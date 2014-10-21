@@ -1,7 +1,6 @@
-from ScoredService import ScoredService
 import socket
 
-class OpenPort(ScoredService):
+class OpenPort():
     def __init__(self, conf_dict):
         self.name = conf_dict["name"]
         self.port = int(conf_dict["port"])
