@@ -143,18 +143,20 @@ def service_factory(conf):
         service_list.append(pluggin_module(conf.pluggins[i]))
     return service_list
 
-def run_loop(teams, services):
+def run_loop(conf, teams, services):
     condition = True
     while(condition):
-        #sleep(rand_time_range())
+        rand_sleep(conf)
         for i in services:
             for t in teams:
                 result = i.score(t)
                 log(t.name, i.name, result)
         break
 
-def rand_time_range():
-    sleep_time = randrange(180,300)
+def rand_sleep(conf):
+    min_seconds = int(conf.general["scoring"]["min_seconds"])
+    max_seconds = int(conf.general["scoring"]["max_seconds"])
+    sleep_time = randrange(min_seconds, max_seconds)
     sleep(sleep_time)
 
 def main():
@@ -163,6 +165,6 @@ def main():
     teams = team_factory(conf)
     services = service_factory(conf)
 
-    run_loop(teams, services)
+    run_loop(conf, teams, services)
 
 main()
