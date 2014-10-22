@@ -68,9 +68,25 @@ class Configuration:
         self.teams_config_path = "teams.conf"
         self.pluggins_config_path = "pluggins.conf"
 
-        self.general = self.file_map(self.general_config_path)
-        self.teams = self.file_map(self.teams_config_path)
-        self.pluggins = self.file_map(self.pluggins_config_path)
+        self.general = self.general_conf()
+        self.teams = self.teams_conf()
+        self.pluggins = self.pluggins_conf()
+
+    def general_conf(self):
+        general = self.file_map(self.general_config_path)
+        return general
+
+    def pluggins_conf(self):
+        tmp_pluggins = self.file_map(self.pluggins_config_path)
+        pluggins = {}
+        for i in tmp_pluggins:
+            if tmp_pluggins[i]["enabled"] == "True":
+                pluggins[i] = tmp_pluggins[i]
+        return pluggins
+
+    def teams_conf(self):
+        teams = self.file_map(self.teams_config_path)
+        return teams
 
     def file_map(self, config_path):
         dict1 = {}
