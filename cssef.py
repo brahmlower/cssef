@@ -9,7 +9,6 @@ from sqlalchemy import String
 from sqlalchemy import Integer
 from sqlalchemy import Boolean
 from sqlalchemy.exc import NoSuchTableError
-from sqlalchemy.exc import OperationalError
 from datetime import datetime
 import ConfigParser
 import sys
@@ -31,10 +30,12 @@ class Database:
             self.tb = self.tables_load(self.md)
         except NoSuchTableError:
             self.sync()
+            self.tb = self.tables_load(self.md)
 
     def sync(self):
         tables = self.tables_define(self.md)
         self.tables_create(tables)
+        sleep(1)
 
     def tables_define(self, md):
         scores = Table('scores', md,
@@ -42,35 +43,29 @@ class Database:
             Column('compid', Integer),
             Column('teamid', Integer),
             Column('servid', Integer),
-            Column('score_type', String(10)),
-            Column('score_val', Integer)
+            Column('points', Integer)
         )
         tables = {}
         tables["scores"] = scores
         return tables
 
     def tables_load(self, md):
-        try:
-            tables = {}
-            tables["scores"] = Table('scores', md, autoload=True)
-        except OperationalError:
-            self.sync()
-            self.tables_load(md)
+        tables = {}
+        tables["scores"] = Table('scores', md, autoload=True)
         return tables
 
     def tables_create(self, tables_dict):
         for i in tables_dict:
             tables_dict[i].create()
 
-    def new_score(self, comp_id, team_id, serv_id, score_type, score_val):
+    def new_score(self, comp_id, team_id, serv_id, points):
         insert = self.tb["scores"].insert()
         fields = {
             'datetime': datetime.now(),
             'compid': comp_id,
             'teamid': team_id,
             'servid': serv_id,
-            'score_type': score_type,
-            'score_val': score_val
+            'points': points
         }
         insert.execute(fields)
 
@@ -143,26 +138,12 @@ class Comp:
     def __init__(self, comp_conf):
         self.id = comp_conf["comp_id"]
 
-class Score:
-    def __init__(self, val_type, val):
-        # val_type should be either 'boolean' or 'integer'
-        # boolean: 1 is true, 0 is false
-        # integer is any integer value
-        self.val_type = val_type
-        self.val = val
-
-def log(db, comp, team, service, result):
+def log(db, comp, team, service, points):
     comp_id = comp.id
     team_id = team.id
-    serv_id = service.name # Really, this should have a service id and service version
-    score_type = result.val_type # This is assuming 'result' is a Score object - interesting/cool idea
-    score_val = result.val
-    db.new_score(comp_id, team_id, serv_id, score_type, score_val)
-    print comp_id, team_id, serv_id, score_type, score_val
-    # if status:
-    #     print "Service '%s' for team '%s' was marked 'up'." % (service,team)
-    # else:
-    #     print "Service '%s' for team '%s' was marked 'down'." % (service,team)
+    serv_id = service.id # Really, this should have a service id and service version
+    db.new_score(comp_id, team_id, serv_id, points)
+    print comp_id, team_id, serv_id, points
 
 def pluggin_module(pluggin_obj):
     module_string = pluggin_obj["module"]
@@ -190,9 +171,9 @@ def run_loop(conf, db, comp, teams, services):
         rand_sleep(conf)
         for i in services:
             for t in teams:
-                result = i.score(t) # i.score() should return an integer, even if boolean result
-                log(db, comp, t, i, result)
-                
+                points = i.score(t) # i.score() should return an integer, even if boolean result
+                log(db, comp, t, i, points)
+
         # This is here just for testing!!
         break
 
