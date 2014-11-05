@@ -171,7 +171,7 @@ def run_loop(conf, db, comp, teams, services):
         rand_sleep(conf)
         for i in services:
             for t in teams:
-                points = i.score(t) # i.score() should return an integer, even if boolean result
+                points = i.score(t)
                 log(db, comp, t, i, points)
 
         # This is here just for testing!!

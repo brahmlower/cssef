@@ -1,15 +1,9 @@
-# from cssef import Score
 import paramiko
 
-# TODO: This should eventually support keys somehow (I think)
-
-# class Score:
-#     def __init__(self, val_type, val):
-#         # val_type should be either 'boolean' or 'integer'
-#         # boolean: 1 is true, 0 is false
-#         # integer is any integer value
-#         self.val_type = val_type
-#         self.val = val
+# This requires 'paramiko'
+# sudo pip install paramiko
+#
+# TODO: This should eventually support keys somehow
 
 class SSH:
 	def __init__(self, conf_dict):

@@ -1,14 +1,5 @@
-# from cssef import Score
 from ftplib import FTP as ftp
 from ftplib import error_perm as ftp_error_perm
-
-# class Score:
-#     def __init__(self, val_type, val):
-#         # val_type should be either 'boolean' or 'integer'
-#         # boolean: 1 is true, 0 is false
-#         # integer is any integer value
-#         self.val_type = val_type
-#         self.val = val
 
 class FTP:
 	def __init__(self, conf_dict):
@@ -25,9 +16,5 @@ class FTP:
 		try:
 			client.login(self.username, self.password)
 			return self.points
-			#return Score('boolean', self.points)
-			#return True
 		except ftp_error_perm:
 			return 0
-			#return Score('boolean', 0)
-			#return False

@@ -1,6 +1,12 @@
-# from cssef import Score
 from smb.SMBConnection import SMBConnection
 from socket import gethostname
+
+# This requires pysmb:
+# sudo pip install pysmb
+#
+# Some resources I used:
+# http://stackoverflow.com/questions/10248796/example-of-pysmb
+# https://pythonhosted.org/pysmb/api/smb_SharedFile.html
 
 class SMB:
 	def __init__(self, conf_dict):
