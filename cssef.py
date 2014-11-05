@@ -9,6 +9,7 @@ from sqlalchemy import String
 from sqlalchemy import Integer
 from sqlalchemy import Boolean
 from sqlalchemy.exc import NoSuchTableError
+from sqlalchemy.exc import OperationalError
 from datetime import datetime
 import ConfigParser
 import sys
@@ -17,9 +18,13 @@ from random import randrange
 
 class Database:
     def __init__(self, conf):
-        database_address = "%s://%s:%s@%s:%s/%s" % (conf["type"], \
-            conf["user"], conf["password"], conf["address"], conf["port"], \
-            conf["db"])
+        if conf["type"] == "mysql":
+            database_address = "%s://%s:%s@%s:%s/%s" % (conf["type"], \
+                conf["user"], conf["password"], conf["address"], conf["port"], \
+                conf["db"])
+        elif conf["type"] == "sqlite":
+            database_address = "%s:///%s" % (conf["type"], conf["file_path"])
+
         self.db = create_engine(database_address)
         self.md = MetaData(self.db)
         try:
@@ -34,31 +39,45 @@ class Database:
     def tables_define(self, md):
         scores = Table('scores', md,
             Column('datetime', DateTime),
-            Column('team', String(10)),
-            Column('addr', String(15)),
-            Column('port', Integer),
-            Column('status', Boolean))
+            Column('compid', Integer),
+            Column('teamid', Integer),
+            Column('servid', Integer),
+            Column('score_type', String(10)),
+            Column('score_val', Integer)
+        )
         tables = {}
         tables["scores"] = scores
         return tables
 
-    def tables_load(self):
-        tables = {}
-        tables["scores"] = Table('scores', md, autoload=True)
+    def tables_load(self, md):
+        try:
+            tables = {}
+            tables["scores"] = Table('scores', md, autoload=True)
+        except OperationalError:
+            self.sync()
+            self.tables_load(md)
         return tables
 
     def tables_create(self, tables_dict):
         for i in tables_dict:
             tables_dict[i].create()
 
-    def new_score(self, team, addr, port, status):
+    def new_score(self, comp_id, team_id, serv_id, score_type, score_val):
         insert = self.tb["scores"].insert()
         fields = {
             'datetime': datetime.now(),
-            'team': team,
-            'addr': addr,
-            'port': port,
-            'status': status
+            'compid': comp_id,
+            'teamid': team_id,
+            'servid': serv_id,
+            'score_type': score_type,
+            'score_val': score_val
+        }
+        insert.execute(fields)
+
+    def new_serv(self):
+        insert = self.tb["services"].insert()
+        fields = {
+            ''
         }
         insert.execute(fields)
 
@@ -120,16 +139,38 @@ class Team:
         self.name = team_conf["name"]
         self.net_addr = team_conf["net_addr"]
 
-def log(team, service, status):
-    if status:
-        print "Service '%s' for team '%s' was marked 'up'." % (service,team)
-    else:
-        print "Service '%s' for team '%s' was marked 'down'." % (service,team)
+class Comp:
+    def __init__(self, comp_conf):
+        self.id = comp_conf["comp_id"]
+
+class Score:
+    def __init__(self, val_type, val):
+        # val_type should be either 'boolean' or 'integer'
+        # boolean: 1 is true, 0 is false
+        # integer is any integer value
+        self.val_type = val_type
+        self.val = val
+
+def log(db, comp, team, service, result):
+    comp_id = comp.id
+    team_id = team.id
+    serv_id = service.name # Really, this should have a service id and service version
+    score_type = result.val_type # This is assuming 'result' is a Score object - interesting/cool idea
+    score_val = result.val
+    db.new_score(comp_id, team_id, serv_id, score_type, score_val)
+    print comp_id, team_id, serv_id, score_type, score_val
+    # if status:
+    #     print "Service '%s' for team '%s' was marked 'up'." % (service,team)
+    # else:
+    #     print "Service '%s' for team '%s' was marked 'down'." % (service,team)
 
 def pluggin_module(pluggin_obj):
     module_string = pluggin_obj["module"]
     module = __import__('pluggins.' + module_string, fromlist=[module_string])
     return getattr(module, module_string)(pluggin_obj)
+
+def comp_factory(conf):
+    return Comp(conf.general["competition"])
 
 def team_factory(conf):
     teams_list = []
@@ -143,14 +184,16 @@ def service_factory(conf):
         service_list.append(pluggin_module(conf.pluggins[i]))
     return service_list
 
-def run_loop(conf, teams, services):
+def run_loop(conf, db, comp, teams, services):
     condition = True
     while(condition):
         rand_sleep(conf)
         for i in services:
             for t in teams:
-                result = i.score(t)
-                log(t.name, i.name, result)
+                result = i.score(t) # i.score() should return an integer, even if boolean result
+                log(db, comp, t, i, result)
+                
+        # This is here just for testing!!
         break
 
 def rand_sleep(conf):
@@ -161,10 +204,11 @@ def rand_sleep(conf):
 
 def main():
     conf = Configuration()
-    #db = Database(conf.general)
+    db = Database(conf.general["database"])
+    comp = comp_factory(conf)
     teams = team_factory(conf)
     services = service_factory(conf)
 
-    run_loop(conf, teams, services)
+    run_loop(conf, db, comp, teams, services)
 
 main()

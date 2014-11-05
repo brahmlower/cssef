@@ -1,7 +1,6 @@
 # from cssef import Score
-import paramiko
-
-# TODO: This should eventually support keys somehow (I think)
+from ftplib import FTP as ftp
+from ftplib import error_perm as ftp_error_perm
 
 class Score:
     def __init__(self, val_type, val):
@@ -11,23 +10,20 @@ class Score:
         self.val_type = val_type
         self.val = val
 
-class SSH:
+class FTP:
 	def __init__(self, conf_dict):
 		self.name = conf_dict["name"]
-		self.port = 22
+		self.port = 20
 		self.username = conf_dict["username"]
 		self.password = conf_dict["password"]
 
 	def score(self, team):
 		host = team.net_addr
-		client = paramiko.SSHClient()
-		client.load_system_host_keys()
-		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+		client = ftp(host)
 		try:
-			client.connect(host, self.port, self.username, self.password)
-			client.close()
+			client.login(self.username, self.password)
 			return Score('boolean',1)
 			#return True
-		except:
+		except ftp_error_perm:
 			return Score('boolean',0)
 			#return False
