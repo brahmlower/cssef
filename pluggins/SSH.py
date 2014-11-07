@@ -7,8 +7,6 @@ import paramiko
 
 class SSH:
 	def __init__(self, conf_dict):
-		self.id = conf_dict["id"]
-		self.name = conf_dict["name"]
 		self.port = conf_dict["port"]
 		self.username = conf_dict["username"]
 		self.password = conf_dict["password"]
@@ -24,4 +22,5 @@ class SSH:
 			client.close()
 			return self.points
 		except:
-			return self.points
+			# This should eventually catch only paramiko errors
+			return 0
