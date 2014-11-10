@@ -1,5 +1,7 @@
-from smb.SMBConnection import SMBConnection
-from socket import gethostname
+#from smb.SMBConnection import SMBConnection
+#from socket import gethostname
+import subprocess
+import os
 
 # This requires pysmb:
 # sudo pip install pysmb
@@ -9,24 +11,22 @@ from socket import gethostname
 # https://pythonhosted.org/pysmb/api/smb_SharedFile.html
 
 class SMB:
-	def __init__(self, conf_dict):
-		self.id = conf_dict["id"]
-		self.name = conf_dict["name"]
-		self.port = conf_dict["port"]
-		self.username = conf_dict["username"]
-		self.password = conf_dict["password"]
-		self.points = conf_dict["points"]
+	def __init__(self, dict_obj):
+		self.username = dict_obj["username"]
+		self.password = dict_obj["password"]
+		self.points = dict_obj["points"]
+		self.subdomain = dict_obj["subdomain"]
 
-		self.localhostname = gethostname()
 
 	def score(self, team):
-		#host = team.net_addr
-		host = "192.168.0.100"
-		conn = SMBConnection(self.username, self.password, self.localhostname, host, use_ntlm_v2=True)
-		x = conn.connect(host, int(self.port))
-		if x:
-			conn.close()
+		host = self.subdomain + "." + team.domainname
+		bproc = "smbclient -L "+host
+		bproc += " -U " + self.username + "%" + self.password
+		FNULL = open(os.devnull, "w")
+		proc = subprocess.Popen(bproc.split(), stdout=subprocess.PIPE, stderr=FNULL)
+		output = proc.communicate()[0]
+		rt = proc.returncode 
+		if rt == "0" or rt == 0:
 			return self.points
 		else:
-			conn.close()
 			return 0

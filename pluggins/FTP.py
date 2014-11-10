@@ -3,18 +3,18 @@ from ftplib import error_perm as ftp_error_perm
 
 class FTP:
 	def __init__(self, conf_dict):
-		self.id = conf_dict["id"]
 		self.name = conf_dict["name"]
 		self.port = conf_dict["port"]
 		self.username = conf_dict["username"]
 		self.password = conf_dict["password"]
 		self.points = conf_dict["points"]
+		self.subdomain = conf_dict["subdomain"]
 
 	def score(self, team):
-		host = team.net_addr
-		client = ftp(host)
+		host = self.subdomain + "." + team.domainname
 		try:
-			client.login(self.username, self.password)
+			client = ftp(host)
+			client.login(self.username, self.password, timeout=3)
 			return self.points
-		except ftp_error_perm:
+		except:
 			return 0

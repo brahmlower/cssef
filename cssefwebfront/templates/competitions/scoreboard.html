@@ -1,0 +1,66 @@
+<html>
+  <head>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="/" class="navbar-brand">CSC CSSEF</a>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+          <ul class="nav navbar-nav">
+	    <li><a href="/competitions/">Competitions</a></li>
+            <li><a href="/admin/">Admin Config</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/admin/login/">Admin Login</a></li>
+            <li><a href="http://uafcsc.com/">UAF CSC</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <br>
+      <br>
+      <br>
+      <ul class="breadcrumb">
+        <li><a href="/competitions/">Competitions</a></li>
+        <li><a href="/competitions/{{ competition_object.compurl }}/summary/">{{ competition_object.compname }}</a></li>
+        <li class="active"> Scoreboard </li>
+      </ul>
+
+      <ul class="nav nav-tabs" role="tablist">
+        <li><a href="/competitions/{{ competition_object.compurl }}/summary">Summary</a></li>
+        <li><a href="/competitions/{{ competition_object.compurl }}/details">Details</a></li>
+        <li><a href="/competitions/{{ competition_object.compurl }}/ranking">Team Rankings</a></li>
+        <li><a href="/competitions/{{ competition_object.compurl }}/servicestatus">Service Status</a></li>
+        <li class="active"><a href="/competitions/{{ competition_object.compurl }}/scoreboard">Scoreboard</a></li>
+        <li><a href="/competitions/{{ competition_object.compurl }}/servicetimeline">Service Timeline</a></li>
+        <li><a href="/competitions/{{ competition_object.compurl }}/injects">Injects</a></li>
+        <li><a href="/competitions/{{ competition_object.compurl }}/incidentresponse">Incident Response</a></li>
+      </ul>
+      <br>
+      <!-- Actual page content -->
+      {% for i in scores %}
+        <h3> Team: {{i.teamname}} </h3>
+        <table class="table">
+          <tr><th>Datetime</th><th>Service</th><th>Points</th></tr>
+          {% for k in i.scores %}
+            <tr><td>{{k.time}}</td><td>{{k.name}}</td><td>{{k.value}}</td></tr>
+          {% endfor %}
+        </table>
+      {% endfor %}
+
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,81 @@
+<html>
+  <head>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="/" class="navbar-brand">CSC CSSEF</a>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+          <ul class="nav navbar-nav">
+	    <li><a href="/competitions">Competitions</a></li>
+            <li><a href="/admin/">Admin Config</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/admin/login/">Admin Login</a></li>
+            <li><a href="http://uafcsc.com/">UAF CSC</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <br>
+      <br>
+      <br>
+      <ul class="breadcrumb">
+        <li><a href="/admin/">Admin</a></li>
+        <li><a href="/admin/competitions/">Competition List</a></li>
+        <li><a href="/admin/competitions/{{ competition_object.compurl }}/summary/">{{ competition_object.compname }}</a></li>
+        <li class="active"> Teams </li>
+      </ul>
+      <div class="page-header">
+        <h1> {{competition_object.compname}} - Teams</h1>
+      </div>
+      <!-- displays the links to other config pages -->
+
+      <ul class="nav nav-tabs" role="tablist">
+        <li><a href="/admin/competitions/{{ competition_object.compurl }}/summary/">Summary</a></li>
+        <li><a href="/admin/competitions/{{ competition_object.compurl }}/details/">Details</a></li>
+        <li><a href="/admin/competitions/{{ competition_object.compurl }}/injects/">Injects</a></li>
+        <li><a href="/admin/competitions/{{ competition_object.compurl }}/scoring/">Scoring</a></li>
+        <li><a href="/admin/competitions/{{ competition_object.compurl }}/services/">Services</a></li>
+        <li class="active"><a href="/admin/competitions/{{ competition_object.compurl }}/teams/">Teams</a></li>
+      </ul>
+      <br>
+      <!-- displays actual page content -->
+      <a href="/admin/competitions/{{ competition_object.compurl }}/createteam/" class="btn btn-primary">Create Team</a>
+      <br><br>
+
+      {% if teams %}
+        {% for i in teams %}
+        <div class="panel panel-default">
+          <div class="panel-heading"> {{i.teamname}} </div>
+          <div class="panel-body">
+            <strong>Name: </strong>{{ i.teamname }}
+            <br>
+            <strong>Domain: </strong>{{ i.domainname }}
+            <div class="bt-component pull-right">
+              <a href="/admin/competitions/{{ competition_object.compurl }}/editteam" class="btn btn-primary">Edit</a>
+              <a href="/admin/competitions/{{ competition_object.compurl }}/teams" class="btn btn-danger">Delete</a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p>No teams have been created yet. Go ahead and make one!</p>
+      {% endif %}
+
+    </div>
+
+  </body>
+</html>

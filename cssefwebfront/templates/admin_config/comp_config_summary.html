@@ -1,0 +1,89 @@
+<html>
+  <head>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="/" class="navbar-brand">CSC CSSEF</a>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+          <ul class="nav navbar-nav">
+	    <li><a href="/competitions/">Competitions</a></li>
+            <li><a href="/admin/">Admin Config</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/admin/login/">Admin Login</a></li>
+            <li><a href="http://uafcsc.com/">UAF CSC</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+    {% autoescape off %}
+      <br>
+      <br>
+      <br>
+      <ul class="breadcrumb">
+        <li><a href="/admin/">Admin</a></li>
+        <li><a href="/admin/competitions/">Competition List</a></li>
+        <li><a href="/admin/competitions/{{ competition_object.compurl }}/summary/">{{ competition_object.compname }}</a></li>
+        <li class="active"> Summary </li>
+      </ul>
+      <div class="page-header">
+        <h1> {{competition_object.compname}} - Summary</h1>
+      </div>
+      <!-- displays the links to other config pages -->
+
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="active"><a href="/admin/competitions/{{ competition_object.compurl }}/summary/">Summary</a></li>
+        <li><a href="/admin/competitions/{{ competition_object.compurl }}/details/">Details</a></li>
+        <li><a href="/admin/competitions/{{ competition_object.compurl }}/injects/">Injects</a></li>
+        <li><a href="/admin/competitions/{{ competition_object.compurl }}/scoring/">Scoring</a></li>
+        <li><a href="/admin/competitions/{{ competition_object.compurl }}/services/">Services</a></li>
+        <li><a href="/admin/competitions/{{ competition_object.compurl }}/teams/">Teams</a></li>
+      </ul>
+      <br>
+
+      <!-- displays the short description -->
+      <div class="panel panel-default">
+        <div class="panel-heading">Short Description</div>
+        <div class="panel-body">
+          <p>{{ competition_object.shrt_desc }}</p>
+          <a href="/admin/competitions/{{ competition_object.compurl }}/" class="btn btn-primary pull-right">Edit</a>
+        </div>
+      </div>
+
+      <!-- displays the full description -->
+      <div class="panel panel-default">
+        <div class="panel-heading">Full Description</div>
+        <div class="panel-body">
+          <p>{{ competition_object.full_desc }}</p>
+          <a href="/admin/competitions/{{ competition_object.compurl }}/" class="btn btn-primary pull-right">Edit</a>
+        </div>
+      </div>
+
+      <h2>Current Viewable</h2>
+      <p>{{ competition_object.viewable }}</p>
+      {% if not competition_object.viewable %}
+        <h2>Auto Display</h2>
+        <p>{{ competition_object.autodisplay }}</p>
+        {% if not competition_object.autodisplay %}
+          <h2>Display Time</h2>
+          <p>{{ competition_object.displaytime }}</p>
+        {% endif %}
+      {% endif %}
+
+    {% endautoescape %}
+    </div>
+  </body>
+</html>

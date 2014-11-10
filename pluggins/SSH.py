@@ -11,14 +11,15 @@ class SSH:
 		self.username = conf_dict["username"]
 		self.password = conf_dict["password"]
 		self.points = conf_dict["points"]
+		self.subdomain = conf_dict["subdomain"]
 
 	def score(self, team):
-		host = team.net_addr
+		host = self.subdomain + "." + team.domainname
 		client = paramiko.SSHClient()
 		client.load_system_host_keys()
 		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		try:
-			client.connect(host, self.port, self.username, self.password)
+			client.connect(host, self.port, self.username, self.password, timeout=3)
 			client.close()
 			return self.points
 		except:

@@ -1,0 +1,59 @@
+<html>
+  <head>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="/" class="navbar-brand">CSC CSSEF</a>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+          <ul class="nav navbar-nav">
+	    <li><a href="/competitions">Competitions</a></li>
+            <li><a href="/admin/">Admin Config</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/admin/login/">Admin Login</a></li>
+            <li><a href="http://uafcsc.com/">UAF CSC</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <br>
+      <br>
+      <br>
+      <ul class="breadcrumb">
+        <li class="active">Admin</li>
+      </ul>
+
+      <div class="jumbotron">
+        <h1>Admin Home</h1>
+        <p>The following are currently scheduled and past competitions ordered chronologically. Select a competition to see more information about it.</p>
+        <br>
+        <!-- <a class="btn btn-primary btn-lg">New Competition</a> -->
+      </div>
+
+      <a href="/admin/users/" class="btn btn-primary btn-lg">Users</a>
+      <!-- <a href="/admin/teams/" class="btn btn-primary btn-lg">Teams</a> -->
+      <a href="/admin/competitions/" class="btn btn-primary btn-lg">Competitions</a>
+
+<!--       <ul class="nav nav-tabs" role="tablist">
+        <li class="active"><a href="/admin/">Home</a></li>
+        <li><a href="/admin/users">Users</a></li>
+        <li><a href="/admin/competitions">Competition List</a></li>
+      </ul>
+      <br> -->
+
+    </div>
+  </body>
+</html>
