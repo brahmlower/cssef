@@ -9,13 +9,13 @@ from json import loads as json_loads
 import ConfigParser
 
 # Required to use django models
-os.environ['DJANGO_SETTINGS_MODULE'] = 'cybersecweb.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'cssefwebfront.settings'
 from django.conf import settings
 
-from cybersecweb.models import Competition
-from cybersecweb.models import Team
-from cybersecweb.models import Service
-from cybersecweb.models import Score
+from cssefwebfront.models import Competition
+from cssefwebfront.models import Team
+from cssefwebfront.models import Service
+from cssefwebfront.models import Score
 
 class Config:
     def __init__(self, config_path):
