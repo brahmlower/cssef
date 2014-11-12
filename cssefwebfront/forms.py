@@ -8,16 +8,9 @@ from django.forms import ChoiceField
 from django.forms.widgets import PasswordInput
 from models import Competition
 from models import Service
+from models import Inject
 from models import Admins
 from models import Team
-
-# def get_competitions_list():
-# 	comp_list = []
-# 	comps = Competition.objects.all()
-# 	for i in comps:
-# 		comp_list.append((i.compid, i.compname))
-# 	print comp_list
-# 	return comp_list
 
 class CreateCompetitionForm(ModelForm):
 	class Meta:
@@ -85,6 +78,19 @@ class CreateServiceForm(ModelForm):
 			'subdomain': TextInput(attrs={'class':'form-control'}),
 		}
 
+class CreateInjectForm(ModelForm):
+	class Meta:
+		model = Inject
+		fields = ['title', 'body']
+		label = {
+			'title': ('Title'),
+			'body': ('Content'),
+		}
+		widgets = {
+			'title': TextInput(attrs={'class':'form-control'}),
+			'body': Textarea(attrs={'class':'form-control'}),
+		}
+
 class AdminLoginForm(ModelForm):
 	class Meta:
 		model = Admins
@@ -95,7 +101,7 @@ class AdminLoginForm(ModelForm):
 		}
 		widgets = {
 			'username': TextInput(attrs={'class':'form-control', 'required': True}),
-			'password': PasswordInput(attrs={'class':'form-control', 'required': False}),
+			'password': PasswordInput(attrs={'class':'form-control', 'required': True}),
 		}
 
 class TeamLoginForm(ModelForm):

@@ -12,12 +12,12 @@ from django.contrib.auth.models import User
 from datetime import datetime  
 
 class Competition(Model):
-	compid = AutoField(primary_key=True)
-	compname = CharField(max_length=50)		# Full name of the competition
-	compurl = CharField(max_length=25)		# string ID of the competition, used in url
-	shrt_desc = CharField(max_length=300)	# A short description of the competition - abreviated version of description field
-	full_desc = TextField(max_length=1000)	# A full description of the competition, what it's about, what the goals are and whatnot
-	viewable = BooleanField()				# Boolean indicating if it's published on the public competition list
+	compid = AutoField(primary_key = True)
+	compname = CharField(max_length = 50)		# Full name of the competition
+	compurl = CharField(max_length = 25)		# string ID of the competition, used in url
+	shrt_desc = CharField(max_length = 300)		# A short description of the competition - abreviated version of description field
+	full_desc = TextField(max_length = 1000)	# A full description of the competition, what it's about, what the goals are and whatnot
+	viewable = BooleanField()					# Boolean indicating if it's published on the public competition list
 	autodisplay = BooleanField()
 	displaytime = PositiveIntegerField()
 	#starttime = PositiveIntegerField()
@@ -27,33 +27,40 @@ class Competition(Model):
 	score_delay_uncert = PositiveIntegerField()
 
 class Team(Model):
-	teamid = AutoField(primary_key=True)
+	teamid = AutoField(primary_key = True)
 	compid = PositiveIntegerField()
-	teamname = CharField(max_length=30)
-	password = CharField(max_length=64)
-	domainname = CharField(max_length=30)
+	teamname = CharField(max_length = 30)
+	password = CharField(max_length = 64)
+	domainname = CharField(max_length = 30)
 
 class Service(Model):
-	servid = AutoField(primary_key=True)
+	servid = AutoField(primary_key = True)
 	compid = PositiveIntegerField()
-	module = CharField(max_length=10)
-	name = CharField(max_length=30)
-	desc = CharField(max_length=200)
-	config = CharField(max_length=1000)
+	module = CharField(max_length = 10)
+	name = CharField(max_length = 30)
+	desc = CharField(max_length = 200)
+	config = CharField(max_length = 1000)
 	points = PositiveIntegerField()
-	subdomain = CharField(max_length=20)
+	subdomain = CharField(max_length = 20)
 
 class Score(Model):
+	scorid = AutoField(primary_key = True)
 	compid = PositiveIntegerField()
 	teamid = PositiveIntegerField()
 	servid = PositiveIntegerField()
 	datetime = DateTimeField()
 	value = PositiveIntegerField()
 
+class Inject(Model):
+	modlid = AutoField(primary_key = True)
+	compid = PositiveIntegerField()
+	title = CharField(max_length = 50)
+	body = CharField(max_length = 1000)
+
 class Admins(Model):
-	userid = AutoField(primary_key=True)
-	username = CharField(max_length=20)
-	password = CharField(max_length=64)
+	userid = AutoField(primary_key = True)
+	username = CharField(max_length = 20)
+	password = CharField(max_length = 64)
 
 # class Teams(Model): #Why isn't this User?
 # 	userid = AutoField(primary_key=True)

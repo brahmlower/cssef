@@ -17,7 +17,7 @@
         </div>
         <div class="navbar-collapse collapse" id="navbar-main">
           <ul class="nav navbar-nav">
-	    <li><a href="/competitions/">Competitions</a></li>
+	    <li><a href="/competitions">Competitions</a></li>
             <li><a href="/admin/">Admin Config</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
@@ -32,38 +32,14 @@
       <br>
       <br>
       <br>
-
-    <!-- BEGIN MESSAGE REPORTING -->
-    {% if messages != None %}
-      {% for i in messages.error %}
-      <div class="alert alert-dismissable alert-error">
-        <button type="button" class="close" data-dismiss="alert">x</button>
-        <strong>Error: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
-      </div>
-      {% endfor %}
-      {% for i in messages.info %}
-      <div class="alert alert-dismissable alert-info">
-        <button type="button" class="close" data-dismiss="alert">x</button>
-        <strong>Info: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
-      </div>
-      {% endfor %}
-      {% for i in messages.success %}
-      <div class="alert alert-dismissable alert-success">
-        <button type="button" class="close" data-dismiss="alert">x</button>
-        <strong>Success: </string>{{ i.string }} <!-- ({{ i.num }}) -->
-      </div>
-      {% endfor %}
-    {% endif %}
-    <!-- END MESSAGE REPORTING -->
-
       <ul class="breadcrumb">
         <li><a href="/admin/">Admin</a></li>
         <li><a href="/admin/competitions/">Competition List</a></li>
         <li><a href="/admin/competitions/{{ competition_object.compurl }}/summary/">{{ competition_object.compname }}</a></li>
-        <li class="active"> Services </li>
+        <li class="active"> Teams </li>
       </ul>
       <div class="page-header">
-        <h1> {{competition_object.compname}} - Services</h1>
+        <h1> {{competition_object.compname}} - Teams</h1>
       </div>
       <!-- displays the links to other config pages -->
 
@@ -72,40 +48,31 @@
         <li><a href="/admin/competitions/{{ competition_object.compurl }}/details/">Details</a></li>
         <li><a href="/admin/competitions/{{ competition_object.compurl }}/injects/">Injects</a></li>
         <li><a href="/admin/competitions/{{ competition_object.compurl }}/scoring/">Scoring</a></li>
-        <li class="active"><a href="/admin/competitions/{{ competition_object.compurl }}/services/">Services</a></li>
-        <li><a href="/admin/competitions/{{ competition_object.compurl }}/teams/">Teams</a></li>
+        <li><a href="/admin/competitions/{{ competition_object.compurl }}/services/">Services</a></li>
+        <li class="active"><a href="/admin/competitions/{{ competition_object.compurl }}/teams/">Teams</a></li>
       </ul>
       <br>
       <!-- displays actual page content -->
-      <a href="/admin/competitions/{{ competition_object.compurl }}/createservice/" class="btn btn-primary">Create Service</a>
+      <a href="/admin/competitions/{{ competition_object.compurl }}/teams/create/" class="btn btn-primary">Create Team</a>
       <br><br>
 
-      {% if services %}
-        {% for i in services %}
+      {% if teams %}
+        {% for i in teams %}
         <div class="panel panel-default">
-          <div class="panel-heading"> {{i.name}} </div>
+          <div class="panel-heading"> {{i.teamname}} </div>
           <div class="panel-body">
-            <strong>Name: </strong>{{ i.name }}
+            <strong>Name: </strong>{{ i.teamname }}
             <br>
-            <strong>Module: </strong>{{ i.module }}.py
-            <br>
-            <strong>Points: </strong>{{ i.points}}
-            <br>
-	    <strong>Subdomain: </strong>{{ i.subdomain }}
-	    <br>
-	    <strong>Service: </strong>{{ i.config }}
-	    <br>
-            <strong>Description: </strong><br>
-            {{ i.desc }}
+            <strong>Domain: </strong>{{ i.domainname }}
             <div class="bt-component pull-right">
-              <a href="/admin/competitions/{{ competition_object.compurl }}/editservice" class="btn btn-primary">Edit</a>
-              <a href="/admin/competitions/{{ competition_object.compurl }}/services/delete/{{ i.servid }}/" class="btn btn-danger">Delete</a>
+              <a href="/admin/competitions/{{ competition_object.compurl }}/teams/edit/{{ i.teamid }}" class="btn btn-primary">Edit</a>
+              <a href="/admin/competitions/{{ competition_object.compurl }}/teams/delete/{{ i.teamid }}" class="btn btn-danger">Delete</a>
             </div>
           </div>
         </div>
         {% endfor %}
       {% else %}
-        <p>No services have been created yet. Go ahead and make one!</p>
+        <p>No teams have been created yet. Go ahead and make one!</p>
       {% endif %}
 
     </div>

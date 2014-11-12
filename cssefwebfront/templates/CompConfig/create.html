@@ -63,7 +63,7 @@
 
 	{% autoescape off %}
 	<h2>New Competition</h2>
-	<form action="/admin/create-competition/" method="post" class="form-horizontal">
+	<form action="/admin/competitions/create/" method="post" class="form-horizontal">
 	  	{% csrf_token %}
 		{{ form.comp.compname.errors}}
 		<label for="{{ form.comp.compname.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.compname.label }}</label>

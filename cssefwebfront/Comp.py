@@ -32,7 +32,7 @@ class UserMessages:
 		self.error = []
 		self.success = []
 
-def login(request, competition='None'):
+def login(request, competition = None):
 	"""
 	Page for teams to login to for a competition
 	"""
@@ -43,7 +43,7 @@ def login(request, competition='None'):
 	c.update(csrf(request))
 	# Checks if the user is submitting the form, or requesting the form
 	if request.method != "POST":
-		return render_to_response('competitions/login.html', c)
+		return render_to_response('Comp/login.html', c)
 
 	form_dict = request.POST.copy()
 	form_dict["compid"] = c["competition_object"].compid
@@ -51,7 +51,7 @@ def login(request, competition='None'):
 	team = authenticate(teamname = form_dict["teamname"], password = form_dict["password"], compid = form_dict["compid"])
 	if team == None:
 		c["messages"].new_info("Incorrect team credentials.", 4321)
-		return render_to_response('competitions/login.html', c)
+		return render_to_response('Comp/login.html', c)
 	auth.login(request, team)
 	return HttpResponseRedirect("/competitions/%s/summary/" % competition)
 	#return render_to_response('competitions/summary.html', c)
@@ -80,9 +80,9 @@ def list(request):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_list"] = Competition.objects.all()
-	return render_to_response('competitions/list.html', c)
+	return render_to_response('Comp/list.html', c)
 
-def summary(request, competition='None'):
+def summary(request, competition = None):
 	"""
 	Display summary information for selected competition
 	"""
@@ -98,9 +98,9 @@ def summary(request, competition='None'):
 	else:
 		c["team_auth"] = False
 
-	return render_to_response('competitions/summary.html', c)
+	return render_to_response('Comp/summary.html', c)
 
-def details(request, competition='None'):
+def details(request, competition = None):
 	"""
 	Display details about the selected competition
 	"""
@@ -109,9 +109,9 @@ def details(request, competition='None'):
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c["services"] = Service.objects.filter(compid = c["competition_object"].compid)
 	c["teams"] = Team.objects.filter(compid = c["competition_object"].compid)
-	return render_to_response('competitions/details.html', c)
+	return render_to_response('Comp/details.html', c)
 
-def rankings(request, competition='None'):
+def rankings(request, competition = None):
 	"""
 	Display team rankings for selected competition
 	"""
@@ -126,36 +126,36 @@ def rankings(request, competition='None'):
 		for k in scores_objs:
 			total += k.value
 		c["ranks"].append({"team": i.teamname, "score": total, "place":0})		
-	return render_to_response('competitions/rankings.html', c)
+	return render_to_response('Comp/rankings.html', c)
 
-def injects(request, competition='None'):
+def injects(request, competition = None):
 	"""
 	Display inject list for selected competition
 	"""
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl=competition)
-	return render_to_response('competitions/injects.html', c)
+	return render_to_response('Comp/injects.html', c)
 
-def servicestatus(request, competition = 'None'):
+def servicestatus(request, competition = None):
 	"""
 	Display current service status for selected team in selected competition
 	"""
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	return render_to_response('competitions/servicestatus.html', c)
+	return render_to_response('Comp/servicestatus.html', c)
 
-def servicetimeline(request, competition='None'):
+def servicetimeline(request, competition = None):
 	"""
 	Display status timeline of services for selected team in selected competition
 	"""
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	return render_to_response('competitions/servicetimeline.html', c)
+	return render_to_response('Comp/servicetimeline.html', c)
 
-def scoreboard(request, competition='None'):
+def scoreboard(request, competition = None):
 	"""
 	Display the list of scores for the selected team of the selected competition
 	"""
@@ -179,13 +179,13 @@ def scoreboard(request, competition='None'):
 
 		score_list.append(tmp_dict)
 	c["scores"] = score_list
-	return render_to_response('competitions/scoreboard.html', c)
+	return render_to_response('Comp/scoreboard.html', c)
 
-def incidentresponse(request, competition = 'None'):
+def incidentresponse(request, competition = None):
 	"""
 	Provides a submission portal for selected team of selected competition to submit incident responses
 	"""
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl=competition)
-	return render_to_response('competitions/incidentresponse.html', c)
+	return render_to_response('Comp/incidentresponse.html', c)
