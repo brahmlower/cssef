@@ -8,6 +8,7 @@ from django.core.context_processors import csrf
 from forms import CreateCompetitionForm
 from forms import AdminLoginForm
 from forms import CreateTeamForm
+from forms import CreateInjectForm
 from forms import CreateServiceForm
 from models import Competition
 from models import Service
@@ -215,7 +216,7 @@ def injects_list(request, competition = None):
 	c["injects"] = Inject.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('CompConfig/injects_list.html', c)
 
-def injects_edit(request, competition = None, injctid = None):
+def injects_edit(request, competition = None, ijctid = None):
 	"""
 	Edit the inject in the competition
 	"""
@@ -225,15 +226,13 @@ def injects_edit(request, competition = None, injctid = None):
 	c["injects"] = Inject.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('CompConfig/injects_edit.html', c)
 
-def injects_delete(request, competition = None, injctid = None):
+def injects_delete(request, competition = None, ijctid = None):
 	"""
-	Lists the injects in the competition
+	Deletes the inject from the competition
 	"""
-	c = {}
-	c["messages"] = UserMessages()
 	comp_obj = Competition.objects.get(compurl = competition)
-	injct_obj = Inject.objects.filter(compid = c["competition_object"].compid)
-	injct_obj.delete()
+	ijct_obj = Inject.objects.filter(compid = comp_obj.compid, ijctid = int(ijctid))
+	ijct_obj.delete()
 	return HttpResponseRedirect("/admin/competitions/%s/injects/" % competition)
 
 def injects_create(request, competition = None):

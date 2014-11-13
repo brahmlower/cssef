@@ -53,6 +53,27 @@
       </ul>
       <br>
 
+      <!-- displays actual page content -->
+      <a href="/admin/competitions/{{ competition_object.compurl }}/injects/create/" class="btn btn-primary">Create Inject</a>
+      <br><br>
+
+      {% if injects %}
+        {% for i in injects %}
+        <div class="panel panel-default">
+          <div class="panel-heading"> {{ i.title }} </div>
+          <div class="panel-body">
+            {{ i.body }}
+            <div class="bt-component pull-right">
+              <a href="/admin/competitions/{{ competition_object.compurl }}/injects/edit/{{ i.ijctid }}/" class="btn btn-primary">Edit</a>
+              <a href="/admin/competitions/{{ competition_object.compurl }}/injects/delete/{{ i.ijctid }}/" class="btn btn-danger">Delete</a>
+            </div>
+            <br>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p>No injects have been created yet. Go ahead and make one!</p>
+      {% endif %}
 
     </div>
 

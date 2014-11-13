@@ -46,7 +46,7 @@ urlpatterns = patterns('',
     url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/services/create/$',                         CompConfig.services_create),
     # Inject related competition configurations
     url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/$',                                     CompConfig.injects_list),
-    url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/edit/(?P<injectid>[1-9][1-9]*)/$',      CompConfig.injects_edit),
-    url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/delete/(?P<injectid>[1-9][1-9]*)/$',    CompConfig.injects_delete),
+    url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/edit/(?P<ijctid>[1-9][1-9]*)/$',      CompConfig.injects_edit),
+    url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/delete/(?P<ijctid>[1-9][1-9]*)/$',    CompConfig.injects_delete),
     url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/create/$',                              CompConfig.injects_create),
 )

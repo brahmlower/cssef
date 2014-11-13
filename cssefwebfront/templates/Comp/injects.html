@@ -49,6 +49,17 @@
         <li><a href="/competitions/{{ competition_object.compurl }}/incidentresponse">Incident Response</a></li>
       </ul>
       <br>
+
+        {% for i in injects %}
+        <div class="panel panel-default">
+          <div class="panel-heading"> {{ i.title }} </div>
+          <div class="panel-body">
+            {{ i.body }}
+            <br>
+          </div>
+        </div>
+        {% endfor %}
+
     </div>
 
   </body>

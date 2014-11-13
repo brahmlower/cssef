@@ -52,7 +52,7 @@ class Score(Model):
 	value = PositiveIntegerField()
 
 class Inject(Model):
-	modlid = AutoField(primary_key = True)
+	ijctid = AutoField(primary_key = True)
 	compid = PositiveIntegerField()
 	title = CharField(max_length = 50)
 	body = CharField(max_length = 1000)

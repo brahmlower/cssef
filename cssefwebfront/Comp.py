@@ -6,6 +6,7 @@ from django.contrib import auth
 from django.core.context_processors import csrf
 from models import Competition
 from models import Service
+from models import Inject
 from models import Score
 from models import Team
 from forms import TeamLoginForm
@@ -135,6 +136,7 @@ def injects(request, competition = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl=competition)
+	c["injects"] = Inject.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('Comp/injects.html', c)
 
 def servicestatus(request, competition = None):

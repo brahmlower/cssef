@@ -81,7 +81,7 @@ class CreateServiceForm(ModelForm):
 class CreateInjectForm(ModelForm):
 	class Meta:
 		model = Inject
-		fields = ['title', 'body']
+		fields = ['compid','title', 'body']
 		label = {
 			'title': ('Title'),
 			'body': ('Content'),
