@@ -5,6 +5,8 @@ from django.shortcuts import render
 from django.contrib import auth
 from django.core.context_processors import csrf
 
+import json 
+
 from forms import CreateCompetitionForm
 from forms import AdminLoginForm
 from forms import CreateTeamForm
@@ -113,15 +115,28 @@ def teams_list(request, competition = None):
 	c["teams"] = Team.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('CompConfig/teams_list.html', c)
 
-def teams_edit(request, competition = None):
+def teams_edit(request, competition = None, teamid = None):
 	"""
 	Edit the team in the competition
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c["action"] = "edit"
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c["teams"] = Team.objects.filter(compid = c["competition_object"].compid)
-	return render_to_response('CompConfig/teams_edit.html', c)
+	c.update(csrf(request))
+	if request.method != "POST":
+		team_obj = Team.objects.filter(compid = c["competition_object"].compid, teamid = int(teamid))
+		c["teamid"] = team_obj[0].teamid
+		c["form"] = {"team": CreateTeamForm(initial = team_obj.values()[0])}
+		return render_to_response('CompConfig/teams_create-edit.html', c)
+	# TODO: This part is super gross. I should improve efficiency at some point
+	tmp_dict = {}
+	tmp_dict['teamname'] = request.POST['teamname']
+	tmp_dict['password'] = request.POST['password']
+	tmp_dict['domainname'] = request.POST['domainname']
+	team_obj = Team.objects.filter(compid = c["competition_object"].compid, teamid = int(teamid))
+	team_obj.update(**tmp_dict)
+	return HttpResponseRedirect('/admin/competitions/%s/teams/' % competition)
 
 def teams_delete(request, competition = None, teamid = None):
 	"""
@@ -138,18 +153,19 @@ def teams_create(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c["action"] = "create"
 	c["form"] = {"team": CreateTeamForm()}
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
 
 	if request.method != "POST":
-		return render_to_response('CompConfig/teams_create.html', c)
+		return render_to_response('CompConfig/teams_create-edit.html', c)
 	form_dict = request.POST.copy()
 	form_dict["compid"] = c["competition_object"].compid
 	team = CreateTeamForm(form_dict)
 	if not team.is_valid():
 		c["messages"].new_info("Invalid field data in team form: %s" % team.errors, 1001)
-		return render_to_response('CompConfig/teams_create.html', c)
+		return render_to_response('CompConfig/teams_create-edit.html', c)
 	team.save()
 	return HttpResponseRedirect("/admin/competitions/%s/teams/" % competition)
 
@@ -170,9 +186,25 @@ def services_edit(request, competition = None, servid = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c["action"] = "edit"
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c["services"] = Service.objects.filter(compid = c["competition_object"].compid)
-	return render_to_response('CompConfig/services_edit.html', c)
+	c.update(csrf(request))
+	if request.method != "POST":
+		serv_obj = Service.objects.filter(compid = c["competition_object"].compid, servid = int(servid))
+		c["servid"] = serv_obj[0].servid
+		c["form"] = {"service": CreateServiceForm(initial = serv_obj.values()[0])}
+		return render_to_response('CompConfig/services_create-edit.html', c)
+	# TODO: This part is super gross. I should improve efficiency at some point
+	tmp_dict = {}
+	tmp_dict['module'] = request.POST['module']
+	tmp_dict['name'] = request.POST['name']
+	tmp_dict['desc'] = request.POST['desc']
+	tmp_dict['points'] = request.POST['points']
+	tmp_dict['config'] = request.POST['config']
+	tmp_dict['subdomain'] = request.POST['subdomain']
+	serv_obj = Service.objects.filter(compid = c["competition_object"].compid, servid = int(servid))
+	serv_obj.update(**tmp_dict)
+	return HttpResponseRedirect('/admin/competitions/%s/services/' % competition)
 
 def services_delete(request, competition = None, servid = None):
 	"""
@@ -190,18 +222,18 @@ def services_create(request, competition = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["form"] = {"service": CreateServiceForm()}
+	c["action"] = "create"
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
 
 	if request.method != "POST":
-		return render_to_response('CompConfig/services_create.html', c)
+		return render_to_response('CompConfig/services_create-edit.html', c)
 	form_dict = request.POST.copy()
 	form_dict["compid"] = c["competition_object"].compid
 	service = CreateServiceForm(form_dict)
 	if not service.is_valid():
 		c["messages"].new_info("Invalid field data in service form: %s" % service.errors, 1001)
-		return render_to_response('CompConfig/services_create.html', c)
-	print "supposedly saving"
+		return render_to_response('CompConfig/services_create-edit.html', c)
 	service.save()
 	return HttpResponseRedirect("/admin/competitions/%s/services/" % competition)
 
@@ -222,9 +254,18 @@ def injects_edit(request, competition = None, ijctid = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c["action"] = "edit"
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c["injects"] = Inject.objects.filter(compid = c["competition_object"].compid)
-	return render_to_response('CompConfig/injects_edit.html', c)
+	c.update(csrf(request))
+	if request.method != "POST":
+		ijct_obj = Inject.objects.filter(compid = c["competition_object"].compid, ijctid = int(ijctid))
+		c["ijctid"] = ijct_obj[0].ijctid
+		c["form"] = {"inject": CreateInjectForm(initial = ijct_obj.values()[0])}
+		return render_to_response('CompConfig/injects_create-edit.html', c)
+	tmp_dict = {'title': request.POST['title'], 'body':request.POST['body']}
+	ijct_obj = Inject.objects.filter(compid = c["competition_object"].compid, ijctid = int(ijctid))
+	ijct_obj.update(**tmp_dict)
+	return HttpResponseRedirect('/admin/competitions/%s/injects/' % competition)
 
 def injects_delete(request, competition = None, ijctid = None):
 	"""
@@ -241,18 +282,19 @@ def injects_create(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c["action"] = "create"
 	c["form"] = {"inject": CreateInjectForm()}
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
 
 	if request.method != "POST":
-		return render_to_response('CompConfig/injects_create.html', c)
+		return render_to_response('CompConfig/injects_create-edit.html', c)
 	form_dict = request.POST.copy()
 	form_dict["compid"] = c["competition_object"].compid
 	inject = CreateInjectForm(form_dict)
 	if not inject.is_valid():
 		c["messages"].new_info("Invalid field data in inject form: %s" % inject.errors, 1001)
-		return render_to_response('CompConfig/injects_create.html', c)
+		return render_to_response('CompConfig/injects_create-edit.html', c)
 	inject.save()
 	return HttpResponseRedirect("/admin/competitions/%s/injects/" % competition)
 
