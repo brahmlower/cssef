@@ -42,17 +42,19 @@ class CreateCompetitionForm(ModelForm):
 class CreateTeamForm(ModelForm):
 	class Meta:
 		model = Team
-		fields = ['teamname','password','domainname','compid']
+		fields = ['teamname','password','domainname','compid','score_configs']
 		labels = {
 			'compid': ('Competition'),
 			'teamname': ('Teamname'),
 			'password': ('Password'),
 			'domainname': ('Domain Name'),
+			'score_configs': ('Score Configurations'),
 		}
 		widgets = {
 			'teamname': TextInput(attrs={'class':'form-control'}),
 			'password': TextInput(attrs={'class':'form-control'}),
 			'domainname': TextInput(attrs={'class':'form-control'}),
+			'score_configs': Textarea(attrs={'class':'form-control'}),
 		}
 
 class CreateServiceForm(ModelForm):

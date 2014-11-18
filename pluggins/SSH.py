@@ -13,7 +13,8 @@ class SSH(Pluggin):
 		"username":str,
 		"password":str,
 		"network":str,
-		"timeout":int}
+		"timeout":int
+	}
 
 	def __init__(self, conf_dict):
 		Pluggin.__init__(self, conf_dict)
@@ -40,5 +41,3 @@ class SSH(Pluggin):
 class Test(PlugginTest):
 	def __init__(self):
 		PlugginTest.__init__(self, SSH)
-
-

@@ -64,6 +64,8 @@
             <strong>Name: </strong>{{ i.teamname }}
             <br>
             <strong>Domain: </strong>{{ i.domainname }}
+            <br>
+            <strong>Score Configurations: </strong>{{ i.score_configs }}
             <div class="bt-component pull-right">
               <a href="/admin/competitions/{{ competition_object.compurl }}/teams/edit/{{ i.teamid }}" class="btn btn-primary">Edit</a>
               <a href="/admin/competitions/{{ competition_object.compurl }}/teams/delete/{{ i.teamid }}" class="btn btn-danger">Delete</a>

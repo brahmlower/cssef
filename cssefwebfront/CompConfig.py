@@ -36,6 +36,31 @@ class UserMessages:
 		self.error = []
 		self.success = []
 
+def add_teams_scoreconfigs(compid):
+	services = Service.objects.filter(compid = compid)
+	teams = Team.objects.filter(compid = compid)
+	for t in teams:
+		score_configs = json.loads(t.score_configs)
+		for s in services:
+			try:
+				x = score_configs[s.module]
+			except KeyError:
+				score_configs[s.module] = {}
+		target_team = Team.objects.filter(compid = compid, teamid = t.teamid)
+		target_team.update(score_configs = json.dumps(score_configs))
+
+def clean_teams_scoreconfigs(compid, module_str):
+	services = Service.objects.filter(compid = compid)
+	teams = Team.objects.filter(compid = compid)
+	for t in teams:
+		score_configs = json.loads(t.score_configs)
+		score_configs.pop(module_str, None)
+		target_team = Team.objects.filter(compid = compid, teamid = t.teamid)
+		target_team.update(score_configs = score_configs)
+
+
+
+
 def list(request):
 	"""
 	Displays list of competitions, add and remove competition options
@@ -134,6 +159,7 @@ def teams_edit(request, competition = None, teamid = None):
 	tmp_dict['teamname'] = request.POST['teamname']
 	tmp_dict['password'] = request.POST['password']
 	tmp_dict['domainname'] = request.POST['domainname']
+	tmp_dict['score_configs'] = request.POST['score_configs']
 	team_obj = Team.objects.filter(compid = c["competition_object"].compid, teamid = int(teamid))
 	team_obj.update(**tmp_dict)
 	return HttpResponseRedirect('/admin/competitions/%s/teams/' % competition)
@@ -167,6 +193,7 @@ def teams_create(request, competition = None):
 		c["messages"].new_info("Invalid field data in team form: %s" % team.errors, 1001)
 		return render_to_response('CompConfig/teams_create-edit.html', c)
 	team.save()
+	add_teams_scoreconfigs(c["competition_object"].compid)
 	return HttpResponseRedirect("/admin/competitions/%s/teams/" % competition)
 
 # Service related configuration modules
@@ -212,6 +239,7 @@ def services_delete(request, competition = None, servid = None):
 	"""
 	comp_obj = Competition.objects.get(compurl = competition)
 	serv_obj = Service.objects.get(compid = comp_obj.compid, servid = int(servid))
+	clean_teams_scoreconfigs(comp_obj.compid, serv_obj.module)
 	serv_obj.delete()
 	return HttpResponseRedirect("/admin/competitions/%s/services/" % competition)
 
@@ -235,6 +263,7 @@ def services_create(request, competition = None):
 		c["messages"].new_info("Invalid field data in service form: %s" % service.errors, 1001)
 		return render_to_response('CompConfig/services_create-edit.html', c)
 	service.save()
+	add_teams_scoreconfigs(c["competition_object"].compid)
 	return HttpResponseRedirect("/admin/competitions/%s/services/" % competition)
 
 # Inject related configuration modules
