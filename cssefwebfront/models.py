@@ -23,7 +23,6 @@ class Competition(Model):
 	displaytime = PositiveIntegerField()
 	#starttime = PositiveIntegerField()
 	#finishtime = PositiveIntegerField()
-	# inject_ids = "" # String of inject ids
 	score_delay = PositiveIntegerField()
 	score_delay_uncert = PositiveIntegerField()
 
@@ -60,6 +59,7 @@ class Score(Model):
 class Inject(Model):
 	ijctid = AutoField(primary_key = True)
 	compid = PositiveIntegerField()
+	viewable = BooleanField()
 	title = CharField(max_length = 50)
 	body = CharField(max_length = 1000)
 
@@ -68,12 +68,6 @@ class Admins(Model):
 	userid = AutoField(primary_key = True)
 	username = CharField(max_length = 20)
 	password = CharField(max_length = 64)
-
-# class Teams(Model): #Why isn't this User?
-# 	userid = AutoField(primary_key=True)
-# 	username = CharField(max_length=20)
-# 	password = CharField(max_length=64)
-# 	competitions = CharField(max_length=100)
 
 
 

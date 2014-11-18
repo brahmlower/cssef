@@ -10,11 +10,11 @@ from ScoringUtils import PlugginTest
 
 class SSH(Pluggin):
 	team_config_type_dict = {
-		"port":int,
-		"username":str,
-		"password":str,
-		"network":str,
-		"timeout":int
+		"port": int,
+		"username": str,
+		"password": str,
+		"network": str,
+		"timeout": int
 	}
 
 	def __init__(self, conf_dict):
