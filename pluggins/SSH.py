@@ -1,6 +1,7 @@
 import paramiko
 
 import traceback
+import json
 from ScoringUtils import Score
 from ScoringUtils import Pluggin
 from ScoringUtils import PlugginTest
@@ -20,7 +21,7 @@ class SSH(Pluggin):
 		Pluggin.__init__(self, conf_dict)
 
 	def score(self, team):
-		team_config = team.score_configs[self.__class__.__name__]
+		team_config = json.loads(team.score_configs)[self.__class__.__name__]
 		address = self.build_address(team_config)
 
 		client = paramiko.SSHClient()

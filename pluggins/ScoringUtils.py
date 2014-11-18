@@ -17,11 +17,11 @@ class Pluggin:
 		if self.net_type == "domainname":
 			sd = self.subdomain
 			dn = team_config["domainname"]
-			return ".".join([sd, dn])
+			return ".".join([str(sd), str(dn)])
 		elif self.net_type == "ipaddress":
 			nm = team_config["network"]
 			na = self.address
-			return ".".join([nm, na])
+			return ".".join([str(nm), str(na)])
 		raise Exception("Bad Programming/User Error: no such '%s'. Should be {domain|ipaddress}" % self.net_type)
 
 
@@ -71,7 +71,7 @@ class PlugginTest:
 		seems to be working for now.
 		"""
 		def __init__(self, class_name, team_config):
-			self.score_configs = {class_name: team_config}
+			self.score_configs = {class_name: json.dumps(team_config)}
 
 class Score:
 	"""

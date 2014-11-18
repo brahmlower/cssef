@@ -178,14 +178,14 @@ def scoreboard(request, competition = None):
 		c["team_auth"] = False
 		return render_to_response('Comp/scoreboard.html', c)
 	c["team_auth"] = True
-	c["scores"] = Score.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid)
-	# score_obj_list = Score.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid)
-	# for i in score_obj_list:
-	# 	score_obj_dict = {}
-	# 	score_obj_dict["time"] = i.datetime
-	# 	score_obj_dict["name"] = Service.objects.get(servid = i.servid).name
-	# 	score_obj_dict["value"] = i.value
-	# 	score_list.append(score_obj_dict)
+	c["scores"] = []
+	score_obj_list = Score.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid)
+	for i in score_obj_list:
+		score_obj_dict = {}
+		score_obj_dict["time"] = i.datetime
+		score_obj_dict["name"] = Service.objects.get(servid = i.servid).name
+		score_obj_dict["value"] = i.value
+		c["scores"].append(score_obj_dict)
 	return render_to_response('Comp/scoreboard.html', c)
 
 def incidentresponse(request, competition = None):

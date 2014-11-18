@@ -128,7 +128,7 @@ class ServiceModule:
         #     sys.exit("Error parsing configuration json object:\n%s" % db_obj.config)
         self.config_json["name"] = self.db_obj.name
         self.config_json["points"] = self.db_obj.points
-	self.config_json["subdomain"] = self.db_obj.subdomain
+        self.config_json["subdomain"] = self.db_obj.subdomain
         self.instance = self.load_pluggin()
 
     def load_pluggin(self):
@@ -170,9 +170,10 @@ def run_loop(comp, teams, servs):
     condition = True
     while(condition):
         rand_sleep(comp.score_delay, comp.score_delay_uncert)
-        for i in servs:
+        for s in servs:
             for t in teams:
-                log(comp, t, i, i.score(t))
+                score_obj = s.score(t)
+                log(comp, t, s, score_obj.value)
         #break #This is here just for testing!!
 
 def manage():
