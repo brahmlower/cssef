@@ -42,13 +42,23 @@
         <li><a href="/competitions/{{ competition_object.compurl }}/summary">Summary</a></li>
         <li><a href="/competitions/{{ competition_object.compurl }}/details">Details</a></li>
         <li><a href="/competitions/{{ competition_object.compurl }}/ranking">Team Rankings</a></li>
+        {% if team_auth %}
         <li><a href="/competitions/{{ competition_object.compurl }}/servicestatus">Service Status</a></li>
         <li><a href="/competitions/{{ competition_object.compurl }}/scoreboard">Scoreboard</a></li>
         <li><a href="/competitions/{{ competition_object.compurl }}/servicetimeline">Service Timeline</a></li>
         <li><a href="/competitions/{{ competition_object.compurl }}/injects">Injects</a></li>
         <li class="active"><a href="/competitions/{{ competition_object.compurl }}/incidentresponse">Incident Response</a></li>
+        {% else %}
+        {% endif %}
       </ul>
       <br>
+      <!-- Actual page content -->
+      {% if team_auth %}
+      {% else %}
+        <p>
+          You must be authenticated as a team of this competition to view the page contents.
+        </p>
+      {% endif %}
     </div>
 
   </body>

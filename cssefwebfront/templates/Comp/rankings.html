@@ -42,18 +42,21 @@
         <li><a href="/competitions/{{ competition_object.compurl }}/summary">Summary</a></li>
         <li><a href="/competitions/{{ competition_object.compurl }}/details">Details</a></li>
         <li class="active"><a href="/competitions/{{ competition_object.compurl }}/ranking">Team Rankings</a></li>
+        {% if team_auth %}
         <li><a href="/competitions/{{ competition_object.compurl }}/servicestatus">Service Status</a></li>
         <li><a href="/competitions/{{ competition_object.compurl }}/scoreboard">Scoreboard</a></li>
         <li><a href="/competitions/{{ competition_object.compurl }}/servicetimeline">Service Timeline</a></li>
         <li><a href="/competitions/{{ competition_object.compurl }}/injects">Injects</a></li>
         <li><a href="/competitions/{{ competition_object.compurl }}/incidentresponse">Incident Response</a></li>
+        {% else %}
+        {% endif %}
       </ul>
       <br>
 	<table class="table">
 	<tr><th>Team Name</th><th>Score</th><th>Rank</th></tr>
       {% for i in ranks %}
 	<tr>
-          <td>{{i.team}}</td>
+    <td>{{i.team}}</td>
 	  <td>{{i.score}}</td>
 	  <td>{{i.place}}</td>
 	</tr>

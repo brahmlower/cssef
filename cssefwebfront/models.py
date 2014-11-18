@@ -9,7 +9,8 @@ from django.db.models import DateTimeField
 from django.db.models import PositiveIntegerField
 from django.forms.widgets import PasswordInput
 from django.contrib.auth.models import User
-from datetime import datetime  
+from datetime import datetime
+from django.utils import timezone
 
 class Competition(Model):
 	compid = AutoField(primary_key = True)
@@ -29,9 +30,13 @@ class Competition(Model):
 class Team(Model):
 	teamid = AutoField(primary_key = True)
 	compid = PositiveIntegerField()
+	last_login = DateTimeField(default = timezone.now)
 	teamname = CharField(max_length = 30)
 	password = CharField(max_length = 64)
 	domainname = CharField(max_length = 30)
+
+	def is_authenticated(self):
+		return True
 
 class Service(Model):
 	servid = AutoField(primary_key = True)
@@ -58,6 +63,7 @@ class Inject(Model):
 	body = CharField(max_length = 1000)
 
 class Admins(Model):
+	last_login = DateTimeField(default = timezone.now)
 	userid = AutoField(primary_key = True)
 	username = CharField(max_length = 20)
 	password = CharField(max_length = 64)

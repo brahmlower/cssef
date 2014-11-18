@@ -122,7 +122,10 @@ class SetConfigurations():
 class ServiceModule:
     def __init__(self, db_obj):
         self.db_obj = db_obj
+        # try:
         self.config_json = json_loads(db_obj.config)
+        # except ValueError, e:
+        #     sys.exit("Error parsing configuration json object:\n%s" % db_obj.config)
         self.config_json["name"] = self.db_obj.name
         self.config_json["points"] = self.db_obj.points
 	self.config_json["subdomain"] = self.db_obj.subdomain

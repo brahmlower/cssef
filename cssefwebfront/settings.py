@@ -50,7 +50,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-#AUTHENTICATION_BACKENDS = {'cssefwebfront.authbackends.TeamAuth'}
+AUTHENTICATION_BACKENDS = {'cssefwebfront.authbackends.TeamAuth'}
 
 ROOT_URLCONF = 'cssefwebfront.urls'
 

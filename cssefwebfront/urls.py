@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     url(r'^competitions/(?P<competition>[\w\-\_]{0,25})/ranking/$',             Comp.rankings),          # Rankings of teams in that competition
     url(r'^competitions/(?P<competition>[\w\-\_]{0,25})/injects/$',             Comp.injects),           # Changes a little after competition is over
     url(r'^competitions/(?P<competition>[\w\-\_]{0,25})/teamlogin/$',           Comp.login),             # Sign in page for teams
+    url(r'^competitions/(?P<competition>[\w\-\_]{0,25})/teamlogout/$',          Comp.logout),            # Sign out 'page' for teams
     url(r'^competitions/(?P<competition>[\w\-\_]{0,25})/servicestatus/$',       Comp.servicestatus),     # Shows current status for services
     url(r'^competitions/(?P<competition>[\w\-\_]{0,25})/servicetimeline/$',     Comp.servicetimeline),   # Shows status history for each service
     url(r'^competitions/(?P<competition>[\w\-\_]{0,25})/scoreboard/$',          Comp.scoreboard),        # Shows itemized list of point awards/penalties

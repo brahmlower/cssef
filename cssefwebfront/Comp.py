@@ -55,24 +55,15 @@ def login(request, competition = None):
 		return render_to_response('Comp/login.html', c)
 	auth.login(request, team)
 	return HttpResponseRedirect("/competitions/%s/summary/" % competition)
-	#return render_to_response('competitions/summary.html', c)
 
-	# login = TeamLoginForm(form_dict)
-	# # Checks that the submitted form data is valid
-	# if not login.is_valid():
-	# 	c["messages"].new_info("Invalid field data in competition form.", 1003)
-	# 	return render(request, 'competitions/login.html', c)
-
-	# # Get the team object, and report any problems
-	# teamname
-	# password
-	# compid
-	# aut.authenticate()
-	# team_obj = Team.objects.filter(teamname=login.cleaned_data['username'], passphrase=login.cleaned_data['password'])
-	# if len(team_obj) > 1:
-	# 	c["messages"].new_info("Multiple teams matched credentials.", 1234)
-	# 	return render_to_response('competitions/login.html', c)
-	# if len(team_obj) == 0:
+def logout(request, competition = None):
+	"""
+	Page for teams to logout of a competition
+	"""
+	auth.logout(request)
+	c = {}
+	c["messages"] = UserMessages()
+	return HttpResponseRedirect("/competitions/%s/summary/" % competition)
 
 def list(request):
 	"""
@@ -92,8 +83,7 @@ def summary(request, competition = None):
 		return HttpResponseRedirect(current_url + "summary/")
 	c = {}
 	c["messages"] = UserMessages()
-	comp_obj = Competition.objects.get(compurl = competition)
-	c["competition_object"] = comp_obj
+	c["competition_object"] = Competition.objects.get(compurl = competition)
 	if request.user.is_authenticated():
 		c["team_auth"] = True
 	else:
@@ -110,6 +100,10 @@ def details(request, competition = None):
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c["services"] = Service.objects.filter(compid = c["competition_object"].compid)
 	c["teams"] = Team.objects.filter(compid = c["competition_object"].compid)
+	if request.user.is_authenticated():
+		c["team_auth"] = True
+	else:
+		c["team_auth"] = False
 	return render_to_response('Comp/details.html', c)
 
 def rankings(request, competition = None):
@@ -118,7 +112,7 @@ def rankings(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c["competition_object"] = Competition.objects.get(compurl=competition)
+	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c["ranks"] = []
 	team_objs = Team.objects.filter(compid = c["competition_object"].compid)
 	for i in team_objs:
@@ -126,7 +120,11 @@ def rankings(request, competition = None):
 		total = 0
 		for k in scores_objs:
 			total += k.value
-		c["ranks"].append({"team": i.teamname, "score": total, "place":0})		
+		c["ranks"].append({"team": i.teamname, "score": total, "place":0})
+	if request.user.is_authenticated():
+		c["team_auth"] = True
+	else:
+		c["team_auth"] = False		
 	return render_to_response('Comp/rankings.html', c)
 
 def injects(request, competition = None):
@@ -135,7 +133,11 @@ def injects(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c["competition_object"] = Competition.objects.get(compurl=competition)
+	c["competition_object"] = Competition.objects.get(compurl = competition)
+	if not request.user.is_authenticated():
+		c["team_auth"] = False
+		return render_to_response('Comp/injects.html', c)
+	c["team_auth"] = True
 	c["injects"] = Inject.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('Comp/injects.html', c)
 
@@ -146,6 +148,10 @@ def servicestatus(request, competition = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
+	if not request.user.is_authenticated():
+		c["team_auth"] = False
+		return render_to_response('Comp/servicestatus.html', c)
+	c["team_auth"] = True
 	return render_to_response('Comp/servicestatus.html', c)
 
 def servicetimeline(request, competition = None):
@@ -155,6 +161,10 @@ def servicetimeline(request, competition = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
+	if not request.user.is_authenticated():
+		c["team_auth"] = False
+		return render_to_response('Comp/servicetimeline.html', c)
+	c["team_auth"] = True
 	return render_to_response('Comp/servicetimeline.html', c)
 
 def scoreboard(request, competition = None):
@@ -164,23 +174,18 @@ def scoreboard(request, competition = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	team_list = Team.objects.filter(compid = c["competition_object"].compid)
-
-	score_list = []
-	for i in team_list:
-		tmp_dict = {}
-		tmp_dict["teamname"] = i.teamname
-		score_obj_list = Score.objects.filter(compid = c["competition_object"].compid, teamid = i.teamid)
-		tmp_dict["scores"] = []
-		for i in score_obj_list:
-			tmp_dict2 = {}
-			tmp_dict2["time"] = i.datetime
-			tmp_dict2["name"] = Service.objects.get(servid = i.servid).name
-			tmp_dict2["value"] = i.value
-			tmp_dict["scores"].append(tmp_dict2)
-
-		score_list.append(tmp_dict)
-	c["scores"] = score_list
+	if not request.user.is_authenticated():
+		c["team_auth"] = False
+		return render_to_response('Comp/scoreboard.html', c)
+	c["team_auth"] = True
+	c["scores"] = Score.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid)
+	# score_obj_list = Score.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid)
+	# for i in score_obj_list:
+	# 	score_obj_dict = {}
+	# 	score_obj_dict["time"] = i.datetime
+	# 	score_obj_dict["name"] = Service.objects.get(servid = i.servid).name
+	# 	score_obj_dict["value"] = i.value
+	# 	score_list.append(score_obj_dict)
 	return render_to_response('Comp/scoreboard.html', c)
 
 def incidentresponse(request, competition = None):
@@ -189,5 +194,9 @@ def incidentresponse(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c["competition_object"] = Competition.objects.get(compurl=competition)
+	c["competition_object"] = Competition.objects.get(compurl = competition)
+	if not request.user.is_authenticated():
+		c["team_auth"] = False
+		return render_to_response('Comp/incidentresponse.html', c)
+	c["team_auth"] = True
 	return render_to_response('Comp/incidentresponse.html', c)
