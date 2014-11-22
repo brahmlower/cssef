@@ -1,0 +1,5 @@
+#!/bin/bash
+
+sqlite3 db.sqlite3 "insert into \
+cssefwebfront_admin (last_login,username,password) \
+values (0,\"$1\",\"$2\");"

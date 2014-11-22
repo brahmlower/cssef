@@ -63,11 +63,14 @@ class Inject(Model):
 	title = CharField(max_length = 50)
 	body = CharField(max_length = 1000)
 
-class Admins(Model):
+class Admin(Model):
 	last_login = DateTimeField(default = timezone.now)
 	userid = AutoField(primary_key = True)
 	username = CharField(max_length = 20)
 	password = CharField(max_length = 64)
+
+	def is_authenticated(self):
+		return True
 
 
 

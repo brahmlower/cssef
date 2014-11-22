@@ -5,8 +5,6 @@ from django.shortcuts import render
 from django.contrib import auth
 from django.core.context_processors import csrf
 
-import json 
-
 from forms import CreateCompetitionForm
 from forms import AdminLoginForm
 from forms import CreateTeamForm
@@ -17,49 +15,10 @@ from models import Service
 from models import Inject
 from models import Team
 
-class UserMessages:
-	def __init__(self):
-		self.info = []
-		self.error = []
-		self.success = []
-	def new_info(self, string, num):
-		self.info.append({"string":string, "num":num})
-
-	def new_error(self, string, num):
-		self.error.append({"string":string, "num":num})
-
-	def new_success(self, string, num):
-		self.success.append({"string":string, "num":num})
-
-	def clear(self):
-		self.info = []
-		self.error = []
-		self.success = []
-
-def add_teams_scoreconfigs(compid):
-	services = Service.objects.filter(compid = compid)
-	teams = Team.objects.filter(compid = compid)
-	for t in teams:
-		score_configs = json.loads(t.score_configs)
-		for s in services:
-			try:
-				x = score_configs[s.module]
-			except KeyError:
-				score_configs[s.module] = {}
-		target_team = Team.objects.filter(compid = compid, teamid = t.teamid)
-		target_team.update(score_configs = json.dumps(score_configs))
-
-def clean_teams_scoreconfigs(compid, module_str):
-	services = Service.objects.filter(compid = compid)
-	teams = Team.objects.filter(compid = compid)
-	for t in teams:
-		score_configs = json.loads(t.score_configs)
-		score_configs.pop(module_str, None)
-		target_team = Team.objects.filter(compid = compid, teamid = t.teamid)
-		target_team.update(score_configs = score_configs)
-
-
-
+from utils import UserMessages
+from utils import isAuthAdmin
+from utils import add_teams_scoreconfigs
+from utils import clean_teams_scoreconfigs
 
 def list(request):
 	"""
@@ -67,6 +26,9 @@ def list(request):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	c["competition_list"] = Competition.objects.all()
 	return render_to_response('CompConfig/list.html', c)
 
@@ -76,6 +38,9 @@ def create(request, competition=None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	c["form"] = {'comp': CreateCompetitionForm()}
 	# Checks if the user is submitting the form, or requesting the form
 	if request.method != "POST":
@@ -98,11 +63,14 @@ def summary(request, competition = None):
 	"""
 	Displays general competitions configurations form
 	"""
+	c = {}
+	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	current_url = request.build_absolute_uri()
 	if request.build_absolute_uri()[-8:] != "summary/":
 		return HttpResponseRedirect(current_url + "summary/")
-	c = {}
-	c["messages"] = UserMessages()
 	comp_obj = Competition.objects.filter(compurl = competition)
 	if len(comp_obj) > 1:
 		c["messages"].new_error("Multiple database entries for URLID: '%s'" % competition, 1234)
@@ -117,6 +85,9 @@ def details(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	return render_to_response('CompConfig/details.html', c)
 
@@ -126,6 +97,9 @@ def scoring(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	return render_to_response('CompConfig/scoring.html', c)
 
@@ -136,6 +110,9 @@ def teams_list(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c["teams"] = Team.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('CompConfig/teams_list.html', c)
@@ -146,6 +123,9 @@ def teams_edit(request, competition = None, teamid = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	c["action"] = "edit"
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
@@ -168,6 +148,11 @@ def teams_delete(request, competition = None, teamid = None):
 	"""
 	Delete the team from the competition
 	"""
+	c = {}
+	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	comp_obj = Competition.objects.get(compurl = competition)
 	team_obj = Team.objects.get(compid=comp_obj.compid, teamid=int(teamid))
 	team_obj.delete()
@@ -179,6 +164,9 @@ def teams_create(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	c["action"] = "create"
 	c["form"] = {"team": CreateTeamForm()}
 	c["competition_object"] = Competition.objects.get(compurl = competition)
@@ -203,6 +191,9 @@ def services_list(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c["services"] = Service.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('CompConfig/services_list.html', c)
@@ -213,6 +204,9 @@ def services_edit(request, competition = None, servid = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	c["action"] = "edit"
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
@@ -237,6 +231,11 @@ def services_delete(request, competition = None, servid = None):
 	"""
 	Deletes the service from the competition
 	"""
+	c = {}
+	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	comp_obj = Competition.objects.get(compurl = competition)
 	serv_obj = Service.objects.get(compid = comp_obj.compid, servid = int(servid))
 	clean_teams_scoreconfigs(comp_obj.compid, serv_obj.module)
@@ -249,6 +248,9 @@ def services_create(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	c["form"] = {"service": CreateServiceForm()}
 	c["action"] = "create"
 	c["competition_object"] = Competition.objects.get(compurl = competition)
@@ -273,6 +275,9 @@ def injects_list(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c["injects"] = Inject.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('CompConfig/injects_list.html', c)
@@ -283,6 +288,9 @@ def injects_edit(request, competition = None, ijctid = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	c["action"] = "edit"
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
@@ -300,6 +308,11 @@ def injects_delete(request, competition = None, ijctid = None):
 	"""
 	Deletes the inject from the competition
 	"""
+	c = {}
+	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	comp_obj = Competition.objects.get(compurl = competition)
 	ijct_obj = Inject.objects.filter(compid = comp_obj.compid, ijctid = int(ijctid))
 	ijct_obj.delete()
@@ -311,6 +324,9 @@ def injects_create(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
 	c["action"] = "create"
 	c["form"] = {"inject": CreateInjectForm()}
 	c["competition_object"] = Competition.objects.get(compurl = competition)

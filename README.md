@@ -14,8 +14,8 @@ Pluggins:
 The webfrontend is written using Django14. Starting the webserver (currently) requires running 'python manage.py runserver'. There are plans to create proper SystemV and SystemD service scripts. As of this writing, the scoring engine component must be started separately, at the time you wish to begin scoring (this will also change in the future).
 
 ## Web Interface ##
-python manage.py syncdb
-python runserver 0.0.0.0
+<pre></code>python manage.py syncdb
+python runserver 0.0.0.0</code></pre>
 
 ## Scoring Engine ##
 Please note that this has a very underdeveloped help menu.
@@ -51,10 +51,6 @@ The score object should be returned by score(). This provides basic information 
 # TODO #
 * pluggins/ScoringUtils should not have its over Score object (use cssefwebfront.models.Score)
 * Add "organizations", which own competition objects
-* Site administrators
- * authentication
- * login
- * logoff
 * Organization administrators
  * authentication
  * login

@@ -2,10 +2,10 @@ from django.conf import settings
 from django.contrib.auth.models import check_password
 
 from models import Team
-from models import Admins
+from models import Admin
 
 class TeamAuth(object):
-	def authenticate(self, teamname=None, password=None, compid=None):
+	def authenticate(self, teamname = None, password = None, compid = None):
 		try:
 			print "teamname: '%s'" % teamname
 			print "password: '%s'" % password
@@ -21,6 +21,18 @@ class TeamAuth(object):
 		except Team.DoesNotExist:
 			return None
 
-# class Admins(object):
-# 	def authenticate():
-# 		pass
+class AdminAuth(object):
+	def authenticate(self, username = None, password = None):
+		try:
+			print "username: '%s'" % username
+			print "password: '%s'" % password
+			admin = Admin.objects.get(username = username, password = password)
+			return admin
+		except:
+			return None
+
+	def get_user(self, userid):
+		try:
+			return Admin.objects.get(userid = userid)
+		except Admin.DoesNotExist:
+			return None

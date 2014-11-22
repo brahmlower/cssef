@@ -3,6 +3,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import render
 from django.contrib import auth
+from django.contrib.auth import authenticate
 from django.core.context_processors import csrf
 from models import Competition
 from models import Service
@@ -11,27 +12,8 @@ from models import Score
 from models import Team
 from forms import TeamLoginForm
 
-
-from django.contrib.auth import authenticate
-
-class UserMessages:
-	def __init__(self):
-		self.info = []
-		self.error = []
-		self.success = []
-	def new_info(self, string, num):
-		self.info.append({"string":string, "num":num})
-
-	def new_error(self, string, num):
-		self.error.append({"string":string, "num":num})
-
-	def new_success(self, string, num):
-		self.success.append({"string":string, "num":num})
-
-	def clear(self):
-		self.info = []
-		self.error = []
-		self.success = []
+from utils import UserMessages
+from utils import isAuthAdmin
 
 def login(request, competition = None):
 	"""
@@ -39,6 +21,7 @@ def login(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
 	c["form"] = {'login': TeamLoginForm()}
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
@@ -71,6 +54,7 @@ def list(request):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
 	c["competition_list"] = Competition.objects.all()
 	return render_to_response('Comp/list.html', c)
 
@@ -83,6 +67,7 @@ def summary(request, competition = None):
 		return HttpResponseRedirect(current_url + "summary/")
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	if request.user.is_authenticated():
 		c["team_auth"] = True
@@ -97,6 +82,7 @@ def details(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c["services"] = Service.objects.filter(compid = c["competition_object"].compid)
 	c["teams"] = Team.objects.filter(compid = c["competition_object"].compid)
@@ -112,6 +98,7 @@ def rankings(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c["ranks"] = []
 	team_objs = Team.objects.filter(compid = c["competition_object"].compid)
@@ -133,6 +120,7 @@ def injects(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	if not request.user.is_authenticated():
 		c["team_auth"] = False
@@ -147,6 +135,7 @@ def servicestatus(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	if not request.user.is_authenticated():
 		c["team_auth"] = False
@@ -160,6 +149,7 @@ def servicetimeline(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	if not request.user.is_authenticated():
 		c["team_auth"] = False
@@ -173,6 +163,7 @@ def scoreboard(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	if not request.user.is_authenticated():
 		c["team_auth"] = False
@@ -194,6 +185,7 @@ def incidentresponse(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	if not request.user.is_authenticated():
 		c["team_auth"] = False

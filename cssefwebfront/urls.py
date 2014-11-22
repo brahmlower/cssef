@@ -22,6 +22,7 @@ urlpatterns = patterns('',
     url(r'^admin/$',                AdminConfig.home),
     url(r'^admin/home/$',           AdminConfig.home),
     url(r'^admin/login/$',          AdminConfig.login),
+    url(r'^admin/logout/$',         AdminConfig.logout),
     url(r'^admin/siteconfig/$',     AdminConfig.site_config),
     # User management configurations
     url(r'^admin/users/$',          AdminConfig.users_list),

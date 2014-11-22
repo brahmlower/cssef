@@ -9,7 +9,7 @@ from django.forms.widgets import PasswordInput
 from models import Competition
 from models import Service
 from models import Inject
-from models import Admins
+from models import Admin
 from models import Team
 
 class CreateCompetitionForm(ModelForm):
@@ -95,7 +95,7 @@ class CreateInjectForm(ModelForm):
 
 class AdminLoginForm(ModelForm):
 	class Meta:
-		model = Admins
+		model = Admin
 		fields = ['username','password']
 		labels = {
 			'username': ('Username'),

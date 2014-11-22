@@ -5,5 +5,11 @@ from django.shortcuts import render
 from django.contrib import auth
 from django.core.context_processors import csrf
 
+from utils import UserMessages
+from utils import isAuthAdmin
+
 def home(request):
-	return render_to_response('home.html')
+	c = {}
+	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	return render_to_response('home.html', c)

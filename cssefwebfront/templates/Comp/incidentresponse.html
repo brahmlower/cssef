@@ -21,7 +21,11 @@
             <li><a href="/admin/">Admin Config</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
+            {% if admin_auth %}
+            <li><a href="/admin/logout/">Admin Logout</a></li>
+            {% else %}
             <li><a href="/admin/login/">Admin Login</a></li>
+            {% endif %}
             <li><a href="http://uafcsc.com/">UAF CSC</a></li>
           </ul>
         </div>
