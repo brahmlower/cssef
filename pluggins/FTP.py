@@ -1,10 +1,17 @@
-from ftplib import FTP as ftp
-from ftplib import error_perm as ftp_error_perm
+# Imports required for django modules
+import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'cssefwebfront.settings'
+from django.conf import settings
 
-import traceback
-from ScoringUtils import Score
+# Imports required for base pluggin
+from cssefwebfront.models import Score
 from ScoringUtils import Pluggin
 from ScoringUtils import PlugginTest
+
+# Imports required for specific pluggin
+from ftplib import FTP as ftp
+from ftplib import error_perm as ftp_error_perm
+import traceback
 
 class FTP(Pluggin):
 	team_config_type_dict = {
@@ -20,6 +27,7 @@ class FTP(Pluggin):
 	def score(self, team):
 		team_config = team.score_configs[self.__class__.__name__]
 		address = self.build_address(team_config)
+		new_score = Score()
 		try:
 			client = ftp.connect(
 				address,
@@ -29,9 +37,12 @@ class FTP(Pluggin):
 				team_config["username"],
 				team_config["password"])
 			client.close()
-			return Score(True, self.points, success_msg="")
+			new_score.value = self.points
+			new_score.message = ""
 		except:
-			return Score(False, 0, error_msg=traceback.format_exc())
+			new_score.value = 0
+			new_score.message = traceback.format_exc()
+		return new_score
 
 class Test(PlugginTest):
 	def __init__(self):

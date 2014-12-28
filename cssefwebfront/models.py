@@ -55,6 +55,7 @@ class Score(Model):
 	servid = PositiveIntegerField()
 	datetime = DateTimeField()
 	value = PositiveIntegerField()
+	message = CharField(max_length = 100)
 
 class Inject(Model):
 	ijctid = AutoField(primary_key = True)

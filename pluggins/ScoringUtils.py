@@ -1,3 +1,4 @@
+from django.utils import timezone
 class Pluggin:
 	"""
 	All pluggins should be children of this class. This ganrantees that each
@@ -6,7 +7,7 @@ class Pluggin:
 	full address for the team, regardless if they're being scored by dns or
 	by an ipv4 address.
 	"""
-	def __init__(self, conf_dict):# points, net_type, subdomain, address, default_port):
+	def __init__(self, conf_dict):
 		self.points = conf_dict["points"]
 		self.net_type = conf_dict["net_type"]
 		self.subdomain = conf_dict["subdomain"]
@@ -55,14 +56,16 @@ class PlugginTest:
 		for i in class_dict:
 			prompt = "Please enter a(n) '%s' for '%s': " % (class_dict[i].__name__, i)
 			tmp_dict[i] = class_dict[i](raw_input(prompt))
-		print "" # To put a blank line between the input sections and output
+		# A blank line between the input sections and output
+		print ""
 		return tmp_dict
 
 	def score(self):
 		class_name = self.class_inst.__class__.__name__
 		emulated_team = self.EmulatedTeam(class_name, self.team_config)
 		score_obj = self.class_inst.score(emulated_team)
-		print score_obj
+		print "[%s] Team:n/a Service:n/a Value:%s Messages:%s" % \
+        (timezone.now(), score_obj.value, score_obj.message)
 
 	class EmulatedTeam:
 		"""
@@ -71,24 +74,4 @@ class PlugginTest:
 		seems to be working for now.
 		"""
 		def __init__(self, class_name, team_config):
-			self.score_configs = {class_name: json.dumps(team_config)}
-
-class Score:
-	"""
-	The score object should be returned by score(). This provides basic
-	information that may be useful for loggin and scoring. This currently
-	only provides the score (as 'value'), a boolean indicating if the score was
-	successfull, as well as a success or error message. If an error was thrown,
-	it will be included in 'error_msg'.
-	"""
-	def __init__(self, success, value, error_msg=None, success_msg=None):
-		self.success = success
-		self.value = value
-		self.error_msg = error_msg
-		self.success_msg = success_msg
-
-	def __str__(self):
-		if self.success:
-			return "Succeeded with value '%s' and message '%s'" % (str(self.value), self.success_msg)
-		else:
-			return "Failed with value '%s' and error '%s'" % (str(self.value), self.error_msg)
+			self.score_configs = {class_name: team_config}

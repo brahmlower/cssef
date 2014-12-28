@@ -1,12 +1,18 @@
+# Imports required for django modules
+import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'cssefwebfront.settings'
+from django.conf import settings
+
+# Imports required for base pluggin
+from cssefwebfront.models import Score
+from ScoringUtils import Pluggin
+from ScoringUtils import PlugginTest
+
+# Imports required for specific pluggin
 #from smb.SMBConnection import SMBConnection
 #from socket import gethostname
 import subprocess
-import os
-
 import traceback
-from ScoringUtils import Score
-from ScoringUtils import Pluggin
-from ScoringUtils import PlugginTest
 
 # This requires pysmb:
 # sudo pip install pysmb
@@ -20,7 +26,7 @@ class SMB(Pluggin):
 		#"port":int,
 		"username":str,
 		"password":str,
-		"network":str,
+		"network":str}
 		#"timeout":int}
 
 	def __init__(self, conf_dict):
@@ -37,10 +43,14 @@ class SMB(Pluggin):
 		output = proc.communicate()[0]
 		rt = proc.returncode
 		FNULL.close()
+		new_score = Score()
 		if rt == "0" or rt == 0:
-			return Score(True, self.points, success_msg="")
+			new_score.value = self.points
+			new_score.message = ""
 		else:
-			return Score(False, 0, error_msg="")
+			new_score.value = 0
+			new_score.message = str(rt)
+		return new_score
 
 class Test(PlugginTest):
 	def __init__(self):
