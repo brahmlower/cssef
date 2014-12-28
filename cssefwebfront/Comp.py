@@ -5,13 +5,17 @@ from django.shortcuts import render
 from django.contrib import auth
 from django.contrib.auth import authenticate
 from django.core.context_processors import csrf
+from django.core.files.uploadedfile import UploadedFile
 from models import Competition
+from models import InjectResponse
 from models import Service
 from models import Inject
 from models import Score
 from models import Team
 from forms import TeamLoginForm
-
+from forms import InjectResponseForm
+from forms import UploadForm
+import settings
 from utils import UserMessages
 from utils import isAuthAdmin
 
@@ -128,6 +132,57 @@ def injects(request, competition = None):
 	c["team_auth"] = True
 	c["injects"] = Inject.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('Comp/injects.html', c)
+
+def injects_respond(request, competition = None, ijctid = None):
+	"""
+	Displays a specific inject and provides either upload or text entry for inject response
+	"""
+	c = {}
+	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	c["competition_object"] = Competition.objects.get(compurl = competition)
+	# Checks if the user is authenticated for this competition
+	if not request.user.is_authenticated():
+		c["team_auth"] = False
+		return render_to_response('Comp/injects.html', c)
+	c["team_auth"] = True
+	c.update(csrf(request))
+	# Checks if we're taking POST data
+	if request.method != "POST":
+		# Serve the page, prompting for input
+		c["inject"] = Inject.objects.get(compid = c["competition_object"].compid, ijctid = ijctid)
+		c["textentryform"] = InjectResponseForm()
+		c["fileuploadform"] = UploadForm()
+		return render_to_response('Comp/injects_view_respond.html', c)
+	# Determine if we're handling text entry or file upload
+	form = UploadForm(request.POST, request.FILES)
+	if form.is_valid():
+		# Taking file upload
+		# Handle necessary file manipulation
+		uf = UploadedFile(request.FILES['docfile'])
+		org_filename = uf.name
+		new_filepath = settings.BASE_DIR + "/" + uf.name
+		wfile = open(new_filepath, "w")
+		wfile.write(uf.read())
+		wfile.close()
+		# Finish the model object and save it
+		ijct_resp_obj = InjectResponse()
+		ijct_resp_obj.compid = c["competition_object"].compid
+		ijct_resp_obj.teamid = request.user.teamid
+		ijct_resp_obj.ijctid = ijctid
+		ijct_resp_obj.filepath = settings.BASE_DIR + "/" + uf.name
+		ijct_resp_obj.save()
+	else:
+		form = InjectResponseForm(request.POST)
+		form.compid = c["competition_object"].compid
+		form.teamid = request.user.teamid
+		form.ijctid = ijctid
+		if not form.is_valid():
+			print "text entry form was invalid"
+		else:
+			form.save()
+	return HttpResponseRedirect('/competitions/%s/injects/' % competition)
+
 
 def servicestatus(request, competition = None):
 	"""

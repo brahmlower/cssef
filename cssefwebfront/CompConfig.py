@@ -367,11 +367,12 @@ def injects_create(request, competition = None):
 		return render_to_response('CompConfig/injects_create-edit.html', c)
 	form_dict = request.POST.copy()
 	form_dict["compid"] = c["competition_object"].compid
-	inject = CreateInjectForm(form_dict)
-	if not inject.is_valid():
-		c["messages"].new_info("Invalid field data in inject form: %s" % inject.errors, 1001)
+	form_dict["viewable"] = True
+	ijct_obj = CreateInjectForm(form_dict)
+	if not ijct_obj.is_valid():
+		c["messages"].new_info("Invalid field data in inject form: %s" % ijct_obj.errors, 1001)
 		return render_to_response('CompConfig/injects_create-edit.html', c)
-	inject.save()
+	ijct_obj.save()
 	return HttpResponseRedirect("/admin/competitions/%s/injects/" % competition)
 
 

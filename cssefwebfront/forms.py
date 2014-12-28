@@ -1,3 +1,4 @@
+from django.forms import Form
 from django.forms import ModelForm
 from django.forms import TextInput
 from django.forms import Textarea
@@ -5,8 +6,10 @@ from django.forms import CheckboxInput
 from django.forms import NumberInput
 from django.forms import Select
 from django.forms import ChoiceField
+from django.forms import FileField
 from django.forms.widgets import PasswordInput
 from models import Competition
+from models import InjectResponse
 from models import Service
 from models import Inject
 from models import Admin
@@ -83,7 +86,7 @@ class CreateServiceForm(ModelForm):
 class CreateInjectForm(ModelForm):
 	class Meta:
 		model = Inject
-		fields = ['compid','title', 'body']
+		fields = ['compid','title', 'body', 'viewable']
 		label = {
 			'title': ('Title'),
 			'body': ('Content'),
@@ -96,7 +99,7 @@ class CreateInjectForm(ModelForm):
 class AdminLoginForm(ModelForm):
 	class Meta:
 		model = Admin
-		fields = ['username','password']
+		fields = ['username', 'password']
 		labels = {
 			'username': ('Username'),
 			'password': ('Password'),
@@ -109,7 +112,7 @@ class AdminLoginForm(ModelForm):
 class TeamLoginForm(ModelForm):
 	class Meta:
 		model = Team
-		fields = ['teamname','password','compid']
+		fields = ['teamname', 'password', 'compid']
 		labels = {
 			'teamname': ('Teamname'),
 			'password': ('Password'),
@@ -128,3 +131,17 @@ class TeamLoginForm(ModelForm):
 			for i in comps:
 				comp_list.append((i.compid, i.compname))
 			print comp_list
+
+class InjectResponseForm(ModelForm):
+	class Meta:
+		model = InjectResponse
+		fields = ['textentry', 'compid', 'teamid', 'ijctid']
+		labels = {
+			'textentry': ('Text Entry')
+		}
+		widgets = {
+			'textentry': Textarea(attrs={'class':'form-control'})
+		}
+
+class UploadForm(Form):
+	docfile = FileField(label="Select a file")

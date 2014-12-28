@@ -73,10 +73,20 @@ The score object should be returned by score(). This provides basic information 
  * login
  * logoff
 * Make competitions editable (surprised I haven't already done this)
-* Create inject display interface for competitors
- * Submit button for uploading inject responses
- * Handle and view responses via white team interface
 * Interface to modify genaric site information
  * Modify homepage content
  * Site link (top right corner)
 * Improve documentation (it sorta sucks right?)
+* Injects
+ * Add delivery time. Make viewable by blue team, editable by white team
+ * Add due time. Make viewable by blue team, editable by white team
+ * implement display time (blue team doesn't see them until a specific time- injects are autodisplayed)
+ * interface for blue team members to view the injects
+ * form for blue team inject responses
+ * view and score inject responses as white team
+ * List submitted responses to injects in blue team view
+ * Display icon indicating a response has been submitted in blue team list view
+* Users/Authentication
+ * Being authenticated as any user will allow viewing the competition as blue team - check that user is authenticated as blue team specifically
+ * Create different types of teams (white/orange/blue/red)
+ * Better reporting when attempting to access restricted pages (other teams pages, admin pages) - this includes 403 pages and whatnot

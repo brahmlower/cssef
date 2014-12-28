@@ -3,6 +3,20 @@
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script>
+      function fileUpload() {
+        jQuery('#fileuploadform').show();
+        jQuery('#fileuploadtab').addClass("active");
+        jQuery('#textentryform').hide();
+        jQuery('#textentrytab').removeClass("active");
+      }
+      function textEntry() {
+        jQuery('#fileuploadform').hide();
+        jQuery('#fileuploadtab').removeClass("active");
+        jQuery('#textentryform').show();
+        jQuery('#textentrytab').addClass("active");
+      }
+    </script>
   </head>
   <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -58,18 +72,49 @@
       <br>
       <!-- Actual page content -->
       {% if team_auth %}
-        {% for i in injects %}
         <div class="panel panel-default">
-          <div class="panel-heading"> {{ i.title }} </div>
+          <div class="panel-heading"> {{ inject.title }} </div>
           <div class="panel-body">
-            {{ i.body }}
+            {{ inject.body }}
             <br>
-            <div class="bt-component pull-right">
-              <a href="/competitions/{{ competition_object.compurl }}/injects/{{ i.ijctid }}" class="btn btn-primary">View/Respond</a>
+            <br>
+            <ul class="nav nav-tabs" role="tablist">
+              <li onclick="textEntry()" id = "textentrytab" class="active"><a href="#">Text</a></li>
+              <li onclick="fileUpload()" id = "fileuploadtab"><a href="#">File Upload</a></li>
+            </ul>
+            <br>
+            <div id="textentryform">
+              <!-- Text entry form -->
+              <form action="/competitions/{{ competition_object.compurl }}/injects/{{ inject.ijctid }}/" method="post" class="form-horizontal">
+                {% csrf_token %}
+                {{ textentryform.textentry.errors }}
+                <label for="{{ textentryform.textentry.id_for_label }}" class="col-lg-2 control-label">{{ textentryform.textentry.label }}</label>
+                <div class="col-lg-10">{{ textentryform.textentry }}</div>
+                <div class="col-lg-10 col-lg-offset-2">
+                  <br>
+                  <button class="btn btn-default">Cancel</button>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+              </form>
+              <!-- End text entry form -->
+            </div>
+            <div id="fileuploadform" style="display:none">
+              <!-- File upload form -->
+              <form action="/competitions/{{ competition_object.compurl }}/injects/{{ inject.ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ fileuploadform.docfile.errors }}
+                <label for="{{ fileuploadform.docfile.id_for_label }}" class="col-lg-2 control-label">{{ fileuploadform.docfile.label }}</label>
+                <div class="col-lg-10">{{ fileuploadform.docfile }}</div>
+                <div class="col-lg-10 col-lg-offset-2">
+                  <br>
+                  <button class="btn btn-default">Cancel</button>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+              </form>
+              <!-- End file upload form -->
             </div>
           </div>
         </div>
-        {% endfor %}
       {% else %}
         <p>
           You must be authenticated as a team of this competition to view the page contents.

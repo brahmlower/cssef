@@ -6,6 +6,7 @@ from django.db.models import TextField
 from django.db.models import BooleanField
 from django.db.models import AutoField
 from django.db.models import DateTimeField
+from django.db.models import FileField
 from django.db.models import PositiveIntegerField
 from django.forms.widgets import PasswordInput
 from django.contrib.auth.models import User
@@ -61,6 +62,7 @@ class Inject(Model):
 	ijctid = AutoField(primary_key = True)
 	compid = PositiveIntegerField()
 	viewable = BooleanField()
+	#viewable_date = DateTimeField() # TODO: Implement this
 	title = CharField(max_length = 50)
 	body = CharField(max_length = 1000)
 
@@ -72,6 +74,18 @@ class Admin(Model):
 
 	def is_authenticated(self):
 		return True
+
+class InjectResponse(Model):
+	compid = PositiveIntegerField()
+	teamid = PositiveIntegerField()
+	ijctid = PositiveIntegerField()
+	filepath = CharField(max_length = 256)
+	textentry = TextField(max_length = 1000)
+
+class UploadedDocument(Model):
+	docfile = FileField(upload_to="documents")
+
+
 
 
 
