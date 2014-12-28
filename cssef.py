@@ -155,25 +155,27 @@ def rand_sleep(score_delay, score_delay_uncert):
     print "[INFO] Sleeping for %s seconds." % str(sleep_time)
     sleep(sleep_time)
 
-def log(comp, team, serv, points):
-    value_dict = {
-        "compid": comp.compid,
-        "teamid": team.teamid,
-        "servid": serv.db_obj.servid,
-        "datetime": timezone.now(),
-        "value": points
-    }
-    new_score = Score(**value_dict)
-    new_score.save()
+def log(score_obj):
+    # Temporary logging
+    print "[%s] Team:%s Service:%s Value:%s Messages:%s" % \
+        (score_obj.datetime, score_obj.teamid, score_obj.servid, score_obj.value, score_obj.message)
 
-def run_loop(comp, teams, servs):
+def run_loop(comp, team_list, serv_list):
     condition = True
     while(condition):
         rand_sleep(comp.score_delay, comp.score_delay_uncert)
-        for s in servs:
-            for t in teams:
-                score_obj = s.score(t)
-                log(comp, t, s, score_obj.value)
+        for serv in serv_list:
+            for team in team_list:
+                # Build the score object
+                score_obj = serv.score(team)
+                score_obj.compid = comp.compid
+                score_obj.teamid = team.teamid
+                score_obj.servid = serv.db_obj.servid
+                score_obj.datetime = timezone.now()
+                # Save the score object
+                score_obj.save()
+                # Log the score object
+                log(comp, team, serv, score_obj.value)
         #break #This is here just for testing!!
 
 def manage():
