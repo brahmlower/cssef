@@ -41,15 +41,29 @@ Pluggins are the modules that actually score the services you plan to score in y
 ScoringUtils.py has been written to simplify the development of pluggins. The following are the three classes it provides.
 #####Pluggin#####
 All pluggins should be children of this class. This ganrantees that each pluggin has these core values: 'points', 'net_type', 'subdomain', 'address' and 'default_port'. Additionally, 'build_address' is provided to get the full address for the team, regardless if they're being scored by dns or by an ipv4 address.
+* 'points' is a nonnegative integer value. Keep in mind 0 indicates the service failed the scoring criteria.
+* 'net_type' indicates how the service should be scored: via ipaddress or by domain name. The two accepted values are 'ipaddress' and 'domainname'
+* 'subdomain' is the subdomain to use to reach the service. In the case of testing a webserver at www.example.com, the subdomain value would be set to 'www'
+* 'address' is the eqivalent of subdomain, but for the ipaddress. If you expected to reach the service at 192.168.1.100, the value of address would be '100'
+* 'default_port' is the port number you would by default expect to find the service on. When scoring a website, this would be set to 80. This can be overwritten by the team configs, should a team change the port on which they serve the site.
 
 #####PlugginTest#####
 This class handles the testing of the pluggin. It asks the user/tester for values that should be used for testing. These values are for the pluggin configuration overall, as well as specific configurations a team might have. Because the Pluggin.score() expects a Team object with score_configs, the Team class is emulated. This class provides EmulatedTeam, which only has score_configs, which holds the team specific configurations provided by the user/tester.
+
+To run a test, start a python shell from the projects root directory. Import the pluggin you'd like to test, then call its Test class. Answer the prompted questions, and and then it will test the pluggin
+
+$ python
+Python 2.7.5 (default, Mar  9 2014, 22:15:05) 
+[GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import pluggins.HTTP as HTTP
+>>> HTTP.Test()
 
 #####Score (being depricated mega-soon)#####
 The score object should be returned by score(). This provides basic information that may be useful for loggin and scoring. This currently only provides the score (as 'value'), a boolean indicating if the score was successfull, as well as a success or error message. If an error was thrown, it will be included in 'error_msg'.
 
 # TODO #
-* pluggins/ScoringUtils should not have its over Score object (use cssefwebfront.models.Score)
+* pluggins/ScoringUtils should not have its own Score object (use cssefwebfront.models.Score)
 * Add "organizations", which own competition objects
 * Organization administrators
  * authentication
