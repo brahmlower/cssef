@@ -11,11 +11,14 @@ Pluggins:
 * SMB - pysmb 1.1.13
 
 # Usage #
-The webfrontend is written using Django14. Starting the webserver (currently) requires running 'python manage.py runserver'. There are plans to create proper SystemV and SystemD service scripts. As of this writing, the scoring engine component must be started separately, at the time you wish to begin scoring (this will also change in the future).
+The webfrontend is written using Django14. Starting the webserver (currently) requires running 'python manage.py runserver'. As of this writing, the scoring engine component must be started separately, at the time you wish to begin scoring.
 
 ## Web Interface ##
 <pre></code>python manage.py syncdb
 python runserver 0.0.0.0</code></pre>
+
+Administrator authentication doesn't use the builtin user database yet. To create an administroator user, run the create_admin script in the projects root directory. The first argument is the admin username and the second argument is the admins password (plaintext right now, I know...)
+<pre><code>./create_admin admin admin</code></pre>
 
 ## Scoring Engine ##
 Please note that this has a very underdeveloped help menu.
@@ -52,29 +55,28 @@ This class handles the testing of the pluggin. It asks the user/tester for value
 
 To run a test, start a python shell from the projects root directory. Import the pluggin you'd like to test, then call its Test class. Answer the prompted questions, and and then it will test the pluggin
 
-$ python
+<pre></code>$ python
 Python 2.7.5 (default, Mar  9 2014, 22:15:05) 
 [GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import pluggins.HTTP as HTTP
 >>> HTTP.Test()
+</code></pre>
 
 #####Score (being depricated mega-soon)#####
 The score object should be returned by score(). This provides basic information that may be useful for loggin and scoring. This currently only provides the score (as 'value'), a boolean indicating if the score was successfull, as well as a success or error message. If an error was thrown, it will be included in 'error_msg'.
 
 # TODO #
-* pluggins/ScoringUtils should not have its own Score object (use cssefwebfront.models.Score)
 * Add "organizations", which own competition objects
 * Organization administrators
  * authentication
  * login
  * logoff
-* Make competitions deletable
 * Make competitions editable (surprised I haven't already done this)
 * Create inject display interface for competitors
  * Submit button for uploading inject responses
  * Handle and view responses via white team interface
-* Genaric site modifications interface
+* Interface to modify genaric site information
  * Modify homepage content
  * Site link (top right corner)
 * Improve documentation (it sorta sucks right?)

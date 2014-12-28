@@ -13,6 +13,7 @@ from forms import CreateServiceForm
 from models import Competition
 from models import Service
 from models import Inject
+from models import Score
 from models import Team
 
 from utils import UserMessages
@@ -57,6 +58,36 @@ def create(request, competition=None):
 	# Set success message and render page
 	c["messages"].new_success("Created competition", 1337)
 	return render_to_response('CompConfig/create.html', c)
+
+def delete(request, competition = None):
+	"""
+	Delete the competition and all related objects (teams, scores, injects, services)
+	"""
+	c = {}
+	c["messages"] = UserMessages()
+	c = isAuthAdmin(request, c)
+	if not c["admin_auth"]:
+		return HttpResponseRedirect("/")
+	comp_obj = Competition.objects.get(compurl = competition)
+	# Gets and deletes all teams associated with the competition
+	team_list = Team.objects.filter(compid = comp_obj.compid)
+	for i in team_list:
+		i.delete()
+	# Gets and deletes all services associated with the competition
+	serv_list = Service.objects.filter(compid = comp_obj.compid)
+	for i in serv_list:
+		i.delete()
+	# Gets and deletes all injects associated with the competition
+	ijct_list = Inject.objects.filter(compid = comp_obj.compid)
+	for i in ijct_list:
+		i.delete()
+	# Gets and deletes all scores associated with the competition
+	scor_list = Score.objects.filter(compid = comp_obj.compid)
+	for i in scor_list:
+		i.delete()
+	# Deletes the competition itself
+	comp_obj.delete()
+	return HttpResponseRedirect("/admin/competitions/")
 
 # General competition configuration modules
 def summary(request, competition = None):

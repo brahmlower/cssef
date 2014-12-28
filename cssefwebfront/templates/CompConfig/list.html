@@ -58,7 +58,10 @@
             </div>
             <div class="panel-body">
               <p>{{ i.shrt_desc }}</p>
-              <a href="/admin/competitions/{{ i.compurl }}/" class="btn btn-primary pull-right">Edit</a>
+              <div class="bt-component pull-right">
+                <a href="/admin/competitions/{{ i.compurl }}/" class="btn btn-primary">Edit</a>
+                <a href="/admin/competitions/{{ i.compurl }}/delete/" class="btn btn-danger">Delete</a>
+              </div>
             </div>
           </div>
           {% endfor %}

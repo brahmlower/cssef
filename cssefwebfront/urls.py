@@ -36,6 +36,7 @@ urlpatterns = patterns('',
     url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/summary/$',   CompConfig.summary),
     url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/details/$',   CompConfig.details),
     url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/scoring/$',   CompConfig.scoring),
+    url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/delete/$',    CompConfig.delete),
     # Team related competition configurations
     url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/teams/$',                                   CompConfig.teams_list),
     url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/teams/edit/(?P<teamid>[1-9][1-9]*)/$',      CompConfig.teams_edit),
