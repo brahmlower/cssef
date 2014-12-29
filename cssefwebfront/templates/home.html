@@ -1,47 +1,46 @@
 <html>
-  <head>
-    {% load staticfiles %}
-    <link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-  </head>
-  <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a href="../" class="navbar-brand">CSC CSSEF</a>
-          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div class="navbar-collapse collapse" id="navbar-main">
-          <ul class="nav navbar-nav">
-            <li><a href="/competitions/">Competitions</a></li>
-            <li><a href="/admin/">Admin Config</a></li>
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-            {% if admin_auth %}
-            <li><a href="/admin/logout/">Admin Logout</a></li>
-            {% else %}
-            <li><a href="/admin/login/">Admin Login</a></li>
-            {% endif %}
-            <li><a href="http://uafcsc.com/">UAF CSC</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
+	<head>
+		{% load staticfiles %}
+		<link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
+		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+	</head>
+	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<a href="../" class="navbar-brand">CSC CSSEF</a>
+					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="navbar-collapse collapse" id="navbar-main">
+					<ul class="nav navbar-nav">
+						<li><a href="/competitions/">Competitions</a></li>
+						<li><a href="/admin/">Admin Config</a></li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						{% if admin_auth %}
+						<li><a href="/admin/logout/">Admin Logout</a></li>
+						{% else %}
+						<li><a href="/admin/login/">Admin Login</a></li>
+						{% endif %}
+						<li><a href="http://uafcsc.com/">UAF CSC</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
 
-    <div class="container">
-      <br>
-      <br>
-      <div class="page-header">
-        <h1>UAF CSC CSSEF Home</h1>
-      </div>
-	<h4>A note to users:</h4>
-	<p>Please note that this site is still a work in progress. Attempts to break it will very likely succeed. Please refrain from abusing the tools available on this site, as it may negatively effect your teammates experiences. This includes deleting service or team objects as well as modifying service or team settings.</p>
-	<p>Currently, all teams share the same point displays, located on the competition page. The only working tabs on the competition section are 'details', 'team rankings' and 'scoreboard'. Any authentication pages you find are non-functional. Attempting to sign in will yield no further access to the site.</p>
-    </div>
-
-  </body>
+		<div class="container">
+			<br>
+			<br>
+			<div class="page-header">
+				<h1>UAF CSC CSSEF Home</h1>
+			</div>
+			<h4>A note to users:</h4>
+			<p>Please note that this site is still a work in progress. Attempts to break it will very likely succeed. Please refrain from abusing the tools available on this site, as it may negatively effect your teammates experiences. This includes deleting service or team objects as well as modifying service or team settings.</p>
+			<p>Currently, all teams share the same point displays, located on the competition page. The only working tabs on the competition section are 'details', 'team rankings' and 'scoreboard'. Any authentication pages you find are non-functional. Attempting to sign in will yield no further access to the site.</p>
+		</div>
+	</body>
 </html>

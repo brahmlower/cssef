@@ -1,40 +1,40 @@
 <html>
-  <head>
-    {% load staticfiles %}
-    <link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-  </head>
-  <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a href="/" class="navbar-brand">CSC CSSEF</a>
-          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div class="navbar-collapse collapse" id="navbar-main">
-          <ul class="nav navbar-nav">
-	    <li><a href="/competitions/">Competitions</a></li>
-            <li><a href="/admin/">Admin Config</a></li>
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="/admin/login/">Admin Login</a></li>
-            <li><a href="http://uafcsc.com/">UAF CSC</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
+	<head>
+		{% load staticfiles %}
+		<link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
+		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+	</head>
+	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<a href="/" class="navbar-brand">CSC CSSEF</a>
+					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="navbar-collapse collapse" id="navbar-main">
+					<ul class="nav navbar-nav">
+						<li><a href="/competitions/">Competitions</a></li>
+						<li><a href="/admin/">Admin Config</a></li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="/admin/login/">Admin Login</a></li>
+						<li><a href="http://uafcsc.com/">UAF CSC</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
 
-    <div class="container">
-    	<br>
-    	<br>
-    	<div class="page-header"><h2>Admin Login</h2></div>
+		<div class="container">
+			<br>
+			<br>
+			<div class="page-header"><h2>Admin Login</h2></div>
 
-		<!-- BEGIN MESSAGE REPORTING -->
-		{% if messages != None %}
+			<!-- BEGIN MESSAGE REPORTING -->
+			{% if messages != None %}
 			{% for i in messages.error %}
 			<div class="alert alert-dismissable alert-error">
 				<button type="button" class="close" data-dismiss="alert">x</button>
@@ -53,22 +53,23 @@
 				<strong>Success: </string>{{ i.string }} <!-- ({{ i.num }}) -->
 			</div>
 			{% endfor %}
-		{% endif %}
-		<!-- END MESSAGE REPORTING -->
+			{% endif %}
+			<!-- END MESSAGE REPORTING -->
 
-    	<form action="/admin/login/" method="post" class="form-horizontal">
-    	{% csrf_token %}
-    	{{ form.login.username.errors }}
-		<label for="{{ form.login.username.id_for_label }}" class="col-lg-2 control-label">{{ form.login.username.label }}</label>
-		<div class="col-lg-10">{{ form.login.username }}</div>
-		{{ form.login.password.errors }}
-		<label for="{{ form.login.password.id_for_label }}" class="col-lg-2 control-label">{{ form.login.password.label }}</label>
-		<div class="col-lg-10">{{ form.login.password }}</div>
-		<div class="col-lg-10 col-lg-offset-2">
-    		<button type="submit" class="btn btn-primary">Login</button>
-    	</div>
-		</form>
-    </div>
+			<form action="/admin/login/" method="post" class="form-horizontal">
+				{% csrf_token %}
+				{{ form.login.username.errors }}
+				<label for="{{ form.login.username.id_for_label }}" class="col-lg-2 control-label">{{ form.login.username.label }}</label>
+				<div class="col-lg-10">{{ form.login.username }}</div>
 
-  </body>
+				{{ form.login.password.errors }}
+				<label for="{{ form.login.password.id_for_label }}" class="col-lg-2 control-label">{{ form.login.password.label }}</label>
+				<div class="col-lg-10">{{ form.login.password }}</div>
+
+				<div class="col-lg-10 col-lg-offset-2">
+					<button type="submit" class="btn btn-primary">Login</button>
+				</div>
+			</form>
+		</div>
+	</body>
 </html>

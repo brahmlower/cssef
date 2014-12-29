@@ -1,81 +1,78 @@
 <html>
-  <head>
-    {% load staticfiles %}
-    <link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-  </head>
-  <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a href="/" class="navbar-brand">CSC CSSEF</a>
-          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div class="navbar-collapse collapse" id="navbar-main">
-          <ul class="nav navbar-nav">
-	    <li><a href="/competitions/">Competitions</a>
-            <li><a href="/admin/">Admin Config</a></li>
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-            {% if admin_auth %}
-            <li><a href="/admin/logout/">Admin Logout</a></li>
-            {% else %}
-            <li><a href="/admin/login/">Admin Login</a></li>
-            {% endif %}
-            <li><a href="http://uafcsc.com/">UAF CSC</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
+	<head>
+		{% load staticfiles %}
+		<link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
+		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+	</head>
+	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<a href="/" class="navbar-brand">CSC CSSEF</a>
+					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="navbar-collapse collapse" id="navbar-main">
+					<ul class="nav navbar-nav">
+						<li><a href="/competitions/">Competitions</a>
+						<li><a href="/admin/">Admin Config</a></li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						{% if admin_auth %}
+						<li><a href="/admin/logout/">Admin Logout</a></li>
+						{% else %}
+						<li><a href="/admin/login/">Admin Login</a></li>
+						{% endif %}
+						<li><a href="http://uafcsc.com/">UAF CSC</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
 
-    <div class="container">
-      <br>
-      <br>
-      <br>
-      <ul class="breadcrumb">
-        <li><a href="/competitions/">Competitions</a></li>
-        <li class="active"><a href="/competitions/{{ competition_object.compurl }}/summary/">{{ competition_object.compname }}</a></li>
-        <li class="active"> Summary </li>
-      </ul>
+		<div class="container">
+			<br>
+			<br>
+			<br>
+			<ul class="breadcrumb">
+				<li><a href="/competitions/">Competitions</a></li>
+				<li class="active"><a href="/competitions/{{ competition_object.compurl }}/summary/">{{ competition_object.compname }}</a></li>
+				<li class="active"> Summary </li>
+			</ul>
 
-      <ul class="nav nav-tabs" role="tablist">
-        <li class="active"><a href="/competitions/{{ competition_object.compurl }}/summary">Summary</a></li>
-        <li><a href="/competitions/{{ competition_object.compurl }}/details">Details</a></li>
-        <li><a href="/competitions/{{ competition_object.compurl }}/ranking">Team Rankings</a></li>
-        {% if team_auth %}
-        <li><a href="/competitions/{{ competition_object.compurl }}/servicestatus">Service Status</a></li>
-        <li><a href="/competitions/{{ competition_object.compurl }}/scoreboard">Scoreboard</a></li>
-        <li><a href="/competitions/{{ competition_object.compurl }}/servicetimeline">Service Timeline</a></li>
-        <li><a href="/competitions/{{ competition_object.compurl }}/injects">Injects</a></li>
-        <li><a href="/competitions/{{ competition_object.compurl }}/incidentresponse">Incident Response</a></li>
-        {% else %}
-        {% endif %}
-      </ul>
+			<ul class="nav nav-tabs" role="tablist">
+				<li class="active"><a href="/competitions/{{ competition_object.compurl }}/summary">Summary</a></li>
+				<li><a href="/competitions/{{ competition_object.compurl }}/details">Details</a></li>
+				<li><a href="/competitions/{{ competition_object.compurl }}/ranking">Team Rankings</a></li>
+				{% if team_auth %}
+				<li><a href="/competitions/{{ competition_object.compurl }}/servicestatus">Service Status</a></li>
+				<li><a href="/competitions/{{ competition_object.compurl }}/scoreboard">Scoreboard</a></li>
+				<li><a href="/competitions/{{ competition_object.compurl }}/servicetimeline">Service Timeline</a></li>
+				<li><a href="/competitions/{{ competition_object.compurl }}/injects">Injects</a></li>
+				<li><a href="/competitions/{{ competition_object.compurl }}/incidentresponse">Incident Response</a></li>
+				{% else %}
+				{% endif %}
+			</ul>
 
+			<div class="jumbotron">
+				<h1>{{ competition_object.compname }}</h1>
+				<p>{{ competition_object.shrt_desc }}</p>
+				{% if team_auth %}
+				<a class="btn btn-primary pull-right" href="/competitions/{{ competition_object.compurl }}/teamlogout/">Logout</a><br>
+				{% else %}
+				<a class="btn btn-primary pull-right" href="/competitions/{{ competition_object.compurl }}/teamlogin/">Team Login</a><br>
+				{% endif %}
+			</div>
 
-      <div class="jumbotron">
-        <h1>{{ competition_object.compname }}</h1>
-        <p>{{ competition_object.shrt_desc }}</p>
-        {% if team_auth %}
-        <a class="btn btn-primary pull-right" href="/competitions/{{ competition_object.compurl }}/teamlogout/">Logout</a><br>
-        {% else %}
-        <a class="btn btn-primary pull-right" href="/competitions/{{ competition_object.compurl }}/teamlogin/">Team Login</a><br>
-        {% endif %}
-      </div>
-
-        <div class="panel panel-default">
-          <div class="panel-heading"> Short Description </div>
-          <div class="panel-body">
-            <p>{{ competition_object.shrt_desc }}</p>
-          </div>
-        </div>
-
-      <br>
-    </div>
-
-  </body>
+			<div class="panel panel-default">
+				<div class="panel-heading"> Short Description </div>
+				<div class="panel-body">
+					<p>{{ competition_object.shrt_desc }}</p>
+				</div>
+			</div>
+			<br>
+		</div>
+	</body>
 </html>
