@@ -16,32 +16,31 @@ from forms import TeamLoginForm
 from forms import InjectResponseForm
 import settings
 from utils import UserMessages
-from utils import isAuthAdmin
-from utils import isAuthBlueTeam
+from utils import getAuthValues
 
-def login(request, competition = None):
+def login(request):
 	"""
 	Page for teams to login to for a competition
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
-	c["form"] = {'login': TeamLoginForm()}
-	c["competition_object"] = Competition.objects.get(compurl = competition)
+	c = getAuthValues(request, c)
 	c.update(csrf(request))
 	# Checks if the user is submitting the form, or requesting the form
 	if request.method != "POST":
+		c["form"] = {'login': TeamLoginForm()}
 		return render_to_response('Comp/login.html', c)
-
-	form_dict = request.POST.copy()
-	form_dict["compid"] = c["competition_object"].compid
-
-	team = authenticate(teamname = form_dict["teamname"], password = form_dict["password"], compid = form_dict["compid"])
+	teamname = request.POST.get('teamname')
+	password = request.POST.get('password')
+	compid = request.POST.get('compid')
+	team = authenticate(teamname = teamname, password = password, compid = compid)
 	if team == None:
 		c["messages"].new_info("Incorrect team credentials.", 4321)
 		return render_to_response('Comp/login.html', c)
 	auth.login(request, team)
-	return HttpResponseRedirect("/competitions/%s/summary/" % competition)
+	competition = Competition.objects.get(compid = compid)
+	print competition.compurl
+	return HttpResponseRedirect("/competitions/%s/summary/" % competition.compurl)
 
 def logout(request, competition = None):
 	"""
@@ -49,12 +48,12 @@ def logout(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthBlueTeam(request, c)
-	if not c["blue_team_auth"]:
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_blue":
 		print "Cannot sign you out of something you're not logged in as."
 	else:
 		auth.logout(request)
-	return HttpResponseRedirect("/competitions/%s/summary/" % competition)
+	return HttpResponseRedirect("/")
 
 def list(request):
 	"""
@@ -62,7 +61,7 @@ def list(request):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
+	c = getAuthValues(request, c)
 	c["competition_list"] = Competition.objects.all()
 	return render_to_response('Comp/list.html', c)
 
@@ -76,8 +75,7 @@ def summary(request, competition = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = isAuthAdmin(request, c)
-	c = isAuthBlueTeam(request, c)
+	c = getAuthValues(request, c)
 	return render_to_response('Comp/summary.html', c)
 
 def details(request, competition = None):
@@ -87,8 +85,7 @@ def details(request, competition = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = isAuthAdmin(request, c)
-	c = isAuthBlueTeam(request, c)
+	c = getAuthValues(request, c)
 	c["services"] = Service.objects.filter(compid = c["competition_object"].compid)
 	c["teams"] = Team.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('Comp/details.html', c)
@@ -100,8 +97,7 @@ def rankings(request, competition = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = isAuthAdmin(request, c)
-	c = isAuthBlueTeam(request, c)
+	c = getAuthValues(request, c)
 	c["ranks"] = []
 	team_objs = Team.objects.filter(compid = c["competition_object"].compid)
 	for i in team_objs:
@@ -119,9 +115,8 @@ def injects(request, competition = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = isAuthAdmin(request, c)
-	c = isAuthBlueTeam(request, c)
-	if not c["blue_team_auth"]:
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_blue":
 		return render_to_response('Comp/injects.html', c)
 	c["injects"] = Inject.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('Comp/injects.html', c)
@@ -133,9 +128,8 @@ def injects_respond(request, competition = None, ijctid = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = isAuthAdmin(request, c)
-	c = isAuthBlueTeam(request, c)
-	if not c["blue_team_auth"]:
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_blue":
 		return render_to_response('Comp/injects.html', c)
 	c.update(csrf(request))
 	# If we're not getting POST data, serve the page normally
@@ -182,9 +176,8 @@ def servicestatus(request, competition = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = isAuthAdmin(request, c)
-	c = isAuthBlueTeam(request, c)
-	if not c["blue_team_auth"]:
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_blue":
 		return render_to_response('Comp/servicestatus.html', c)
 	return render_to_response('Comp/servicestatus.html', c)
 
@@ -195,9 +188,8 @@ def servicetimeline(request, competition = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = isAuthAdmin(request, c)
-	c = isAuthBlueTeam(request, c)
-	if not c["blue_team_auth"]:
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_blue":
 		return render_to_response('Comp/servicetimeline.html', c)
 	return render_to_response('Comp/servicetimeline.html', c)
 
@@ -208,9 +200,8 @@ def scoreboard(request, competition = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = isAuthAdmin(request, c)
-	c = isAuthBlueTeam(request, c)
-	if not c["blue_team_auth"]:
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_blue":
 		return render_to_response('Comp/scoreboard.html', c)
 	c["scores"] = []
 	score_obj_list = Score.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid)
@@ -229,8 +220,7 @@ def incidentresponse(request, competition = None):
 	c = {}
 	c["messages"] = UserMessages()
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = isAuthAdmin(request, c)
-	c = isAuthBlueTeam(request, c)
-	if not c["blue_team_auth"]:
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_blue":
 		return render_to_response('Comp/incidentresponse.html', c)
 	return render_to_response('Comp/incidentresponse.html', c)

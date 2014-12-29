@@ -3,6 +3,7 @@
 		{% load staticfiles %}
 		<link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+		<script src="{% static "cybersecweb/bootstrap.min.js" %}"></script>
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top">
@@ -17,16 +18,32 @@
 				</div>
 				<div class="navbar-collapse collapse" id="navbar-main">
 					<ul class="nav navbar-nav">
-						<li><a href="/competitions/">Competitions</a></li>
+						{% if auth_name == "auth_team_white" %}
 						<li><a href="/admin/">Admin Config</a></li>
+						{% elif auth_name == "auth_team_blue" %}
+						<li><a href="/competitions/">Competitions</a></li>
+						{% endif %}
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
-						{% if admin_auth %}
-						<li><a href="/admin/logout/">Admin Logout</a></li>
-						{% else %}
-						<li><a href="/admin/login/">Admin Login</a></li>
+						{% if auth %}
+						<li class="navbar-text">{{ auth_name_display }}</li>
+						<li class="divider-vertical"></li>
+						{% if auth_name == "auth_team_white" %}
+						<li><a href="/admin/logout/">Logout</a></li>
+						{% elif auth_name == "auth_team_blue" %}
+						<li><a href="/competitions/logout/">Logout</a></li>
 						{% endif %}
-						<li><a href="http://uafcsc.com/">UAF CSC</a></li>
+						{% else %}
+						<li class="dropdown">
+							<a id="login_dropdown" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login<span class="caret"></span></a>
+							<ul class="dropdown-menu" role="menu" aria-labelledby="login_dropdown">
+								<li><a href="/competitions/login/" role="menuitem" tabindex="-1">Blue Team</a></li>
+								<li><a href="#" role="menuitem" tabindex="-1">Orange Team</a></li>
+								<li><a href="#" role="menuitem" tabindex="-1">Red Team</a></li>
+								<li><a href="/admin/login/" role="menuitem" tabindex="-1">White Team</a></li>
+							</ul>
+						</li>
+						{% endif %}
 					</ul>
 				</div>
 			</div>
@@ -60,10 +77,12 @@
 			{% endif %}
 			<!-- END MESSAGE REPORTING -->
 
-
-
-			<form action="/competitions/{{ competition_object.compurl }}/teamlogin/" method="post" class="form-horizontal">
+			<form action="/competitions/login/" method="post" class="form-horizontal">
 				{% csrf_token %}
+				{{ form.login.compid.errors }}
+				<label for="{{ form.login.compid.id_for_label }}" class="col-lg-2 control-label">{{ form.login.compid.label }}</label>
+				<div class="col-lg-10">{{ form.login.compid }}</div>
+
 				{{ form.login.teamname.errors }}
 				<label for="{{ form.login.teamname.id_for_label }}" class="col-lg-2 control-label">{{ form.login.teamname.label }}</label>
 				<div class="col-lg-10">{{ form.login.teamname }}</div>
@@ -71,10 +90,6 @@
 				{{ form.login.password.errors }}
 				<label for="{{ form.login.password.id_for_label }}" class="col-lg-2 control-label">{{ form.login.password.label }}</label>
 				<div class="col-lg-10">{{ form.login.password }}</div>
-		
-				{{ form.login.competitions.errors }}
-				<label for="{{ form.login.competitions.id_for_label }}" class="col-lg-2 control-label">{{ form.login.competitions.label }}</label>
-				<div class="col-lg-10">{{ form.login.competitions }}</div>
 
 				<div class="col-lg-10 col-lg-offset-2">
 					<button type="submit" class="btn btn-primary">Login</button>

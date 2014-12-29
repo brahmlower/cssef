@@ -6,10 +6,10 @@ from django.contrib import auth
 from django.core.context_processors import csrf
 
 from utils import UserMessages
-from utils import isAuthAdmin
+from utils import getAuthValues
 
 def home(request):
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
+	c = getAuthValues(request, c)
 	return render_to_response('home.html', c)

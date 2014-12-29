@@ -14,8 +14,8 @@ from models import Competition
 from models import Service
 from models import Team
 
-from cssefwebfront.utils import UserMessages
-from cssefwebfront.utils import isAuthAdmin
+from utils import UserMessages
+from utils import getAuthValues
 
 def home(request):
 	"""
@@ -23,8 +23,8 @@ def home(request):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
-	if not c["admin_auth"]:
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	return render_to_response('AdminConfig/home.html', c)
 
@@ -34,7 +34,7 @@ def login(request):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
+	c = getAuthValues(request, c)
 	c["form"] = {'login': AdminLoginForm()}
 
 	c.update(csrf(request))
@@ -67,8 +67,8 @@ def site_config(request):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
-	if not c["admin_auth"]:
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	return render_to_response('AdminConfig/home.html', c)
 
@@ -78,8 +78,8 @@ def users_list(request):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
-	if not c["admin_auth"]:
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	return render_to_response('AdminConfig/users_list.html', c)
 
@@ -89,8 +89,8 @@ def users_edit(request):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
-	if not c["admin_auth"]:
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	return render_to_response('AdminConfig/users_edit.html', c)
 
@@ -100,8 +100,8 @@ def users_delete(request):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
-	if not c["admin_auth"]:
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	return HttpResponseRedirect('/admin/users/')
 
@@ -111,8 +111,8 @@ def users_create(request):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
-	if not c["admin_auth"]:
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	return render_to_response('AdminConfig/users_create.html', c)
 

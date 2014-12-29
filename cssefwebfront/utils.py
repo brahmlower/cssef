@@ -2,20 +2,19 @@ import json
 from models import Service
 from models import Team
 
-def isAuthAdmin(request, c):
-	user = request.user
-	if user.is_authenticated() and user.__class__.__name__ == "Admin":
-		c["admin_auth"] = True
-	else:
-		c["admin_auth"] = False
-	return c
-
-def isAuthBlueTeam(request, c):
-	user = request.user
-	if user.is_authenticated and user.__class__.__name__ == "Team":
-		c["blue_team_auth"] = True
-	else:
-		c["blue_team_auth"] = False
+def getAuthValues(request, c):
+	c["auth"] = request.user.is_authenticated
+	if request.user.is_authenticated:
+		team = request.user.__class__.__name__
+		if team == "Team":
+			c["auth_name"] = "auth_team_blue"
+			c["auth_name_display"] = "Blue Team"
+		elif team == "Admin":
+			c["auth_name"] = "auth_team_white"
+			c["auth_name_display"] = "White Team"
+		else:
+			c["auth_name"] = "auth_team_red"
+			c["auth_name_display"] = "Red Team"
 	return c
 
 class UserMessages:

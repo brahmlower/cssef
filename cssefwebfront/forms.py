@@ -8,6 +8,7 @@ from django.forms import Select
 from django.forms import ChoiceField
 from django.forms import FileField
 from django.forms import SplitDateTimeField
+from django.forms import ModelChoiceField
 from django.forms.widgets import PasswordInput
 from models import Competition
 from models import InjectResponse
@@ -111,27 +112,27 @@ class AdminLoginForm(ModelForm):
 		}
 
 class TeamLoginForm(ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(TeamLoginForm, self).__init__(*args, **kwargs)
+		tuple_list = []
+		for i in Competition.objects.all():
+			tuple_list.append((i.compid, i.compname))
+		self.fields['compid'].choices = tuple_list
+
+	compid = ChoiceField(label = "Competition", choices = [], widget = Select(attrs={'class':'form-control', 'required': True}))
 	class Meta:
 		model = Team
 		fields = ['teamname', 'password', 'compid']
 		labels = {
-			'teamname': ('Teamname'),
-			'password': ('Password'),
-			'compid': ('Competition')
+			'teamname': ('Team Name'),
+			'password': ('Password')
 		}
 		widgets = {
 			'teamname': TextInput(attrs={'class':'form-control', 'required': True}),
-			'password': PasswordInput(attrs={'class':'form-control', 'required': True}),
-			'compid': Select(attrs={'class':'form-control', 'required': True}),
+			'password': PasswordInput(attrs={'class':'form-control', 'required': True})
 		}
 
-		def __init__(self, *args, **kwargs):
-			super(TeamLoginForm, self).__init__(*args, **kwargs)
-			comp_list = []
-			comps = Competition.objects.all()
-			for i in comps:
-				comp_list.append((i.compid, i.compname))
-			print comp_list
+
 
 class InjectResponseForm(ModelForm):
 	docfile = FileField(label="File Upload", required=False)
