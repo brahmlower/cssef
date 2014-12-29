@@ -76,45 +76,51 @@
 				<div class="panel-heading"> {{ inject.title }} </div>
 				<div class="panel-body">
 					{{ inject.body }}
-					<br>
-					<br>
-					<ul class="nav nav-tabs" role="tablist">
-						<li onclick="textEntry()" id = "textentrytab" class="active"><a href="#">Text</a></li>
-						<li onclick="fileUpload()" id = "fileuploadtab"><a href="#">File Upload</a></li>
-					</ul>
-					<br>
-					<div id="textentryform">
-						<!-- Text entry form -->
-						<form action="/competitions/{{ competition_object.compurl }}/injects/{{ inject.ijctid }}/" method="post" class="form-horizontal">
-							{% csrf_token %}
-							{{ textentryform.textentry.errors }}
-							<label for="{{ textentryform.textentry.id_for_label }}" class="col-lg-2 control-label">{{ textentryform.textentry.label }}</label>
-							<div class="col-lg-10">{{ textentryform.textentry }}</div>
-							<div class="col-lg-10 col-lg-offset-2">
-								<br>
-								<button class="btn btn-default">Cancel</button>
-								<button type="submit" class="btn btn-primary">Submit</button>
-							</div>
-						</form>
-						<!-- End text entry form -->
-					</div>
-					<div id="fileuploadform" style="display:none">
-						<!-- File upload form -->
-						<form action="/competitions/{{ competition_object.compurl }}/injects/{{ inject.ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
-							{% csrf_token %}
-							{{ fileuploadform.docfile.errors }}
-							<label for="{{ fileuploadform.docfile.id_for_label }}" class="col-lg-2 control-label">{{ fileuploadform.docfile.label }}</label>
-							<div class="col-lg-10">{{ fileuploadform.docfile }}</div>
-							<div class="col-lg-10 col-lg-offset-2">
-							<br>
-								<button class="btn btn-default">Cancel</button>
-								<button type="submit" class="btn btn-primary">Submit</button>
-							</div>
-						</form>
-						<!-- End file upload form -->
-					</div>
 				</div>
 			</div>
+
+			{% for i in responses %}
+			<div class="panel panel-default">
+				<div class="panel-heading"> Submitted at: {{ i.datetime }}</div>
+				<div class="panel-body">
+					{% if i.istext %}
+					<strong> Submitted Text </strong>
+					<p>
+						{{ i.textentry }}
+					</p>
+					{% endif %}
+					{% if i.isfile %}
+					<strong> Attached File </strong>
+					<p>
+						File: <a href="#">{{ i.filename }}</a>
+					</p>
+					{% endif %}
+				</div>
+			</div>
+			{% endfor %}
+
+			<div class="panel panel-default">
+				<div class="panel-heading"> Response Submission </div>
+				<div class="panel-body">
+					<form action="/competitions/{{ competition_object.compurl }}/injects/{{ inject.ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+						{% csrf_token %}
+						{{ responseform.textentry.errors }}
+						<label for="{{ responseform.textentry.id_for_label }}" class="col-lg-2 control-label">{{ responseform.textentry.label }}</label>
+						<div class="col-lg-10">{{ responseform.textentry }}<br></div>
+
+						{{ responseform.docfile.errors }}
+						<label for="{{ responseform.docfile.id_for_label }}" class="col-lg-2 control-label">{{ responseform.docfile.label }}</label>
+						<div class="col-lg-10">{{ responseform.docfile }}</div>
+
+						<div class="bt-component pull-right">
+							<br>
+							<button class="btn btn-default">Cancel</button>
+							<button type="submit" class="btn btn-primary">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+
 			{% else %}
 			<p>
 				You must be authenticated as a team of this competition to view the page contents.

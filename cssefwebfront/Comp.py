@@ -147,41 +147,41 @@ def injects_respond(request, competition = None, ijctid = None):
 		return render_to_response('Comp/injects.html', c)
 	c["team_auth"] = True
 	c.update(csrf(request))
-	# Checks if we're taking POST data
+	# If we're not getting POST data, serve the page normally
 	if request.method != "POST":
-		# Serve the page, prompting for input
 		c["inject"] = Inject.objects.get(compid = c["competition_object"].compid, ijctid = ijctid)
-		c["textentryform"] = InjectResponseForm()
-		c["fileuploadform"] = UploadForm()
+		c["responses"] = InjectResponse.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid, ijctid = ijctid)
+		c["responseform"] = InjectResponseForm()
 		return render_to_response('Comp/injects_view_respond.html', c)
 	# Determine if we're handling text entry or file upload
-	form = UploadForm(request.POST, request.FILES)
-	if form.is_valid():
-		# Taking file upload
+	ijct_resp_obj = InjectResponse()
+	ijct_resp_obj.compid = c["competition_object"].compid
+	ijct_resp_obj.teamid = request.user.teamid
+	ijct_resp_obj.ijctid = int(ijctid)
+	# Checks if we were given a file
+	try:
 		# Handle necessary file manipulation
+		print request.FILES
 		uf = UploadedFile(request.FILES['docfile'])
-		org_filename = uf.name
-		new_filepath = settings.BASE_DIR + "/" + uf.name
-		wfile = open(new_filepath, "w")
+		dest_filepath = settings.BASE_DIR + "/" + uf.name
+		wfile = open(dest_filepath, "w")
 		wfile.write(uf.read())
 		wfile.close()
-		# Finish the model object and save it
-		ijct_resp_obj = InjectResponse()
-		ijct_resp_obj.compid = c["competition_object"].compid
-		ijct_resp_obj.teamid = request.user.teamid
-		ijct_resp_obj.ijctid = ijctid
-		ijct_resp_obj.filepath = settings.BASE_DIR + "/" + uf.name
+		# Fill out file related parts of the model
+		ijct_resp_obj.isfile = True
+		ijct_resp_obj.filename = uf.name
+		ijct_resp_obj.filepath = dest_filepath
+	except KeyError:
+		print "no file was uploaded"
+	# Checks if we were given text
+	form = InjectResponseForm(request.POST)
+	if  form.is_valid():
+		ijct_resp_obj.istext = True
+		ijct_resp_obj.textentry = form.cleaned_data['textentry']
+	#TODO: Have some way of telling user they need to add input before they may submit
+	if ijct_resp_obj.istext or ijct_resp_obj.isfile:
 		ijct_resp_obj.save()
-	else:
-		form = InjectResponseForm(request.POST)
-		form.compid = c["competition_object"].compid
-		form.teamid = request.user.teamid
-		form.ijctid = ijctid
-		if not form.is_valid():
-			print "text entry form was invalid"
-		else:
-			form.save()
-	return HttpResponseRedirect('/competitions/%s/injects/' % competition)
+	return HttpResponseRedirect('/competitions/%s/injects/%s/' % (competition, ijctid))
 
 
 def servicestatus(request, competition = None):

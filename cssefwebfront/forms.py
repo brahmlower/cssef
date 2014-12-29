@@ -133,15 +133,13 @@ class TeamLoginForm(ModelForm):
 			print comp_list
 
 class InjectResponseForm(ModelForm):
+	docfile = FileField(label="File Upload", required=False)
 	class Meta:
 		model = InjectResponse
-		fields = ['textentry', 'compid', 'teamid', 'ijctid']
+		fields = ['textentry']
 		labels = {
 			'textentry': ('Text Entry')
 		}
 		widgets = {
 			'textentry': Textarea(attrs={'class':'form-control'})
 		}
-
-class UploadForm(Form):
-	docfile = FileField(label="Select a file")

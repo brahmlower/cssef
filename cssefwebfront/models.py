@@ -79,14 +79,9 @@ class InjectResponse(Model):
 	compid = PositiveIntegerField()
 	teamid = PositiveIntegerField()
 	ijctid = PositiveIntegerField()
-	filepath = CharField(max_length = 256)
+	datetime = DateTimeField(default = timezone.now)
+	istext = BooleanField(default = False)
+	isfile = BooleanField(default = False)
 	textentry = TextField(max_length = 1000)
-
-class UploadedDocument(Model):
-	docfile = FileField(upload_to="documents")
-
-
-
-
-
-
+	filepath = CharField(max_length = 256)
+	filename = CharField(max_length = 64)
