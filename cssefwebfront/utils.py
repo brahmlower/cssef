@@ -10,6 +10,14 @@ def isAuthAdmin(request, c):
 		c["admin_auth"] = False
 	return c
 
+def isAuthBlueTeam(request, c):
+	user = request.user
+	if user.is_authenticated and user.__class__.__name__ == "Team":
+		c["blue_team_auth"] = True
+	else:
+		c["blue_team_auth"] = False
+	return c
+
 class UserMessages:
 	def __init__(self):
 		self.info = []

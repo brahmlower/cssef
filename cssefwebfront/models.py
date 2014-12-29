@@ -3,14 +3,13 @@ from django.db.models import Model
 from django.db.models import CharField
 from django.db.models import BooleanField
 from django.db.models import TextField
-from django.db.models import BooleanField
 from django.db.models import AutoField
 from django.db.models import DateTimeField
 from django.db.models import FileField
 from django.db.models import PositiveIntegerField
 from django.forms.widgets import PasswordInput
 from django.contrib.auth.models import User
-from datetime import datetime
+#from datetime import datetime
 from django.utils import timezone
 
 class Competition(Model):
@@ -19,9 +18,9 @@ class Competition(Model):
 	compurl = CharField(max_length = 25)		# string ID of the competition, used in url
 	shrt_desc = CharField(max_length = 300)		# A short description of the competition - abreviated version of description field
 	full_desc = TextField(max_length = 1000)	# A full description of the competition, what it's about, what the goals are and whatnot
-	viewable = BooleanField()					# Boolean indicating if it's published on the public competition list
-	autodisplay = BooleanField()
-	displaytime = PositiveIntegerField()
+	viewable = BooleanField(default = False)	# Boolean indicating if it's published on the public competition list
+	autodisplay = BooleanField(default = False)
+	displaytime = DateTimeField(default = timezone.now)
 	#starttime = PositiveIntegerField()
 	#finishtime = PositiveIntegerField()
 	score_delay = PositiveIntegerField()

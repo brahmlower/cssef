@@ -90,3 +90,19 @@ The score object should be returned by score(). This provides basic information 
  * Being authenticated as any user will allow viewing the competition as blue team - check that user is authenticated as blue team specifically
  * Create different types of teams (white/orange/blue/red)
  * Better reporting when attempting to access restricted pages (other teams pages, admin pages) - this includes 403 pages and whatnot
+* Blue Team views
+ * Incident Response
+  * new incident form
+  * list of current incidents
+  * incidents can be modified (think ticketing system)
+ * Service Timeline
+  * graph services
+  * may require competition start time?
+  * filter by service
+ * Scoreboard
+  * filter by service
+  * color code scores (red down, green up)
+ * Service Status
+  * Current service status (will call a single instance of the scoring engine)
+ * Details
+ * Summary

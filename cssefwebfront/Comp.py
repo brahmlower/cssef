@@ -14,10 +14,10 @@ from models import Score
 from models import Team
 from forms import TeamLoginForm
 from forms import InjectResponseForm
-from forms import UploadForm
 import settings
 from utils import UserMessages
 from utils import isAuthAdmin
+from utils import isAuthBlueTeam
 
 def login(request, competition = None):
 	"""
@@ -47,9 +47,13 @@ def logout(request, competition = None):
 	"""
 	Page for teams to logout of a competition
 	"""
-	auth.logout(request)
 	c = {}
 	c["messages"] = UserMessages()
+	c = isAuthBlueTeam(request, c)
+	if not c["blue_team_auth"]:
+		print "Cannot sign you out of something you're not logged in as."
+	else:
+		auth.logout(request)
 	return HttpResponseRedirect("/competitions/%s/summary/" % competition)
 
 def list(request):
@@ -71,13 +75,9 @@ def summary(request, competition = None):
 		return HttpResponseRedirect(current_url + "summary/")
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	if request.user.is_authenticated():
-		c["team_auth"] = True
-	else:
-		c["team_auth"] = False
-
+	c = isAuthAdmin(request, c)
+	c = isAuthBlueTeam(request, c)
 	return render_to_response('Comp/summary.html', c)
 
 def details(request, competition = None):
@@ -86,14 +86,11 @@ def details(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
+	c = isAuthAdmin(request, c)
+	c = isAuthBlueTeam(request, c)
 	c["services"] = Service.objects.filter(compid = c["competition_object"].compid)
 	c["teams"] = Team.objects.filter(compid = c["competition_object"].compid)
-	if request.user.is_authenticated():
-		c["team_auth"] = True
-	else:
-		c["team_auth"] = False
 	return render_to_response('Comp/details.html', c)
 
 def rankings(request, competition = None):
@@ -102,8 +99,9 @@ def rankings(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
+	c = isAuthAdmin(request, c)
+	c = isAuthBlueTeam(request, c)
 	c["ranks"] = []
 	team_objs = Team.objects.filter(compid = c["competition_object"].compid)
 	for i in team_objs:
@@ -111,11 +109,7 @@ def rankings(request, competition = None):
 		total = 0
 		for k in scores_objs:
 			total += k.value
-		c["ranks"].append({"team": i.teamname, "score": total, "place":0})
-	if request.user.is_authenticated():
-		c["team_auth"] = True
-	else:
-		c["team_auth"] = False		
+		c["ranks"].append({"team": i.teamname, "score": total, "place":0})		
 	return render_to_response('Comp/rankings.html', c)
 
 def injects(request, competition = None):
@@ -124,12 +118,11 @@ def injects(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	if not request.user.is_authenticated():
-		c["team_auth"] = False
+	c = isAuthAdmin(request, c)
+	c = isAuthBlueTeam(request, c)
+	if not c["blue_team_auth"]:
 		return render_to_response('Comp/injects.html', c)
-	c["team_auth"] = True
 	c["injects"] = Inject.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('Comp/injects.html', c)
 
@@ -139,13 +132,11 @@ def injects_respond(request, competition = None, ijctid = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	# Checks if the user is authenticated for this competition
-	if not request.user.is_authenticated():
-		c["team_auth"] = False
+	c = isAuthAdmin(request, c)
+	c = isAuthBlueTeam(request, c)
+	if not c["blue_team_auth"]:
 		return render_to_response('Comp/injects.html', c)
-	c["team_auth"] = True
 	c.update(csrf(request))
 	# If we're not getting POST data, serve the page normally
 	if request.method != "POST":
@@ -190,12 +181,11 @@ def servicestatus(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	if not request.user.is_authenticated():
-		c["team_auth"] = False
+	c = isAuthAdmin(request, c)
+	c = isAuthBlueTeam(request, c)
+	if not c["blue_team_auth"]:
 		return render_to_response('Comp/servicestatus.html', c)
-	c["team_auth"] = True
 	return render_to_response('Comp/servicestatus.html', c)
 
 def servicetimeline(request, competition = None):
@@ -204,12 +194,11 @@ def servicetimeline(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	if not request.user.is_authenticated():
-		c["team_auth"] = False
+	c = isAuthAdmin(request, c)
+	c = isAuthBlueTeam(request, c)
+	if not c["blue_team_auth"]:
 		return render_to_response('Comp/servicetimeline.html', c)
-	c["team_auth"] = True
 	return render_to_response('Comp/servicetimeline.html', c)
 
 def scoreboard(request, competition = None):
@@ -218,12 +207,11 @@ def scoreboard(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	if not request.user.is_authenticated():
-		c["team_auth"] = False
+	c = isAuthAdmin(request, c)
+	c = isAuthBlueTeam(request, c)
+	if not c["blue_team_auth"]:
 		return render_to_response('Comp/scoreboard.html', c)
-	c["team_auth"] = True
 	c["scores"] = []
 	score_obj_list = Score.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid)
 	for i in score_obj_list:
@@ -240,10 +228,9 @@ def incidentresponse(request, competition = None):
 	"""
 	c = {}
 	c["messages"] = UserMessages()
-	c = isAuthAdmin(request, c)
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	if not request.user.is_authenticated():
-		c["team_auth"] = False
+	c = isAuthAdmin(request, c)
+	c = isAuthBlueTeam(request, c)
+	if not c["blue_team_auth"]:
 		return render_to_response('Comp/incidentresponse.html', c)
-	c["team_auth"] = True
 	return render_to_response('Comp/incidentresponse.html', c)

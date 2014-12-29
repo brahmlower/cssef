@@ -7,6 +7,7 @@ from django.forms import NumberInput
 from django.forms import Select
 from django.forms import ChoiceField
 from django.forms import FileField
+from django.forms import SplitDateTimeField
 from django.forms.widgets import PasswordInput
 from models import Competition
 from models import InjectResponse
@@ -35,9 +36,9 @@ class CreateCompetitionForm(ModelForm):
 			'compurl': TextInput(attrs={'class':'form-control', 'required': True}),
 			'shrt_desc': Textarea(attrs={'class': 'form-control','rows':3, 'required': True}),
 			'full_desc': Textarea(attrs={'class':'form-control', 'required': True}),
-			'viewable': CheckboxInput(attrs={'class':'form-control checkbox', 'required': False}),
-			'autodisplay': CheckboxInput(attrs={'class':'form-control checkbox', 'required': False}),
-			'displaytime': NumberInput(attrs={'class':'form-control', 'required': False}),
+			'viewable': CheckboxInput(attrs={'class':'form-control checkbox'}),
+			'autodisplay': CheckboxInput(attrs={'class':'form-control checkbox'}),
+			#'displaytime': SplitDateTimeField(),#attrs={'class':'form-control'}),
 			'score_delay': NumberInput(attrs={'class':'form-control', 'required': True}),
 			'score_delay_uncert': NumberInput(attrs={'class':'form-control', 'required': True}),
 		}
