@@ -5,6 +5,8 @@ from django.db.models import BooleanField
 from django.db.models import TextField
 from django.db.models import AutoField
 from django.db.models import DateTimeField
+from django.db.models import DateField
+from django.db.models import TimeField
 from django.db.models import FileField
 from django.db.models import PositiveIntegerField
 from django.forms.widgets import PasswordInput
@@ -20,7 +22,8 @@ class Competition(Model):
 	full_desc = TextField(max_length = 1000)	# A full description of the competition, what it's about, what the goals are and whatnot
 	viewable = BooleanField(default = False)	# Boolean indicating if it's published on the public competition list
 	autodisplay = BooleanField(default = False)
-	displaytime = DateTimeField(default = timezone.now)
+	displaydate = DateField()
+	displaytime = TimeField()
 	#starttime = PositiveIntegerField()
 	#finishtime = PositiveIntegerField()
 	score_delay = PositiveIntegerField()
@@ -75,6 +78,7 @@ class Admin(Model):
 		return True
 
 class InjectResponse(Model):
+	ijctrespid = AutoField(primary_key = True)
 	compid = PositiveIntegerField()
 	teamid = PositiveIntegerField()
 	ijctid = PositiveIntegerField()

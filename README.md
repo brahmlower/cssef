@@ -61,10 +61,21 @@ Python 2.7.5 (default, Mar  9 2014, 22:15:05)
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import pluggins.HTTP as HTTP
 >>> HTTP.Test()
-</code></pre>
 
-#####Score (being depricated mega-soon)#####
-The score object should be returned by score(). This provides basic information that may be useful for loggin and scoring. This currently only provides the score (as 'value'), a boolean indicating if the score was successfull, as well as a success or error message. If an error was thrown, it will be included in 'error_msg'.
+General service pluggin configurations.
+Please enter a value for 'points': 100
+Please enter a value for 'net_type': ipaddress
+Please enter a value for 'subdomain': www
+Please enter a value for 'address': 109
+Please enter a value for 'default_port': 80
+
+Team specific pluggin configurations.
+Please enter a(n) 'int' for 'port': 80
+Please enter a(n) 'int' for 'timeout': 2
+Please enter a(n) 'str' for 'network': 192.168.0
+
+[2014-12-29 09:53:56.579363+00:00] Team:n/a Service:n/a Value:100 Messages:
+</code></pre>
 
 # TODO #
 * Add "organizations", which own competition objects
@@ -80,15 +91,9 @@ The score object should be returned by score(). This provides basic information 
 * Injects
  * Add delivery time. Make viewable by blue team, editable by white team
  * Add due time. Make viewable by blue team, editable by white team
- * implement display time (blue team doesn't see them until a specific time- injects are autodisplayed)
- * interface for blue team members to view the injects
- * form for blue team inject responses
  * view and score inject responses as white team
- * List submitted responses to injects in blue team view
  * Display icon indicating a response has been submitted in blue team list view
 * Users/Authentication
- * Being authenticated as any user will allow viewing the competition as blue team - check that user is authenticated as blue team specifically
- * Create different types of teams (white/orange/blue/red)
  * Better reporting when attempting to access restricted pages (other teams pages, admin pages) - this includes 403 pages and whatnot
 * Blue Team views
  * Incident Response

@@ -2,8 +2,24 @@
 	<head>
 		{% load staticfiles %}
 		<link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
+		<link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap-datetimepicker.min.css" %}">
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 		<script src="{% static "cybersecweb/bootstrap.min.js" %}"></script>
+		<script src="{% static "cybersecweb/moment.min.js" %}"></script>
+		<script src="{% static "cybersecweb/bootstrap-datetimepicker.min.js" %}"></script>
+		<script type="text/javascript">
+			$(function() {
+				$('#{{ form.comp.displaydate.id_for_label }}').datetimepicker({
+					pickTime: false
+				});
+			});
+			$(function() {
+				$('#{{ form.comp.displaytime.id_for_label }}').datetimepicker({
+					pick12HourFormat: false,
+					pickDate: false
+				});
+			});
+		</script>
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top">
@@ -110,9 +126,13 @@
 				<label for="{{ form.comp.autodisplay.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.autodisplay.label }}</label>
 				<div class="col-lg-10">{{ form.comp.autodisplay }}</div>
 			
+				{{ form.comp.displaydate.errors }}
+				<label for="{{ form.comp.displaydate.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.displaydate.label }}</label>
+				<div class="col-lg-10 input-append">{{ form.comp.displaydate }}</div>
+
 				{{ form.comp.displaytime.errors }}
 				<label for="{{ form.comp.displaytime.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.displaytime.label }}</label>
-				<div class="col-lg-10"><!-- {{ form.comp.displaytime }} --></div>
+				<div class="col-lg-10 input-append">{{ form.comp.displaytime }}</div>
 
 				{{ form.comp.score_delay.errors }}
 				<label for="{{ form.comp.score_delay.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.score_delay.label }}</label>

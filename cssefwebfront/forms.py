@@ -7,8 +7,10 @@ from django.forms import NumberInput
 from django.forms import Select
 from django.forms import ChoiceField
 from django.forms import FileField
-from django.forms import SplitDateTimeField
+#from django.forms import SplitDateTimeWidget
 from django.forms import ModelChoiceField
+from django.forms import DateInput
+from django.forms import TimeInput
 from django.forms.widgets import PasswordInput
 from models import Competition
 from models import InjectResponse
@@ -20,7 +22,7 @@ from models import Team
 class CreateCompetitionForm(ModelForm):
 	class Meta:
 		model = Competition
-		fields = ['compname','compurl','shrt_desc','full_desc', 'viewable','autodisplay','displaytime', 'score_delay', 'score_delay_uncert']
+		fields = ['compname', 'compurl', 'shrt_desc', 'full_desc', 'viewable', 'autodisplay', 'displaydate', 'displaytime', 'score_delay', 'score_delay_uncert']
 		labels = {
 			'compname': ('Competition Name'),
 			'compurl': ('Competition URL Value'),
@@ -28,6 +30,7 @@ class CreateCompetitionForm(ModelForm):
 			'full_desc': ('Description'),
 			'viewable': ('Visible'),
 			'autodisplay': ('Auto Display'),
+			'displaydate': ('Display Date'),
 			'displaytime': ('Display Time'),
 			'score_delay': ('Scoring Interval'),
 			'score_delay_uncert': ('Scoring Interval Uncertanty')
@@ -39,7 +42,8 @@ class CreateCompetitionForm(ModelForm):
 			'full_desc': Textarea(attrs={'class':'form-control', 'required': True}),
 			'viewable': CheckboxInput(attrs={'class':'form-control checkbox'}),
 			'autodisplay': CheckboxInput(attrs={'class':'form-control checkbox'}),
-			#'displaytime': SplitDateTimeField(),#attrs={'class':'form-control'}),
+			'displaydate': DateInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD"}),
+			'displaytime': TimeInput(attrs={'class':'form-control', 'data-date-format': "HH:mm"}),
 			'score_delay': NumberInput(attrs={'class':'form-control', 'required': True}),
 			'score_delay_uncert': NumberInput(attrs={'class':'form-control', 'required': True}),
 		}

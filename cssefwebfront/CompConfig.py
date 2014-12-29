@@ -77,6 +77,10 @@ def delete(request, competition = None):
 	serv_list = Service.objects.filter(compid = comp_obj.compid)
 	for i in serv_list:
 		i.delete()
+	# Gets and deletes all inject responses associated with the competition (TODO: This doesn't delete any uploaded files associated with the response)
+	resp_list = InjectResponse.objects.filter(compid = comp_obj.compid)
+	for i in resp_list:
+		i.delete()
 	# Gets and deletes all injects associated with the competition
 	ijct_list = Inject.objects.filter(compid = comp_obj.compid)
 	for i in ijct_list:
@@ -345,6 +349,11 @@ def injects_delete(request, competition = None, ijctid = None):
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	comp_obj = Competition.objects.get(compurl = competition)
+	# Delete any responses to the inject (TODO: this doesn't delete uploaded files)
+	response_objs = InjectResponse.objects.filter(compid = comp_obj.compid, ijctid = int(ijctid))
+	for i in response_objs:
+		i.delete()
+	# Deletes the inject itself
 	ijct_obj = Inject.objects.filter(compid = comp_obj.compid, ijctid = int(ijctid))
 	ijct_obj.delete()
 	return HttpResponseRedirect("/admin/competitions/%s/injects/" % competition)
