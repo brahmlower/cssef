@@ -334,7 +334,9 @@ def injects_edit(request, competition = None, ijctid = None):
 		c["ijctid"] = ijct_obj[0].ijctid
 		c["form"] = {"inject": CreateInjectForm(initial = ijct_obj.values()[0])}
 		return render_to_response('CompConfig/injects_create-edit.html', c)
-	tmp_dict = {'title': request.POST['title'], 'body':request.POST['body']}
+	# Note this will only work when there are no lists
+	tmp_dict = request.POST.copy().dict()
+	tmp_dict.pop('csrfmiddlewaretoken', None)
 	ijct_obj = Inject.objects.filter(compid = c["competition_object"].compid, ijctid = int(ijctid))
 	ijct_obj.update(**tmp_dict)
 	return HttpResponseRedirect('/admin/competitions/%s/injects/' % competition)
@@ -368,15 +370,14 @@ def injects_create(request, competition = None):
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	c["action"] = "create"
-	c["form"] = {"inject": CreateInjectForm()}
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
-
+	# Just displays the form if we're not handling any input
 	if request.method != "POST":
+		c["form"] = {"inject": CreateInjectForm()}
 		return render_to_response('CompConfig/injects_create-edit.html', c)
 	form_dict = request.POST.copy()
 	form_dict["compid"] = c["competition_object"].compid
-	form_dict["viewable"] = True
 	ijct_obj = CreateInjectForm(form_dict)
 	if not ijct_obj.is_valid():
 		c["messages"].new_info("Invalid field data in inject form: %s" % ijct_obj.errors, 1001)

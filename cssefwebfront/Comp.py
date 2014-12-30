@@ -17,6 +17,7 @@ from forms import InjectResponseForm
 import settings
 from utils import UserMessages
 from utils import getAuthValues
+from django.utils import timezone
 
 def login(request):
 	"""
@@ -118,7 +119,7 @@ def injects(request, competition = None):
 	c = getAuthValues(request, c)
 	if c["auth_name"] != "auth_team_blue":
 		return render_to_response('Comp/injects.html', c)
-	c["injects"] = Inject.objects.filter(compid = c["competition_object"].compid)
+	c["injects"] = Inject.objects.filter(compid = c["competition_object"].compid, dt_delivery__lte = timezone.now())
 	return render_to_response('Comp/injects.html', c)
 
 def injects_respond(request, competition = None, ijctid = None):

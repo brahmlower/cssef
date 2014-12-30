@@ -22,10 +22,9 @@ class Competition(Model):
 	full_desc = TextField(max_length = 1000)	# A full description of the competition, what it's about, what the goals are and whatnot
 	viewable = BooleanField(default = False)	# Boolean indicating if it's published on the public competition list
 	autodisplay = BooleanField(default = False)
-	displaydate = DateField()
-	displaytime = TimeField()
-	#starttime = PositiveIntegerField()
-	#finishtime = PositiveIntegerField()
+	dt_display = DateTimeField()
+	dt_start = DateTimeField()
+	dt_finish = DateTimeField()
 	score_delay = PositiveIntegerField()
 	score_delay_uncert = PositiveIntegerField()
 
@@ -63,8 +62,9 @@ class Score(Model):
 class Inject(Model):
 	ijctid = AutoField(primary_key = True)
 	compid = PositiveIntegerField()
-	viewable = BooleanField()
-	#viewable_date = DateTimeField() # TODO: Implement this
+	dt_delivery = DateTimeField()
+	dt_response_due = DateTimeField()
+	dt_response_close = DateTimeField()
 	title = CharField(max_length = 50)
 	body = CharField(max_length = 1000)
 

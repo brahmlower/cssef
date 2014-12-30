@@ -2,8 +2,22 @@
 	<head>
 		{% load staticfiles %}
 		<link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
+		<link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap-datetimepicker.min.css" %}">
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 		<script src="{% static "cybersecweb/bootstrap.min.js" %}"></script>
+		<script src="{% static "cybersecweb/moment.min.js" %}"></script>
+		<script src="{% static "cybersecweb/bootstrap-datetimepicker.min.js" %}"></script>
+		<script type="text/javascript">
+			$(function() {
+				$('#{{ form.inject.dt_delivery.id_for_label }}').datetimepicker();
+			});
+			$(function() {
+				$('#{{ form.inject.dt_response_due.id_for_label }}').datetimepicker();
+			});
+			$(function() {
+				$('#{{ form.inject.dt_response_close.id_for_label }}').datetimepicker();
+			});
+		</script>
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top">
@@ -89,8 +103,20 @@
 				<div class="col-lg-10">{{ form.inject.title }}</div>
 
 				{{ form.inject.body.errors}}
-				<label for="{{ form.inject.boyd.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.body.label }}</label>
+				<label for="{{ form.inject.body.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.body.label }}</label>
 				<div class="col-lg-10">{{ form.inject.body }}</div>
+
+				{{ form.inject.dt_delivery.errors}}
+				<label for="{{ form.inject.dt_delivery.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.dt_delivery.label }}</label>
+				<div class="col-lg-10">{{ form.inject.dt_delivery }}</div>
+
+				{{ form.inject.dt_response_due.errors}}
+				<label for="{{ form.inject.dt_response_due.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.dt_response_due.label }}</label>
+				<div class="col-lg-10">{{ form.inject.dt_response_due }}</div>
+
+				{{ form.inject.dt_response_close.errors}}
+				<label for="{{ form.inject.dt_response_close.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.dt_response_close.label }}</label>
+				<div class="col-lg-10">{{ form.inject.dt_response_close }}</div>
 
 				<div class="col-lg-10 col-lg-offset-2">
 					<br>

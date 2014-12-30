@@ -22,7 +22,7 @@ from models import Team
 class CreateCompetitionForm(ModelForm):
 	class Meta:
 		model = Competition
-		fields = ['compname', 'compurl', 'shrt_desc', 'full_desc', 'viewable', 'autodisplay', 'displaydate', 'displaytime', 'score_delay', 'score_delay_uncert']
+		fields = ['compname', 'compurl', 'shrt_desc', 'full_desc', 'viewable', 'autodisplay', 'dt_display', 'dt_start', 'dt_finish', 'score_delay', 'score_delay_uncert']
 		labels = {
 			'compname': ('Competition Name'),
 			'compurl': ('Competition URL Value'),
@@ -30,8 +30,9 @@ class CreateCompetitionForm(ModelForm):
 			'full_desc': ('Description'),
 			'viewable': ('Visible'),
 			'autodisplay': ('Auto Display'),
-			'displaydate': ('Display Date'),
-			'displaytime': ('Display Time'),
+			'dt_display': ('Viewable Date'),
+			'dt_start': ('Start Time'),
+			'dt_finish': ('Finish Time'),
 			'score_delay': ('Scoring Interval'),
 			'score_delay_uncert': ('Scoring Interval Uncertanty')
 		}
@@ -42,8 +43,9 @@ class CreateCompetitionForm(ModelForm):
 			'full_desc': Textarea(attrs={'class':'form-control', 'required': True}),
 			'viewable': CheckboxInput(attrs={'class':'form-control checkbox'}),
 			'autodisplay': CheckboxInput(attrs={'class':'form-control checkbox'}),
-			'displaydate': DateInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD"}),
-			'displaytime': TimeInput(attrs={'class':'form-control', 'data-date-format': "HH:mm"}),
+			'dt_display': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
+			'dt_start': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
+			'dt_finish': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
 			'score_delay': NumberInput(attrs={'class':'form-control', 'required': True}),
 			'score_delay_uncert': NumberInput(attrs={'class':'form-control', 'required': True}),
 		}
@@ -92,14 +94,20 @@ class CreateServiceForm(ModelForm):
 class CreateInjectForm(ModelForm):
 	class Meta:
 		model = Inject
-		fields = ['compid','title', 'body', 'viewable']
-		label = {
+		fields = ['compid','title', 'body', 'dt_delivery', 'dt_response_due', 'dt_response_close']
+		labels = {
 			'title': ('Title'),
 			'body': ('Content'),
+			'dt_delivery': ('Delivery Time'),
+			'dt_response_due': ('Response Due Time'),
+			'dt_response_close': ('Response Close Time')
 		}
 		widgets = {
 			'title': TextInput(attrs={'class':'form-control'}),
 			'body': Textarea(attrs={'class':'form-control'}),
+			'dt_delivery': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
+			'dt_response_due': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
+			'dt_response_close': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"})
 		}
 
 class AdminLoginForm(ModelForm):
@@ -135,8 +143,6 @@ class TeamLoginForm(ModelForm):
 			'teamname': TextInput(attrs={'class':'form-control', 'required': True}),
 			'password': PasswordInput(attrs={'class':'form-control', 'required': True})
 		}
-
-
 
 class InjectResponseForm(ModelForm):
 	docfile = FileField(label="File Upload", required=False)
