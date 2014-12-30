@@ -73,10 +73,9 @@
 					<div class="panel panel-default">
 						<div class="panel-heading"> {{ i.title }} </div>
 						<div class="panel-body">
-							<strong>Released at: </strong> {{ i.dt_delivery }}
-							<br>
-							<strong>Due at: </strong> {{ i.dt_response_due }}
-							<br><br>
+							<strong>Released at: </strong>{{ i.dt_delivery }}<br>
+							<strong>Due at: </strong>{{ i.dt_response_due }}<br>
+							<strong>Closes at: </strong>{{ i.dt_response_close }}<br><br>
 							<p>{{ i.body }}</p>
 							<br>
 							<div class="bt-component pull-right">

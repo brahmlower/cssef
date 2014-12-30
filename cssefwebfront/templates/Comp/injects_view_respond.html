@@ -72,7 +72,10 @@
 					<div class="panel panel-default">
 						<div class="panel-heading"> {{ inject.title }} </div>
 						<div class="panel-body">
-							{{ inject.body }}
+							<strong>Released at: </strong>{{ inject.dt_delivery }}<br>
+							<strong>Due at: </strong>{{ inject.dt_response_due }}<br>
+							<strong>Closes at: </strong>{{ inject.dt_response_close }}<br><br>
+							<p>{{ inject.body }}</p>
 						</div>
 					</div>
 
@@ -101,6 +104,7 @@
 					<div class="panel panel-default">
 						<div class="panel-heading"> Response Submission </div>
 						<div class="panel-body">
+							{% if not response_locked %}
 							<form action="/competitions/{{ competition_object.compurl }}/injects/{{ inject.ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 								{% csrf_token %}
 								{{ responseform.textentry.errors }}
@@ -117,6 +121,11 @@
 									<button type="submit" class="btn btn-primary">Submit</button>
 								</div>
 							</form>
+							{% else %}
+							<p>
+								Response submission for this inject has been locked. The inject expired at {{ inject.dt_response_close }} 
+							</p>
+							{% endif %}
 						</div>
 					</div>
 

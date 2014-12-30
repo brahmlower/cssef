@@ -77,6 +77,9 @@
 					<div class="panel panel-default">
 						<div class="panel-heading"> {{ i.title }} </div>
 						<div class="panel-body">
+							<strong>Released at: </strong>{{ i.dt_delivery }}<br>
+							<strong>Due at: </strong>{{ i.dt_response_due }}<br>
+							<strong>Closes at: </strong>{{ i.dt_response_close }}<br><br>
 							{{ i.body }}
 							<div class="bt-component pull-right">
 								<a href="/admin/competitions/{{ competition_object.compurl }}/injects/edit/{{ i.ijctid }}/" class="btn btn-primary">Edit</a>

@@ -93,7 +93,7 @@ def rankings(request, competition = None):
 	c["ranks"] = []
 	team_objs = Team.objects.filter(compid = c["competition_object"].compid)
 	for i in team_objs:
-		scores_objs = Score.objects.filter(compid = c["competition_object"].compid, teamid=i.teamid)
+		scores_objs = Score.objects.filter(compid = c["competition_object"].compid, teamid = i.teamid)
 		total = 0
 		for k in scores_objs:
 			total += k.value
@@ -128,8 +128,17 @@ def injects_respond(request, competition = None, ijctid = None):
 	if request.method != "POST":
 		c["inject"] = Inject.objects.get(compid = c["competition_object"].compid, ijctid = ijctid)
 		c["responses"] = InjectResponse.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid, ijctid = ijctid)
-		c["responseform"] = InjectResponseForm()
+		if c["inject"].dt_response_close <= timezone.now():
+			c["response_locked"] = True
+		else:
+			c["response_locked"] = False
+			c["responseform"] = InjectResponseForm()
 		return render_to_response('Comp/injects_view_respond.html', c)
+	# Check if we're allowed to take the submission (time restrictions)
+	ijct_obj = Inject.objects.get(compid = c["competition_object"].compid, ijctid = ijctid)
+	if ijct_obj.dt_response_close <= timezone.now():
+		# Very clever person - submission form was closed, but they're attempting to POST anyway
+		return HttpResponseRedirect('/competitions/%s/injects/%s/' % (competition, ijctid))
 	# Determine if we're handling text entry or file upload
 	ijct_resp_obj = InjectResponse()
 	ijct_resp_obj.compid = c["competition_object"].compid

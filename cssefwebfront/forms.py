@@ -18,6 +18,7 @@ from models import Service
 from models import Inject
 from models import Admin
 from models import Team
+from django.utils import timezone
 
 class CreateCompetitionForm(ModelForm):
 	class Meta:
@@ -127,7 +128,7 @@ class TeamLoginForm(ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(TeamLoginForm, self).__init__(*args, **kwargs)
 		tuple_list = []
-		for i in Competition.objects.all():
+		for i in Competition.objects.filter(dt_start__lte = timezone.now(), dt_finish__gt = timezone.now()):
 			tuple_list.append((i.compid, i.compname))
 		self.fields['compid'].choices = tuple_list
 
