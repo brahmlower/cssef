@@ -17,7 +17,7 @@ from django.utils import timezone
 class Competition(Model):
 	compid = AutoField(primary_key = True)
 	compname = CharField(max_length = 50)		# Full name of the competition
-	compurl = CharField(max_length = 25)		# string ID of the competition, used in url
+	compurl = CharField(max_length = 50)		# string ID of the competition, used in url
 	shrt_desc = CharField(max_length = 300)		# A short description of the competition - abreviated version of description field
 	full_desc = TextField(max_length = 1000)	# A full description of the competition, what it's about, what the goals are and whatnot
 	viewable = BooleanField(default = False)	# Boolean indicating if it's published on the public competition list

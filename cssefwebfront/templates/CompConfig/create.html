@@ -10,12 +10,11 @@
 		<script type="text/javascript">
 			$(function() {
 				$('#{{ form.comp.dt_display.id_for_label }}').datetimepicker();
-			});
-			$(function() {
 				$('#{{ form.comp.dt_start.id_for_label }}').datetimepicker();
-			});
-			$(function() {
 				$('#{{ form.comp.dt_finish.id_for_label }}').datetimepicker();
+				$("#id_compname").keyup( function() { var compname = $("#id_compname").val();
+					$("#id_compurl").val(compname.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/gi, ''));
+				});
 			});
 		</script>
 	</head>

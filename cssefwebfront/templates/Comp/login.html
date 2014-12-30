@@ -4,6 +4,13 @@
 		<link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 		<script src="{% static "cybersecweb/bootstrap.min.js" %}"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				window.onload = function() {
+					$("#{{ form.login.teamname.id_for_label }}").focus();
+				};  
+			}); 
+		</script>
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top">
