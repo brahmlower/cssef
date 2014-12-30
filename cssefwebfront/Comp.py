@@ -18,6 +18,7 @@ import settings
 from utils import UserMessages
 from utils import getAuthValues
 from django.utils import timezone
+from hashlib import md5
 
 def login(request):
 	"""
@@ -139,9 +140,13 @@ def injects_respond(request, competition = None, ijctid = None):
 		# Handle necessary file manipulation
 		print request.FILES
 		uf = UploadedFile(request.FILES['docfile'])
-		dest_filepath = settings.BASE_DIR + "/" + uf.name
+		file_content = uf.read()
+		md5_obj = md5()
+		md5_obj.update(file_content)
+		md5_obj.hexdigest()
+		dest_filepath = settings.BASE_DIR + settings.CONTENT_INJECT_REPONSE_PATH + md5_obj.hexdigest()
 		wfile = open(dest_filepath, "w")
-		wfile.write(uf.read())
+		wfile.write(file_content)
 		wfile.close()
 		# Fill out file related parts of the model
 		ijct_resp_obj.isfile = True

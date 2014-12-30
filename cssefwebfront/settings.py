@@ -89,7 +89,12 @@ USE_TZ = True
 
 STATIC_ROOT = ''
 
-STATICFILES_DIRS = (BASE_DIR + '/static/',)
+STATICFILES_DIRS = (BASE_DIR + '/resources/static/',)
 
-STATIC_URL = '/static/'
+STATIC_URL = '/resources/static/'
+
+# CSSEF Specific
+CONTENT_INJECT_PATH = "/resources/content/injects/"
+
+CONTENT_INJECT_REPONSE_PATH = "/resources/content/inject_responses/"
 

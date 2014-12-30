@@ -3,6 +3,7 @@ from . import views
 from . import Comp
 from . import CompConfig
 from . import AdminConfig
+from . import Resources
 
 urlpatterns = patterns('',
 	url(r'^$', views.home),
@@ -52,4 +53,6 @@ urlpatterns = patterns('',
 	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/edit/(?P<ijctid>[1-9][1-9]*)/$',		CompConfig.injects_edit),
 	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/delete/(?P<ijctid>[1-9][1-9]*)/$',	CompConfig.injects_delete),
 	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/create/$',							CompConfig.injects_create),
+
+	url(r'^resources/injectresponses/(?P<compid>[1-9][1-9]*)/(?P<teamid>[1-9][1-9]*)/(?P<ijctrespid>[1-9][1-9]*)/(?P<filename>[\w\-\_\.]{0,25})$',	Resources.inject),
 )

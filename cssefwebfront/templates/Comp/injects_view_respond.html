@@ -89,8 +89,10 @@
 							{% endif %}
 							{% if i.isfile %}
 							<strong> Attached File </strong>
+							<br>
+							<img src="/resources/injectresponses/{{i.compid}}/{{i.teamid}}/{{i.ijctrespid}}/{{i.filename}}">
 							<p>
-								File: <a href="#">{{ i.filename }}</a>
+								File: <a href="/resources/injectresponses/{{i.compid}}/{{i.teamid}}/{{i.ijctrespid}}/{{i.filename}}">{{ i.filename }}</a>
 							</p>
 							{% endif %}
 						</div>
