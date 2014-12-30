@@ -25,7 +25,7 @@ class CreateCompetitionForm(ModelForm):
 		fields = ['compname', 'compurl', 'shrt_desc', 'full_desc', 'viewable', 'autodisplay', 'dt_display', 'dt_start', 'dt_finish', 'score_delay', 'score_delay_uncert']
 		labels = {
 			'compname': ('Competition Name'),
-			'compurl': ('Competition URL Value'),
+			'compurl': ('Competition URL'),
 			'shrt_desc': ('Short Description'),
 			'full_desc': ('Description'),
 			'viewable': ('Visible'),

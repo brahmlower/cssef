@@ -1,13 +1,15 @@
 <html>
 	<head>
 		{% load staticfiles %}
-		<link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
+		<!-- <link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}"> -->
+		<link rel="stylesheet" type="text/css" href="http://getbootstrap.com/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" type="test/css" href="http://getbootstrap.com/examples/dashboard/dashboard.css">
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 		<script src="{% static "cybersecweb/bootstrap.min.js" %}"></script>
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top">
-			<div class="container">
+			<div class="container-fluid">
 				<div class="navbar-header">
 					<a href="/" class="navbar-brand">CSC CSSEF</a>
 					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
@@ -18,6 +20,7 @@
 				</div>
 				<div class="navbar-collapse collapse" id="navbar-main">
 					<ul class="nav navbar-nav">
+						<li><a href="/">Home</a></li>
 						{% if auth_name == "auth_team_white" %}
 						<li><a href="/admin/">Admin Config</a></li>
 						{% elif auth_name == "auth_team_blue" %}
@@ -49,32 +52,25 @@
 			</div>
 		</div>
 
-		<div class="container">
-			<br>
-			<br>
-			<br>
-			<ul class="breadcrumb">
-				<li class="active">Admin</li>
-			</ul>
-
-			<div class="jumbotron">
-				<h1>Admin Home</h1>
-				<p>The following are currently scheduled and past competitions ordered chronologically. Select a competition to see more information about it.</p>
-				<br>
-				<!-- <a class="btn btn-primary btn-lg">New Competition</a> -->
+		<div class="container-fluid">
+			<div class="row">
+				<!-- Start admin navigation sidebar -->
+				<div class="col-sm-3 col-md-2 sidebar">
+					<ul class="nav nav-sidebar">
+						<li><a href="/admin/home/">Home</a></li>
+						<li><a href="/admin/users/">Users</a></li>
+						<li><a href="/admin/competitions/">Competitions</a></li>
+						<li><a href="#">Account</a></li>
+					</ul>
+				</div>
+				<!-- End admin navigation sidebar -->
+				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+					<div class="jumbotron">
+						<h1>Admin Home</h1>
+						<p>This is where the admins (white team in this case) live!</p>
+					</div>
+				</div>
 			</div>
-
-			<a href="/admin/users/" class="btn btn-primary btn-lg">Users</a>
-			<!-- <a href="/admin/teams/" class="btn btn-primary btn-lg">Teams</a> -->
-			<a href="/admin/competitions/" class="btn btn-primary btn-lg">Competitions</a>
-
-			<!-- <ul class="nav nav-tabs" role="tablist">
-				<li class="active"><a href="/admin/">Home</a></li>
-				<li><a href="/admin/users">Users</a></li>
-				<li><a href="/admin/competitions">Competition List</a></li>
-			</ul>
-			<br> -->
-
 		</div>
 	</body>
 </html>

@@ -1,13 +1,14 @@
 <html>
 	<head>
 		{% load staticfiles %}
-		<link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
+		<link rel="stylesheet" type="text/css" href="http://getbootstrap.com/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="http://getbootstrap.com/examples/dashboard/dashboard.css">
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 		<script src="{% static "cybersecweb/bootstrap.min.js" %}"></script>
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top">
-			<div class="container">
+			<div class="container-fluid">
 				<div class="navbar-header">
 					<a href="/" class="navbar-brand">CSC CSSEF</a>
 					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
@@ -18,6 +19,7 @@
 				</div>
 				<div class="navbar-collapse collapse" id="navbar-main">
 					<ul class="nav navbar-nav">
+						<li><a href="/">Home</a></li>
 						{% if auth_name == "auth_team_white" %}
 						<li><a href="/admin/">Admin Config</a></li>
 						{% elif auth_name == "auth_team_blue" %}
@@ -49,77 +51,90 @@
 			</div>
 		</div>
 
-		<div class="container">
-			<br>
-			<br>
-			<br>
-
-			<!-- BEGIN MESSAGE REPORTING -->
-			{% if messages != None %}
-			{% for i in messages.error %}
-			<div class="alert alert-dismissable alert-error">
-				<button type="button" class="close" data-dismiss="alert">x</button>
-				<strong>Error: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
-			</div>
-			{% endfor %}
-			{% for i in messages.info %}
-			<div class="alert alert-dismissable alert-info">
-				<button type="button" class="close" data-dismiss="alert">x</button>
-				<strong>Info: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
-			</div>
-			{% endfor %}
-			{% for i in messages.success %}
-			<div class="alert alert-dismissable alert-success">
-				<button type="button" class="close" data-dismiss="alert">×</button>
-				<strong>Success: </string>{{ i.string }} <!-- ({{ i.num }}) -->
-			</div>
-			{% endfor %}
-			{% endif %}
-			<!-- END MESSAGE REPORTING -->
-
-			<h2> Create Service </h2>
-			{% if action == "create" %}
-			<form action="/admin/competitions/{{ competition_object.compurl }}/services/{{ action }}/" method="post" class="form-horizontal">
-			{% else%}
-			<form action="/admin/competitions/{{ competition_object.compurl }}/services/{{ action }}/{{ servid }}/" method="post" class="form-horizontal">
-			{% endif %}
-				{% csrf_token %}
-				<!-- Form field for service name -->
-				{{ form.service.name.errors}}
-				<label for="{{ form.service.name.id_for_label }}" class="col-lg-2 control-label">{{ form.service.name.label }}</label>
-				<div class="col-lg-10">{{ form.service.name }}</div>
-
-				<!-- Form field for module name -->
-				{{ form.service.module.errors }}
-				<label for="{{ form.service.module.id_for_label }}" class="col-lg-2 control-label">{{ form.service.module.label }}</label>
-				<div class="col-lg-10">{{ form.service.module }}</div>
-
-				<!-- Form field for subdomain name -->
-				{{ form.service.subdomain.errors }}
-				<label for="{{ form.service.subdomain.id_for_label }}" class="col-lg-2 control-label">{{ form.service.subdomain.label }}</label>
-				<div class="col-lg-10">{{ form.service.subdomain }}</div>
-
-				<!-- Form field for points -->
-				{{ form.service.points.errors}}
-				<label for="{{ form.service.points.id_for_label }}" class="col-lg-2 control-label">{{ form.service.points.label }}</label>
-				<div class="col-lg-10">{{ form.service.points }}</div>
-
-				<!-- Form field for json config -->
-				{{ form.service.config.errors}}
-				<label for="{{ form.service.config.id_for_label }}" class="col-lg-2 control-label">{{ form.service.config.label }}</label>
-				<div class="col-lg-10">{{ form.service.config }}</div>
-
-				<!-- Form field for description -->
-				{{ form.service.desc.errors}}
-				<label for="{{ form.service.desc.id_for_label }}" class="col-lg-2 control-label">{{ form.service.desc.label }}</label>
-				<div class="col-lg-10">{{ form.service.desc }}</div>
-
-				<div class="col-lg-10 col-lg-offset-2">
-					<br>
-					<button class="btn btn-default">Cancel</button>
-					<button type="submit" class="btn btn-primary">Save</button>
+		<div class="container-fluid">
+			<div class="row">
+				<!-- Start competition config navigation sidebar -->
+				<div class="col-sm-3 col-md-2 sidebar">
+					<ul class="nav nav-sidebar">
+						<li><a href="/admin/competitions/{{ competition_object.compurl }}/summary/">Summary</a></li>
+						<li><a href="/admin/competitions/{{ competition_object.compurl }}/details/">Details</a></li>
+						<li><a href="/admin/competitions/{{ competition_object.compurl }}/injects/">Injects</a></li>
+						<li><a href="/admin/competitions/{{ competition_object.compurl }}/scoring/">Scoring</a></li>
+						<li><a href="/admin/competitions/{{ competition_object.compurl }}/services/">Services</a></li>
+						<li><a href="/admin/competitions/{{ competition_object.compurl }}/teams/">Teams</a></li>
+					</ul>
 				</div>
-			</form>
+				<!-- End competition config navigation sidebar -->
+				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+					<!-- BEGIN MESSAGE REPORTING -->
+					{% if messages != None %}
+					{% for i in messages.error %}
+					<div class="alert alert-dismissable alert-error">
+						<button type="button" class="close" data-dismiss="alert">x</button>
+						<strong>Error: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
+					</div>
+					{% endfor %}
+					{% for i in messages.info %}
+					<div class="alert alert-dismissable alert-info">
+						<button type="button" class="close" data-dismiss="alert">x</button>
+						<strong>Info: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
+					</div>
+					{% endfor %}
+					{% for i in messages.success %}
+					<div class="alert alert-dismissable alert-success">
+						<button type="button" class="close" data-dismiss="alert">×</button>
+						<strong>Success: </string>{{ i.string }} <!-- ({{ i.num }}) -->
+					</div>
+					{% endfor %}
+					{% endif %}
+					<!-- END MESSAGE REPORTING -->
+
+					<h2> Create Service </h2>
+					{% if action == "create" %}
+					<form action="/admin/competitions/{{ competition_object.compurl }}/services/{{ action }}/" method="post" class="form-horizontal">
+					{% else%}
+					<form action="/admin/competitions/{{ competition_object.compurl }}/services/{{ action }}/{{ servid }}/" method="post" class="form-horizontal">
+					{% endif %}
+						{% csrf_token %}
+						<!-- Form field for service name -->
+						{{ form.service.name.errors}}
+						<label for="{{ form.service.name.id_for_label }}" class="col-lg-2 control-label">{{ form.service.name.label }}</label>
+						<div class="col-lg-10">{{ form.service.name }}</div>
+
+						<!-- Form field for module name -->
+						{{ form.service.module.errors }}
+						<label for="{{ form.service.module.id_for_label }}" class="col-lg-2 control-label">{{ form.service.module.label }}</label>
+						<div class="col-lg-10">{{ form.service.module }}</div>
+
+						<!-- Form field for subdomain name -->
+						{{ form.service.subdomain.errors }}
+						<label for="{{ form.service.subdomain.id_for_label }}" class="col-lg-2 control-label">{{ form.service.subdomain.label }}</label>
+						<div class="col-lg-10">{{ form.service.subdomain }}</div>
+
+						<!-- Form field for points -->
+						{{ form.service.points.errors}}
+						<label for="{{ form.service.points.id_for_label }}" class="col-lg-2 control-label">{{ form.service.points.label }}</label>
+						<div class="col-lg-10">{{ form.service.points }}</div>
+
+						<!-- Form field for json config -->
+						{{ form.service.config.errors}}
+						<label for="{{ form.service.config.id_for_label }}" class="col-lg-2 control-label">{{ form.service.config.label }}</label>
+						<div class="col-lg-10">{{ form.service.config }}</div>
+
+						<!-- Form field for description -->
+						{{ form.service.desc.errors}}
+						<label for="{{ form.service.desc.id_for_label }}" class="col-lg-2 control-label">{{ form.service.desc.label }}</label>
+						<div class="col-lg-10">{{ form.service.desc }}</div>
+
+						<div class="col-lg-10 col-lg-offset-2">
+							<br>
+							<button class="btn btn-default">Cancel</button>
+							<button type="submit" class="btn btn-primary">Save</button>
+						</div>
+					</form>
+				</div>
+			</dvi>
 		</div>
 	</body>
 </html>

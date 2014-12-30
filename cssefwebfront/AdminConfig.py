@@ -72,6 +72,78 @@ def site_config(request):
 		return HttpResponseRedirect("/")
 	return render_to_response('AdminConfig/home.html', c)
 
+def comp_list(request):
+	"""
+	Displays list of competitions, add and remove competition options
+	"""
+	c = {}
+	c["messages"] = UserMessages()
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_white":
+		return HttpResponseRedirect("/")
+	c["competition_list"] = Competition.objects.all()
+	return render_to_response('AdminConfig/list.html', c)
+
+def comp_create(request, competition=None):
+	"""
+	Creates a new competition
+	"""
+	c = {}
+	c["messages"] = UserMessages()
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_white":
+		return HttpResponseRedirect("/")
+	c["form"] = {'comp': CreateCompetitionForm()}
+	# Checks if the user is submitting the form, or requesting the form
+	if request.method != "POST":
+		c.update(csrf(request))
+		return render_to_response('AdminConfig/create.html', c)
+	form_comp = CreateCompetitionForm(request.POST)
+	# Checks that submitted form data is valid
+	if not form_comp.is_valid():
+		c["messages"].new_error("Invalid field data in competition form.", 1003)
+		return render(request, 'AdminConfig/create.html', c)
+	# Create the new competition
+	comp = Competition(**form_comp.cleaned_data)
+	comp.save()
+	# Set success message and render page
+	c["messages"].new_success("Created competition", 1337)
+	return render_to_response('AdminConfig/create.html', c)
+
+def comp_delete(request, competition = None):
+	"""
+	Delete the competition and all related objects (teams, scores, injects, services)
+	"""
+	c = {}
+	c["messages"] = UserMessages()
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_white":
+		return HttpResponseRedirect("/")
+	comp_obj = Competition.objects.get(compurl = competition)
+	# Gets and deletes all teams associated with the competition
+	team_list = Team.objects.filter(compid = comp_obj.compid)
+	for i in team_list:
+		i.delete()
+	# Gets and deletes all services associated with the competition
+	serv_list = Service.objects.filter(compid = comp_obj.compid)
+	for i in serv_list:
+		i.delete()
+	# Gets and deletes all inject responses associated with the competition (TODO: This doesn't delete any uploaded files associated with the response)
+	resp_list = InjectResponse.objects.filter(compid = comp_obj.compid)
+	for i in resp_list:
+		i.delete()
+	# Gets and deletes all injects associated with the competition
+	ijct_list = Inject.objects.filter(compid = comp_obj.compid)
+	for i in ijct_list:
+		i.delete()
+	# Gets and deletes all scores associated with the competition
+	scor_list = Score.objects.filter(compid = comp_obj.compid)
+	for i in scor_list:
+		i.delete()
+	# Deletes the competition itself
+	comp_obj.delete()
+	return HttpResponseRedirect("/admin/competitions/")
+
 def users_list(request):
 	"""
 	Displays site or competition administrative users

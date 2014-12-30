@@ -56,16 +56,6 @@ def logout(request, competition = None):
 		auth.logout(request)
 	return HttpResponseRedirect("/")
 
-def list(request):
-	"""
-	Display list of competitions
-	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
-	c["competition_list"] = Competition.objects.all()
-	return render_to_response('Comp/list.html', c)
-
 def summary(request, competition = None):
 	"""
 	Display summary information for selected competition

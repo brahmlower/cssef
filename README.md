@@ -86,11 +86,8 @@ Please enter a(n) 'str' for 'network': 192.168.0
 * Make competitions editable (surprised I haven't already done this)
 * Interface to modify genaric site information
  * Modify homepage content
- * Site link (top right corner)
 * Improve documentation (it sorta sucks right?)
 * Injects
- * Add delivery time. Make viewable by blue team, editable by white team
- * Add due time. Make viewable by blue team, editable by white team
  * view and score inject responses as white team
  * Display icon indicating a response has been submitted in blue team list view
 * Users/Authentication

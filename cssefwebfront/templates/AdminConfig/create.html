@@ -10,13 +10,12 @@
 		<script src="{% static "cybersecweb/bootstrap-datetimepicker.min.js" %}"></script>
 		<script type="text/javascript">
 			$(function() {
-				$('#{{ form.inject.dt_delivery.id_for_label }}').datetimepicker();
-			});
-			$(function() {
-				$('#{{ form.inject.dt_response_due.id_for_label }}').datetimepicker();
-			});
-			$(function() {
-				$('#{{ form.inject.dt_response_close.id_for_label }}').datetimepicker();
+				$('#{{ form.comp.dt_display.id_for_label }}').datetimepicker();
+				$('#{{ form.comp.dt_start.id_for_label }}').datetimepicker();
+				$('#{{ form.comp.dt_finish.id_for_label }}').datetimepicker();
+				$("#id_compname").keyup( function() { var compname = $("#id_compname").val();
+					$("#id_compurl").val(compname.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/gi, ''));
+				});
 			});
 		</script>
 	</head>
@@ -67,19 +66,17 @@
 
 		<div class="container-fluid">
 			<div class="row">
-				<!-- Start competition config navigation sidebar -->
 				<div class="col-sm-3 col-md-2 sidebar">
 					<ul class="nav nav-sidebar">
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/summary/">Summary</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/details/">Details</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/injects/">Injects</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/scoring/">Scoring</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/services/">Services</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/teams/">Teams</a></li>
+						<li><a href="/admin/home/">Home</a></li>
+						<li><a href="/admin/users/">Users</a></li>
+						<li><a href="/admin/competitions/">Competitions</a></li>
+						<li><a href="#">Account</a></li>
 					</ul>
 				</div>
-				<!-- End competition config navigation sidebar -->
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+					<!-- actual page content-->
+
 					<!-- BEGIN MESSAGE REPORTING -->
 					{% if messages != None %}
 					{% for i in messages.error %}
@@ -103,41 +100,63 @@
 					{% endif %}
 					<!-- END MESSAGE REPORTING -->
 
-					<h2> Create Inject </h2>
-					{% if action == "create" %}
-					<form action="/admin/competitions/{{ competition_object.compurl }}/injects/{{ action }}/" method="post" class="form-horizontal">
-					{% else%}
-					<form action="/admin/competitions/{{ competition_object.compurl }}/injects/{{ action }}/{{ ijctid }}/" method="post" class="form-horizontal">
-					{% endif %}
+					{% autoescape off %}
+					<h2>New Competition</h2>
+					<form action="/admin/competitions/create/" method="post" class="form-horizontal">
 						{% csrf_token %}
-						{{ form.inject.title.errors}}
-						<label for="{{ form.inject.title.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.title.label }}</label>
-						<div class="col-lg-10">{{ form.inject.title }}</div>
+						{{ form.comp.compname.errors}}
+						<label for="{{ form.comp.compname.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.compname.label }}</label>
+						<div class="col-lg-10">{{ form.comp.compname }}</div>
 
-						{{ form.inject.body.errors}}
-						<label for="{{ form.inject.body.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.body.label }}</label>
-						<div class="col-lg-10">{{ form.inject.body }}</div>
+						{{ form.comp.compurl.errors }}
+						<label for="{{ form.comp.compurl.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.compurl.label }}</label>
+						<div class="col-lg-10">{{ form.comp.compurl }}</div>
 
-						{{ form.inject.dt_delivery.errors}}
-						<label for="{{ form.inject.dt_delivery.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.dt_delivery.label }}</label>
-						<div class="col-lg-10">{{ form.inject.dt_delivery }}</div>
+						{{ form.comp.shrt_desc.errors }}
+						<label for="{{ form.comp.shrt_desc.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.shrt_desc.label }}</label>
+						<div class="col-lg-10">{{ form.comp.shrt_desc }}</div>
 
-						{{ form.inject.dt_response_due.errors}}
-						<label for="{{ form.inject.dt_response_due.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.dt_response_due.label }}</label>
-						<div class="col-lg-10">{{ form.inject.dt_response_due }}</div>
+						{{ form.comp.full_desc.errors }}
+						<label for="{{ form.comp.full_desc.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.full_desc.label }}</label>
+						<div class="col-lg-10">{{ form.comp.full_desc }}</div>
 
-						{{ form.inject.dt_response_close.errors}}
-						<label for="{{ form.inject.dt_response_close.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.dt_response_close.label }}</label>
-						<div class="col-lg-10">{{ form.inject.dt_response_close }}</div>
+						{{ form.comp.viewable.errors }}
+						<label for="{{ form.comp.viewable.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.viewable.label }}</label>
+						<div class="col-lg-10">{{ form.comp.viewable }}</div>
 
+						{{ form.comp.autodisplay.errors }}
+						<label for="{{ form.comp.autodisplay.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.autodisplay.label }}</label>
+						<div class="col-lg-10">{{ form.comp.autodisplay }}</div>
+			
+						{{ form.comp.dt_display.errors }}
+						<label for="{{ form.comp.dt_display.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.dt_display.label }}</label>
+						<div class="col-lg-10 input-append">{{ form.comp.dt_display }}</div>
+
+						{{ form.comp.dt_start.errors }}
+						<label for="{{ form.comp.dt_start.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.dt_start.label }}</label>
+						<div class="col-lg-10 input-append">{{ form.comp.dt_start }}</div>
+
+						{{ form.comp.dt_finish.errors }}
+						<label for="{{ form.comp.dt_finish.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.dt_finish.label }}</label>
+						<div class="col-lg-10 input-append">{{ form.comp.dt_finish }}</div>
+
+						{{ form.comp.score_delay.errors }}
+						<label for="{{ form.comp.score_delay.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.score_delay.label }}</label>
+						<div class="col-lg-10">{{ form.comp.score_delay }}</div>
+
+						{{ form.comp.score_delay_uncert.errors }}
+						<label for="{{ form.comp.score_delay_uncert.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.score_delay_uncert.label }}</label>
+						<div class="col-lg-10">{{ form.comp.score_delay_uncert }}</div>
+
+						<br>	
 						<div class="col-lg-10 col-lg-offset-2">
-							<br>
 							<button class="btn btn-default">Cancel</button>
-							<button type="submit" class="btn btn-primary">Save</button>
+							<button type="submit" class="btn btn-primary">Create</button>
 						</div>
 					</form>
+					{% endautoescape %}
 				</div>
 			</div>
-		</div>
+		</dvi>
 	</body>
 </html>

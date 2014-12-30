@@ -1,7 +1,8 @@
 <html>
 	<head>
 		{% load staticfiles %}
-		<link rel="stylesheet" type="text/css" href="{% static "cybersecweb/bootstrap.min.css" %}">
+		<link rel="stylesheet" type="text/css" href="http://getbootstrap.com/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="http://getbootstrap.com/examples/dashboard/dashboard.css">
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 		<script src="{% static "cybersecweb/bootstrap.min.js" %}"></script>
 		<script type="text/javascript">
@@ -14,7 +15,7 @@
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top">
-			<div class="container">
+			<div class="container-fluid">
 				<div class="navbar-header">
 					<a href="/" class="navbar-brand">CSC CSSEF</a>
 					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
@@ -25,6 +26,7 @@
 				</div>
 				<div class="navbar-collapse collapse" id="navbar-main">
 					<ul class="nav navbar-nav">
+						<li><a href="/">Home</a></li>
 						{% if auth_name == "auth_team_white" %}
 						<li><a href="/admin/">Admin Config</a></li>
 						{% elif auth_name == "auth_team_blue" %}
@@ -56,48 +58,49 @@
 			</div>
 		</div>
 
-		<div class="container">
-			<br>
-			<br>
-			<div class="page-header"><h2>Admin Login</h2></div>
-
-			<!-- BEGIN MESSAGE REPORTING -->
-			{% if messages != None %}
-			{% for i in messages.error %}
-			<div class="alert alert-dismissable alert-error">
-				<button type="button" class="close" data-dismiss="alert">x</button>
-				<strong>Error: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
-			</div>
-			{% endfor %}
-			{% for i in messages.info %}
-			<div class="alert alert-dismissable alert-info">
-				<button type="button" class="close" data-dismiss="alert">x</button>
-				<strong>Info: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
-			</div>
-			{% endfor %}
-			{% for i in messages.success %}
-			<div class="alert alert-dismissable alert-success">
-				<button type="button" class="close" data-dismiss="alert">×</button>
-				<strong>Success: </string>{{ i.string }} <!-- ({{ i.num }}) -->
-			</div>
-			{% endfor %}
-			{% endif %}
-			<!-- END MESSAGE REPORTING -->
-
-			<form action="/admin/login/" method="post" class="form-horizontal">
-				{% csrf_token %}
-				{{ form.login.username.errors }}
-				<label for="{{ form.login.username.id_for_label }}" class="col-lg-2 control-label">{{ form.login.username.label }}</label>
-				<div class="col-lg-10">{{ form.login.username }}</div>
-
-				{{ form.login.password.errors }}
-				<label for="{{ form.login.password.id_for_label }}" class="col-lg-2 control-label">{{ form.login.password.label }}</label>
-				<div class="col-lg-10">{{ form.login.password }}</div>
-
-				<div class="col-lg-10 col-lg-offset-2">
-					<button type="submit" class="btn btn-primary">Login</button>
+		<div class="container-fluid">
+			<div class="col-sm-9 col-sm-offset-3 col-md-6 col-md-offset-3 main">
+				<div class="page-header">
+					<h2>Admin Login</h2>
 				</div>
-			</form>
+				<!-- BEGIN MESSAGE REPORTING -->
+				{% if messages != None %}
+				{% for i in messages.error %}
+				<div class="alert alert-dismissable alert-error">
+					<button type="button" class="close" data-dismiss="alert">x</button>
+					<strong>Error: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
+				</div>
+				{% endfor %}
+				{% for i in messages.info %}
+				<div class="alert alert-dismissable alert-info">
+					<button type="button" class="close" data-dismiss="alert">x</button>
+					<strong>Info: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
+				</div>
+				{% endfor %}
+				{% for i in messages.success %}
+				<div class="alert alert-dismissable alert-success">
+					<button type="button" class="close" data-dismiss="alert">×</button>
+					<strong>Success: </string>{{ i.string }} <!-- ({{ i.num }}) -->
+				</div>
+				{% endfor %}
+				{% endif %}
+				<!-- END MESSAGE REPORTING -->
+
+				<form action="/admin/login/" method="post" class="form-horizontal">
+					{% csrf_token %}
+					{{ form.login.username.errors }}
+					<label for="{{ form.login.username.id_for_label }}" class="col-lg-3 control-label">{{ form.login.username.label }}</label>
+					<div class="col-lg-9">{{ form.login.username }}</div>
+
+					{{ form.login.password.errors }}
+					<label for="{{ form.login.password.id_for_label }}" class="col-lg-3 control-label">{{ form.login.password.label }}</label>
+					<div class="col-lg-9">{{ form.login.password }}</div>
+
+					<div class="col-lg-10 col-lg-offset-3">
+						<button type="submit" class="btn btn-primary">Login</button>
+					</div>
+				</form>
+			</div>
 		</div>
 	</body>
 </html>
