@@ -94,7 +94,7 @@ STATICFILES_DIRS = (BASE_DIR + '/resources/static/',)
 STATIC_URL = '/resources/static/'
 
 # CSSEF Specific
-CONTENT_INJECT_PATH = "/resources/content/injects/"
-
-CONTENT_INJECT_REPONSE_PATH = "/resources/content/inject_responses/"
+CONTENT_INJECT_PATH =           "/resources/content/injects/"
+CONTENT_INJECT_REPONSE_PATH =   "/resources/content/injectresponses/"
+CONTENT_INCIDENT_REPONSE_PATH = "/resources/content/incidentresponses/"
 

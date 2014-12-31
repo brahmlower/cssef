@@ -19,6 +19,7 @@ urlpatterns = patterns('',
 	url(r'^competitions/(?P<competition>[\w\-\_]{0,25})/servicetimeline/$',		Comp.servicetimeline),	# Shows status history for each service
 	url(r'^competitions/(?P<competition>[\w\-\_]{0,25})/scoreboard/$',			Comp.scoreboard),		# Shows itemized list of point awards/penalties
 	url(r'^competitions/(?P<competition>[\w\-\_]{0,25})/incidentresponse/$',	Comp.incidentresponse),	# Document submission for indicent responses
+	url(r'^competitions/(?P<competition>[\w\-\_]{0,25})/incidentresponse/(?P<intrspid>[1-9][1-9]*)/$',	Comp.incidentresponse_respond), # LOL!
 	# General administrator pages
 	url(r'^admin/$',						AdminConfig.home),
 	url(r'^admin/home/$',					AdminConfig.home),
@@ -54,5 +55,6 @@ urlpatterns = patterns('',
 	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/delete/(?P<ijctid>[1-9][1-9]*)/$',	CompConfig.injects_delete),
 	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/create/$',							CompConfig.injects_create),
 
-	url(r'^resources/injectresponses/(?P<compid>[1-9][1-9]*)/(?P<teamid>[1-9][1-9]*)/(?P<ijctrespid>[1-9][1-9]*)/(?P<filename>[\w\-\_\.]{0,25})$',	Resources.inject),
+	url(r'^resources/injectresponses/(?P<compid>[1-9][1-9]*)/(?P<teamid>[1-9][1-9]*)/(?P<ijctrespid>[1-9][1-9]*)/(?P<filename>[\w\-\_\.]{0,50})$',	Resources.injectresponse),
+	url(r'^resources/incidentresponses/(?P<compid>[1-9][1-9]*)/(?P<teamid>[1-9][1-9]*)/(?P<intrspid>[1-9][1-9]*)/(?P<filename>[\w\-\_\.]{0,50})$',	Resources.incidentresponse)
 )

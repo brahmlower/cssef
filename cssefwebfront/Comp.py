@@ -8,19 +8,20 @@ from django.core.context_processors import csrf
 from django.core.files.uploadedfile import UploadedFile
 from models import Competition
 from models import InjectResponse
+from models import IncidentResponse
 from models import Service
 from models import Inject
 from models import Score
 from models import Team
 from forms import TeamLoginForm
 from forms import InjectResponseForm
+from forms import IncidentResponseForm
+from forms import IncidentResponseReplyForm
 import settings
 from utils import UserMessages
 from utils import getAuthValues
 from django.utils import timezone
 from hashlib import md5
-
-#from cssef import ServiceModule
 from cssef import LoadServs
 
 def login(request):
@@ -165,7 +166,7 @@ def injects_respond(request, competition = None, ijctid = None):
 		ijct_resp_obj.filename = uf.name
 		ijct_resp_obj.filepath = dest_filepath
 	except KeyError:
-		print "no file was uploaded"
+		pass
 	# Checks if we were given text
 	form = InjectResponseForm(request.POST)
 	if  form.is_valid():
@@ -238,4 +239,93 @@ def incidentresponse(request, competition = None):
 	c = getAuthValues(request, c)
 	if c["auth_name"] != "auth_team_blue":
 		return render_to_response('Comp/incidentresponse.html', c)
+	c.update(csrf(request))
+	# Get any already opened intrusion responses
+	c["responseform"] = IncidentResponseForm()
+	c["responses"] = IncidentResponse.objects.filter(compid = request.user.compid, teamid = request.user.teamid, replyto = -1)
+	# If we're not getting POST data, serve the page normally
+	if request.method != "POST":
+		c["responseform"] = IncidentResponseForm()
+		return render_to_response('Comp/incidentresponse.html', c)
+	# Checks if form is valid, and if so, builds model
+	form = IncidentResponseForm(request.POST)
+	if not form.is_valid():
+		#TODO: This is technically failing without raising an error for the user
+		return render_to_response('Comp/incidentresponse.html', c)
+	intresp_obj = IncidentResponse()
+	intresp_obj.compid = c["competition_object"].compid
+	intresp_obj.teamid = request.user.teamid
+	intresp_obj.datetime = timezone.now()
+	intresp_obj.subject = form.cleaned_data['subject']
+	intresp_obj.textentry = form.cleaned_data['textentry']
+	intresp_obj.replyto = -1
+	# Checks if we were given a file
+	try:
+		# Handle necessary file manipulation
+		uf = UploadedFile(request.FILES['docfile'])
+		file_content = uf.read()
+		md5_obj = md5()
+		md5_obj.update(file_content)
+		md5_obj.hexdigest()
+		dest_filepath = settings.BASE_DIR + settings.CONTENT_INCIDENT_REPONSE_PATH + md5_obj.hexdigest()
+		wfile = open(dest_filepath, "w")
+		wfile.write(file_content)
+		wfile.close()
+		# Fill out file related parts of the model
+		intresp_obj.isfile = True
+		intresp_obj.filename = uf.name
+		intresp_obj.filepath = dest_filepath
+	except KeyError:
+		pass
+	intresp_obj.save()
 	return render_to_response('Comp/incidentresponse.html', c)
+
+def incidentresponse_respond(request, competition = None, intrspid = None):
+	c = {}
+	c["messages"] = UserMessages()
+	c["competition_object"] = Competition.objects.get(compurl = competition)
+	c = getAuthValues(request, c)
+	if c["auth_name"] != "auth_team_blue":
+		return render_to_response('Comp/incidentresponse_view_respond.html', c)
+	c.update(csrf(request))
+	# Get any already opened intrusion responses
+	c["responseform"] = IncidentResponseReplyForm()
+	c["firstpost"] = IncidentResponse.objects.get(intrspid = intrspid)
+	c["responses"] = IncidentResponse.objects.filter(compid = request.user.compid, teamid = request.user.teamid, replyto = intrspid)
+	# If we're not getting POST data, serve the page normally
+	if request.method != "POST":
+		c["responseform"] = IncidentResponseReplyForm()
+		return render_to_response('Comp/incidentresponse_view_respond.html', c)
+	# Checks if form is valid, and if so, builds model
+	form = IncidentResponseReplyForm(request.POST)
+	if not form.is_valid():
+		print form.errors
+		#TODO: This is technically failing without raising an error for the user
+		return render_to_response('Comp/incidentresponse_view_respond.html', c)
+	intresp_obj = IncidentResponse()
+	intresp_obj.compid = c["competition_object"].compid
+	intresp_obj.teamid = request.user.teamid
+	intresp_obj.datetime = timezone.now()
+	intresp_obj.textentry = form.cleaned_data['textentry']
+	intresp_obj.replyto = intrspid
+	# Checks if we were given a file
+	try:
+		# Handle necessary file manipulation
+		uf = UploadedFile(request.FILES['docfile'])
+		file_content = uf.read()
+		md5_obj = md5()
+		md5_obj.update(file_content)
+		md5_obj.hexdigest()
+		dest_filepath = settings.BASE_DIR + settings.CONTENT_INCIDENT_REPONSE_PATH + md5_obj.hexdigest()
+		wfile = open(dest_filepath, "w")
+		wfile.write(file_content)
+		wfile.close()
+		# Fill out file related parts of the model
+		intresp_obj.isfile = True
+		intresp_obj.filename = uf.name
+		intresp_obj.filepath = dest_filepath
+	except KeyError:
+		pass
+	intresp_obj.save()
+	return render_to_response('Comp/incidentresponse_view_respond.html', c)
+

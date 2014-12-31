@@ -4,13 +4,6 @@
 		<link rel="stylesheet" type="text/css" href="/resources/static/css/bootstrap-dashboard.css">
 		<script src="/resources/static/js/jquery-1.10.2.min.js"></script>
 		<script src="/resources/static/js/bootstrap.min.js"></script>
-		<script>
-			function toggle_form (){
-				console.log("clicked")
-				$("#new_response_form").toggleClass('hidden');
-				$("#new_response_button_div").toggleClass('hidden');
-			};
-		</script>
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top">
@@ -76,16 +69,41 @@
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 					<!-- Actual page content -->
 					{% if auth_name == "auth_team_blue" %}
-					<div id="new_response_form" class="panel panel-default hidden">
-						<div class="panel-heading"> New Incident Response </div>
+					<div class="panel panel-default">
+						<div class="panel-heading">{{ firstpost.subject }}</div>
 						<div class="panel-body">
-							<form action="/competitions/{{ competition_object.compurl }}/incidentresponse/" method="post" class="form-horizontal" enctype="multipart/form-data">
+							<strong> Submitted at: </strong> {{ firstpost.datetime }} <br>
+							<strong> Submitted Text: </strong>
+							<p>{{ firstpost.textentry }}</p>
+							{% if firstpost.isfile %}
+							<strong> Attached File </strong><br>
+							<img src="/resources/incidentresponses/{{firstpost.compid}}/{{firstpost.teamid}}/{{firstpost.intrspid}}/{{firstpost.filename}}">
+							<p>File: <a href="/resources/incidentresponses/{{firstpost.compid}}/{{firstpost.teamid}}/{{firstpost.intrspid}}/{{firstpost.filename}}">{{ firstpost.filename }}</a></p>
+							{% endif %}
+						</div>
+					</div>
+
+					{% for i in responses %}
+					<div class="panel panel-default">
+						<div class="panel-heading">Reply to: {{ firstpost.subject }}</div>
+						<div class="panel-body">
+							<strong> Submitted at: </strong> {{ i.datetime }} <br>
+							<strong> Submitted Text: </strong>
+							<p>{{ i.textentry }}</p>
+							{% if i.isfile %}
+							<strong> Attached File </strong><br>
+							<img src="/resources/incidentresponses/{{i.compid}}/{{i.teamid}}/{{i.intrspid}}/{{i.filename}}">
+							<p>File: <a href="/resources/incidentresponses/{{i.compid}}/{{i.teamid}}/{{i.intrspid}}/{{i.filename}}">{{ i.filename }}</a></p>
+							{% endif %}
+						</div>
+					</div>
+					{% endfor %}
+
+					<div class="panel panel-default">
+						<div class="panel-heading"> Reply </div>
+						<div class="panel-body">
+							<form action="/competitions/{{ competition_object.compurl }}/incidentresponse/{{firstpost.intrspid}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 								{% csrf_token %}
-
-								{{ responseform.subject.errors }}
-								<label for="{{ responseform.subject.id_for_label }}" class="col-lg-2 control-label">{{ responseform.subject.label }}</label>
-								<div class="col-lg-10">{{ responseform.subject }}<br></div>
-
 								{{ responseform.textentry.errors }}
 								<label for="{{ responseform.textentry.id_for_label }}" class="col-lg-2 control-label">{{ responseform.textentry.label }}</label>
 								<div class="col-lg-10">{{ responseform.textentry }}<br></div>
@@ -96,37 +114,11 @@
 
 								<div class="bt-component pull-right">
 									<br>
-									<button id="form_cancel_button" class="btn btn-cancel" onclick="toggle_form()">Cancel</button>
 									<button type="submit" class="btn btn-primary">Submit</button>
 								</div>
 							</form>
 						</div>
 					</div>
-
-					<div id="new_response_button_div">
-						<button id="new_response_button" class="btn btn-primary" onclick="toggle_form()">New Incident Response</button>
-					</div><br>
-
-					{% for i in responses %}
-					<div class="panel panel-default">
-						<div class="panel-heading">{{ i.subject }}</div>
-						<div class="panel-body">
-							<strong> Submitted at: </strong> {{ i.datetime }} <br>
-							<strong> Submitted Text: </strong>
-							<p>{{ i.textentry }}</p>
-							{% if i.isfile %}
-							<strong> Attached File </strong><br>
-							<img src="/resources/incidentresponses/{{i.compid}}/{{i.teamid}}/{{i.intrspid}}/{{i.filename}}">
-							<p>File: <a href="/resources/incidentresponses/{{i.compid}}/{{i.teamid}}/{{i.intrspid}}/{{i.filename}}">{{ i.filename }}</a></p>
-							{% endif %}
-							<br>
-							<div class="bt-component pull-right">
-								<a href="/competitions/{{ competition_object.compurl }}/incidentresponse/{{ i.intrspid }}" class="btn btn-primary">View/Respond</a>
-							</div>
-						</div>
-					</div>
-					{% endfor %}
-
 					{% else %}
 					<p>
 						You must be authenticated as a team of this competition to view the page contents.

@@ -8,6 +8,7 @@ from django.db.models import DateTimeField
 from django.db.models import DateField
 from django.db.models import TimeField
 from django.db.models import FileField
+from django.db.models import IntegerField
 from django.db.models import PositiveIntegerField
 from django.forms.widgets import PasswordInput
 from django.contrib.auth.models import User
@@ -31,7 +32,7 @@ class Competition(Model):
 class Team(Model):
 	teamid = AutoField(primary_key = True)
 	compid = PositiveIntegerField()
-	last_login = DateTimeField(default = timezone.now)
+	last_login = DateTimeField(default = timezone.now())
 	teamname = CharField(max_length = 30)
 	password = CharField(max_length = 64)
 	domainname = CharField(max_length = 30)
@@ -69,7 +70,7 @@ class Inject(Model):
 	body = CharField(max_length = 1000)
 
 class Admin(Model):
-	last_login = DateTimeField(default = timezone.now)
+	last_login = DateTimeField(default = timezone.now())
 	userid = AutoField(primary_key = True)
 	username = CharField(max_length = 20)
 	password = CharField(max_length = 64)
@@ -82,9 +83,22 @@ class InjectResponse(Model):
 	compid = PositiveIntegerField()
 	teamid = PositiveIntegerField()
 	ijctid = PositiveIntegerField()
-	datetime = DateTimeField(default = timezone.now)
+	datetime = DateTimeField(default = timezone.now())
 	istext = BooleanField(default = False)
 	isfile = BooleanField(default = False)
 	textentry = TextField(max_length = 1000)
 	filepath = CharField(max_length = 256)
 	filename = CharField(max_length = 64)
+
+class IncidentResponse(Model):
+	intrspid = AutoField(primary_key = True)
+	compid = PositiveIntegerField()
+	teamid = PositiveIntegerField()
+	replyto = IntegerField()
+	datetime = DateTimeField(default = timezone.now())
+	subject = CharField(max_length = 100, default = "")
+	textentry = TextField(max_length = 1000)
+	isfile = BooleanField(default = False)
+	filepath = CharField(max_length = 256)
+	filename = CharField(max_length = 64)
+

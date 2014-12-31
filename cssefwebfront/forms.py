@@ -14,6 +14,7 @@ from django.forms import TimeInput
 from django.forms.widgets import PasswordInput
 from models import Competition
 from models import InjectResponse
+from models import IncidentResponse
 from models import Service
 from models import Inject
 from models import Admin
@@ -146,7 +147,7 @@ class TeamLoginForm(ModelForm):
 		}
 
 class InjectResponseForm(ModelForm):
-	docfile = FileField(label="File Upload", required=False)
+	docfile = FileField(label = "File Upload", required = False)
 	class Meta:
 		model = InjectResponse
 		fields = ['textentry']
@@ -156,3 +157,30 @@ class InjectResponseForm(ModelForm):
 		widgets = {
 			'textentry': Textarea(attrs={'class':'form-control'})
 		}
+
+class IncidentResponseForm(ModelForm):
+	docfile = FileField(label = "File Upload", required = False)
+	class Meta:
+		model = IncidentResponse
+		fields = ['textentry','subject']
+		labels = {
+			'subject': ('Subject'),
+			'textentry': ('Text Entry')
+		}
+		widgets = {
+			'subject': TextInput(attrs={'class':'form-control'}),
+			'textentry': Textarea(attrs={'class':'form-control'})
+		}
+
+class IncidentResponseReplyForm(ModelForm):
+	docfile = FileField(label = "File Upload", required = False)
+	class Meta:
+		model = IncidentResponse
+		fields = ['textentry']
+		labels = {
+			'textentry': ('Text Entry')
+		}
+		widgets = {
+			'textentry': Textarea(attrs={'class':'form-control'}),
+		}
+
