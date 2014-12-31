@@ -29,6 +29,9 @@
 						}
 					}
 				);
+				$("#{{ form.team.teamname.id_for_label }}").keyup( function() { var teamname = $("#{{ form.team.teamname.id_for_label }}").val();
+					$("#{{ form.team.username.id_for_label }}").val(teamname.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/gi, ''));
+				});
 			});
 		</script>
 	</head>
@@ -128,6 +131,10 @@
 						{{ form.team.teamname.errors }}
 						<label for="{{ form.team.teamname.id_for_label }}" class="col-lg-2 control-label">{{ form.team.teamname.label }}</label>
 						<div class="col-lg-10">{{ form.team.teamname }}</div>
+
+						{{ form.team.username.errors }}
+						<label for="{{ form.team.username.id_for_label }}" class="col-lg-2 control-label">{{ form.team.username.label }}</label>
+						<div class="col-lg-10">{{ form.team.username }}</div>
 
 						{{ form.team.password.errors }}
 						<label for="{{ form.team.passphrase.id_for_label }}" class="col-lg-2 control-label">{{ form.team.password.label }}</label>

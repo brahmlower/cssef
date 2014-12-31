@@ -36,12 +36,13 @@ def login(request):
 	if request.method != "POST":
 		c["form"] = {'login': TeamLoginForm()}
 		return render_to_response('Comp/login.html', c)
-	teamname = request.POST.get('teamname')
+	username = request.POST.get('username')
 	password = request.POST.get('password')
 	compid = request.POST.get('compid')
-	team = authenticate(teamname = teamname, password = password, compid = compid)
+	team = authenticate(username = username, password = password, compid = compid)
 	if team == None:
 		c["messages"].new_info("Incorrect team credentials.", 4321)
+		c["form"] = {'login': TeamLoginForm()}
 		return render_to_response('Comp/login.html', c)
 	auth.login(request, team)
 	competition = Competition.objects.get(compid = compid)

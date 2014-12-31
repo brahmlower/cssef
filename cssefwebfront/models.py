@@ -34,6 +34,7 @@ class Team(Model):
 	compid = PositiveIntegerField()
 	last_login = DateTimeField(default = timezone.now())
 	teamname = CharField(max_length = 30)
+	username = CharField(max_length = 30)
 	password = CharField(max_length = 64)
 	domainname = CharField(max_length = 30)
 	score_configs = TextField(max_length = 500, default = "{}")

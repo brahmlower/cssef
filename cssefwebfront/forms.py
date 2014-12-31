@@ -55,16 +55,18 @@ class CreateCompetitionForm(ModelForm):
 class CreateTeamForm(ModelForm):
 	class Meta:
 		model = Team
-		fields = ['teamname','password','domainname','compid','score_configs']
+		fields = ['teamname','username','password','domainname','compid','score_configs']
 		labels = {
 			'compid': ('Competition'),
 			'teamname': ('Teamname'),
+			'username': ('Team Username'),
 			'password': ('Password'),
 			'domainname': ('Domain Name'),
 			'score_configs': ('Score Configurations'),
 		}
 		widgets = {
 			'teamname': TextInput(attrs={'class':'form-control'}),
+			'username': TextInput(attrs={'class':'form-control'}),
 			'password': TextInput(attrs={'class':'form-control'}),
 			'domainname': TextInput(attrs={'class':'form-control'}),
 			'score_configs': Textarea(attrs={'class':'form-control'}),
@@ -137,13 +139,13 @@ class TeamLoginForm(ModelForm):
 	compid = ChoiceField(label = "Competition", choices = [], widget = Select(attrs={'class':'form-control', 'required': True}))
 	class Meta:
 		model = Team
-		fields = ['teamname', 'password', 'compid']
+		fields = ['username', 'password', 'compid']
 		labels = {
-			'teamname': ('Team Name'),
+			'username': ('Team Name'),
 			'password': ('Password')
 		}
 		widgets = {
-			'teamname': TextInput(attrs={'class':'form-control', 'required': True}),
+			'username': TextInput(attrs={'class':'form-control', 'required': True}),
 			'password': PasswordInput(attrs={'class':'form-control', 'required': True})
 		}
 

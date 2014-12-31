@@ -8,7 +8,7 @@ def getAuthValues(request, c):
 		team = request.user.__class__.__name__
 		if team == "Team":
 			c["auth_name"] = "auth_team_blue"
-			c["auth_name_display"] = "Blue Team"
+			c["auth_name_display"] = "Blue Team (%s)" % request.user.teamname
 		elif team == "Admin":
 			c["auth_name"] = "auth_team_white"
 			c["auth_name_display"] = "White Team"
