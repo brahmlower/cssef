@@ -29,7 +29,7 @@
 						{% if auth_name == "auth_team_white" %}
 						<li><a href="/admin/">Admin Config</a></li>
 						{% elif auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/{{ competition_object.compurl }}/summary/">Competition</a></li>
+						<li class="active"><a href="/competitions/{{ competition_object.compurl }}/summary/">Competition</a></li>
 						{% endif %}
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
@@ -105,8 +105,11 @@
 
 					<div id="new_response_button_div">
 						<button id="new_response_button" class="btn btn-primary" onclick="toggle_form()">New Incident Response</button>
-					</div><br>
-
+					</div>
+					<hr>
+					{% if not responses %}
+					<p>Your teams has not submitted any incident responses yet.</p>
+					{% endif %}
 					{% for i in responses %}
 					<div class="panel panel-default">
 						<div class="panel-heading">{{ i.subject }}</div>

@@ -22,7 +22,7 @@
 						{% if auth_name == "auth_team_white" %}
 						<li><a href="/admin/">Admin Config</a></li>
 						{% elif auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/{{ competition_object.compurl }}/summary/">Competition</a></li>
+						<li class="active"><a href="/competitions/{{ competition_object.compurl }}/summary/">Competition</a></li>
 						{% endif %}
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
@@ -69,6 +69,9 @@
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 					<!-- Actual page content -->
 					{% if auth_name == "auth_team_blue" %}
+					{% if not injects %}
+					<p>No injects have been released yet.</p>
+					{% endif %}
 					{% for i in injects %}
 					<div class="panel panel-default">
 						<div class="panel-heading"> {{ i.title }} </div>
