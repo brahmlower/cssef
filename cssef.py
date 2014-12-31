@@ -47,30 +47,6 @@ class Config:
                 dict1[option] = None
         return dict1
 
-def LoadComp(compid):
-    try:
-        comp_obj = Competition.objects.get(compid = compid)
-        return comp_obj
-    except:
-        sys.exit("No competition with id: '%s'" % str(compid))
-
-def LoadTeams(compid):
-    try:
-        team_objs = Team.objects.filter(compid = compid)
-        return team_objs
-    except:
-        sys.exit("No teams were associated with competition with id '%s' in table 'teams'" % str(compid))
-
-def LoadServs(compid):
-    try:
-        serv_objs = Service.objects.filter(compid = compid)
-    except:
-        sys.exit("No services were associated with competition with id '%s' in table 'services'" % str(compid))
-    serv_list = []
-    for i in serv_objs:
-        serv_list.append(ServiceModule(i))
-    return serv_list
-
 class SetConfigurations():
     @staticmethod
     def dump_teams():
@@ -137,6 +113,30 @@ class ServiceModule:
         score_obj.datetime = timezone.now()
         return score_obj
 
+def LoadComp(compid):
+    try:
+        comp_obj = Competition.objects.get(compid = compid)
+        return comp_obj
+    except:
+        sys.exit("No competition with id: '%s'" % str(compid))
+
+def LoadTeams(compid):
+    try:
+        team_objs = Team.objects.filter(compid = compid)
+        return team_objs
+    except:
+        sys.exit("No teams were associated with competition with id '%s' in table 'teams'" % str(compid))
+
+def LoadServs(compid):
+    try:
+        serv_objs = Service.objects.filter(compid = compid)
+    except:
+        sys.exit("No services were associated with competition with id '%s' in table 'services'" % str(compid))
+    serv_list = []
+    for i in serv_objs:
+        serv_list.append(ServiceModule(i))
+    return serv_list
+
 def arg_list_dict(args):
     value_dict = {}
     for i in args:
@@ -155,7 +155,7 @@ def rand_sleep(score_delay, score_delay_uncert):
 
 def log(score_obj):
     # Temporary logging
-    print "[%s] Team:%s Service:%s Value:%s Messages:%s" % \
+    print "[SCORE] (%s) Team:%s Service:%s Value:%s Messages:%s" % \
         (score_obj.datetime, score_obj.teamid, score_obj.servid, score_obj.value, score_obj.message)
 
 def run_loop(comp, team_list, serv_list):
@@ -168,12 +168,12 @@ def run_loop(comp, team_list, serv_list):
                 score_obj = serv.score(team)
                 score_obj.compid = comp.compid
                 score_obj.teamid = team.teamid
-                score_obj.servid = serv.db_obj.servid
+                score_obj.servid = serv.service_obj.servid
                 score_obj.datetime = timezone.now()
                 # Save the score object
                 score_obj.save()
                 # Log the score object
-                log(comp, team, serv, score_obj.value)
+                log(score_obj)
         #break #This is here just for testing!!
 
 def manage():
@@ -207,18 +207,25 @@ def manage():
         elif sys.argv[2] == "edit":
             SetConfigurations.create("serv", sys.argv[3:])
 
+def run_comp(compid):
+    comp = LoadComp(compid)
+    teams = LoadTeams(compid)
+    servs = LoadServs(compid)
+    run_loop(comp, teams, servs)
+
 def main():
     config = Config("cssef.conf")
     if len(sys.argv) == 1:
         sys.exit("Must provide an action {run|team|competition|service}")
     if sys.argv[1] != "run":
         manage()
-    else:
-        compid = 1 #Temporarily hardcoded competition id
-        comp = Load.comp(compid)
-        teams = Load.teams(compid)
-        servs = Load.servs(compid)
-        run_loop(comp, teams, servs)
+    if len(sys.argv) != 3:
+        sys.exit("Usage: %s run <competition id>" % sys.argv[0])
+    try:
+        compid = int(sys.argv[2])
+    except:
+        sys.exit("Competition ID must be an integer.")
+    run_comp(compid)
 
 if __name__ == "__main__":
 	main()

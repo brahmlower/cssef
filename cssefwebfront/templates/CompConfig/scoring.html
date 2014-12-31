@@ -20,7 +20,7 @@
 					<ul class="nav navbar-nav">
 						<li><a href="/">Home</a></li>
 						{% if auth_name == "auth_team_white" %}
-						<li><a href="/admin/">Admin Config</a></li>
+						<li class="active"><a href="/admin/">Admin Config</a></li>
 						{% elif auth_name == "auth_team_blue" %}
 						<li><a href="/competitions/">Competitions</a></li>
 						{% endif %}
@@ -55,10 +55,12 @@
 				<!-- Start competition config navigation sidebar -->
 				<div class="col-sm-3 col-md-2 sidebar">
 					<ul class="nav nav-sidebar">
+						<li><a href="/admin/competitions/"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></li>
+						<li class="nav-divider"><li>
 						<li><a href="/admin/competitions/{{ competition_object.compurl }}/summary/">Summary</a></li>
 						<li><a href="/admin/competitions/{{ competition_object.compurl }}/details/">Details</a></li>
 						<li><a href="/admin/competitions/{{ competition_object.compurl }}/injects/">Injects</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/scoring/">Scoring</a></li>
+						<li class="active"><a href="/admin/competitions/{{ competition_object.compurl }}/scoring/">Scoring</a></li>
 						<li><a href="/admin/competitions/{{ competition_object.compurl }}/services/">Services</a></li>
 						<li><a href="/admin/competitions/{{ competition_object.compurl }}/teams/">Teams</a></li>
 					</ul>
