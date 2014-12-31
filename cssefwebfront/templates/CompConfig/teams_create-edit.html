@@ -130,26 +130,25 @@
 						{% csrf_token %}
 						{{ form.team.teamname.errors }}
 						<label for="{{ form.team.teamname.id_for_label }}" class="col-lg-2 control-label">{{ form.team.teamname.label }}</label>
-						<div class="col-lg-10">{{ form.team.teamname }}</div>
+						<div class="col-lg-10">{{ form.team.teamname }}<br></div>
 
 						{{ form.team.username.errors }}
 						<label for="{{ form.team.username.id_for_label }}" class="col-lg-2 control-label">{{ form.team.username.label }}</label>
-						<div class="col-lg-10">{{ form.team.username }}</div>
+						<div class="col-lg-10">{{ form.team.username }}<br></div>
 
 						{{ form.team.password.errors }}
 						<label for="{{ form.team.passphrase.id_for_label }}" class="col-lg-2 control-label">{{ form.team.password.label }}</label>
-						<div class="col-lg-10">{{ form.team.password }}</div>
+						<div class="col-lg-10">{{ form.team.password }}<br></div>
 
 						{{ form.team.domainname.errors }}
 						<label for="{{ form.team.domainname.id_for_label }}" class="col-lg-2 control-label">{{ form.team.domainname.label }}</label>
-						<div class="col-lg-10">{{ form.team.domainname }}</div>
+						<div class="col-lg-10">{{ form.team.domainname }}<br></div>
 
 						{{ form.team.score_configs.errors }}
 						<label for="{{ form.team.score_configs.id_for_label }}" class="col-lg-2 control-label">{{ form.team.score_configs.label }}</label>
-						<div class="col-lg-10">{{ form.team.score_configs }}</div>
+						<div class="col-lg-10">{{ form.team.score_configs }}<br></div>
 
 						<div class="col-lg-10 col-lg-offset-2">
-							<br>
 							<button id="form_sub_button" type="submit" class="btn btn-primary">Save</button>
 							<p id="form_messages"></p>
 						</div>

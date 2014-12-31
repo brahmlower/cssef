@@ -105,49 +105,48 @@
 						{% csrf_token %}
 						{{ form.comp.compname.errors}}
 						<label for="{{ form.comp.compname.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.compname.label }}</label>
-						<div class="col-lg-10">{{ form.comp.compname }}</div>
+						<div class="col-lg-10">{{ form.comp.compname }}<br></div>
 
 						{{ form.comp.compurl.errors }}
 						<label for="{{ form.comp.compurl.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.compurl.label }}</label>
-						<div class="col-lg-10">{{ form.comp.compurl }}</div>
+						<div class="col-lg-10">{{ form.comp.compurl }}<br></div>
 
 						{{ form.comp.shrt_desc.errors }}
 						<label for="{{ form.comp.shrt_desc.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.shrt_desc.label }}</label>
-						<div class="col-lg-10">{{ form.comp.shrt_desc }}</div>
+						<div class="col-lg-10">{{ form.comp.shrt_desc }}<br></div>
 
 						{{ form.comp.full_desc.errors }}
 						<label for="{{ form.comp.full_desc.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.full_desc.label }}</label>
-						<div class="col-lg-10">{{ form.comp.full_desc }}</div>
+						<div class="col-lg-10">{{ form.comp.full_desc }}<br></div>
 
 						{{ form.comp.viewable.errors }}
 						<label for="{{ form.comp.viewable.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.viewable.label }}</label>
-						<div class="col-lg-10">{{ form.comp.viewable }}</div>
+						<div class="col-lg-10">{{ form.comp.viewable }}<br></div>
 
 						{{ form.comp.autodisplay.errors }}
 						<label for="{{ form.comp.autodisplay.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.autodisplay.label }}</label>
-						<div class="col-lg-10">{{ form.comp.autodisplay }}</div>
+						<div class="col-lg-10">{{ form.comp.autodisplay }}<br></div>
 			
 						{{ form.comp.dt_display.errors }}
 						<label for="{{ form.comp.dt_display.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.dt_display.label }}</label>
-						<div class="col-lg-10 input-append">{{ form.comp.dt_display }}</div>
+						<div class="col-lg-10 input-append">{{ form.comp.dt_display }}<br></div>
 
 						{{ form.comp.dt_start.errors }}
 						<label for="{{ form.comp.dt_start.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.dt_start.label }}</label>
-						<div class="col-lg-10 input-append">{{ form.comp.dt_start }}</div>
+						<div class="col-lg-10 input-append">{{ form.comp.dt_start }}<br></div>
 
 						{{ form.comp.dt_finish.errors }}
 						<label for="{{ form.comp.dt_finish.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.dt_finish.label }}</label>
-						<div class="col-lg-10 input-append">{{ form.comp.dt_finish }}</div>
+						<div class="col-lg-10 input-append">{{ form.comp.dt_finish }}<br></div>
 
 						{{ form.comp.score_delay.errors }}
 						<label for="{{ form.comp.score_delay.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.score_delay.label }}</label>
-						<div class="col-lg-10">{{ form.comp.score_delay }}</div>
+						<div class="col-lg-10">{{ form.comp.score_delay }}<br></div>
 
 						{{ form.comp.score_delay_uncert.errors }}
 						<label for="{{ form.comp.score_delay_uncert.id_for_label }}" class="col-lg-2 control-label">{{ form.comp.score_delay_uncert.label }}</label>
-						<div class="col-lg-10">{{ form.comp.score_delay_uncert }}</div>
+						<div class="col-lg-10">{{ form.comp.score_delay_uncert }}<br></div>
 
-						<br>	
 						<div class="col-lg-10 col-lg-offset-2">
 							<button class="btn btn-default">Cancel</button>
 							<button type="submit" class="btn btn-primary">Create</button>

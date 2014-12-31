@@ -109,30 +109,29 @@
 						{% csrf_token %}
 						{{ form.inject.title.errors}}
 						<label for="{{ form.inject.title.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.title.label }}</label>
-						<div class="col-lg-10">{{ form.inject.title }}</div>
+						<div class="col-lg-10">{{ form.inject.title }}<br></div>
 
 						{{ form.inject.body.errors}}
 						<label for="{{ form.inject.body.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.body.label }}</label>
-						<div class="col-lg-10">{{ form.inject.body }}</div>
+						<div class="col-lg-10">{{ form.inject.body }}<br></div>
 
 						{{ form.inject.dt_delivery.errors}}
 						<label for="{{ form.inject.dt_delivery.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.dt_delivery.label }}</label>
-						<div class="col-lg-10">{{ form.inject.dt_delivery }}</div>
+						<div class="col-lg-10">{{ form.inject.dt_delivery }}<br></div>
 
 						{{ form.inject.dt_response_due.errors}}
 						<label for="{{ form.inject.dt_response_due.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.dt_response_due.label }}</label>
-						<div class="col-lg-10">{{ form.inject.dt_response_due }}</div>
+						<div class="col-lg-10">{{ form.inject.dt_response_due }}<br></div>
 
 						{{ form.inject.dt_response_close.errors}}
 						<label for="{{ form.inject.dt_response_close.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.dt_response_close.label }}</label>
-						<div class="col-lg-10">{{ form.inject.dt_response_close }}</div>
+						<div class="col-lg-10">{{ form.inject.dt_response_close }}<br></div>
 
 						{{ form.inject.docfile.errors }}
 						<label for="{{ form.inject.docfile.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.docfile.label }}</label>
-						<div class="col-lg-10">{{ form.inject.docfile }}</div>
+						<div class="col-lg-10">{{ form.inject.docfile }}<br></div>
 
 						<div class="col-lg-10 col-lg-offset-2">
-							<br>
 							<button type="submit" class="btn btn-primary">Save</button>
 						</div>
 					</form>
