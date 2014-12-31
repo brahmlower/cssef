@@ -108,7 +108,8 @@ def comp_create(request, competition=None):
 	comp.save()
 	# Set success message and render page
 	c["messages"].new_success("Created competition", 1337)
-	return render_to_response('AdminConfig/create.html', c)
+	#return render_to_response('AdminConfig/create.html', c)
+	return HttpResponseRedirect('/admin/competitions/')
 
 def comp_delete(request, competition = None):
 	"""
