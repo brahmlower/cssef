@@ -94,6 +94,7 @@ class CreateServiceForm(ModelForm):
 		}
 
 class CreateInjectForm(ModelForm):
+	docfile = FileField(label = "File Upload", required = False)
 	class Meta:
 		model = Inject
 		fields = ['compid','title', 'body', 'dt_delivery', 'dt_response_due', 'dt_response_close']

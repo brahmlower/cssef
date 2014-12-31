@@ -4,12 +4,13 @@ from django.shortcuts import render_to_response
 from django.shortcuts import render
 from django.contrib import auth
 from django.core.context_processors import csrf
-
+from django.core.files.uploadedfile import UploadedFile
 from forms import CreateCompetitionForm
 from forms import AdminLoginForm
 from forms import CreateTeamForm
 from forms import CreateInjectForm
 from forms import CreateServiceForm
+from models import InjectResponse
 from models import Competition
 from models import Service
 from models import Inject
@@ -20,6 +21,8 @@ from utils import UserMessages
 from utils import getAuthValues
 from utils import add_teams_scoreconfigs
 from utils import clean_teams_scoreconfigs
+from hashlib import md5
+import settings
 
 # General competition configuration modules
 def summary(request, competition = None):
@@ -258,6 +261,7 @@ def injects_edit(request, competition = None, ijctid = None):
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
 	if request.method != "POST":
+		# Have to use filter here, otherwise we get 'Inject object is not iterable' errors
 		ijct_obj = Inject.objects.filter(compid = c["competition_object"].compid, ijctid = int(ijctid))
 		c["ijctid"] = ijct_obj[0].ijctid
 		c["form"] = {"inject": CreateInjectForm(initial = ijct_obj.values()[0])}
@@ -265,6 +269,24 @@ def injects_edit(request, competition = None, ijctid = None):
 	# Note this will only work when there are no lists
 	tmp_dict = request.POST.copy().dict()
 	tmp_dict.pop('csrfmiddlewaretoken', None)
+	# If we're given a file
+	try:
+		# Handle necessary file manipulation
+		uf = UploadedFile(request.FILES['docfile'])
+		file_content = uf.read()
+		md5_obj = md5()
+		md5_obj.update(file_content)
+		md5_obj.hexdigest()
+		dest_filepath = settings.BASE_DIR + settings.CONTENT_INJECT_PATH + md5_obj.hexdigest()
+		wfile = open(dest_filepath, "w")
+		wfile.write(file_content)
+		wfile.close()
+		# Fill out file related parts of the model
+		tmp_dict['isfile'] = True
+		tmp_dict['filename'] = uf.name
+		tmp_dict['filepath'] = dest_filepath
+	except KeyError:
+		pass
 	ijct_obj = Inject.objects.filter(compid = c["competition_object"].compid, ijctid = int(ijctid))
 	ijct_obj.update(**tmp_dict)
 	return HttpResponseRedirect('/admin/competitions/%s/injects/' % competition)
@@ -304,11 +326,33 @@ def injects_create(request, competition = None):
 	if request.method != "POST":
 		c["form"] = {"inject": CreateInjectForm()}
 		return render_to_response('CompConfig/injects_create-edit.html', c)
-	form_dict = request.POST.copy()
+	form_dict = request.POST.copy().dict()
 	form_dict["compid"] = c["competition_object"].compid
-	ijct_obj = CreateInjectForm(form_dict)
-	if not ijct_obj.is_valid():
-		c["messages"].new_info("Invalid field data in inject form: %s" % ijct_obj.errors, 1001)
+	form_dict.pop('csrfmiddlewaretoken', None)
+	form_obj = CreateInjectForm(form_dict)
+	if not form_obj.is_valid():
+		c["messages"].new_info("Invalid field data in inject form: %s" % form_obj.errors, 1001)
 		return render_to_response('CompConfig/injects_create-edit.html', c)
+	# If we're given a file
+	try:
+		# Handle necessary file manipulation
+		uf = UploadedFile(request.FILES['docfile'])
+		file_content = uf.read()
+		md5_obj = md5()
+		md5_obj.update(file_content)
+		md5_obj.hexdigest()
+		dest_filepath = settings.BASE_DIR + settings.CONTENT_INJECT_PATH + md5_obj.hexdigest()
+		wfile = open(dest_filepath, "w")
+		wfile.write(file_content)
+		wfile.close()
+		# Fill out file related parts of the model
+		form_dict['isfile'] = True
+		form_dict['filename'] = uf.name
+		form_dict['filepath'] = dest_filepath
+	except KeyError:
+		print "no picture uplaoded"
+		print request.FILES
+		pass
+	ijct_obj = Inject(**form_dict)
 	ijct_obj.save()
 	return HttpResponseRedirect("/admin/competitions/%s/injects/" % competition)

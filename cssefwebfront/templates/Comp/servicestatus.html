@@ -69,6 +69,9 @@
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 					<!-- Actual page content-->
 					{% if auth_name == "auth_team_blue" %}
+					{% if not status_list %}
+					<p>There are no services yet, so there are no statuses to report.</p>
+					{% endif %}
 					{% for i in status_list %}
 					{% if i.score.value == 0 %}
 					<div class="panel panel-danger">

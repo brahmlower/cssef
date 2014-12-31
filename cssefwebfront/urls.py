@@ -54,7 +54,9 @@ urlpatterns = patterns('',
 	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/edit/(?P<ijctid>[1-9][1-9]*)/$',		CompConfig.injects_edit),
 	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/delete/(?P<ijctid>[1-9][1-9]*)/$',	CompConfig.injects_delete),
 	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/injects/create/$',							CompConfig.injects_create),
+	# Uploaded file related urls
+	url(r'^resources/injects/(?P<compid>[1-9][1-9]*)//(?P<ijctid>[1-9][1-9]*)/(?P<filename>[\w\-\_\.]{0,64})$',	Resources.inject),
+	url(r'^resources/injectresponses/(?P<compid>[1-9][1-9]*)/(?P<teamid>[1-9][1-9]*)/(?P<ijctrespid>[1-9][1-9]*)/(?P<filename>[\w\-\_\.]{0,64})$',	Resources.injectresponse),
+	url(r'^resources/incidentresponses/(?P<compid>[1-9][1-9]*)/(?P<teamid>[1-9][1-9]*)/(?P<intrspid>[1-9][1-9]*)/(?P<filename>[\w\-\_\.]{0,64})$',	Resources.incidentresponse)
 
-	url(r'^resources/injectresponses/(?P<compid>[1-9][1-9]*)/(?P<teamid>[1-9][1-9]*)/(?P<ijctrespid>[1-9][1-9]*)/(?P<filename>[\w\-\_\.]{0,50})$',	Resources.injectresponse),
-	url(r'^resources/incidentresponses/(?P<compid>[1-9][1-9]*)/(?P<teamid>[1-9][1-9]*)/(?P<intrspid>[1-9][1-9]*)/(?P<filename>[\w\-\_\.]{0,50})$',	Resources.incidentresponse)
 )

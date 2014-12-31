@@ -68,6 +68,9 @@ class Inject(Model):
 	dt_response_close = DateTimeField()
 	title = CharField(max_length = 50)
 	body = CharField(max_length = 1000)
+	isfile = BooleanField(default = False)
+	filepath = CharField(max_length = 256)
+	filename = CharField(max_length = 64)
 
 class Admin(Model):
 	last_login = DateTimeField(default = timezone.now())

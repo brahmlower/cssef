@@ -2,14 +2,11 @@ from django.http import StreamingHttpResponse
 from django.http import HttpResponse
 from models import IncidentResponse
 from models import InjectResponse
+from models import Inject
 from utils import getAuthValues
 
 def verify_user(ad, id_name):
 	c = getAuthValues(ad['request'], {})
-	# Malformed url (this shouldn't happen, now that I think about it...)
-	if ad['compid'] == None or ad['teamid'] == None or ad['filename'] == None or ad[id_name] == None:
-		print "you didn't provide all the things"
-		return HttpResponse()
 	# Only white team and blue team may access these files
 	if c["auth_name"] != "auth_team_white" and c["auth_name"] != "auth_team_blue":
 		print "you're not properly authenticated"
@@ -18,6 +15,12 @@ def verify_user(ad, id_name):
 	if c["auth_name"] == "auth_team_blue" and (ad['request'].user.compid != int(ad['compid']) or ad['request'].user.teamid != int(ad['teamid'])):
 		print "you're blue team, trying to access other peoples documents"
 		return HttpResponse()
+
+def inject(request, compid = None, ijctid = None, filename = None):
+	verify_user(locals(), 'ijctid')
+	ijct_obj = Inject.objects.get(compid = compid, ijctid = ijctid, filename = filename)
+	rfile = open(ijct_obj.filepath, 'r')
+	return StreamingHttpResponse(rfile, content_type='application/force-download')
 
 def injectresponse(request, compid = None, teamid = None, ijctrespid = None, filename = None):
 	verify_user(locals(), 'ijctrespid')

@@ -102,9 +102,9 @@
 
 					<h2> Create Inject </h2>
 					{% if action == "create" %}
-					<form action="/admin/competitions/{{ competition_object.compurl }}/injects/{{ action }}/" method="post" class="form-horizontal">
+					<form action="/admin/competitions/{{ competition_object.compurl }}/injects/{{ action }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 					{% else%}
-					<form action="/admin/competitions/{{ competition_object.compurl }}/injects/{{ action }}/{{ ijctid }}/" method="post" class="form-horizontal">
+					<form action="/admin/competitions/{{ competition_object.compurl }}/injects/{{ action }}/{{ ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 					{% endif %}
 						{% csrf_token %}
 						{{ form.inject.title.errors}}
@@ -126,6 +126,10 @@
 						{{ form.inject.dt_response_close.errors}}
 						<label for="{{ form.inject.dt_response_close.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.dt_response_close.label }}</label>
 						<div class="col-lg-10">{{ form.inject.dt_response_close }}</div>
+
+						{{ form.inject.docfile.errors }}
+						<label for="{{ form.inject.docfile.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.docfile.label }}</label>
+						<div class="col-lg-10">{{ form.inject.docfile }}</div>
 
 						<div class="col-lg-10 col-lg-offset-2">
 							<br>

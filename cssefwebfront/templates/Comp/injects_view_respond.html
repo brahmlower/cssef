@@ -74,8 +74,12 @@
 						<div class="panel-body">
 							<strong>Released at: </strong>{{ inject.dt_delivery }}<br>
 							<strong>Due at: </strong>{{ inject.dt_response_due }}<br>
-							<strong>Closes at: </strong>{{ inject.dt_response_close }}<br><br>
-							<p>{{ inject.body }}</p>
+							<strong>Closes at: </strong>{{ inject.dt_response_close }}<br>
+							{% if inject.isfile %}
+							<strong> Attached File: </strong><a href="/resources/injects/{{inject.compid}}/{{inject.ijctid}}/{{inject.filename}}">{{ inject.filename }}</a><br>
+							{% endif %}
+							<strong>Inject body:</strong><br>
+							{{ inject.body }}
 						</div>
 					</div>
 
@@ -85,17 +89,12 @@
 						<div class="panel-body">
 							{% if i.istext %}
 							<strong> Submitted Text </strong>
-							<p>
-								{{ i.textentry }}
-							</p>
+							<p>{{ i.textentry }}</p>
 							{% endif %}
 							{% if i.isfile %}
-							<strong> Attached File </strong>
-							<br>
+							<strong> Attached File </strong><br>
 							<img src="/resources/injectresponses/{{i.compid}}/{{i.teamid}}/{{i.ijctrespid}}/{{i.filename}}">
-							<p>
-								File: <a href="/resources/injectresponses/{{i.compid}}/{{i.teamid}}/{{i.ijctrespid}}/{{i.filename}}">{{ i.filename }}</a>
-							</p>
+							<p>File: <a href="/resources/injectresponses/{{i.compid}}/{{i.teamid}}/{{i.ijctrespid}}/{{i.filename}}">{{ i.filename }}</a></p>
 							{% endif %}
 						</div>
 					</div>

@@ -81,7 +81,11 @@
 						<div class="panel-body">
 							<strong>Released at: </strong>{{ i.dt_delivery }}<br>
 							<strong>Due at: </strong>{{ i.dt_response_due }}<br>
-							<strong>Closes at: </strong>{{ i.dt_response_close }}<br><br>
+							<strong>Closes at: </strong>{{ i.dt_response_close }}<br>
+							{% if i.isfile %}
+							<strong> Attached File: </strong><a href="/resources/injects/{{i.compid}}/{{i.ijctid}}/{{i.filename}}">{{ i.filename }}</a><br>
+							{% endif %}
+							<strong>Inject body:</strong><br>
 							{{ i.body }}
 							<div class="bt-component pull-right">
 								<a href="/admin/competitions/{{ competition_object.compurl }}/injects/edit/{{ i.ijctid }}/" class="btn btn-primary">Edit</a>
