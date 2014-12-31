@@ -46,7 +46,7 @@ class Service(Model):
 	module = CharField(max_length = 10)
 	name = CharField(max_length = 30)
 	desc = CharField(max_length = 200)
-	config = CharField(max_length = 1000)
+	config = CharField(max_length = 1000, default = "{}")
 	points = PositiveIntegerField()
 	subdomain = CharField(max_length = 20)
 

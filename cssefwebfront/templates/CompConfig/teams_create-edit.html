@@ -4,6 +4,33 @@
 		<link rel="stylesheet" type="text/css" href="/resources/static/css/bootstrap-dashboard.css">
 		<script src="/resources/static/js/jquery-1.10.2.min.js"></script>
 		<script src="/resources/static/js/bootstrap.min.js"></script>
+		<script>
+			$(function () {
+				$('#{{ form.team.score_configs.id_for_label }}').focusout(
+					function() {
+						// Replaces any single quotes with double quotes (screws up apostophes TODO: fix this somehow)
+						$("#{{ form.team.score_configs.id_for_label }}").val($("#{{ form.team.score_configs.id_for_label }}").val().replace(/\'/g, '\"'));
+						// Checks if the submission should be locked
+						var score_config = $("#{{ form.team.score_configs.id_for_label }}").val();
+						try {
+							JSON.parse(score_config);
+						} catch (e) {
+							// Bad json object, need to disable submit button
+							if (!$('#form_sub_button').hasClass('disabled')) {
+								$('#form_sub_button').addClass('disabled')
+								$('#form_messages').html('Unable to parse json object in \'Score Configuration\' field.')
+							}
+							return
+						}
+						// The json object is good, and we should remove the disabled class if it's there
+						if ($('#form_sub_button').hasClass('disabled')) {
+							$('#form_sub_button').removeClass('disabled')
+							$('#form_messages').html('')
+						}
+					}
+				);
+			});
+		</script>
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top">
@@ -114,8 +141,8 @@
 
 						<div class="col-lg-10 col-lg-offset-2">
 							<br>
-							<button class="btn btn-default">Cancel</button>
-							<button type="submit" class="btn btn-primary">Save</button>
+							<button id="form_sub_button" type="submit" class="btn btn-primary">Save</button>
+							<p id="form_messages"></p>
 						</div>
 					</form>
 				</div>
