@@ -7,6 +7,7 @@ from django.conf import settings
 from cssefwebfront.models import Score
 from ScoringUtils import Pluggin
 from ScoringUtils import PlugginTest
+import json
 
 # Imports required for specific pluggin
 import paramiko
@@ -26,8 +27,8 @@ class SSH(Pluggin):
 	def __init__(self, conf_dict):
 		Pluggin.__init__(self, conf_dict)
 
-	def score(self, team):
-		team_config = team.score_configs[self.__class__.__name__]
+	def score(self, team, service_name):
+		team_config = json.loads(team.score_configs)[service_name]
 		address = self.build_address(team_config)
 
 		client = paramiko.SSHClient()

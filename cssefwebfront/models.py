@@ -55,7 +55,7 @@ class Score(Model):
 	compid = PositiveIntegerField()
 	teamid = PositiveIntegerField()
 	servid = PositiveIntegerField()
-	datetime = DateTimeField()
+	datetime = DateTimeField(default = timezone.now())
 	value = PositiveIntegerField()
 	message = CharField(max_length = 100)
 

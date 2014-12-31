@@ -7,23 +7,26 @@ from django.conf import settings
 from cssefwebfront.models import Score
 from ScoringUtils import Pluggin
 from ScoringUtils import PlugginTest
+import json
 
 # Imports required for specific pluggin
+from django.utils.html import escape
 from urllib2 import urlopen
 import traceback
+
 
 class HTTP(Pluggin):
 	team_config_type_dict = {
 		"port":int,
 		"network":str,
 		"timeout":int
-		}
+	}
 
 	def __init__(self, conf_dict):
 		Pluggin.__init__(self, conf_dict)
 
-	def score(self, team):
-		team_config = team.score_configs[self.__class__.__name__]
+	def score(self, team, service_name):
+		team_config = json.loads(team.score_configs)[service_name]
 		address = "http://%s:%s" %(self.build_address(team_config), str(team_config["port"]))
 		new_score = Score()
 		try:
@@ -33,7 +36,7 @@ class HTTP(Pluggin):
 			new_score.message = ""
 		except:
 			new_score.value = 0
-			new_score.message = traceback.format_exc()
+			new_score.message = "Address: %s<br>Traceback: %s" % (address,escape(traceback.format_exc().splitlines()[-1]))
 		return new_score
 
 class Test(PlugginTest):

@@ -47,33 +47,29 @@ class Config:
                 dict1[option] = None
         return dict1
 
-class Load:
-    @staticmethod
-    def comp(compid):
-        try:
-            comp_obj = Competition.objects.get(compid = compid)
-            return comp_obj
-        except:
-            sys.exit("No competition with id: '%s'" % str(compid))
+def LoadComp(compid):
+    try:
+        comp_obj = Competition.objects.get(compid = compid)
+        return comp_obj
+    except:
+        sys.exit("No competition with id: '%s'" % str(compid))
 
-    @staticmethod
-    def teams(compid):
-        try:
-            team_objs = Team.objects.filter(compid = compid)
-            return team_objs
-        except:
-            sys.exit("No teams were associated with competition with id '%s' in table 'teams'" % str(compid))
+def LoadTeams(compid):
+    try:
+        team_objs = Team.objects.filter(compid = compid)
+        return team_objs
+    except:
+        sys.exit("No teams were associated with competition with id '%s' in table 'teams'" % str(compid))
 
-    @staticmethod
-    def servs(compid):
-        try:
-            serv_objs = Service.objects.filter(compid = compid)
-        except:
-            sys.exit("No services were associated with competition with id '%s' in table 'services'" % str(compid))
-        serv_list = []
-        for i in serv_objs:
-            serv_list.append(ServiceModule(i))
-        return serv_list
+def LoadServs(compid):
+    try:
+        serv_objs = Service.objects.filter(compid = compid)
+    except:
+        sys.exit("No services were associated with competition with id '%s' in table 'services'" % str(compid))
+    serv_list = []
+    for i in serv_objs:
+        serv_list.append(ServiceModule(i))
+    return serv_list
 
 class SetConfigurations():
     @staticmethod
@@ -120,24 +116,26 @@ class SetConfigurations():
         db_obj.save()
 
 class ServiceModule:
-    def __init__(self, db_obj):
-        self.db_obj = db_obj
+    def __init__(self, service_obj):
+        self.service_obj = service_obj
         # try:
-        self.config_json = json_loads(db_obj.config)
+        self.config_json = json_loads(service_obj.config)
         # except ValueError, e:
-        #     sys.exit("Error parsing configuration json object:\n%s" % db_obj.config)
-        self.config_json["name"] = self.db_obj.name
-        self.config_json["points"] = self.db_obj.points
-        self.config_json["subdomain"] = self.db_obj.subdomain
+        #     sys.exit("Error parsing configuration json object:\n%s" % service_obj.config)
+        self.config_json["name"] = self.service_obj.name
+        self.config_json["points"] = self.service_obj.points
+        self.config_json["subdomain"] = self.service_obj.subdomain
         self.instance = self.load_pluggin()
 
     def load_pluggin(self):
-        module_name = self.db_obj.module
+        module_name = self.service_obj.module
         module = __import__('pluggins.' + module_name, fromlist=[module_name])
         return getattr(module, module_name)(self.config_json)
 
     def score(self, team_obj):
-        return self.instance.score(team_obj)
+        score_obj = self.instance.score(team_obj, self.service_obj.name)
+        score_obj.datetime = timezone.now()
+        return score_obj
 
 def arg_list_dict(args):
     value_dict = {}

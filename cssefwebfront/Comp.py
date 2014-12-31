@@ -20,6 +20,9 @@ from utils import getAuthValues
 from django.utils import timezone
 from hashlib import md5
 
+#from cssef import ServiceModule
+from cssef import LoadServs
+
 def login(request):
 	"""
 	Page for teams to login to for a competition
@@ -184,6 +187,13 @@ def servicestatus(request, competition = None):
 	c = getAuthValues(request, c)
 	if c["auth_name"] != "auth_team_blue":
 		return render_to_response('Comp/servicestatus.html', c)
+	c["status_list"] = []
+	service_modules = LoadServs(c["competition_object"].compid)
+	for i in service_modules:
+		c["status_list"].append({
+			"service": i.service_obj,
+			"score": i.score(request.user)
+		})
 	return render_to_response('Comp/servicestatus.html', c)
 
 def servicetimeline(request, competition = None):
