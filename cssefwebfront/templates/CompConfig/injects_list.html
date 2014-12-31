@@ -74,22 +74,22 @@
 					<a href="/admin/competitions/{{ competition_object.compurl }}/injects/create/" class="btn btn-primary">Create Inject</a>
 					<br>
 					<br>
-					{% if injects %}
-					{% for i in injects %}
+					{% if inject_list %}
+					{% for i in inject_list %}
 					<div class="panel panel-default">
-						<div class="panel-heading"> {{ i.title }} </div>
+						<div class="panel-heading"> {{ i.inject.title }} </div>
 						<div class="panel-body">
-							<strong>Released at: </strong>{{ i.dt_delivery }}<br>
-							<strong>Due at: </strong>{{ i.dt_response_due }}<br>
-							<strong>Closes at: </strong>{{ i.dt_response_close }}<br>
-							{% if i.isfile %}
-							<strong> Attached File: </strong><a href="/resources/injects/{{i.compid}}/{{i.ijctid}}/{{i.filename}}">{{ i.filename }}</a><br>
-							{% endif %}
+							<strong>Released at: </strong>{{ i.inject.dt_delivery }}<br>
+							<strong>Due at: </strong>{{ i.inject.dt_response_due }}<br>
+							<strong>Closes at: </strong>{{ i.inject.dt_response_close }}<br>
+							{% for k in i.files %}
+							<strong> Attached File: </strong><a href="/resources/injects/{{i.inject.compid}}/{{i.inject.ijctid}}/{{k.urlencfilename}}">{{ k.filename }}</a><br>
+							{% endfor %}
 							<strong>Inject body:</strong><br>
-							{{ i.body }}
+							{{ i.inject.body }}
 							<div class="bt-component pull-right">
-								<a href="/admin/competitions/{{ competition_object.compurl }}/injects/edit/{{ i.ijctid }}/" class="btn btn-primary">Edit</a>
-								<a href="/admin/competitions/{{ competition_object.compurl }}/injects/delete/{{ i.ijctid }}/" class="btn btn-danger">Delete</a>
+								<a href="/admin/competitions/{{ competition_object.compurl }}/injects/edit/{{ i.inject.ijctid }}/" class="btn btn-primary">Edit</a>
+								<a href="/admin/competitions/{{ competition_object.compurl }}/injects/delete/{{ i.inject.ijctid }}/" class="btn btn-danger">Delete</a>
 							</div>
 							<br>
 						</div>

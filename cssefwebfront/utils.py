@@ -1,6 +1,13 @@
 import json
 from models import Service
 from models import Team
+from models import Inject
+from hashlib import md5
+import settings
+from django.core.files.uploadedfile import UploadedFile
+from models import Document
+from urllib import quote
+
 
 def getAuthValues(request, c):
 	c["auth"] = request.user.is_authenticated
@@ -35,6 +42,27 @@ class UserMessages:
 		self.info = []
 		self.error = []
 		self.success = []
+
+def save_document(request_file, content_subdir, related_obj):
+	uploadedfile = UploadedFile(request_file)
+	file_content = uploadedfile.read()
+	doc_obj = Document()
+	doc_obj.filehash = md5(file_content).hexdigest()
+	doc_obj.filepath = settings.BASE_DIR + content_subdir + doc_obj.filehash
+	doc_obj.filename = uploadedfile.name
+	doc_obj.urlencfilename = quote(uploadedfile.name)
+	if related_obj.__class__.__name__.lower() == "queryset":
+		if len(related_obj) == 1:
+			setattr(doc_obj, related_obj[0].__class__.__name__.lower(), related_obj[0])
+		else:
+			print "ERROR: The queryset object had %s elements to it" % str(len(related_obj))
+	else:
+		setattr(doc_obj, related_obj.__class__.__name__.lower(), related_obj)
+	doc_obj.save()
+
+	wfile = open(doc_obj.filepath, "w")
+	wfile.write(file_content)
+	wfile.close()
 
 def add_teams_scoreconfigs(compid):
 	# Add service scoring configuration objects to each team

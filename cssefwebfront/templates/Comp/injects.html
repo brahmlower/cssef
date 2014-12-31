@@ -69,23 +69,23 @@
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 					<!-- Actual page content -->
 					{% if auth_name == "auth_team_blue" %}
-					{% if not injects %}
+					{% if not inject_list %}
 					<p>No injects have been released yet.</p>
 					{% endif %}
-					{% for i in injects %}
+					{% for i in inject_list %}
 					<div class="panel panel-default">
-						<div class="panel-heading"> {{ i.title }} </div>
+						<div class="panel-heading"> {{ i.inject.title }} </div>
 						<div class="panel-body">
-							<strong>Released at: </strong>{{ i.dt_delivery }}<br>
-							<strong>Due at: </strong>{{ i.dt_response_due }}<br>
-							<strong>Closes at: </strong>{{ i.dt_response_close }}<br>
-							{% if i.isfile %}
-							<strong> Attached File: </strong><a href="/resources/injects/{{i.compid}}/{{i.ijctid}}/{{i.filename}}">{{ i.filename }}</a><br>
-							{% endif %}
+							<strong>Released at: </strong>{{ i.inject.dt_delivery }}<br>
+							<strong>Due at: </strong>{{ i.inject.dt_response_due }}<br>
+							<strong>Closes at: </strong>{{ i.inject.dt_response_close }}<br>
+							{% for k in i.files %}
+							<strong> Attached File: </strong><a href="/resources/injects/{{i.inject.compid}}/{{i.inject.ijctid}}/{{k.urlencfilename}}">{{ k.filename }}</a><br>
+							{% endfor %}
 							<strong>Inject body:</strong><br>
-							{{ i.body }}
+							{{ i.inject.body }}
 							<div class="bt-component pull-right">
-								<a href="/competitions/{{ competition_object.compurl }}/injects/{{ i.ijctid }}" class="btn btn-primary">View/Respond</a>
+								<a href="/competitions/{{ competition_object.compurl }}/injects/{{ i.inject.ijctid }}" class="btn btn-primary">View/Respond</a>
 							</div>
 						</div>
 					</div>

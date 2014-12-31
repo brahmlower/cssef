@@ -16,13 +16,14 @@ from models import Service
 from models import Inject
 from models import Score
 from models import Team
-
+from models import Document
 from utils import UserMessages
 from utils import getAuthValues
 from utils import add_teams_scoreconfigs
 from utils import clean_teams_scoreconfigs
 from hashlib import md5
 import settings
+from utils import save_document
 
 # General competition configuration modules
 def summary(request, competition = None):
@@ -245,7 +246,12 @@ def injects_list(request, competition = None):
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c["injects"] = Inject.objects.filter(compid = c["competition_object"].compid)
+	c["inject_list"] = []
+	for i in Inject.objects.filter(compid = c["competition_object"].compid):
+		c["inject_list"].append({
+			"inject": i,
+			"files": Document.objects.filter(inject = i)
+		})
 	return render_to_response('CompConfig/injects_list.html', c)
 
 def injects_edit(request, competition = None, ijctid = None):
@@ -269,26 +275,11 @@ def injects_edit(request, competition = None, ijctid = None):
 	# Note this will only work when there are no lists
 	tmp_dict = request.POST.copy().dict()
 	tmp_dict.pop('csrfmiddlewaretoken', None)
-	# If we're given a file
-	try:
-		# Handle necessary file manipulation
-		uf = UploadedFile(request.FILES['docfile'])
-		file_content = uf.read()
-		md5_obj = md5()
-		md5_obj.update(file_content)
-		md5_obj.hexdigest()
-		dest_filepath = settings.BASE_DIR + settings.CONTENT_INJECT_PATH + md5_obj.hexdigest()
-		wfile = open(dest_filepath, "w")
-		wfile.write(file_content)
-		wfile.close()
-		# Fill out file related parts of the model
-		tmp_dict['isfile'] = True
-		tmp_dict['filename'] = uf.name
-		tmp_dict['filepath'] = dest_filepath
-	except KeyError:
-		pass
 	ijct_obj = Inject.objects.filter(compid = c["competition_object"].compid, ijctid = int(ijctid))
 	ijct_obj.update(**tmp_dict)
+	# Was there a file? If so, save it!
+	if 'docfile' in request.FILES:
+		save_document(request.FILES['docfile'], settings.CONTENT_INJECT_PATH, ijct_obj)
 	return HttpResponseRedirect('/admin/competitions/%s/injects/' % competition)
 
 def injects_delete(request, competition = None, ijctid = None):
@@ -333,26 +324,10 @@ def injects_create(request, competition = None):
 	if not form_obj.is_valid():
 		c["messages"].new_info("Invalid field data in inject form: %s" % form_obj.errors, 1001)
 		return render_to_response('CompConfig/injects_create-edit.html', c)
-	# If we're given a file
-	try:
-		# Handle necessary file manipulation
-		uf = UploadedFile(request.FILES['docfile'])
-		file_content = uf.read()
-		md5_obj = md5()
-		md5_obj.update(file_content)
-		md5_obj.hexdigest()
-		dest_filepath = settings.BASE_DIR + settings.CONTENT_INJECT_PATH + md5_obj.hexdigest()
-		wfile = open(dest_filepath, "w")
-		wfile.write(file_content)
-		wfile.close()
-		# Fill out file related parts of the model
-		form_dict['isfile'] = True
-		form_dict['filename'] = uf.name
-		form_dict['filepath'] = dest_filepath
-	except KeyError:
-		print "no picture uplaoded"
-		print request.FILES
-		pass
+	# Start saving the inject!
 	ijct_obj = Inject(**form_dict)
 	ijct_obj.save()
+	# Was there a file? If so, save it!
+	if 'docfile' in request.FILES:
+		save_document(request.FILES['docfile'], settings.CONTENT_INJECT_PATH, ijct_obj)
 	return HttpResponseRedirect("/admin/competitions/%s/injects/" % competition)

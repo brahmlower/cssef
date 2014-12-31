@@ -10,6 +10,7 @@ from django.db.models import TimeField
 from django.db.models import FileField
 from django.db.models import IntegerField
 from django.db.models import PositiveIntegerField
+from django.db.models import ForeignKey
 from django.forms.widgets import PasswordInput
 from django.contrib.auth.models import User
 #from datetime import datetime
@@ -69,9 +70,6 @@ class Inject(Model):
 	dt_response_close = DateTimeField()
 	title = CharField(max_length = 50)
 	body = CharField(max_length = 1000)
-	isfile = BooleanField(default = False)
-	filepath = CharField(max_length = 256)
-	filename = CharField(max_length = 64)
 
 class Admin(Model):
 	last_login = DateTimeField(default = timezone.now())
@@ -88,11 +86,7 @@ class InjectResponse(Model):
 	teamid = PositiveIntegerField()
 	ijctid = PositiveIntegerField()
 	datetime = DateTimeField(default = timezone.now())
-	istext = BooleanField(default = False)
-	isfile = BooleanField(default = False)
 	textentry = TextField(max_length = 1000)
-	filepath = CharField(max_length = 256)
-	filename = CharField(max_length = 64)
 
 class IncidentResponse(Model):
 	intrspid = AutoField(primary_key = True)
@@ -102,7 +96,15 @@ class IncidentResponse(Model):
 	datetime = DateTimeField(default = timezone.now())
 	subject = CharField(max_length = 100, default = "")
 	textentry = TextField(max_length = 1000)
-	isfile = BooleanField(default = False)
+
+class Document(Model):
+	docid = AutoField(primary_key = True)
+	inject = ForeignKey(Inject, null=True, blank=True, unique = False)
+	injectresponse = ForeignKey(InjectResponse, null=True, blank=True, unique = False)
+	incidentresponse = ForeignKey(IncidentResponse, null=True, blank=True, unique = False)
+	filehash = CharField(max_length = 32)
 	filepath = CharField(max_length = 256)
 	filename = CharField(max_length = 64)
+	urlencfilename = CharField(max_length = 128)
+
 

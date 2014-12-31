@@ -107,24 +107,24 @@
 						<button id="new_response_button" class="btn btn-primary" onclick="toggle_form()">New Incident Response</button>
 					</div>
 					<hr>
-					{% if not responses %}
+					{% if not response_list %}
 					<p>Your teams has not submitted any incident responses yet.</p>
 					{% endif %}
-					{% for i in responses %}
+					{% for i in response_list %}
 					<div class="panel panel-default">
-						<div class="panel-heading">{{ i.subject }}</div>
+						<div class="panel-heading">{{ i.response.subject }}</div>
 						<div class="panel-body">
-							<strong> Submitted at: </strong> {{ i.datetime }} <br>
+							<strong> Submitted at: </strong> {{ i.response.datetime }} <br>
 							<strong> Submitted Text: </strong>
-							<p>{{ i.textentry }}</p>
-							{% if i.isfile %}
+							<p>{{ i.response.textentry }}</p>
+							{% for k in i.files %}
 							<strong> Attached File </strong><br>
-							<img src="/resources/incidentresponses/{{i.compid}}/{{i.teamid}}/{{i.intrspid}}/{{i.filename}}">
-							<p>File: <a href="/resources/incidentresponses/{{i.compid}}/{{i.teamid}}/{{i.intrspid}}/{{i.filename}}">{{ i.filename }}</a></p>
-							{% endif %}
+							<img src="/resources/incidentresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.intrspid}}/{{k.urlencfilename}}">
+							<p>File: <a href="/resources/incidentresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.intrspid}}/{{k.urlencfilename}}">{{ k.filename }}</a></p>
+							{% endfor %}
 							<br>
 							<div class="bt-component pull-right">
-								<a href="/competitions/{{ competition_object.compurl }}/incidentresponse/{{ i.intrspid }}" class="btn btn-primary">View/Respond</a>
+								<a href="/competitions/{{ competition_object.compurl }}/incidentresponse/{{ i.response.intrspid }}" class="btn btn-primary">View/Respond</a>
 							</div>
 						</div>
 					</div>

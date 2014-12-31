@@ -9,6 +9,7 @@ from django.core.files.uploadedfile import UploadedFile
 from models import Competition
 from models import InjectResponse
 from models import IncidentResponse
+from models import Document
 from models import Service
 from models import Inject
 from models import Score
@@ -23,6 +24,8 @@ from utils import getAuthValues
 from django.utils import timezone
 from hashlib import md5
 from cssef import LoadServs
+
+from utils import save_document
 
 def login(request):
 	"""
@@ -115,7 +118,12 @@ def injects(request, competition = None):
 	c = getAuthValues(request, c)
 	if c["auth_name"] != "auth_team_blue":
 		return render_to_response('Comp/injects.html', c)
-	c["injects"] = Inject.objects.filter(compid = c["competition_object"].compid, dt_delivery__lte = timezone.now())
+	c["inject_list"] = []
+	for i in Inject.objects.filter(compid = request.user.compid, dt_delivery__lte = timezone.now()):
+		c["inject_list"].append({
+			"inject": i,
+			"files": Document.objects.filter(inject = i)
+		})
 	return render_to_response('Comp/injects.html', c)
 
 def injects_respond(request, competition = None, ijctid = None):
@@ -131,9 +139,18 @@ def injects_respond(request, competition = None, ijctid = None):
 	c.update(csrf(request))
 	# If we're not getting POST data, serve the page normally
 	if request.method != "POST":
-		c["inject"] = Inject.objects.get(compid = c["competition_object"].compid, ijctid = ijctid)
-		c["responses"] = InjectResponse.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid, ijctid = ijctid)
-		if c["inject"].dt_response_close <= timezone.now():
+		c["inject"] = {
+			"inject": Inject.objects.get(compid = c["competition_object"].compid, ijctid = ijctid),
+			"files": Document.objects.filter(inject = ijctid)
+		}
+		#c["responses"] = InjectResponse.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid, ijctid = ijctid)
+		c["response_list"] = []
+		for i in InjectResponse.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid, ijctid = ijctid):
+			c["response_list"].append({
+				"response": i,
+				"files": Document.objects.filter(injectresponse = i)
+			})
+		if c["inject"]["inject"].dt_response_close <= timezone.now():
 			c["response_locked"] = True
 		else:
 			c["response_locked"] = False
@@ -145,37 +162,17 @@ def injects_respond(request, competition = None, ijctid = None):
 		# Very clever person - submission form was closed, but they're attempting to POST anyway
 		return HttpResponseRedirect('/competitions/%s/injects/%s/' % (competition, ijctid))
 	# Determine if we're handling text entry or file upload
-	ijct_resp_obj = InjectResponse()
-	ijct_resp_obj.compid = c["competition_object"].compid
-	ijct_resp_obj.teamid = request.user.teamid
-	ijct_resp_obj.ijctid = int(ijctid)
+	tmp_dict = request.POST.copy().dict()
+	tmp_dict.pop('csrfmiddlewaretoken', None)
+	tmp_dict.pop('docfile', None)
+	tmp_dict['compid'] = request.user.compid
+	tmp_dict['teamid'] = request.user.teamid
+	tmp_dict['ijctid'] = int(ijctid)
+	ijct_resp_obj = InjectResponse(**tmp_dict)
+	ijct_resp_obj.save()
 	# Checks if we were given a file
-	try:
-		# Handle necessary file manipulation
-		print request.FILES
-		uf = UploadedFile(request.FILES['docfile'])
-		file_content = uf.read()
-		md5_obj = md5()
-		md5_obj.update(file_content)
-		md5_obj.hexdigest()
-		dest_filepath = settings.BASE_DIR + settings.CONTENT_INJECT_REPONSE_PATH + md5_obj.hexdigest()
-		wfile = open(dest_filepath, "w")
-		wfile.write(file_content)
-		wfile.close()
-		# Fill out file related parts of the model
-		ijct_resp_obj.isfile = True
-		ijct_resp_obj.filename = uf.name
-		ijct_resp_obj.filepath = dest_filepath
-	except KeyError:
-		pass
-	# Checks if we were given text
-	form = InjectResponseForm(request.POST)
-	if  form.is_valid():
-		ijct_resp_obj.istext = True
-		ijct_resp_obj.textentry = form.cleaned_data['textentry']
-	#TODO: Have some way of telling user they need to add input before they may submit
-	if ijct_resp_obj.istext or ijct_resp_obj.isfile:
-		ijct_resp_obj.save()
+	if 'docfile' in request.FILES:
+		save_document(request.FILES['docfile'], settings.CONTENT_INJECT_REPONSE_PATH, ijct_resp_obj)
 	return HttpResponseRedirect('/competitions/%s/injects/%s/' % (competition, ijctid))
 
 
@@ -243,10 +240,15 @@ def incidentresponse(request, competition = None):
 	c.update(csrf(request))
 	# Get any already opened intrusion responses
 	c["responseform"] = IncidentResponseForm()
-	c["responses"] = IncidentResponse.objects.filter(compid = request.user.compid, teamid = request.user.teamid, replyto = -1)
 	# If we're not getting POST data, serve the page normally
 	if request.method != "POST":
 		c["responseform"] = IncidentResponseForm()
+		c["response_list"] = []
+		for i in IncidentResponse.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid, replyto = -1):
+			c["response_list"].append({
+				"response": i,
+				"files": Document.objects.filter(incidentresponse = i)
+			})
 		return render_to_response('Comp/incidentresponse.html', c)
 	# Checks if form is valid, and if so, builds model
 	form = IncidentResponseForm(request.POST)
@@ -260,26 +262,12 @@ def incidentresponse(request, competition = None):
 	intresp_obj.subject = form.cleaned_data['subject']
 	intresp_obj.textentry = form.cleaned_data['textentry']
 	intresp_obj.replyto = -1
-	# Checks if we were given a file
-	try:
-		# Handle necessary file manipulation
-		uf = UploadedFile(request.FILES['docfile'])
-		file_content = uf.read()
-		md5_obj = md5()
-		md5_obj.update(file_content)
-		md5_obj.hexdigest()
-		dest_filepath = settings.BASE_DIR + settings.CONTENT_INCIDENT_REPONSE_PATH + md5_obj.hexdigest()
-		wfile = open(dest_filepath, "w")
-		wfile.write(file_content)
-		wfile.close()
-		# Fill out file related parts of the model
-		intresp_obj.isfile = True
-		intresp_obj.filename = uf.name
-		intresp_obj.filepath = dest_filepath
-	except KeyError:
-		pass
 	intresp_obj.save()
-	return render_to_response('Comp/incidentresponse.html', c)
+	# Was there a file? If so, save it!
+	if 'docfile' in request.FILES:
+		save_document(request.FILES['docfile'], settings.CONTENT_INCIDENT_REPONSE_PATH, intresp_obj)
+	#return render_to_response('Comp/incidentresponse.html')
+	return HttpResponseRedirect('/competitions/%s/incidentresponse/' % c["competition_object"].compurl)
 
 def incidentresponse_respond(request, competition = None, intrspid = None):
 	c = {}
@@ -291,8 +279,16 @@ def incidentresponse_respond(request, competition = None, intrspid = None):
 	c.update(csrf(request))
 	# Get any already opened intrusion responses
 	c["responseform"] = IncidentResponseReplyForm()
-	c["firstpost"] = IncidentResponse.objects.get(intrspid = intrspid)
-	c["responses"] = IncidentResponse.objects.filter(compid = request.user.compid, teamid = request.user.teamid, replyto = intrspid)
+	c["firstpost"] = {
+		"response": IncidentResponse.objects.get(intrspid = intrspid),
+		"files": Document.objects.filter(incidentresponse = intrspid)
+		}
+	c["response_list"] = []
+	for i in IncidentResponse.objects.filter(compid = request.user.compid, teamid = request.user.teamid, replyto = intrspid):
+		c["response_list"].append({
+			"response": i,
+			"files": Document.objects.filter(incidentresponse = i)
+		})
 	# If we're not getting POST data, serve the page normally
 	if request.method != "POST":
 		c["responseform"] = IncidentResponseReplyForm()
@@ -309,24 +305,10 @@ def incidentresponse_respond(request, competition = None, intrspid = None):
 	intresp_obj.datetime = timezone.now()
 	intresp_obj.textentry = form.cleaned_data['textentry']
 	intresp_obj.replyto = intrspid
-	# Checks if we were given a file
-	try:
-		# Handle necessary file manipulation
-		uf = UploadedFile(request.FILES['docfile'])
-		file_content = uf.read()
-		md5_obj = md5()
-		md5_obj.update(file_content)
-		md5_obj.hexdigest()
-		dest_filepath = settings.BASE_DIR + settings.CONTENT_INCIDENT_REPONSE_PATH + md5_obj.hexdigest()
-		wfile = open(dest_filepath, "w")
-		wfile.write(file_content)
-		wfile.close()
-		# Fill out file related parts of the model
-		intresp_obj.isfile = True
-		intresp_obj.filename = uf.name
-		intresp_obj.filepath = dest_filepath
-	except KeyError:
-		pass
 	intresp_obj.save()
-	return render_to_response('Comp/incidentresponse_view_respond.html', c)
+	# Was there a file? If so, save it!
+	if 'docfile' in request.FILES:
+		save_document(request.FILES['docfile'], settings.CONTENT_INCIDENT_REPONSE_PATH, intresp_obj)
+	#return render_to_response('Comp/incidentresponse_view_respond.html')
+	return HttpResponseRedirect('/competitions/%s/incidentresponse/%s/' % (c["competition_object"].compurl, str(intrspid)))
 

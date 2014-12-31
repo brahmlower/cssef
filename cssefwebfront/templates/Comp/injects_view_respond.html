@@ -70,32 +70,32 @@
 					<!-- Actual page content -->
 					{% if auth_name == "auth_team_blue" %}
 					<div class="panel panel-default">
-						<div class="panel-heading"> {{ inject.title }} </div>
+						<div class="panel-heading"> {{ inject.inject.title }} </div>
 						<div class="panel-body">
-							<strong>Released at: </strong>{{ inject.dt_delivery }}<br>
-							<strong>Due at: </strong>{{ inject.dt_response_due }}<br>
-							<strong>Closes at: </strong>{{ inject.dt_response_close }}<br>
-							{% if inject.isfile %}
-							<strong> Attached File: </strong><a href="/resources/injects/{{inject.compid}}/{{inject.ijctid}}/{{inject.filename}}">{{ inject.filename }}</a><br>
-							{% endif %}
+							<strong>Released at: </strong>{{ inject.inject.dt_delivery }}<br>
+							<strong>Due at: </strong>{{ inject.inject.dt_response_due }}<br>
+							<strong>Closes at: </strong>{{ inject.inject.dt_response_close }}<br>
+							{% for k in inject.files %}
+							<strong> Attached File: </strong><a href="/resources/injects/{{inject.inject.compid}}/{{inject.inject.ijctid}}/{{k.urlencfilename}}">{{ k.filename }}</a><br>
+							{% endfor %}
 							<strong>Inject body:</strong><br>
-							{{ inject.body }}
+							{{ inject.inject.body }}
 						</div>
 					</div>
 
-					{% for i in responses %}
+					{% for i in response_list %}
 					<div class="panel panel-default">
-						<div class="panel-heading"> Submitted at: {{ i.datetime }}</div>
+						<div class="panel-heading"> Submitted at: {{ i.response.datetime }}</div>
 						<div class="panel-body">
-							{% if i.istext %}
+							{% if i.response.textentry %}
 							<strong> Submitted Text </strong>
-							<p>{{ i.textentry }}</p>
+							<p>{{ i.response.textentry }}</p>
 							{% endif %}
-							{% if i.isfile %}
+							{% for k in i.files %}
 							<strong> Attached File </strong><br>
-							<img src="/resources/injectresponses/{{i.compid}}/{{i.teamid}}/{{i.ijctrespid}}/{{i.filename}}">
-							<p>File: <a href="/resources/injectresponses/{{i.compid}}/{{i.teamid}}/{{i.ijctrespid}}/{{i.filename}}">{{ i.filename }}</a></p>
-							{% endif %}
+							<img src="/resources/injectresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.ijctrespid}}/{{k.urlencfilename}}">
+							<p>File: <a href="/resources/injectresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.ijctrespid}}/{{k.urlencfilename}}">{{ k.filename }}</a></p>
+							{% endfor %}
 						</div>
 					</div>
 					{% endfor %}
@@ -104,7 +104,7 @@
 						<div class="panel-heading"> Response Submission </div>
 						<div class="panel-body">
 							{% if not response_locked %}
-							<form action="/competitions/{{ competition_object.compurl }}/injects/{{ inject.ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+							<form action="/competitions/{{ competition_object.compurl }}/injects/{{ inject.inject.ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 								{% csrf_token %}
 								{{ responseform.textentry.errors }}
 								<label for="{{ responseform.textentry.id_for_label }}" class="col-lg-2 control-label">{{ responseform.textentry.label }}</label>

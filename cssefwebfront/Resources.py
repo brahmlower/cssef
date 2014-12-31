@@ -2,8 +2,10 @@ from django.http import StreamingHttpResponse
 from django.http import HttpResponse
 from models import IncidentResponse
 from models import InjectResponse
+from models import Document
 from models import Inject
 from utils import getAuthValues
+from urllib import unquote
 
 def verify_user(ad, id_name):
 	c = getAuthValues(ad['request'], {})
@@ -12,25 +14,31 @@ def verify_user(ad, id_name):
 		print "you're not properly authenticated"
 		return HttpResponse()
 	# Limits blue teams to accessing only their own inject files
-	if c["auth_name"] == "auth_team_blue" and (ad['request'].user.compid != int(ad['compid']) or ad['request'].user.teamid != int(ad['teamid'])):
+	if c["auth_name"] == "auth_team_blue" and ad['request'].user.compid != int(ad['compid']):
 		print "you're blue team, trying to access other peoples documents"
 		return HttpResponse()
 
 def inject(request, compid = None, ijctid = None, filename = None):
 	verify_user(locals(), 'ijctid')
-	ijct_obj = Inject.objects.get(compid = compid, ijctid = ijctid, filename = filename)
-	rfile = open(ijct_obj.filepath, 'r')
+	filename = unquote(filename)
+	ijct_obj = Inject.objects.get(compid = compid, ijctid = ijctid)
+	doc_ob = Document.objects.get(inject = ijct_obj, filename = filename)
+	rfile = open(doc_ob.filepath, 'r')
 	return StreamingHttpResponse(rfile, content_type='application/force-download')
 
 def injectresponse(request, compid = None, teamid = None, ijctrespid = None, filename = None):
 	verify_user(locals(), 'ijctrespid')
-	ijct_resp_obj = InjectResponse.objects.get(compid = compid, teamid = teamid, ijctrespid = ijctrespid, filename = filename)
-	rfile = open(ijct_resp_obj.filepath, 'r')
+	filename = unquote(filename)
+	ijct_resp_obj = InjectResponse.objects.get(compid = compid, teamid = teamid, ijctrespid = ijctrespid)
+	doc_ob = Document.objects.get(injectresponse = ijct_resp_obj, filename = filename)
+	rfile = open(doc_ob.filepath, 'r')
 	return StreamingHttpResponse(rfile, content_type='application/force-download')
 
 def incidentresponse(request, compid = None, teamid = None, intrspid = None, filename = None):
 	verify_user(locals(), 'intrspid')
-	ijct_resp_obj = IncidentResponse.objects.get(compid = compid, teamid = teamid, intrspid = intrspid, filename = filename)
-	rfile = open(ijct_resp_obj.filepath, 'r')
+	filename = unquote(filename)
+	icdt_resp_obj = IncidentResponse.objects.get(compid = compid, teamid = teamid, intrspid = intrspid)
+	doc_ob = Document.objects.get(incidentresponse = icdt_resp_obj, filename = filename)
+	rfile = open(doc_ob.filepath, 'r')
 	return StreamingHttpResponse(rfile, content_type='application/force-download')
 
