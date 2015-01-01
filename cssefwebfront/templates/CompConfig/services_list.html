@@ -98,26 +98,21 @@
 					<a href="/admin/competitions/{{ competition_object.compurl }}/services/create/" class="btn btn-primary">Create Service</a>
 					<br><br>
 
-					{% if services %}
-					{% for i in services %}
+					{% if service_list %}
+					{% for i in service_list %}
 					<div class="panel panel-default">
-						<div class="panel-heading"> {{i.name}} </div>
+						<div class="panel-heading"> {{i.service.name}} </div>
 						<div class="panel-body">
-							<strong>Name: </strong>{{ i.name }}
-							<br>
-							<strong>Module: </strong>{{ i.module }}.py
-							<br>
-							<strong>Points: </strong>{{ i.points}}
-							<br>
-							<strong>Subdomain: </strong>{{ i.subdomain }}
-							<br>
-							<strong>Service: </strong>{{ i.config }}
-							<br>
+							<strong>Name: </strong>{{ i.service.name }}<br>
+							<strong>Module: </strong>{{ i.module.modulename }}<br>
+							<strong>Points: </strong>{{ i.service.points}}<br>
+							<strong>Subdomain: </strong>{{ i.service.subdomain }}<br>
+							<strong>Service: </strong>{{ i.service.config }}<br>
 							<strong>Description: </strong><br>
-							{{ i.desc }}
+							{{ i.service.desc }}
 							<div class="bt-component pull-right">
-								<a href="/admin/competitions/{{ competition_object.compurl }}/services/edit/{{ i.servid }}/" class="btn btn-primary">Edit</a>
-								<a href="/admin/competitions/{{ competition_object.compurl }}/services/delete/{{ i.servid }}/" class="btn btn-danger">Delete</a>
+								<a href="/admin/competitions/{{ competition_object.compurl }}/services/edit/{{ i.service.servid }}/" class="btn btn-primary">Edit</a>
+								<a href="/admin/competitions/{{ competition_object.compurl }}/services/delete/{{ i.service.servid }}/" class="btn btn-danger">Delete</a>
 							</div>
 						</div>
 					</div>

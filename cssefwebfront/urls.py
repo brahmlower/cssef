@@ -26,11 +26,17 @@ urlpatterns = patterns('',
 	url(r'^admin/login/$',					AdminConfig.login),
 	url(r'^admin/logout/$',					AdminConfig.logout),
 	url(r'^admin/siteconfig/$',				AdminConfig.site_config),
-	# User management configurations
+	# User management pages
 	url(r'^admin/users/$',					AdminConfig.users_list),
 	url(r'^admin/users/edit/$',				AdminConfig.users_edit),
 	url(r'^admin/users/delete/$',			AdminConfig.users_delete),
 	url(r'^admin/users/create/$',			AdminConfig.users_create),
+	# Service module pages
+	url(r'^admin/servicemodules/$',			AdminConfig.servicemodule_list),
+	url(r'^admin/servicemodules/create/$',	AdminConfig.servicemodule_create),
+	url(r'^admin/servicemodules/edit/(?P<servmdulid>[1-9][1-9]*)/$',	AdminConfig.servicemodule_edit),
+	url(r'^admin/servicemodules/delete/(?P<servmdulid>[1-9][1-9]*)/$',	AdminConfig.servicemodule_delete),
+	# Competition management pages
 	url(r'^admin/competitions/$',			AdminConfig.comp_list),
 	url(r'^admin/competitions/create/$',	AdminConfig.comp_create),
 	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/delete/$',	AdminConfig.comp_delete),

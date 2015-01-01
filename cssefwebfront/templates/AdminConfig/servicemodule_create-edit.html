@@ -52,22 +52,40 @@
 
 		<div class="container-fluid">
 			<div class="row">
-				<!-- Start admin navigation sidebar -->
 				<div class="col-sm-3 col-md-2 sidebar">
 					<ul class="nav nav-sidebar">
-						<li class="active"><a href="/admin/home/">Home</a></li>
+						<li><a href="/admin/home/">Home</a></li>
 						<li><a href="/admin/users/">Users</a></li>
 						<li><a href="/admin/competitions/">Competitions</a></li>
-						<li><a href="/admin/servicemodules/">Service Modules</a></li>
+						<li class="active"><a href="/admin/servicemodules/">Service Modules</a></li>
 						<li><a href="#">Account</a></li>
 					</ul>
 				</div>
-				<!-- End admin navigation sidebar -->
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-					<div class="jumbotron">
-						<h1>Admin Home</h1>
-						<p>This is where the admins (white team in this case) live!</p>
-					</div>
+					<!-- actual page content-->
+					{% if action == "create" %}
+					<form action="/admin/servicemodules/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
+					{% else %}
+					<form action="/admin/servicemodules/edit/{{servmdulid}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+					{% endif %}
+						{% csrf_token %}
+						{{ form.modulename.errors }}
+						<label for="{{ form.modulename.id_for_label }}" class="col-lg-2 control-label">{{ form.modulename.label }}</label>
+						<div class="col-lg-10">{{ form.modulename }}<br></div>
+
+						{{ form.description.errors }}
+						<label for="{{ form.description.id_for_label }}" class="col-lg-2 control-label">{{ form.description.label }}</label>
+						<div class="col-lg-10">{{ form.description }}<br></div>
+
+						{{ form.docfile.errors }}
+						<label for="{{ form.docfile.id_for_label }}" class="col-lg-2 control-label">{{ form.docfile.label }}</label>
+						<div class="col-lg-10">{{ form.docfile }}<br></div>
+
+						<div class="col-lg-10 col-lg-offset-2">
+							<button id="form_sub_button" type="submit" class="btn btn-primary">Save</button>
+							<p id="form_messages"></p>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>

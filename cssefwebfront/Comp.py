@@ -49,7 +49,6 @@ def login(request):
 		return render_to_response('Comp/login.html', c)
 	auth.login(request, team)
 	competition = Competition.objects.get(compid = compid)
-	print competition.compurl
 	return HttpResponseRedirect("/competitions/%s/summary/" % competition.compurl)
 
 def logout(request, competition = None):

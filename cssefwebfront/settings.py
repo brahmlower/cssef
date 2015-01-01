@@ -97,4 +97,5 @@ STATIC_URL = '/resources/static/'
 CONTENT_INJECT_PATH =           "/resources/content/injects/"
 CONTENT_INJECT_REPONSE_PATH =   "/resources/content/injectresponses/"
 CONTENT_INCIDENT_REPONSE_PATH = "/resources/content/incidentresponses/"
+CONTENT_SERVICEMODULE_PATH =    "/pluggins/"
 

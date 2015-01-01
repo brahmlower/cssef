@@ -43,10 +43,15 @@ class Team(Model):
 	def is_authenticated(self):
 		return True
 
+class ServiceModule(Model):
+	servmdulid = AutoField(primary_key = True)
+	modulename = CharField(max_length = 20)
+	description = TextField(max_length = 500)
+
 class Service(Model):
 	servid = AutoField(primary_key = True)
 	compid = PositiveIntegerField()
-	module = CharField(max_length = 10)
+	servicemodule = ForeignKey(ServiceModule, unique = False)
 	name = CharField(max_length = 30)
 	desc = CharField(max_length = 200)
 	config = CharField(max_length = 1000, default = "{}")
@@ -99,9 +104,10 @@ class IncidentResponse(Model):
 
 class Document(Model):
 	docid = AutoField(primary_key = True)
-	inject = ForeignKey(Inject, null=True, blank=True, unique = False)
-	injectresponse = ForeignKey(InjectResponse, null=True, blank=True, unique = False)
-	incidentresponse = ForeignKey(IncidentResponse, null=True, blank=True, unique = False)
+	inject = ForeignKey(Inject, null = True, blank = True, unique = False)
+	injectresponse = ForeignKey(InjectResponse, null = True, blank = True, unique = False)
+	incidentresponse = ForeignKey(IncidentResponse, null = True, blank = True, unique = False)
+	servicemodule = ForeignKey(ServiceModule, null = True, blank = True, unique = True)
 	filehash = CharField(max_length = 32)
 	filepath = CharField(max_length = 256)
 	filename = CharField(max_length = 64)

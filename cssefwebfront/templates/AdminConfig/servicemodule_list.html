@@ -52,21 +52,44 @@
 
 		<div class="container-fluid">
 			<div class="row">
-				<!-- Start admin navigation sidebar -->
 				<div class="col-sm-3 col-md-2 sidebar">
 					<ul class="nav nav-sidebar">
-						<li class="active"><a href="/admin/home/">Home</a></li>
+						<li><a href="/admin/home/">Home</a></li>
 						<li><a href="/admin/users/">Users</a></li>
 						<li><a href="/admin/competitions/">Competitions</a></li>
-						<li><a href="/admin/servicemodules/">Service Modules</a></li>
+						<li class="active"><a href="/admin/servicemodules/">Service Modules</a></li>
 						<li><a href="#">Account</a></li>
 					</ul>
 				</div>
-				<!-- End admin navigation sidebar -->
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+					<!-- actual page content-->
 					<div class="jumbotron">
-						<h1>Admin Home</h1>
-						<p>This is where the admins (white team in this case) live!</p>
+						<h1>Service Module List</h1>
+						<p>The following are currently available service modules. Select a service module to edit or test it, or create a new one.</p><br>
+						<a class="btn btn-primary btn-lg" href="/admin/servicemodules/create/">New Service Module</a>
+					</div>
+
+					<div id="competition_list">
+						{% if module_list %}
+						{% for i in module_list %}
+						<div class="panel panel-default">
+							<div class="panel-heading">{{ i.module.modulename }}</div>
+							<div class="panel-body">
+								<strong>Filename: </strong>{{i.file.filename}}<br>
+								<strong>Filehash: </strong>{{i.file.filehash}}<br>
+								<strong>Description: </strong>
+								<p>{{ i.module.description }}</p>
+								<div class="bt-component pull-right">
+									<a href="/admin/servicemodules/test/{{ i.module.servmdulid }}/" class="btn btn-primary">Test</a>
+									<a href="/admin/servicemodules/edit/{{ i.module.servmdulid }}/" class="btn btn-primary">Edit</a>
+									<a href="/admin/servicemodules/delete/{{ i.module.servmdulid }}/" class="btn btn-danger">Delete</a>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+						{% else %}
+						<p>No service modules have been created yet. Go ahead and make one!</p>
+						{% endif %}
 					</div>
 				</div>
 			</div>

@@ -15,6 +15,7 @@ from django.forms.widgets import PasswordInput
 from models import Competition
 from models import InjectResponse
 from models import IncidentResponse
+from models import ServiceModule
 from models import Service
 from models import Inject
 from models import Admin
@@ -73,12 +74,18 @@ class CreateTeamForm(ModelForm):
 		}
 
 class CreateServiceForm(ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(CreateServiceForm, self).__init__(*args, **kwargs)
+		tuple_list = []
+		for i in ServiceModule.objects.all():
+			tuple_list.append((i.servmdulid, i.modulename))
+		self.fields['servicemodule'].choices = tuple_list
+
+	servicemodule = ChoiceField(label = "Service Module", choices = [], widget = Select(attrs={'class':'form-control', 'required': True}))
 	class Meta:
 		model = Service
-		fields = ['compid', 'module', 'name', 'desc', 'config', 'points', 'subdomain']
+		fields = ['compid', 'name', 'desc', 'config', 'points', 'subdomain']
 		labels = {
-			'compid': ('Competition'),
-			'module': ('Module'),
 			'name': ('Name'),
 			'desc': ('Description'),
 			'points': ('Points'),
@@ -86,8 +93,6 @@ class CreateServiceForm(ModelForm):
 			'subdomain': ('Subdomain'),
 		}
 		widgets = {
-			'compid': TextInput(attrs={'class':'form-control'}),
-			'module': TextInput(attrs={'class':'form-control'}),
 			'name': TextInput(attrs={'class':'form-control'}),
 			'points': NumberInput(attrs={'class':'form-control'}),
 			'desc': Textarea(attrs={'class':'form-control'}),
@@ -113,6 +118,20 @@ class CreateInjectForm(ModelForm):
 			'dt_delivery': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
 			'dt_response_due': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
 			'dt_response_close': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"})
+		}
+
+class CreateServiceModuleForm(ModelForm):
+	docfile = FileField(label = "File Upload", required = False)
+	class Meta:
+		model = ServiceModule
+		fields = ['modulename', 'description']
+		labels = {
+			'modulename': ('Module Name'),
+			'description': ('Description')
+		}
+		widgets = {
+			'modulename': TextInput(attrs={'class':'form-control', 'required': True}),
+			'description': Textarea(attrs={'class':'form-control', 'required': True})
 		}
 
 class AdminLoginForm(ModelForm):

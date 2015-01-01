@@ -12,6 +12,7 @@ from forms import CreateInjectForm
 from forms import CreateServiceForm
 from models import InjectResponse
 from models import Competition
+from models import ServiceModule
 from models import Service
 from models import Inject
 from models import Score
@@ -162,7 +163,12 @@ def services_list(request, competition = None):
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c["services"] = Service.objects.filter(compid = c["competition_object"].compid)
+	c["service_list"] = []
+	for i in Service.objects.filter(compid = c["competition_object"].compid):
+		c["service_list"].append({
+			"service": i,
+			"module": i.servicemodule
+		})
 	return render_to_response('CompConfig/services_list.html', c)
 
 def services_edit(request, competition = None, servid = None):
@@ -183,15 +189,10 @@ def services_edit(request, competition = None, servid = None):
 		c["form"] = {"service": CreateServiceForm(initial = serv_obj.values()[0])}
 		return render_to_response('CompConfig/services_create-edit.html', c)
 	# TODO: This part is super gross. I should improve efficiency at some point
-	tmp_dict = {}
-	tmp_dict['module'] = request.POST['module']
-	tmp_dict['name'] = request.POST['name']
-	tmp_dict['desc'] = request.POST['desc']
-	tmp_dict['points'] = request.POST['points']
-	tmp_dict['config'] = request.POST['config']
-	tmp_dict['subdomain'] = request.POST['subdomain']
+	form_dict = request.POST.copy().dict()
+	form_dict.pop('csrfmiddlewaretoken', None)
 	serv_obj = Service.objects.filter(compid = c["competition_object"].compid, servid = int(servid))
-	serv_obj.update(**tmp_dict)
+	serv_obj.update(**form_dict)
 	return HttpResponseRedirect('/admin/competitions/%s/services/' % competition)
 
 def services_delete(request, competition = None, servid = None):
@@ -205,7 +206,7 @@ def services_delete(request, competition = None, servid = None):
 		return HttpResponseRedirect("/")
 	comp_obj = Competition.objects.get(compurl = competition)
 	serv_obj = Service.objects.get(compid = comp_obj.compid, servid = int(servid))
-	clean_teams_scoreconfigs(comp_obj.compid, serv_obj.module)
+	#clean_teams_scoreconfigs(comp_obj.compid, serv_obj.module)
 	serv_obj.delete()
 	return HttpResponseRedirect("/admin/competitions/%s/services/" % competition)
 
@@ -213,25 +214,28 @@ def services_create(request, competition = None):
 	"""
 	Create services in the competition
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
-	c["form"] = {"service": CreateServiceForm()}
-	c["action"] = "create"
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c.update(csrf(request))
-
 	if request.method != "POST":
+		# Serve empty form without acting on any data
+		c.update(csrf(request))
+		c["form"] = {"service": CreateServiceForm()}
+		c["action"] = "create"
 		return render_to_response('CompConfig/services_create-edit.html', c)
-	form_dict = request.POST.copy()
+	# Prepare post data for validation
+	form_dict = request.POST.copy().dict()
 	form_dict["compid"] = c["competition_object"].compid
-	service = CreateServiceForm(form_dict)
-	if not service.is_valid():
-		c["messages"].new_info("Invalid field data in service form: %s" % service.errors, 1001)
+	serv_form = CreateServiceForm(form_dict)
+	if not serv_form.is_valid():
+		print serv_form.errors
 		return render_to_response('CompConfig/services_create-edit.html', c)
-	service.save()
+	# Now prepare post data for service object instantiation
+	form_dict.pop('csrfmiddlewaretoken', None)
+	form_dict["servicemodule"] = ServiceModule.objects.get(servmdulid = form_dict["servicemodule"])
+	serv_obj = Service(**form_dict)
+	serv_obj.save()
 	add_teams_scoreconfigs(c["competition_object"].compid)
 	return HttpResponseRedirect("/admin/competitions/%s/services/" % competition)
 

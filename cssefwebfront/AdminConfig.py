@@ -10,12 +10,17 @@ from forms import CreateCompetitionForm
 from forms import AdminLoginForm
 from forms import CreateTeamForm
 from forms import CreateServiceForm
+from forms import CreateServiceModuleForm
+from models import ServiceModule
 from models import Competition
+from models import Document
 from models import Service
 from models import Team
 
 from utils import UserMessages
 from utils import getAuthValues
+from utils import save_document
+import settings
 
 def home(request):
 	"""
@@ -144,6 +149,75 @@ def comp_delete(request, competition = None):
 	# Deletes the competition itself
 	comp_obj.delete()
 	return HttpResponseRedirect("/admin/competitions/")
+
+def servicemodule_list(request):
+	c = getAuthValues(request, {})
+	if c["auth_name"] != "auth_team_white":
+		return HttpResponseRedirect("/")
+	c["module_list"] = []
+	for i in ServiceModule.objects.all():
+		c["module_list"].append({
+			"module": i,
+			"file": Document.objects.get(servicemodule = i)
+		})
+	return render_to_response('AdminConfig/servicemodule_list.html', c)
+
+def servicemodule_create(request):
+	c = getAuthValues(request, {})
+	if c["auth_name"] != "auth_team_white":
+		return HttpResponseRedirect("/")
+	if request.method != "POST":
+		c.update(csrf(request))
+		c["action"] = "create"
+		c["form"] = CreateServiceModuleForm()
+		return render_to_response('AdminConfig/servicemodule_create-edit.html', c)
+	form_obj = CreateServiceModuleForm(request.POST, request.FILES)
+	if 'docfile' in request.FILES and form_obj.is_valid():
+		form_obj.cleaned_data.pop('docfile', None)
+		servmdul_obj = ServiceModule(**form_obj.cleaned_data)
+		servmdul_obj.save()
+		save_document(request.FILES['docfile'], settings.CONTENT_SERVICEMODULE_PATH, servmdul_obj, ashash = False)
+	else:
+		# Not exactly giving the user an error message here (TODO)
+		c.update(csrf(request))
+		c["action"] = "create"
+		c["form"] = CreateServiceModuleForm()
+		return render_to_response('AdminConfig/servicemodule_create-edit.html', c)
+	return HttpResponseRedirect('/admin/servicemodules/')
+
+def servicemodule_delete(request, servmdulid = None):
+	c = getAuthValues(request, {})
+	if c["auth_name"] != "auth_team_white":
+		return HttpResponseRedirect("/")
+	servmdul_obj = ServiceModule.objects.get(servmdulid = servmdulid)
+	servmdul_obj.delete()
+	return HttpResponseRedirect("/admin/servicemodules/")
+
+def servicemodule_edit(request, servmdulid = None):
+	c = getAuthValues(request, {})
+	if c["auth_name"] != "auth_team_white":
+		return HttpResponseRedirect("/")
+	c.update(csrf(request))
+	c["action"] = "edit"
+	if request.method != "POST":
+		servmdul_obj = ServiceModule.objects.filter(servmdulid = servmdulid)
+		c["servmdulid"] = servmdulid
+		c["form"] = CreateServiceModuleForm(initial = servmdul_obj.values()[0])
+		return render_to_response('AdminConfig/servicemodule_create-edit.html', c)
+	form_obj = CreateServiceModuleForm(request.POST, request.FILES)
+	if 'docfile' in request.FILES and form_obj.is_valid():
+		form_obj.cleaned_data.pop('docfile', None)
+		servmdul_obj = ServiceModule.objects.filter(servmdulid = servmdulid)
+		servmdul_obj.update(**form_obj.cleaned_data)
+		return HttpResponseRedirect('/admin/servicemodules/')
+	else:
+		# Not exactly giving the user an error message here (TODO)
+		print "there were errors"
+		c["form"] = CreateServiceModuleForm()
+		return render_to_response('AdminConfig/servicemodule_create-edit.html', c)
+
+def servicemodule_test(request, servmdulid = None):
+	pass
 
 def users_list(request):
 	"""

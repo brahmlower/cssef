@@ -126,15 +126,15 @@
 					<form action="/admin/competitions/{{ competition_object.compurl }}/services/{{ action }}/{{ servid }}/" method="post" class="form-horizontal">
 					{% endif %}
 						{% csrf_token %}
+						<!-- Form field for module name -->
+						{{ form.service.servicemodule.errors }}
+						<label for="{{ form.service.servicemodule.id_for_label }}" class="col-lg-2 control-label">{{ form.service.servicemodule.label }}</label>
+						<div class="col-lg-10">{{ form.service.servicemodule }}<br></div>
+
 						<!-- Form field for service name -->
 						{{ form.service.name.errors}}
 						<label for="{{ form.service.name.id_for_label }}" class="col-lg-2 control-label">{{ form.service.name.label }}</label>
 						<div class="col-lg-10">{{ form.service.name }}<br></div>
-
-						<!-- Form field for module name -->
-						{{ form.service.module.errors }}
-						<label for="{{ form.service.module.id_for_label }}" class="col-lg-2 control-label">{{ form.service.module.label }}</label>
-						<div class="col-lg-10">{{ form.service.module }}<br></div>
 
 						<!-- Form field for subdomain name -->
 						{{ form.service.subdomain.errors }}
