@@ -89,11 +89,11 @@
 					{% csrf_token %}
 					{{ form.login.username.errors }}
 					<label for="{{ form.login.username.id_for_label }}" class="col-lg-3 control-label">{{ form.login.username.label }}</label>
-					<div class="col-lg-9">{{ form.login.username }}</div>
+					<div class="col-lg-9">{{ form.login.username }}<br></div>
 
 					{{ form.login.password.errors }}
 					<label for="{{ form.login.password.id_for_label }}" class="col-lg-3 control-label">{{ form.login.password.label }}</label>
-					<div class="col-lg-9">{{ form.login.password }}</div>
+					<div class="col-lg-9">{{ form.login.password }}<br></div>
 
 					<div class="col-lg-10 col-lg-offset-3">
 						<button type="submit" class="btn btn-primary">Login</button>
