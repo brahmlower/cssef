@@ -57,21 +57,21 @@
 					<ul class="nav nav-sidebar">
 						<li><a href="/admin/competitions/"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></li>
 						<li class="nav-divider"><li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/summary/">Summary</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/details/">Details</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/injects/">Injects</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/scoring/">Scoring</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/services/">Services</a></li>
-						<li class="active"><a href="/admin/competitions/{{ competition_object.compurl }}/teams/">Teams</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/summary/">Summary</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/details/">Details</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/injects/">Injects</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/scoring/">Scoring</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/services/">Services</a></li>
+						<li class="active"><a href="/admin/competitions/{{ comp_obj.compurl }}/teams/">Teams</a></li>
 					</ul>
 				</div>
 				<!-- End competition config navigation sidebar -->
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 					<!-- displays actual page content -->
 					<div class="page-header">
-						<h1> {{competition_object.compname}} - Teams</h1>
+						<h1> {{comp_obj.compname}} - Teams</h1>
 					</div>
-					<a href="/admin/competitions/{{ competition_object.compurl }}/teams/create/" class="btn btn-primary">Create Team</a>
+					<a href="/admin/competitions/{{ comp_obj.compurl }}/teams/create/" class="btn btn-primary">Create Team</a>
 					<br><br>
 					{% if teams %}
 					{% for i in teams %}
@@ -83,8 +83,8 @@
 							<strong>Domain: </strong>{{ i.domainname }}<br>
 							<strong>Score Configurations: </strong>{{ i.score_configs }}
 							<div class="bt-component pull-right">
-								<a href="/admin/competitions/{{ competition_object.compurl }}/teams/edit/{{ i.teamid }}" class="btn btn-primary">Edit</a>
-								<a href="/admin/competitions/{{ competition_object.compurl }}/teams/delete/{{ i.teamid }}" class="btn btn-danger">Delete</a>
+								<a href="/admin/competitions/{{ comp_obj.compurl }}/teams/edit/{{ i.teamid }}" class="btn btn-primary">Edit</a>
+								<a href="/admin/competitions/{{ comp_obj.compurl }}/teams/delete/{{ i.teamid }}" class="btn btn-danger">Delete</a>
 							</div>
 						</div>
 					</div>

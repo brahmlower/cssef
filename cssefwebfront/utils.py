@@ -67,27 +67,48 @@ def save_document(request_file, content_subdir, related_obj, ashash = True):
 	wfile.write(file_content)
 	wfile.close()
 
-def add_teams_scoreconfigs(compid):
-	# Add service scoring configuration objects to each team
-	services = Service.objects.filter(compid = compid)
-	teams = Team.objects.filter(compid = compid)
-	for t in teams:
-		score_configs = json.loads(t.score_configs)
-		for s in services:
-			try:
-				x = score_configs[s.module]
-			except KeyError:
-				score_configs[s.module] = {}
-		target_team = Team.objects.filter(compid = compid, teamid = t.teamid)
-		target_team.update(score_configs = json.dumps(score_configs))
+def buildTeamServiceConfigForms(compid, team_score_dict = None):
+	if team_score_dict != None:
+		team_score_dict = json.loads(team_score_dict)
+	tmp_list = []
+	for serv_obj in Service.objects.filter(compid = compid):
+		module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
+		module_inst = getattr(__import__('pluggins.' + module_name, fromlist=[module_name]), module_name)({}) # <-- This dict here is the arguments for the instance of the module
+		config_dict = getattr(module_inst, "team_config_type_dict")
+		#print config_dict
+		config_list = []
+		for key in config_dict:
+			tmp_dict = {}
+			tmp_dict["label"] = key
+			tmp_dict["id_for_label"] = "%s-%s" % (serv_obj.name, key)
+			if config_dict[key] == int:
+				tmp_dict["type"] = "number"
+			elif config_dict[key] == str:
+				tmp_dict["type"] = "text"
+			if team_score_dict != None and serv_obj.name in team_score_dict:
+				tmp_dict["value"] = team_score_dict[serv_obj.name][key]
+			config_list.append(tmp_dict)
+		tmp_list.append({
+			"service": serv_obj,
+			"configs": config_list
+		})
+	return tmp_list
 
-def clean_teams_scoreconfigs(compid, module_str):
-	# Removes the scoring configuration object from teams for services
-	# that have been deleted
-	services = Service.objects.filter(compid = compid)
-	teams = Team.objects.filter(compid = compid)
-	for t in teams:
-		score_configs = json.loads(t.score_configs)
-		score_configs.pop(module_str, None)
-		target_team = Team.objects.filter(compid = compid, teamid = t.teamid)
-		target_team.update(score_configs = score_configs)
+def buildTeamServiceConfigDict(compid, post_dict):
+	tmp_dict = {}
+	for serv_obj in Service.objects.filter(compid = compid):
+		module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
+		module_inst = getattr(__import__('pluggins.' + module_name, fromlist=[module_name]), module_name)({}) # <-- This dict here is the arguments for the instance of the module
+		config_dict = getattr(module_inst, "team_config_type_dict")
+		serv_dict = {}
+		for key in config_dict:
+			if serv_obj.name + "-" + key in post_dict:
+				serv_dict[key] = post_dict.pop(serv_obj.name + "-" + key)
+				# If it's in a list, pull it out of the list
+				if serv_dict[key].__class__.__name__ == "list":
+					serv_dict[key] = serv_dict[key][0]
+				# Now cast it as its intended value type
+				if len(serv_dict[key]) != 0:
+					serv_dict[key] = config_dict[key](serv_dict[key])
+		tmp_dict[serv_obj.name] = serv_dict
+	return json.dumps(tmp_dict)

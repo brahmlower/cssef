@@ -20,11 +20,14 @@ from models import Team
 from models import Document
 from utils import UserMessages
 from utils import getAuthValues
-from utils import add_teams_scoreconfigs
-from utils import clean_teams_scoreconfigs
-from hashlib import md5
+from utils import buildTeamServiceConfigDict
+from utils import buildTeamServiceConfigForms
+
+from django.forms import NumberInput
+from django.forms import TextInput
 import settings
 from utils import save_document
+import json
 
 # General competition configuration modules
 def summary(request, competition = None):
@@ -81,35 +84,32 @@ def teams_list(request, competition = None):
 	c = getAuthValues(request, c)
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
-	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c["teams"] = Team.objects.filter(compid = c["competition_object"].compid)
+	c["comp_obj"] = Competition.objects.get(compurl = competition)
+	c["teams"] = Team.objects.filter(compid = c["comp_obj"].compid)
 	return render_to_response('CompConfig/teams_list.html', c)
 
 def teams_edit(request, competition = None, teamid = None):
 	"""
 	Edit the team in the competition
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	c["action"] = "edit"
-	c["competition_object"] = Competition.objects.get(compurl = competition)
+	c["comp_obj"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
 	if request.method != "POST":
-		team_obj = Team.objects.filter(compid = c["competition_object"].compid, teamid = int(teamid))
+		team_obj = Team.objects.filter(compid = c["comp_obj"].compid, teamid = int(teamid))
 		c["teamid"] = team_obj[0].teamid
-		c["form"] = {"team": CreateTeamForm(initial = team_obj.values()[0])}
+		c["form"] = CreateTeamForm(initial = team_obj.values()[0])
+		c["service_configs_list"] = buildTeamServiceConfigForms(c["comp_obj"].compid, team_obj[0].score_configs)
 		return render_to_response('CompConfig/teams_create-edit.html', c)
-	# TODO: This part is super gross. I should improve efficiency at some point
-	tmp_dict = {}
-	tmp_dict['teamname'] = request.POST['teamname']
-	tmp_dict['password'] = request.POST['password']
-	tmp_dict['domainname'] = request.POST['domainname']
-	tmp_dict['score_configs'] = request.POST['score_configs']
-	team_obj = Team.objects.filter(compid = c["competition_object"].compid, teamid = int(teamid))
-	team_obj.update(**tmp_dict)
+	form_dict = request.POST.copy().dict()
+	form_dict.pop('csrfmiddlewaretoken', None)
+	form_dict["compid"] = c["comp_obj"].compid
+	form_dict["score_configs"] = buildTeamServiceConfigDict(c["comp_obj"].compid, form_dict)
+	team_obj = Team.objects.filter(compid = c["comp_obj"].compid, teamid = int(teamid))
+	team_obj.update(**form_dict)
 	return HttpResponseRedirect('/admin/competitions/%s/teams/' % competition)
 
 def teams_delete(request, competition = None, teamid = None):
@@ -130,26 +130,24 @@ def teams_create(request, competition = None):
 	"""
 	Create the team in the competition
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	c["action"] = "create"
-	c["form"] = {"team": CreateTeamForm()}
-	c["competition_object"] = Competition.objects.get(compurl = competition)
+	c["form"] = CreateTeamForm()
+	c["comp_obj"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
-
 	if request.method != "POST":
+		# Get a list of the services
+		c["service_configs_list"] = buildTeamServiceConfigForms(c["comp_obj"].compid)
 		return render_to_response('CompConfig/teams_create-edit.html', c)
 	form_dict = request.POST.copy()
-	form_dict["compid"] = c["competition_object"].compid
+	form_dict["compid"] = c["comp_obj"].compid
+	form_dict["score_configs"] = buildTeamServiceConfigDict(c["comp_obj"].compid, form_dict)
 	team = CreateTeamForm(form_dict)
 	if not team.is_valid():
-		c["messages"].new_info("Invalid field data in team form: %s" % team.errors, 1001)
 		return render_to_response('CompConfig/teams_create-edit.html', c)
 	team.save()
-	add_teams_scoreconfigs(c["competition_object"].compid)
 	return HttpResponseRedirect("/admin/competitions/%s/teams/" % competition)
 
 # Service related configuration modules
@@ -157,9 +155,7 @@ def services_list(request, competition = None):
 	"""
 	Lists the services in the competition
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	c["competition_object"] = Competition.objects.get(compurl = competition)
@@ -209,7 +205,6 @@ def services_delete(request, competition = None, servid = None):
 		return HttpResponseRedirect("/")
 	comp_obj = Competition.objects.get(compurl = competition)
 	serv_obj = Service.objects.get(compid = comp_obj.compid, servid = int(servid))
-	#clean_teams_scoreconfigs(comp_obj.compid, serv_obj.module)
 	serv_obj.delete()
 	return HttpResponseRedirect("/admin/competitions/%s/services/" % competition)
 
@@ -243,7 +238,6 @@ def services_create(request, competition = None):
 		form_dict["connect_display"] = "Domain Name"
 	serv_obj = Service(**form_dict)
 	serv_obj.save()
-	add_teams_scoreconfigs(c["competition_object"].compid)
 	return HttpResponseRedirect("/admin/competitions/%s/services/" % competition)
 
 # Inject related configuration modules

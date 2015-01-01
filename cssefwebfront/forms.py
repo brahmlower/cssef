@@ -7,10 +7,7 @@ from django.forms import NumberInput
 from django.forms import Select
 from django.forms import ChoiceField
 from django.forms import FileField
-#from django.forms import SplitDateTimeWidget
 from django.forms import ModelChoiceField
-from django.forms import DateInput
-from django.forms import TimeInput
 from django.forms.widgets import PasswordInput
 from models import Competition
 from models import InjectResponse
@@ -58,19 +55,16 @@ class CreateTeamForm(ModelForm):
 		model = Team
 		fields = ['teamname','username','password','domainname','compid','score_configs']
 		labels = {
-			'compid': ('Competition'),
 			'teamname': ('Teamname'),
 			'username': ('Team Username'),
 			'password': ('Password'),
 			'domainname': ('Domain Name'),
-			'score_configs': ('Score Configurations'),
 		}
 		widgets = {
 			'teamname': TextInput(attrs={'class':'form-control'}),
 			'username': TextInput(attrs={'class':'form-control'}),
 			'password': TextInput(attrs={'class':'form-control'}),
 			'domainname': TextInput(attrs={'class':'form-control'}),
-			'score_configs': Textarea(attrs={'class':'form-control'}),
 		}
 
 class CreateServiceForm(ModelForm):

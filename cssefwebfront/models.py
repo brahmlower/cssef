@@ -59,7 +59,6 @@ class Service(Model):
 	connect_display = CharField(max_length = 15)
 	networkloc = CharField(max_length = 15)
 	defaultport = PositiveIntegerField()
-	#configuration = CharField(max_length = 1000, default = "{}")
 
 class Score(Model):
 	scorid = AutoField(primary_key = True)

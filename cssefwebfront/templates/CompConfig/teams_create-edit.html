@@ -9,9 +9,9 @@
 				$('#{{ form.team.score_configs.id_for_label }}').focusout(
 					function() {
 						// Replaces any single quotes with double quotes (screws up apostophes TODO: fix this somehow)
-						$("#{{ form.team.score_configs.id_for_label }}").val($("#{{ form.team.score_configs.id_for_label }}").val().replace(/\'/g, '\"'));
+						$("#{{ form.score_configs.id_for_label }}").val($("#{{ form.score_configs.id_for_label }}").val().replace(/\'/g, '\"'));
 						// Checks if the submission should be locked
-						var score_config = $("#{{ form.team.score_configs.id_for_label }}").val();
+						var score_config = $("#{{ form.score_configs.id_for_label }}").val();
 						try {
 							JSON.parse(score_config);
 						} catch (e) {
@@ -29,8 +29,8 @@
 						}
 					}
 				);
-				$("#{{ form.team.teamname.id_for_label }}").keyup( function() { var teamname = $("#{{ form.team.teamname.id_for_label }}").val();
-					$("#{{ form.team.username.id_for_label }}").val(teamname.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/gi, ''));
+				$("#{{ form.teamname.id_for_label }}").keyup( function() { var teamname = $("#{{ form.teamname.id_for_label }}").val();
+					$("#{{ form.username.id_for_label }}").val(teamname.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/gi, ''));
 				});
 			});
 		</script>
@@ -87,12 +87,12 @@
 					<ul class="nav nav-sidebar">
 						<li><a href="/admin/competitions/"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></li>
 						<li class="nav-divider"><li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/summary/">Summary</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/details/">Details</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/injects/">Injects</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/scoring/">Scoring</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/services/">Services</a></li>
-						<li class="active"><a href="/admin/competitions/{{ competition_object.compurl }}/teams/">Teams</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/summary/">Summary</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/details/">Details</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/injects/">Injects</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/scoring/">Scoring</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/services/">Services</a></li>
+						<li class="active"><a href="/admin/competitions/{{ comp_obj.compurl }}/teams/">Teams</a></li>
 					</ul>
 				</div>
 				<!-- End competition config navigation sidebar -->
@@ -121,32 +121,40 @@
 					<!-- END MESSAGE REPORTING -->
 					{% endif %}
 
-					<h2> Create Team </h2>
+					
 					{% if action == "create" %}
-					<form action="/admin/competitions/{{ competition_object.compurl }}/teams/{{ action }}/" method="post" class="form-horizontal">
+					<h2> Create Team </h2>
+					<form action="/admin/competitions/{{ comp_obj.compurl }}/teams/{{ action }}/" method="post" class="form-horizontal">
 					{% else%}
-					<form action="/admin/competitions/{{ competition_object.compurl }}/teams/{{ action }}/{{ teamid }}/" method="post" class="form-horizontal">
+					<h2> Edit Team </h2>
+					<form action="/admin/competitions/{{ comp_obj.compurl }}/teams/{{ action }}/{{ teamid }}/" method="post" class="form-horizontal">
 					{% endif %}	
 						{% csrf_token %}
-						{{ form.team.teamname.errors }}
-						<label for="{{ form.team.teamname.id_for_label }}" class="col-lg-2 control-label">{{ form.team.teamname.label }}</label>
-						<div class="col-lg-10">{{ form.team.teamname }}<br></div>
+						{{ form.teamname.errors }}
+						<label for="{{ form.teamname.id_for_label }}" class="col-lg-2 control-label">{{ form.teamname.label }}</label>
+						<div class="col-lg-10">{{ form.teamname }}<br></div>
 
-						{{ form.team.username.errors }}
-						<label for="{{ form.team.username.id_for_label }}" class="col-lg-2 control-label">{{ form.team.username.label }}</label>
-						<div class="col-lg-10">{{ form.team.username }}<br></div>
+						{{ form.username.errors }}
+						<label for="{{ form.username.id_for_label }}" class="col-lg-2 control-label">{{ form.username.label }}</label>
+						<div class="col-lg-10">{{ form.username }}<br></div>
 
-						{{ form.team.password.errors }}
-						<label for="{{ form.team.passphrase.id_for_label }}" class="col-lg-2 control-label">{{ form.team.password.label }}</label>
-						<div class="col-lg-10">{{ form.team.password }}<br></div>
+						{{ form.password.errors }}
+						<label for="{{ form.passphrase.id_for_label }}" class="col-lg-2 control-label">{{ form.password.label }}</label>
+						<div class="col-lg-10">{{ form.password }}<br></div>
 
-						{{ form.team.domainname.errors }}
-						<label for="{{ form.team.domainname.id_for_label }}" class="col-lg-2 control-label">{{ form.team.domainname.label }}</label>
-						<div class="col-lg-10">{{ form.team.domainname }}<br></div>
+						{{ form.domainname.errors }}
+						<label for="{{ form.domainname.id_for_label }}" class="col-lg-2 control-label">{{ form.domainname.label }}</label>
+						<div class="col-lg-10">{{ form.domainname }}<br></div>
 
-						{{ form.team.score_configs.errors }}
-						<label for="{{ form.team.score_configs.id_for_label }}" class="col-lg-2 control-label">{{ form.team.score_configs.label }}</label>
-						<div class="col-lg-10">{{ form.team.score_configs }}<br></div>
+						{% for service_configs in service_configs_list %}
+						<h4><br>Configurations for Service: {{ service_configs.service.name }}</h4>
+						{% for field in service_configs.configs %}
+						<label for="{{ field.id_for_label }}" class="col-lg-2 control-label">{{ field.label }}</label>
+						<div class="col-lg-10">
+							<input class="form-control" id="{{ field.id_for_label }}" name="{{ field.id_for_label }}" type="{{field.type}}" value="{{field.value}}"><br>
+						</div>
+						{% endfor %}
+						{% endfor%}
 
 						<div class="col-lg-10 col-lg-offset-2">
 							<button id="form_sub_button" type="submit" class="btn btn-primary">Save</button>
