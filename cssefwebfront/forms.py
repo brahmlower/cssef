@@ -55,7 +55,7 @@ class CreateTeamForm(ModelForm):
 		model = Team
 		fields = ['teamname','username','password','domainname','compid','score_configs']
 		labels = {
-			'teamname': ('Teamname'),
+			'teamname': ('Team Name'),
 			'username': ('Team Username'),
 			'password': ('Password'),
 			'domainname': ('Domain Name'),

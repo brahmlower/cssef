@@ -87,13 +87,10 @@
 						<div class="panel-heading"> Services </div>
 						<div class="panel-body">
 							{% for i in services%}
-							<strong>Name: </strong> {{ i.name }}
-							<br>
-							<strong>Points: </strong> {{ i.points }}
-							<br>
-							<strong>Description:</strong>
-							<br>
-							{{ i.desc }}
+							<strong>Name: </strong> {{ i.name }}<br>
+							<strong>Points: </strong> {{ i.points }}<br>
+							<strong>Description:</strong><br>
+							{{ i.description }}
 							<hr>
 							{% endfor %}
 						</div>

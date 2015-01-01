@@ -16,6 +16,7 @@ from cssefwebfront.models import Competition
 from cssefwebfront.models import Team
 from cssefwebfront.models import Service
 from cssefwebfront.models import Score
+from cssefwebfront.models import Document
 
 class Config:
     def __init__(self, config_path):
@@ -92,24 +93,17 @@ class SetConfigurations():
         db_obj.save()
 
 class ServiceModule:
-    def __init__(self, service_obj):
-        self.service_obj = service_obj
-        # try:
-        self.config_json = json_loads(service_obj.config)
-        # except ValueError, e:
-        #     sys.exit("Error parsing configuration json object:\n%s" % service_obj.config)
-        self.config_json["name"] = self.service_obj.name
-        self.config_json["points"] = self.service_obj.points
-        self.config_json["subdomain"] = self.service_obj.subdomain
-        self.instance = self.load_pluggin()
+    def __init__(self, serv_obj):
+        self.serv_obj = serv_obj
+        self.instance = self.load_pluggin(serv_obj)
 
-    def load_pluggin(self):
-        module_name = self.service_obj.module
+    def load_pluggin(self, serv_obj):
+        module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
         module = __import__('pluggins.' + module_name, fromlist=[module_name])
-        return getattr(module, module_name)(self.config_json)
+        return getattr(module, module_name)(serv_obj)
 
     def score(self, team_obj):
-        score_obj = self.instance.score(team_obj, self.service_obj.name)
+        score_obj = self.instance.score(team_obj, self.serv_obj.name)
         score_obj.datetime = timezone.now()
         return score_obj
 
@@ -168,7 +162,7 @@ def run_loop(comp, team_list, serv_list):
                 score_obj = serv.score(team)
                 score_obj.compid = comp.compid
                 score_obj.teamid = team.teamid
-                score_obj.servid = serv.service_obj.servid
+                score_obj.servid = serv.serv_obj.servid
                 score_obj.datetime = timezone.now()
                 # Save the score object
                 score_obj.save()

@@ -80,8 +80,9 @@
 					{% endif%}
 						<div class="panel-heading"> {{ i.service.name }} </div>
 						<div class="panel-body">
-							<strong>Service Descriptions:</strong> {{ i.service.desc }}<br>
-							<strong>Service Configuration:</strong> {{ i.service.config }}<br>
+							<strong>Service Description:</strong> {{ i.service.description }}<br>
+							<strong>Service Port:</strong> {{ i.service.defaultport }}<br>
+							<strong>Service Host:</strong> {{ i.service.networkloc}}<br>
 							<hr>
 							<strong>Score Time: </strong> {{ i.score.datetime }} <br>
 							<strong>Scored Value: </strong> {{ i.score.value }} <br>

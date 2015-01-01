@@ -189,7 +189,7 @@ def servicestatus(request, competition = None):
 	service_modules = LoadServs(c["competition_object"].compid)
 	for i in service_modules:
 		c["status_list"].append({
-			"service": i.service_obj,
+			"service": i.serv_obj,
 			"score": i.score(request.user)
 		})
 	return render_to_response('Comp/servicestatus.html', c)

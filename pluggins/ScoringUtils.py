@@ -1,4 +1,5 @@
 from django.utils import timezone
+import json
 class Pluggin:
 	"""
 	All pluggins should be children of this class. This ganrantees that each
@@ -7,23 +8,33 @@ class Pluggin:
 	full address for the team, regardless if they're being scored by dns or
 	by an ipv4 address.
 	"""
-	def __init__(self, conf_dict):
-		self.points = conf_dict["points"]
-		self.net_type = conf_dict["net_type"]
-		self.subdomain = conf_dict["subdomain"]
-		self.address = conf_dict["address"]
-		self.default_port = conf_dict["default_port"]
+	def __init__(self, service_obj):
+		self.service_name = service_obj.name
+		self.points = service_obj.points
+		self.connectip = service_obj.connectip
+		self.networkloc = service_obj.networkloc
+		self.port = service_obj.defaultport
+		self.networkaddr = ""
+		self.domainname = ""
 
-	def build_address(self, team_config):
-		if self.net_type == "domainname":
-			sd = self.subdomain
-			dn = team_config["domainname"]
-			return ".".join([str(sd), str(dn)])
-		elif self.net_type == "ipaddress":
-			nm = team_config["network"]
-			na = self.address
-			return ".".join([str(nm), str(na)])
-		raise Exception("Bad Programming/User Error: no such '%s'. Should be {domain|ipaddress}" % self.net_type)
+	def update_configuration(self, team_obj):
+		self.networkaddr = team_obj.domainname
+		score_config_dict = json.loads(team_obj.score_configs)
+		if self.service_name in score_config_dict:
+			for key in score_config_dict[self.service_name]:
+				value = score_config_dict[self.service_name][key]
+				if isinstance(value, self.team_config_type_dict[key]) and len(str(value)) > 0:
+					setattr(self, key, score_config_dict[self.service_name][key])
+
+	def build_address(self, withport = None):
+		addr = ""
+		if self.connectip:
+			addr = self.networkaddr + "." + self.networkloc
+		else:
+			addr = self.networkloc + "." + self.networkaddr
+		if withport:
+			return addr + ":" + str(self.port)
+		return addr
 
 
 class PlugginTest:
@@ -65,7 +76,7 @@ class PlugginTest:
 		emulated_team = self.EmulatedTeam(class_name, self.team_config)
 		score_obj = self.class_inst.score(emulated_team)
 		print "[%s] Team:n/a Service:n/a Value:%s Messages:%s" % \
-        (timezone.now(), score_obj.value, score_obj.message)
+			(timezone.now(), score_obj.value, score_obj.message)
 
 	class EmulatedTeam:
 		"""
