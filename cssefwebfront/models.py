@@ -53,10 +53,13 @@ class Service(Model):
 	compid = PositiveIntegerField()
 	servicemodule = ForeignKey(ServiceModule, unique = False)
 	name = CharField(max_length = 30)
-	desc = CharField(max_length = 200)
-	config = CharField(max_length = 1000, default = "{}")
+	description = CharField(max_length = 200)
 	points = PositiveIntegerField()
-	subdomain = CharField(max_length = 20)
+	connectip = BooleanField()
+	connect_display = CharField(max_length = 15)
+	networkloc = CharField(max_length = 15)
+	defaultport = PositiveIntegerField()
+	#configuration = CharField(max_length = 1000, default = "{}")
 
 class Score(Model):
 	scorid = AutoField(primary_key = True)

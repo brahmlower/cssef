@@ -82,22 +82,23 @@ class CreateServiceForm(ModelForm):
 		self.fields['servicemodule'].choices = tuple_list
 
 	servicemodule = ChoiceField(label = "Service Module", choices = [], widget = Select(attrs={'class':'form-control', 'required': True}))
+	connectip = ChoiceField(label = "Connection Method", choices = [(0 ,'Domain Name'), (1,'IP Address')], widget = Select(attrs={'class':'form-control', 'required': True}))
 	class Meta:
 		model = Service
-		fields = ['compid', 'name', 'desc', 'config', 'points', 'subdomain']
+		fields = ['name', 'description', 'points', 'networkloc','defaultport']
 		labels = {
 			'name': ('Name'),
-			'desc': ('Description'),
+			'description': ('Description'),
 			'points': ('Points'),
-			'config': ('Json Config'),
-			'subdomain': ('Subdomain'),
+			'networkloc': ('Machine Address'),
+			'defaultport': ('Default Port')
 		}
 		widgets = {
 			'name': TextInput(attrs={'class':'form-control'}),
 			'points': NumberInput(attrs={'class':'form-control'}),
-			'desc': Textarea(attrs={'class':'form-control'}),
-			'config': Textarea(attrs={'class':'form-control'}),
-			'subdomain': TextInput(attrs={'class':'form-control'}),
+			'description': Textarea(attrs={'class':'form-control'}),
+			'networkloc': TextInput(attrs={'class':'form-control'}),
+			'defaultport': NumberInput(attrs={'class':'form-control'}),
 		}
 
 class CreateInjectForm(ModelForm):

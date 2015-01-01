@@ -163,12 +163,7 @@ def services_list(request, competition = None):
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c["service_list"] = []
-	for i in Service.objects.filter(compid = c["competition_object"].compid):
-		c["service_list"].append({
-			"service": i,
-			"module": i.servicemodule
-		})
+	c["service_list"] = Service.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('CompConfig/services_list.html', c)
 
 def services_edit(request, competition = None, servid = None):
@@ -186,11 +181,19 @@ def services_edit(request, competition = None, servid = None):
 	if request.method != "POST":
 		serv_obj = Service.objects.filter(compid = c["competition_object"].compid, servid = int(servid))
 		c["servid"] = serv_obj[0].servid
-		c["form"] = {"service": CreateServiceForm(initial = serv_obj.values()[0])}
+		initial_dict = serv_obj.values()[0]
+		initial_dict["connectip"] = int(initial_dict["connectip"])
+		initial_dict["servicemodule"] = serv_obj[0].servicemodule.servmdulid
+		c["form"] = CreateServiceForm(initial = initial_dict)
 		return render_to_response('CompConfig/services_create-edit.html', c)
 	# TODO: This part is super gross. I should improve efficiency at some point
 	form_dict = request.POST.copy().dict()
 	form_dict.pop('csrfmiddlewaretoken', None)
+	print form_dict["connectip"].__class__.__name__
+	if int(form_dict["connectip"]) == 1:
+		form_dict["connect_display"] = "IP Address"
+	else:
+		form_dict["connect_display"] = "Domain Name"
 	serv_obj = Service.objects.filter(compid = c["competition_object"].compid, servid = int(servid))
 	serv_obj.update(**form_dict)
 	return HttpResponseRedirect('/admin/competitions/%s/services/' % competition)
@@ -221,19 +224,23 @@ def services_create(request, competition = None):
 	if request.method != "POST":
 		# Serve empty form without acting on any data
 		c.update(csrf(request))
-		c["form"] = {"service": CreateServiceForm()}
+		c["form"] = CreateServiceForm()
 		c["action"] = "create"
 		return render_to_response('CompConfig/services_create-edit.html', c)
 	# Prepare post data for validation
 	form_dict = request.POST.copy().dict()
-	form_dict["compid"] = c["competition_object"].compid
 	serv_form = CreateServiceForm(form_dict)
 	if not serv_form.is_valid():
 		print serv_form.errors
 		return render_to_response('CompConfig/services_create-edit.html', c)
 	# Now prepare post data for service object instantiation
 	form_dict.pop('csrfmiddlewaretoken', None)
+	form_dict["compid"] = c["competition_object"].compid
 	form_dict["servicemodule"] = ServiceModule.objects.get(servmdulid = form_dict["servicemodule"])
+	if int(form_dict["connectip"]) == 1:
+		form_dict["connect_display"] = "IP Address"
+	else:
+		form_dict["connect_display"] = "Domain Name"
 	serv_obj = Service(**form_dict)
 	serv_obj.save()
 	add_teams_scoreconfigs(c["competition_object"].compid)
