@@ -27,18 +27,17 @@ class SMB(Pluggin):
 		#"port":int,
 		"username":str,
 		"password":str,
-		"network":str}
+	}
 		#"timeout":int}
 
-	def __init__(self, conf_dict):
-		Pluggin.__init__(self, conf_dict)
+	def __init__(self, service_obj):
+		Pluggin.__init__(self, service_obj)
 
-	def score(self, team, service_name):
-		team_config = json.loads(team.score_configs)[service_name]
-		address = self.build_address(team_config)
+	def score(self, team_obj, service_name):
+		self.update_configuration(team_obj)
 
-		bproc = "smbclient -L "+address
-		bproc += " -U " + team_config["username"] + "%" + team_config["password"]
+		bproc = "smbclient -L "+ self.build_address()
+		bproc += " -U " + self.username + "%" + self.password
 		FNULL = open(os.devnull, "w")
 		proc = subprocess.Popen(bproc.split(), stdout=subprocess.PIPE, stderr=FNULL)
 		output = proc.communicate()[0]

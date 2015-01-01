@@ -37,7 +37,7 @@ class Team(Model):
 	teamname = CharField(max_length = 30)
 	username = CharField(max_length = 30)
 	password = CharField(max_length = 64)
-	domainname = CharField(max_length = 30)
+	networkaddr = CharField(max_length = 30)
 	score_configs = TextField(max_length = 500, default = "{}")
 
 	def is_authenticated(self):

@@ -15,19 +15,16 @@ import socket
 class OpenPort(Pluggin):
     team_config_type_dict = {
         "port": int,
-        "network": str,
         "timeout": int
     }
-    def __init__(self, conf_dict):
-        Pluggin.__init__(self, conf_dict)
+    def __init__(self, service_obj):
+        Pluggin.__init__(self, service_obj)
 
-    def score(self, service_name):
-        team_config = json.loads(team.score_configs)[service_name]
-        address = self.build_address(team_config)
-
+    def score(self, team_obj):
+        self.update_configuration(team_obj)
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(team_config["timeout"])
-        result = sock.connect_ex((address, team_config["port"]))
+        sock.settimeout(self.timeout)
+        result = sock.connect_ex((self.build_address(), self.port))
         new_score = Score()
         if result == 0:
             new_score.value = self.points

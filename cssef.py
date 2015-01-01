@@ -94,16 +94,17 @@ class SetConfigurations():
 
 class ServiceModule:
     def __init__(self, serv_obj):
+        # serv_obj is used in other locations (don't remove)
         self.serv_obj = serv_obj
         self.instance = self.load_pluggin(serv_obj)
 
     def load_pluggin(self, serv_obj):
         module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
-        module = __import__('pluggins.' + module_name, fromlist=[module_name])
+        module = __import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name])
         return getattr(module, module_name)(serv_obj)
 
     def score(self, team_obj):
-        score_obj = self.instance.score(team_obj, self.serv_obj.name)
+        score_obj = self.instance.score(team_obj)
         score_obj.datetime = timezone.now()
         return score_obj
 

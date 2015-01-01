@@ -7,41 +7,36 @@ from django.conf import settings
 from cssefwebfront.models import Score
 from ScoringUtils import Pluggin
 from ScoringUtils import PlugginTest
-import json
 
 # Imports required for specific pluggin
 import paramiko
 import traceback
 
 # TODO: This should eventually support keys
-
 class SSH(Pluggin):
 	team_config_type_dict = {
 		"port": int,
 		"username": str,
 		"password": str,
-		"network": str,
 		"timeout": int
 	}
 
-	def __init__(self, conf_dict):
-		Pluggin.__init__(self, conf_dict)
+	def __init__(self, service_obj):
+		Pluggin.__init__(self, service_obj)
 
-	def score(self, team, service_name):
-		team_config = json.loads(team.score_configs)[service_name]
-		address = self.build_address(team_config)
-
+	def score(self, team_obj):
+		self.update_configuration(team_obj)
 		client = paramiko.SSHClient()
 		client.load_system_host_keys()
 		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		new_score = Score()
 		try:
 			client.connect(
-				address,
-				team_config["port"],
-				team_config["username"],
-				team_config["password"],
-				timeout=team_config["timeout"])
+				self.build_address(),
+				self.port,
+				self.username,
+				self.password,
+				timeout=self.timeout)
 			client.close()
 			new_score.value = self.points
 			new_score.message = ""

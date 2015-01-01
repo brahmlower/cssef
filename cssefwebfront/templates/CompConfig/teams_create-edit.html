@@ -142,9 +142,9 @@
 						<label for="{{ form.passphrase.id_for_label }}" class="col-lg-2 control-label">{{ form.password.label }}</label>
 						<div class="col-lg-10">{{ form.password }}<br></div>
 
-						{{ form.domainname.errors }}
-						<label for="{{ form.domainname.id_for_label }}" class="col-lg-2 control-label">{{ form.domainname.label }}</label>
-						<div class="col-lg-10">{{ form.domainname }}<br></div>
+						{{ form.networkaddr.errors }}
+						<label for="{{ form.networkaddr.id_for_label }}" class="col-lg-2 control-label">{{ form.networkaddr.label }}</label>
+						<div class="col-lg-10">{{ form.networkaddr }}<br></div>
 
 						{% for service_configs in service_configs_list %}
 						<h4><br>Configurations for Service: {{ service_configs.service.name }}</h4>

@@ -7,6 +7,7 @@ import settings
 from django.core.files.uploadedfile import UploadedFile
 from models import Document
 from urllib import quote
+import settings
 
 
 def getAuthValues(request, c):
@@ -73,7 +74,8 @@ def buildTeamServiceConfigForms(compid, team_score_dict = None):
 	tmp_list = []
 	for serv_obj in Service.objects.filter(compid = compid):
 		module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
-		module_inst = getattr(__import__('pluggins.' + module_name, fromlist=[module_name]), module_name)(serv_obj)
+		module_inst = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)(serv_obj)
+		#module_inst = getattr(__import__('pluggins.' + module_name, fromlist=[module_name]), module_name)(serv_obj)
 		config_dict = getattr(module_inst, "team_config_type_dict")
 		#print config_dict
 		config_list = []
@@ -98,7 +100,7 @@ def buildTeamServiceConfigDict(compid, post_dict):
 	tmp_dict = {}
 	for serv_obj in Service.objects.filter(compid = compid):
 		module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
-		module_inst = getattr(__import__('pluggins.' + module_name, fromlist=[module_name]), module_name)(serv_obj)
+		module_inst = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)(serv_obj)
 		config_dict = getattr(module_inst, "team_config_type_dict")
 		serv_dict = {}
 		for key in config_dict:

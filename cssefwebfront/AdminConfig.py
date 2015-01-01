@@ -176,7 +176,7 @@ def servicemodule_create(request):
 		form_obj.cleaned_data.pop('docfile', None)
 		servmdul_obj = ServiceModule(**form_obj.cleaned_data)
 		servmdul_obj.save()
-		save_document(request.FILES['docfile'], settings.CONTENT_SERVICEMODULE_PATH, servmdul_obj, ashash = False)
+		save_document(request.FILES['docfile'], settings.CONTENT_PLUGGINS_PATH, servmdul_obj, ashash = False)
 	else:
 		# Not exactly giving the user an error message here (TODO)
 		c.update(csrf(request))

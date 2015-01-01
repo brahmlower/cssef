@@ -7,7 +7,6 @@ from django.conf import settings
 from cssefwebfront.models import Score
 from ScoringUtils import Pluggin
 from ScoringUtils import PlugginTest
-import json
 
 # Imports required for specific pluggin
 from django.utils.html import escape
@@ -18,16 +17,15 @@ import traceback
 class HTTP(Pluggin):
 	team_config_type_dict = {
 		"port":int,
-		"network":str,
 		"timeout":int
 	}
 
-	def __init__(self, conf_dict):
-		Pluggin.__init__(self, conf_dict)
+	def __init__(self, service_obj):
+		Pluggin.__init__(self, service_obj)
 
-	def score(self, team, service_name):
-		team_config = json.loads(team.score_configs)[service_name]
-		address = "http://%s:%s" %(self.build_address(team_config), str(team_config["port"]))
+	def score(self, team_obj):
+		self.update_configuration(team_obj)
+		address = "http://" + self.build_address(withport = True)
 		new_score = Score()
 		try:
 			request = urlopen(address)
