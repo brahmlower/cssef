@@ -1,4 +1,3 @@
-from django import forms
 from django.db.models import Model
 from django.db.models import CharField
 from django.db.models import BooleanField
@@ -13,8 +12,13 @@ from django.db.models import PositiveIntegerField
 from django.db.models import ForeignKey
 from django.forms.widgets import PasswordInput
 from django.contrib.auth.models import User
-#from datetime import datetime
 from django.utils import timezone
+
+# Import for signal handlers
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+from hashlib import md5
+import os
 
 class Competition(Model):
 	compid = AutoField(primary_key = True)
@@ -114,5 +118,23 @@ class Document(Model):
 	filepath = CharField(max_length = 256)
 	filename = CharField(max_length = 64)
 	urlencfilename = CharField(max_length = 128)
+
+
+@receiver(pre_delete, sender = Document)
+def delete_document(sender, **kwargs):
+	# Read the file in
+	instance = kwargs['instance']
+	rfile = open(instance.filepath, 'r')
+	content = rfile.read()
+	rfile.close()
+	# Get a hash of the file
+	if instance.filehash != md5(content).hexdigest():
+		print "[ERROR] Databased md5 did not match md5 of target file at '%s' for Document object id '%s'" % (instance.filepath, str(instance.docid))
+	else:
+		os.remove(instance.filepath)
+
+# @reciever(pre_delete, sender = ServiceModule)
+# def delete_servicemodule(sender, **kwargs):
+
 
 
