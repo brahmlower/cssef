@@ -9,9 +9,9 @@
 		<script src="/resources/static/js/bootstrap-datetimepicker.min.js"></script>
 		<script type="text/javascript">
 			$(function() {
-				$('#{{ form.inject.dt_delivery.id_for_label }}').datetimepicker();
-				$('#{{ form.inject.dt_response_due.id_for_label }}').datetimepicker();
-				$('#{{ form.inject.dt_response_close.id_for_label }}').datetimepicker();
+				$('#{{ form.dt_delivery.id_for_label }}').datetimepicker();
+				$('#{{ form.dt_response_due.id_for_label }}').datetimepicker();
+				$('#{{ form.dt_response_close.id_for_label }}').datetimepicker();
 			});
 		</script>
 	</head>
@@ -107,29 +107,29 @@
 					<form action="/admin/competitions/{{ competition_object.compurl }}/injects/{{ action }}/{{ ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 					{% endif %}
 						{% csrf_token %}
-						{{ form.inject.title.errors}}
-						<label for="{{ form.inject.title.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.title.label }}</label>
-						<div class="col-lg-10">{{ form.inject.title }}<br></div>
+						{{ form.title.errors}}
+						<label for="{{ form.title.id_for_label }}" class="col-lg-2 control-label">{{ form.title.label }}</label>
+						<div class="col-lg-10">{{ form.title }}<br></div>
 
-						{{ form.inject.body.errors}}
-						<label for="{{ form.inject.body.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.body.label }}</label>
-						<div class="col-lg-10">{{ form.inject.body }}<br></div>
+						{{ form.body.errors}}
+						<label for="{{ form.body.id_for_label }}" class="col-lg-2 control-label">{{ form.body.label }}</label>
+						<div class="col-lg-10">{{ form.body }}<br></div>
 
-						{{ form.inject.dt_delivery.errors}}
-						<label for="{{ form.inject.dt_delivery.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.dt_delivery.label }}</label>
-						<div class="col-lg-10">{{ form.inject.dt_delivery }}<br></div>
+						{{ form.dt_delivery.errors}}
+						<label for="{{ form.dt_delivery.id_for_label }}" class="col-lg-2 control-label">{{ form.dt_delivery.label }}</label>
+						<div class="col-lg-10">{{ form.dt_delivery }}<br></div>
 
-						{{ form.inject.dt_response_due.errors}}
-						<label for="{{ form.inject.dt_response_due.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.dt_response_due.label }}</label>
-						<div class="col-lg-10">{{ form.inject.dt_response_due }}<br></div>
+						{{ form.dt_response_due.errors}}
+						<label for="{{ form.dt_response_due.id_for_label }}" class="col-lg-2 control-label">{{ form.dt_response_due.label }}</label>
+						<div class="col-lg-10">{{ form.dt_response_due }}<br></div>
 
-						{{ form.inject.dt_response_close.errors}}
-						<label for="{{ form.inject.dt_response_close.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.dt_response_close.label }}</label>
-						<div class="col-lg-10">{{ form.inject.dt_response_close }}<br></div>
+						{{ form.dt_response_close.errors}}
+						<label for="{{ form.dt_response_close.id_for_label }}" class="col-lg-2 control-label">{{ form.dt_response_close.label }}</label>
+						<div class="col-lg-10">{{ form.dt_response_close }}<br></div>
 
-						{{ form.inject.docfile.errors }}
-						<label for="{{ form.inject.docfile.id_for_label }}" class="col-lg-2 control-label">{{ form.inject.docfile.label }}</label>
-						<div class="col-lg-10">{{ form.inject.docfile }}<br></div>
+						{{ form.docfile.errors }}
+						<label for="{{ form.docfile.id_for_label }}" class="col-lg-2 control-label">{{ form.docfile.label }}</label>
+						<div class="col-lg-10">{{ form.docfile }}<br></div>
 
 						<div class="col-lg-10 col-lg-offset-2">
 							<a class="btn btn-default" href="/admin/competitions/{{ competition_object.compurl }}/injects/">Cancel</a>

@@ -3,9 +3,8 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import render
 from django.contrib import auth
-from django.contrib.auth import authenticate
+#from django.contrib.auth import authenticate
 from django.core.context_processors import csrf
-
 from forms import CreateCompetitionForm
 from forms import AdminLoginForm
 from forms import CreateTeamForm
@@ -17,7 +16,6 @@ from models import Competition
 from models import Document
 from models import Service
 from models import Team
-
 from utils import UserMessages
 from utils import getAuthValues
 from utils import save_document
@@ -29,9 +27,7 @@ def home(request):
 	"""
 	Page displayed after loggin in
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	return render_to_response('AdminConfig/home.html', c)
@@ -50,7 +46,7 @@ def login(request):
 	if request.method != "POST":
 		return render_to_response('AdminConfig/login.html', c)
 	form_dict = request.POST.copy()
-	admin = authenticate(username = form_dict["username"], password = form_dict["password"])
+	admin = auth.authenticate(username = form_dict["username"], password = form_dict["password"])
 	if admin == None:
 		c["messages"].new_info("Incorrect credentials.", 4321)
 		return render_to_response('AdminConfig/login.html', c)
@@ -63,17 +59,13 @@ def logout(request):
 	Page for teams to logout of a competition
 	"""
 	auth.logout(request)
-	c = {}
-	c["messages"] = UserMessages()
 	return HttpResponseRedirect("/")
 
 def site_config(request):
 	"""
 	Displays configuration options for the overall site
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	return render_to_response('AdminConfig/home.html', c)
@@ -82,9 +74,7 @@ def comp_list(request):
 	"""
 	Displays list of competitions, add and remove competition options
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	c["competition_list"] = Competition.objects.all()
@@ -94,12 +84,10 @@ def comp_create(request, competition=None):
 	"""
 	Creates a new competition
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
-	c["form"] = {'comp': CreateCompetitionForm()}
+	c["form"] = CreateCompetitionForm()
 	# Checks if the user is submitting the form, or requesting the form
 	if request.method != "POST":
 		c.update(csrf(request))
@@ -107,22 +95,17 @@ def comp_create(request, competition=None):
 	form_comp = CreateCompetitionForm(request.POST)
 	# Checks that submitted form data is valid
 	if not form_comp.is_valid():
-		c["messages"].new_error("Invalid field data in competition form.", 1003)
 		return render(request, 'AdminConfig/create.html', c)
 	# Create the new competition
 	comp = Competition(**form_comp.cleaned_data)
 	comp.save()
-	# Set success message and render page
-	c["messages"].new_success("Created competition", 1337)
 	return HttpResponseRedirect('/admin/competitions/')
 
 def comp_delete(request, competition = None):
 	"""
 	Delete the competition and all related objects (teams, scores, injects, services)
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	comp_obj = Competition.objects.get(compurl = competition)
@@ -254,9 +237,7 @@ def users_list(request):
 	"""
 	Displays site or competition administrative users
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	return render_to_response('AdminConfig/users_list.html', c)
@@ -265,9 +246,7 @@ def users_edit(request):
 	"""
 	Edit a site or competition administrative user
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	return render_to_response('AdminConfig/users_edit.html', c)
@@ -276,9 +255,7 @@ def users_delete(request):
 	"""
 	Delete site or competition administrative users
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	return HttpResponseRedirect('/admin/users/')
@@ -287,9 +264,7 @@ def users_create(request):
 	"""
 	Create site or competition administrative users
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	return render_to_response('AdminConfig/users_create.html', c)

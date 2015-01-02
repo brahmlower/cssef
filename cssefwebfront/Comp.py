@@ -1,11 +1,9 @@
 from django.http import HttpResponseRedirect
-from django.template import RequestContext
 from django.shortcuts import render_to_response
-from django.shortcuts import render
 from django.contrib import auth
-from django.contrib.auth import authenticate
 from django.core.context_processors import csrf
 from django.core.files.uploadedfile import UploadedFile
+from django.utils import timezone
 from models import Competition
 from models import InjectResponse
 from models import IncidentResponse
@@ -18,14 +16,12 @@ from forms import TeamLoginForm
 from forms import InjectResponseForm
 from forms import IncidentResponseForm
 from forms import IncidentResponseReplyForm
-import settings
 from utils import UserMessages
 from utils import getAuthValues
-from django.utils import timezone
+from utils import save_document
 from hashlib import md5
 from cssef import LoadServs
-
-from utils import save_document
+import settings
 
 def login(request):
 	"""
@@ -42,7 +38,7 @@ def login(request):
 	username = request.POST.get('username')
 	password = request.POST.get('password')
 	compid = request.POST.get('compid')
-	team = authenticate(username = username, password = password, compid = compid)
+	team = auth.authenticate(username = username, password = password, compid = compid)
 	if team == None:
 		c["messages"].new_info("Incorrect team credentials.", 4321)
 		c["form"] = {'login': TeamLoginForm()}
@@ -55,9 +51,7 @@ def logout(request, competition = None):
 	"""
 	Page for teams to logout of a competition
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_blue":
 		print "Cannot sign you out of something you're not logged in as."
 	else:
@@ -71,20 +65,16 @@ def summary(request, competition = None):
 	current_url = request.build_absolute_uri()
 	if request.build_absolute_uri()[-8:] != "summary/":
 		return HttpResponseRedirect(current_url + "summary/")
-	c = {}
-	c["messages"] = UserMessages()
+	c = getAuthValues(request, {})
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = getAuthValues(request, c)
 	return render_to_response('Comp/summary.html', c)
 
 def details(request, competition = None):
 	"""
 	Display details about the selected competition
 	"""
-	c = {}
-	c["messages"] = UserMessages()
+	c = getAuthValues(request, {})
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = getAuthValues(request, c)
 	c["services"] = Service.objects.filter(compid = c["competition_object"].compid)
 	c["teams"] = Team.objects.filter(compid = c["competition_object"].compid)
 	return render_to_response('Comp/details.html', c)
@@ -93,10 +83,8 @@ def rankings(request, competition = None):
 	"""
 	Display team rankings for selected competition
 	"""
-	c = {}
-	c["messages"] = UserMessages()
+	c = getAuthValues(request, {})
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = getAuthValues(request, c)
 	c["ranks"] = []
 	team_objs = Team.objects.filter(compid = c["competition_object"].compid)
 	for i in team_objs:
@@ -111,12 +99,10 @@ def injects(request, competition = None):
 	"""
 	Display inject list for selected competition
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_blue":
-		return render_to_response('Comp/injects.html', c)
+		return HttpResponseRedirect('/')
+	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c["inject_list"] = []
 	for i in Inject.objects.filter(compid = request.user.compid, dt_delivery__lte = timezone.now()):
 		c["inject_list"].append({
@@ -129,12 +115,10 @@ def injects_respond(request, competition = None, ijctid = None):
 	"""
 	Displays a specific inject and provides either upload or text entry for inject response
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_blue":
-		return render_to_response('Comp/injects.html', c)
+		return HttpResponseRedirect('/')
+	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
 	# If we're not getting POST data, serve the page normally
 	if request.method != "POST":
@@ -142,7 +126,6 @@ def injects_respond(request, competition = None, ijctid = None):
 			"inject": Inject.objects.get(compid = c["competition_object"].compid, ijctid = ijctid),
 			"files": Document.objects.filter(inject = ijctid)
 		}
-		#c["responses"] = InjectResponse.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid, ijctid = ijctid)
 		c["response_list"] = []
 		for i in InjectResponse.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid, ijctid = ijctid):
 			c["response_list"].append({
@@ -174,17 +157,14 @@ def injects_respond(request, competition = None, ijctid = None):
 		save_document(request.FILES['docfile'], settings.CONTENT_INJECT_REPONSE_PATH, ijct_resp_obj)
 	return HttpResponseRedirect('/competitions/%s/injects/%s/' % (competition, ijctid))
 
-
 def servicestatus(request, competition = None):
 	"""
 	Display current service status for selected team in selected competition
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_blue":
-		return render_to_response('Comp/servicestatus.html', c)
+		return HttpResponseRedirect('/')
+	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c["status_list"] = []
 	service_modules = LoadServs(c["competition_object"].compid)
 	for i in service_modules:
@@ -198,24 +178,20 @@ def servicetimeline(request, competition = None):
 	"""
 	Display status timeline of services for selected team in selected competition
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_blue":
-		return render_to_response('Comp/servicetimeline.html', c)
+		return HttpResponseRedirect('/')
+	c["competition_object"] = Competition.objects.get(compurl = competition)
 	return render_to_response('Comp/servicetimeline.html', c)
 
 def scoreboard(request, competition = None):
 	"""
 	Display the list of scores for the selected team of the selected competition
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_blue":
-		return render_to_response('Comp/scoreboard.html', c)
+		return HttpResponseRedirect('/')
+	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c["scores"] = []
 	score_obj_list = Score.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid)
 	for i in score_obj_list:
@@ -230,12 +206,10 @@ def incidentresponse(request, competition = None):
 	"""
 	Provides a submission portal for selected team of selected competition to submit incident responses
 	"""
-	c = {}
-	c["messages"] = UserMessages()
-	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_blue":
-		return render_to_response('Comp/incidentresponse.html', c)
+		return HttpResponseRedirect('/')
+	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
 	# Get any already opened intrusion responses
 	c["responseform"] = IncidentResponseForm()
@@ -265,16 +239,13 @@ def incidentresponse(request, competition = None):
 	# Was there a file? If so, save it!
 	if 'docfile' in request.FILES:
 		save_document(request.FILES['docfile'], settings.CONTENT_INCIDENT_REPONSE_PATH, intresp_obj)
-	#return render_to_response('Comp/incidentresponse.html')
 	return HttpResponseRedirect('/competitions/%s/incidentresponse/' % c["competition_object"].compurl)
 
 def incidentresponse_respond(request, competition = None, intrspid = None):
-	c = {}
-	c["messages"] = UserMessages()
-	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c = getAuthValues(request, c)
+	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_blue":
-		return render_to_response('Comp/incidentresponse_view_respond.html', c)
+		return HttpResponseRedirect('/')
+	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
 	# Get any already opened intrusion responses
 	c["responseform"] = IncidentResponseReplyForm()
@@ -308,6 +279,5 @@ def incidentresponse_respond(request, competition = None, intrspid = None):
 	# Was there a file? If so, save it!
 	if 'docfile' in request.FILES:
 		save_document(request.FILES['docfile'], settings.CONTENT_INCIDENT_REPONSE_PATH, intresp_obj)
-	#return render_to_response('Comp/incidentresponse_view_respond.html')
 	return HttpResponseRedirect('/competitions/%s/incidentresponse/%s/' % (c["competition_object"].compurl, str(intrspid)))
 
