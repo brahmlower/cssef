@@ -108,6 +108,11 @@ def teams_edit(request, competition = None, teamid = None):
 	form_dict.pop('csrfmiddlewaretoken', None)
 	form_dict["compid"] = c["comp_obj"].compid
 	form_dict["score_configs"] = buildTeamServiceConfigDict(c["comp_obj"].compid, form_dict)
+	# Clean network address
+	if form_dict['networkaddr'][-1] == ".":
+		form_dict['networkaddr'] = form_dict['networkaddr'][:-1]
+	if form_dict['networkaddr'][0] == ".":
+		form_dict['networkaddr'] = form_dict['networkaddr'][1:]
 	team_obj = Team.objects.filter(compid = c["comp_obj"].compid, teamid = int(teamid))
 	team_obj.update(**form_dict)
 	return HttpResponseRedirect('/admin/competitions/%s/teams/' % competition)
@@ -144,6 +149,11 @@ def teams_create(request, competition = None):
 	form_dict = request.POST.copy()
 	form_dict["compid"] = c["comp_obj"].compid
 	form_dict["score_configs"] = buildTeamServiceConfigDict(c["comp_obj"].compid, form_dict)
+	# Clean network address
+	if form_dict['networkaddr'][-1] == ".":
+		form_dict['networkaddr'] = form_dict['networkaddr'][:-1]
+	if form_dict['networkaddr'][0] == ".":
+		form_dict['networkaddr'] = form_dict['networkaddr'][1:]
 	team = CreateTeamForm(form_dict)
 	if not team.is_valid():
 		return render_to_response('CompConfig/teams_create-edit.html', c)
@@ -185,11 +195,16 @@ def services_edit(request, competition = None, servid = None):
 	# TODO: This part is super gross. I should improve efficiency at some point
 	form_dict = request.POST.copy().dict()
 	form_dict.pop('csrfmiddlewaretoken', None)
-	print form_dict["connectip"].__class__.__name__
+	# Set network connection display
 	if int(form_dict["connectip"]) == 1:
 		form_dict["connect_display"] = "IP Address"
 	else:
 		form_dict["connect_display"] = "Domain Name"
+	# Clean machine address value
+	if form_dict['networkloc'][0] == ".":
+		form_dict['networkloc'] = form_dict['networkloc'][1:]
+	if form_dict['networkloc'][-1] == ".":
+		form_dict['networkloc'] = form_dict['networkloc'][:-1]
 	serv_obj = Service.objects.filter(compid = c["competition_object"].compid, servid = int(servid))
 	serv_obj.update(**form_dict)
 	return HttpResponseRedirect('/admin/competitions/%s/services/' % competition)
@@ -232,10 +247,16 @@ def services_create(request, competition = None):
 	form_dict.pop('csrfmiddlewaretoken', None)
 	form_dict["compid"] = c["competition_object"].compid
 	form_dict["servicemodule"] = ServiceModule.objects.get(servmdulid = form_dict["servicemodule"])
+	# Set network connection display
 	if int(form_dict["connectip"]) == 1:
 		form_dict["connect_display"] = "IP Address"
 	else:
 		form_dict["connect_display"] = "Domain Name"
+	# Clean machine address value
+	if form_dict['connectip'] and form_dict['networkloc'][0] == ".":
+		form_dict['networkloc'] = form_dict['networkloc'][1:]
+	elif not form_dict['connectip'] and form_dict['networkloc'][-1] == ".":
+		form_dict['networkloc'] = form_dict['networkloc'][:-1]
 	serv_obj = Service(**form_dict)
 	serv_obj.save()
 	return HttpResponseRedirect("/admin/competitions/%s/services/" % competition)

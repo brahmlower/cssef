@@ -18,11 +18,11 @@ class Pluggin:
 
 	def update_configuration(self, team_obj):
 		self.networkaddr = team_obj.networkaddr
+		# Set the score configurations
 		score_config_dict = json.loads(team_obj.score_configs)
 		if self.service_name in score_config_dict:
 			for key in score_config_dict[self.service_name]:
 				value = score_config_dict[self.service_name][key]
-				print 'key: ' + key + 'type' + value.__class__.__name__
 				if (isinstance(value, self.team_config_type_dict[key]) or isinstance(value, unicode)) and len(str(value)) > 0:
 					setattr(self, key, score_config_dict[self.service_name][key])
 
