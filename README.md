@@ -81,11 +81,13 @@ Please enter a(n) 'str' for 'network': 192.168.0
 #####Long Term#####
 * Add Orange Team support
 * Add Red Team support
+
 #####Medium Term#####
 * Seperate White Team and Site Admin pages and accounts
 * View and score inject responses as white team
 * Implement better error notification when user attempt to access blocked pages
 * Test scoring a service from a White Team interface
+
 #####Short Term#####
 * Add interface to edit competition details
 * Add interface to modify general site information/content

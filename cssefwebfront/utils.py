@@ -86,11 +86,20 @@ def save_document(request_file, content_subdir, related_obj, ashash = True):
 def run_pluggin_test(serv_obj, team_config_dict):
 	module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
 	module = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)
+	config_dict = getattr(module(serv_obj), "team_config_type_dict")
 	# Fix key names in the config dict
 	for key in team_config_dict:
 		if "serv_config_" in key:
-			print "key: " + key + "\t type: " + team_config_dict[key].__class__.__name__
-			team_config_dict[key.split('serv_config_')[1]] = team_config_dict.pop(key)
+			new_key = key.split('serv_config_')[1]
+			if team_config_dict[key] == u'':
+				# Value is blank, so set it to None so it can be ignored by the pluggin
+				team_config_dict.pop(key)
+				team_config_dict[new_key] = None
+			else:
+				# Casts the unicdoe value to a python string, to be converted to it's proper type
+				team_config_dict[key] = team_config_dict[key].encode('ascii','ignore')
+				# Casts the unicode value as the type defined by the pluggin configuration types dict
+				team_config_dict[new_key] = config_dict[new_key](team_config_dict.pop(key))
 	pt = PlugginTest(module, {"serv_obj": serv_obj, "team_configs": team_config_dict})
 	return pt.score_obj
 

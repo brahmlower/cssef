@@ -55,12 +55,12 @@ class PlugginTest:
 	"""
 	def __init__(self, class_obj, configs_dict = None):
 		self.configs_dict = configs_dict
-		self.config_list = ["points","connectip","networkaddr","networkloc","port"]
 		if self.configs_dict != None:
 			self.class_inst = class_obj(self.configs_dict['serv_obj'])
 			self.networkaddr = self.configs_dict['team_configs'].pop('networkaddr')
 			self.team_config = self.configs_dict['team_configs']
 		else:
+			self.config_list = ["points","connectip","networkaddr","networkloc","port"]
 			self.class_inst = class_obj(self.get_pluggin_configs())
 			self.team_config = self.get_team_config(class_obj)
 		self.score_obj = self.score()
