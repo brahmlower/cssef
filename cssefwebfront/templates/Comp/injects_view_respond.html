@@ -69,17 +69,17 @@
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 					<!-- Actual page content -->
 					{% if auth_name == "auth_team_blue" %}
-					<div class="panel panel-default">
-						<div class="panel-heading"> {{ inject.inject.title }} </div>
+					<div class="panel panel-{{inject.display_state}}">
+						<div class="panel-heading"> {{ inject.ijct_obj.title }} </div>
 						<div class="panel-body">
-							<strong>Released at: </strong>{{ inject.inject.dt_delivery }}<br>
-							<strong>Due at: </strong>{{ inject.inject.dt_response_due }}<br>
-							<strong>Closes at: </strong>{{ inject.inject.dt_response_close }}<br>
+							<strong>Released at: </strong>{{ inject.ijct_obj.dt_delivery }}<br>
+							<strong>Due at: </strong>{{ inject.ijct_obj.dt_response_due }}<br>
+							<strong>Closes at: </strong>{{ inject.ijct_obj.dt_response_close }}<br>
 							{% for k in inject.files %}
-							<strong> Attached File: </strong><a href="/resources/injects/{{inject.inject.compid}}/{{inject.inject.ijctid}}/{{k.urlencfilename}}">{{ k.filename }}</a><br>
+							<strong> Attached File: </strong><a href="/resources/injects/{{inject.ijct_obj.compid}}/{{inject.ijct_obj.ijctid}}/{{k.urlencfilename}}">{{ k.filename }}</a><br>
 							{% endfor %}
 							<strong>Inject body:</strong><br>
-							{{ inject.inject.body }}
+							{{ inject.ijct_obj.body }}
 						</div>
 					</div>
 
@@ -104,7 +104,7 @@
 						<div class="panel-heading"> Response Submission </div>
 						<div class="panel-body">
 							{% if not response_locked %}
-							<form action="/competitions/{{ competition_object.compurl }}/injects/{{ inject.inject.ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+							<form action="/competitions/{{ competition_object.compurl }}/injects/{{ inject.ijct_obj.ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 								{% csrf_token %}
 								{{ responseform.textentry.errors }}
 								<label for="{{ responseform.textentry.id_for_label }}" class="col-lg-2 control-label">{{ responseform.textentry.label }}</label>
@@ -121,7 +121,7 @@
 							</form>
 							{% else %}
 							<p>
-								Response submission for this inject has been locked. The inject expired at {{ inject.dt_response_close }} 
+								Response submission for this inject has been locked. The inject expired at {{ inject.ijct_obj.dt_response_close }} 
 							</p>
 							{% endif %}
 						</div>

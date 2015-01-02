@@ -320,6 +320,7 @@ def injects_create(request, competition = None):
 	form_dict = request.POST.copy().dict()
 	form_dict["compid"] = c["competition_object"].compid
 	form_dict.pop('csrfmiddlewaretoken', None)
+	form_dict.pop('docfile')
 	form_obj = CreateInjectForm(form_dict)
 	if not form_obj.is_valid():
 		c["messages"].new_info("Invalid field data in inject form: %s" % form_obj.errors, 1001)

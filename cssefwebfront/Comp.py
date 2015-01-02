@@ -16,6 +16,7 @@ from forms import TeamLoginForm
 from forms import InjectResponseForm
 from forms import IncidentResponseForm
 from forms import IncidentResponseReplyForm
+from utils import get_inject_display_state
 from utils import UserMessages
 from utils import getAuthValues
 from utils import save_document
@@ -105,9 +106,18 @@ def injects(request, competition = None):
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c["inject_list"] = []
 	for i in Inject.objects.filter(compid = request.user.compid, dt_delivery__lte = timezone.now()):
+		# Determine inject state (unanswered, answered, due, closed)
+		# display_state = "default"
+		# if i.dt_response_due <= timezone.now():
+		# 	display_state = "warning"
+		# if i.dt_response_close <= timezone.now():
+		# 	display_state = "danger"
+		# if len(InjectResponse.objects.filter(compid = request.user.compid, teamid = request.user.teamid, ijctid = i.ijctid)) > 0:
+		# 	display_state = "success"
 		c["inject_list"].append({
 			"inject": i,
-			"files": Document.objects.filter(inject = i)
+			"files": Document.objects.filter(inject = i),
+			"display_state": get_inject_display_state(request.user, i)
 		})
 	return render_to_response('Comp/injects.html', c)
 
@@ -122,9 +132,11 @@ def injects_respond(request, competition = None, ijctid = None):
 	c.update(csrf(request))
 	# If we're not getting POST data, serve the page normally
 	if request.method != "POST":
+		ijct_obj = Inject.objects.get(compid = c["competition_object"].compid, ijctid = ijctid)
 		c["inject"] = {
-			"inject": Inject.objects.get(compid = c["competition_object"].compid, ijctid = ijctid),
-			"files": Document.objects.filter(inject = ijctid)
+			"ijct_obj": ijct_obj,
+			"files": Document.objects.filter(inject = ijctid),
+			"display_state": get_inject_display_state(request.user, ijct_obj)
 		}
 		c["response_list"] = []
 		for i in InjectResponse.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid, ijctid = ijctid):
@@ -132,7 +144,7 @@ def injects_respond(request, competition = None, ijctid = None):
 				"response": i,
 				"files": Document.objects.filter(injectresponse = i)
 			})
-		if c["inject"]["inject"].dt_response_close <= timezone.now():
+		if c["inject"]["ijct_obj"].dt_response_close <= timezone.now():
 			c["response_locked"] = True
 		else:
 			c["response_locked"] = False

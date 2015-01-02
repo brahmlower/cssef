@@ -78,33 +78,22 @@ Please enter a(n) 'str' for 'network': 192.168.0
 </code></pre>
 
 # TODO #
-* Add "organizations", which own competition objects
-* Organization administrators
- * authentication
- * login
- * logoff
-* Make competitions editable (surprised I haven't already done this)
-* Interface to modify genaric site information
- * Modify homepage content
-* Improve documentation (it sorta sucks right?)
-* Injects
- * view and score inject responses as white team
- * Display icon indicating a response has been submitted in blue team list view
-* Users/Authentication
- * Better reporting when attempting to access restricted pages (other teams pages, admin pages) - this includes 403 pages and whatnot
-* Blue Team views
- * Incident Response
-  * new incident form
-  * list of current incidents
-  * incidents can be modified (think ticketing system)
- * Service Timeline
-  * graph services
-  * may require competition start time?
-  * filter by service
- * Scoreboard
-  * filter by service
-  * color code scores (red down, green up)
- * Service Status
-  * Current service status (will call a single instance of the scoring engine)
- * Details
- * Summary
+#####Long Term#####
+* Add Orange Team support
+* Add Red Team support
+#####Medium Term#####
+* Seperate White Team and Site Admin pages and accounts
+* View and score inject responses as white team
+* Implement better error notification when user attempt to access blocked pages
+* Test scoring a service from a White Team interface
+#####Short Term#####
+* Add interface to edit competition details
+* Add interface to modify general site information/content
+* Add content to Service Timeline view for Blue Team
+ * Filterable by service
+ * General statistics
+* Expand upon Scoreboard view for Blue Team
+ * Filterable by service
+* Finish content for Summary pages (Blue and White Teams)
+* Finish content for Details pages (Blue and White Teams)
+* Change networkaddr field in Team model (and surrounding code) to be CIDR or domain name

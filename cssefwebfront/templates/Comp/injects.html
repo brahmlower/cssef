@@ -73,7 +73,7 @@
 					<p>No injects have been released yet.</p>
 					{% endif %}
 					{% for i in inject_list %}
-					<div class="panel panel-default">
+					<div class="panel panel-{{i.display_state}}">
 						<div class="panel-heading"> {{ i.inject.title }} </div>
 						<div class="panel-body">
 							<strong>Released at: </strong>{{ i.inject.dt_delivery }}<br>

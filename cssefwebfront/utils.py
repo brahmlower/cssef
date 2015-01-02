@@ -1,17 +1,18 @@
-import json
-from models import Service
-from models import Team
-from models import Inject
 from django.forms import CharField
 from django.forms import NumberInput
 from django.forms import TextInput
-from hashlib import md5
-import settings
+from django.utils import timezone
 from django.core.files.uploadedfile import UploadedFile
+from models import Service
+from models import Team
+from models import Inject
 from models import Document
+from models import InjectResponse
+from hashlib import md5
 from urllib import quote
 from ScoringUtils import PlugginTest
 import settings
+import json
 
 
 def getAuthValues(request, c):
@@ -48,6 +49,16 @@ class UserMessages:
 		self.error = []
 		self.success = []
 
+def get_inject_display_state(user_obj, injct_obj):
+	display_state = "default"
+	if injct_obj.dt_response_due <= timezone.now():
+		display_state = "warning"
+	if injct_obj.dt_response_close <= timezone.now():
+		display_state = "danger"
+	if len(InjectResponse.objects.filter(compid = user_obj.compid, teamid = user_obj.teamid, ijctid = injct_obj.ijctid)) > 0:
+		display_state = "success"
+	return display_state
+
 def save_document(request_file, content_subdir, related_obj, ashash = True):
 	uploadedfile = UploadedFile(request_file)
 	file_content = uploadedfile.read()
@@ -78,6 +89,7 @@ def run_pluggin_test(serv_obj, team_config_dict):
 	# Fix key names in the config dict
 	for key in team_config_dict:
 		if "serv_config_" in key:
+			print "key: " + key + "\t type: " + team_config_dict[key].__class__.__name__
 			team_config_dict[key.split('serv_config_')[1]] = team_config_dict.pop(key)
 	pt = PlugginTest(module, {"serv_obj": serv_obj, "team_configs": team_config_dict})
 	return pt.score_obj
