@@ -36,7 +36,3 @@ class HTTP(Pluggin):
 			new_score.value = 0
 			new_score.message = "Address: %s<br>Traceback: %s" % (address,escape(traceback.format_exc().splitlines()[-1]))
 		return new_score
-
-class Test(PlugginTest):
-	def __init__(self):
-		PlugginTest.__init__(self, HTTP)

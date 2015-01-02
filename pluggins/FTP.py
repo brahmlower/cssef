@@ -44,7 +44,3 @@ class FTP(Pluggin):
 			new_score.message = "Address: %s<br>Port: %s<br>Traceback: %s" % \
 				(self.build_address(),str(self.port),escape(traceback.format_exc().splitlines()[-1]))
 		return new_score
-
-class Test(PlugginTest):
-	def __init__(self):
-		PlugginTest.__init__(self, FTP)

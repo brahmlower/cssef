@@ -232,6 +232,16 @@ def servicemodule_test(request, servmdulid = None):
 
 	form_dict = request.POST.copy().dict()
 	form_dict.pop('csrfmiddlewaretoken')
+	# Clean network address
+	if form_dict['networkaddr'][-1] == ".":
+		form_dict['networkaddr'] = form_dict['networkaddr'][:-1]
+	if form_dict['networkaddr'][0] == ".":
+		form_dict['networkaddr'] = form_dict['networkaddr'][1:]
+	# Clean machine address value
+	if form_dict['networkloc'][0] == ".":
+		form_dict['networkloc'] = form_dict['networkloc'][1:]
+	if form_dict['networkloc'][-1] == ".":
+		form_dict['networkloc'] = form_dict['networkloc'][:-1]
 	# Prepare the service object for use in the module
 	serv_obj.name = c['servmdul_obj'].modulename
 	serv_obj.connectip = form_dict.pop('connectip')
@@ -240,7 +250,6 @@ def servicemodule_test(request, servmdulid = None):
 	serv_obj.points = 100
 	c['score_obj'] = run_pluggin_test(serv_obj, form_dict)
 	return render_to_response('AdminConfig/servicemodule_test.html', c)
-
 
 def users_list(request):
 	"""

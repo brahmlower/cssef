@@ -20,11 +20,8 @@ class Pluggin:
 		self.networkaddr = team_obj.networkaddr
 		# Set the score configurations
 		score_config_dict = json.loads(team_obj.score_configs)
-		print score_config_dict
-		print self.service_name
 		if self.service_name in score_config_dict:
 			for key in score_config_dict[self.service_name]:
-				print "key: " + key
 				value = score_config_dict[self.service_name][key]
 				if (isinstance(value, self.team_config_type_dict[key]) or isinstance(value, unicode)) and len(str(value)) > 0:
 					setattr(self, key, score_config_dict[self.service_name][key])
@@ -38,6 +35,13 @@ class Pluggin:
 		if withport:
 			return addr + ":" + str(self.port)
 		return addr
+
+	class Test:
+		def __init__(self, *args, **kwargs):
+			if len(kwargs) == 1 and 'test_dict' in kwargs:
+				self.pt = PlugginTest(self.__class__, kwargs['test_dict'])
+			else:
+				self.pt = PlugginsTest(self.__class__)
 
 class PlugginTest:
 	"""

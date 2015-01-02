@@ -10,7 +10,7 @@ import settings
 from django.core.files.uploadedfile import UploadedFile
 from models import Document
 from urllib import quote
-#import ScoringUtils
+from ScoringUtils import PlugginTest
 import settings
 
 
@@ -74,13 +74,13 @@ def save_document(request_file, content_subdir, related_obj, ashash = True):
 
 def run_pluggin_test(serv_obj, team_config_dict):
 	module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
-	module = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=['Test']), 'Test')
+	module = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)
 	# Fix key names in the config dict
 	for key in team_config_dict:
 		if "serv_config_" in key:
 			team_config_dict[key.split('serv_config_')[1]] = team_config_dict.pop(key)
-	instance = module(test_dict = {"serv_obj": serv_obj, "team_configs": team_config_dict})
-	return instance.pt.score_obj
+	pt = PlugginTest(module, {"serv_obj": serv_obj, "team_configs": team_config_dict})
+	return pt.score_obj
 
 def buildServiceConfigForm(serv_obj, form_obj, team_score_dict = None):
 	if team_score_dict != None and isinstance(team_score_dict, str):

@@ -31,6 +31,7 @@ class SSH(Pluggin):
 		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		new_score = Score()
 		try:
+			print "self.port: '"+str(self.port)+"'"
 			client.connect(
 				self.build_address(),
 				self.port,
@@ -44,7 +45,3 @@ class SSH(Pluggin):
 			new_score.value = 0
 			new_score.message = traceback.format_exc()
 		return new_score
-
-class Test(PlugginTest):
-	def __init__(self):
-		PlugginTest.__init__(self, SSH)

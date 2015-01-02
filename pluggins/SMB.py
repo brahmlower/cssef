@@ -51,7 +51,3 @@ class SMB(Pluggin):
 			new_score.value = 0
 			new_score.message = str(rt)
 		return new_score
-
-class Test(PlugginTest):
-	def __init__(self):
-		PlugginTest.__init__(self, SMB)

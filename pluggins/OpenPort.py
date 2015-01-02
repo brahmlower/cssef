@@ -33,7 +33,3 @@ class OpenPort(Pluggin):
             new_score.value = 0
             new_score.message = "" # TODO: Could eventually use an error message here
         return new_score
-
-class Test(PlugginTest):
-    def __init__(self):
-        PlugginTest.__init__(self, OpenPort)
