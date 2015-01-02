@@ -8,6 +8,7 @@ from django.forms import Select
 from django.forms import ChoiceField
 from django.forms import FileField
 from django.forms import ModelChoiceField
+from django.forms import CharField
 from django.forms.widgets import PasswordInput
 from models import Competition
 from models import InjectResponse
@@ -66,6 +67,12 @@ class CreateTeamForm(ModelForm):
 			'password': TextInput(attrs={'class':'form-control'}),
 			'networkaddr': TextInput(attrs={'class':'form-control'}),
 		}
+
+class TestServiceForm(Form):
+	connectip = ChoiceField(label = "Connection Method", choices = [(0 ,'Domain Name'), (1,'IP Address')], widget = Select(attrs={'class':'form-control', 'required': True}))
+	networkaddr = ChoiceField(label = "Network Address", widget = TextInput(attrs={'class':'form-control'}))
+	networkloc = CharField(label = "Machine Address", widget = TextInput(attrs={'class':'form-control'}))
+	defaultport = CharField(label = "Default Port", widget = NumberInput(attrs={'class':'form-control'}))
 
 class CreateServiceForm(ModelForm):
 	def __init__(self, *args, **kwargs):

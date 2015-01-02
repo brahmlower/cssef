@@ -35,6 +35,7 @@ urlpatterns = patterns('',
 	url(r'^admin/servicemodules/$',			AdminConfig.servicemodule_list),
 	url(r'^admin/servicemodules/create/$',	AdminConfig.servicemodule_create),
 	url(r'^admin/servicemodules/edit/(?P<servmdulid>[1-9][1-9]*)/$',	AdminConfig.servicemodule_edit),
+	url(r'^admin/servicemodules/test/(?P<servmdulid>[1-9][1-9]*)/$',	AdminConfig.servicemodule_test),	
 	url(r'^admin/servicemodules/delete/(?P<servmdulid>[1-9][1-9]*)/$',	AdminConfig.servicemodule_delete),
 	# Competition management pages
 	url(r'^admin/competitions/$',			AdminConfig.comp_list),

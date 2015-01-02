@@ -20,8 +20,11 @@ class Pluggin:
 		self.networkaddr = team_obj.networkaddr
 		# Set the score configurations
 		score_config_dict = json.loads(team_obj.score_configs)
+		print score_config_dict
+		print self.service_name
 		if self.service_name in score_config_dict:
 			for key in score_config_dict[self.service_name]:
+				print "key: " + key
 				value = score_config_dict[self.service_name][key]
 				if (isinstance(value, self.team_config_type_dict[key]) or isinstance(value, unicode)) and len(str(value)) > 0:
 					setattr(self, key, score_config_dict[self.service_name][key])
@@ -46,11 +49,17 @@ class PlugginTest:
 	has score_configs, which holds the team specific configurations provided by
 	the user/tester.
 	"""
-	def __init__(self, class_obj):
-		self.config_list = ["points","net_type","subdomain","address","default_port"]
-		self.class_inst = class_obj(self.get_pluggin_configs())
-		self.team_config = self.get_team_config(class_obj)
-		self.score()
+	def __init__(self, class_obj, configs_dict = None):
+		self.configs_dict = configs_dict
+		self.config_list = ["points","connectip","networkaddr","networkloc","port"]
+		if self.configs_dict != None:
+			self.class_inst = class_obj(self.configs_dict['serv_obj'])
+			self.networkaddr = self.configs_dict['team_configs'].pop('networkaddr')
+			self.team_config = self.configs_dict['team_configs']
+		else:
+			self.class_inst = class_obj(self.get_pluggin_configs())
+			self.team_config = self.get_team_config(class_obj)
+		self.score_obj = self.score()
 
 	def get_pluggin_configs(self):
 		print "\nGeneral service pluggin configurations."
@@ -72,10 +81,11 @@ class PlugginTest:
 
 	def score(self):
 		class_name = self.class_inst.__class__.__name__
-		emulated_team = self.EmulatedTeam(class_name, self.team_config)
+		emulated_team = self.EmulatedTeam(class_name, self.team_config, self.networkaddr)
 		score_obj = self.class_inst.score(emulated_team)
 		print "[%s] Team:n/a Service:n/a Value:%s Messages:%s" % \
 			(timezone.now(), score_obj.value, score_obj.message)
+		return score_obj
 
 	class EmulatedTeam:
 		"""
@@ -83,5 +93,6 @@ class PlugginTest:
 		score_configs. There might be a simpler way of doing this, but this
 		seems to be working for now.
 		"""
-		def __init__(self, class_name, team_config):
-			self.score_configs = {class_name: team_config}
+		def __init__(self, class_name, team_config, networkaddr):
+			self.networkaddr = networkaddr
+			self.score_configs = json.dumps({class_name: team_config})

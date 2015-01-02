@@ -2,11 +2,15 @@ import json
 from models import Service
 from models import Team
 from models import Inject
+from django.forms import CharField
+from django.forms import NumberInput
+from django.forms import TextInput
 from hashlib import md5
 import settings
 from django.core.files.uploadedfile import UploadedFile
 from models import Document
 from urllib import quote
+#import ScoringUtils
 import settings
 
 
@@ -68,6 +72,35 @@ def save_document(request_file, content_subdir, related_obj, ashash = True):
 	wfile.write(file_content)
 	wfile.close()
 
+def run_pluggin_test(serv_obj, team_config_dict):
+	module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
+	module = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=['Test']), 'Test')
+	# Fix key names in the config dict
+	for key in team_config_dict:
+		if "serv_config_" in key:
+			team_config_dict[key.split('serv_config_')[1]] = team_config_dict.pop(key)
+	instance = module(test_dict = {"serv_obj": serv_obj, "team_configs": team_config_dict})
+	return instance.pt.score_obj
+
+def buildServiceConfigForm(serv_obj, form_obj, team_score_dict = None):
+	if team_score_dict != None and isinstance(team_score_dict, str):
+		# This might cause problems since Form.initial is expecting a querydict
+		team_score_dict = json.loads(team_score_dict)
+	module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
+	module_inst = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)(serv_obj)
+	config_dict = getattr(module_inst, "team_config_type_dict")
+	config_list = []
+	for key in config_dict:
+		if config_dict[key] == int:
+			field_obj = CharField(label = key.title(), widget = NumberInput(attrs={'class':'form-control'}))
+		elif config_dict[key] == str:
+			field_obj = CharField(label = key.title(), widget = TextInput(attrs={'class':'form-control'}))
+		# HOLY BUTT NUTS BATMAN!
+		form_obj.fields['serv_config_'+key] = field_obj
+		if team_score_dict != None:
+			form_obj.initial = team_score_dict
+	return form_obj
+
 def buildTeamServiceConfigForms(compid, team_score_dict = None):
 	if team_score_dict != None:
 		team_score_dict = json.loads(team_score_dict)
@@ -75,13 +108,12 @@ def buildTeamServiceConfigForms(compid, team_score_dict = None):
 	for serv_obj in Service.objects.filter(compid = compid):
 		module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
 		module_inst = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)(serv_obj)
-		#module_inst = getattr(__import__('pluggins.' + module_name, fromlist=[module_name]), module_name)(serv_obj)
 		config_dict = getattr(module_inst, "team_config_type_dict")
 		#print config_dict
 		config_list = []
 		for key in config_dict:
 			tmp_dict = {}
-			tmp_dict["label"] = key
+			tmp_dict["label"] = key.title()
 			tmp_dict["id_for_label"] = "%s-%s" % (serv_obj.name, key)
 			if config_dict[key] == int:
 				tmp_dict["type"] = "number"

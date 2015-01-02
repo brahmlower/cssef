@@ -9,6 +9,7 @@ from django.core.context_processors import csrf
 from forms import CreateCompetitionForm
 from forms import AdminLoginForm
 from forms import CreateTeamForm
+from forms import TestServiceForm
 from forms import CreateServiceForm
 from forms import CreateServiceModuleForm
 from models import ServiceModule
@@ -20,6 +21,8 @@ from models import Team
 from utils import UserMessages
 from utils import getAuthValues
 from utils import save_document
+from utils import run_pluggin_test
+from utils import buildServiceConfigForm
 import settings
 
 def home(request):
@@ -46,8 +49,6 @@ def login(request):
 	# Checks if the user is submitting the form, or requesting the form
 	if request.method != "POST":
 		return render_to_response('AdminConfig/login.html', c)
-
-	#login = AdminLoginForm(request.POST)
 	form_dict = request.POST.copy()
 	admin = authenticate(username = form_dict["username"], password = form_dict["password"])
 	if admin == None:
@@ -55,7 +56,7 @@ def login(request):
 		return render_to_response('AdminConfig/login.html', c)
 	# Checks that the submitted form data is valid
 	auth.login(request, admin)
-	return HttpResponseRedirect("/admin/home") #render_to_response('AdminConfig/home.html', c)
+	return HttpResponseRedirect("/admin/home")
 
 def logout(request):
 	"""
@@ -217,7 +218,29 @@ def servicemodule_edit(request, servmdulid = None):
 		return render_to_response('AdminConfig/servicemodule_create-edit.html', c)
 
 def servicemodule_test(request, servmdulid = None):
-	pass
+	c = getAuthValues(request, {})
+	if c["auth_name"] != "auth_team_white":
+		return HttpResponseRedirect("/")
+	c.update(csrf(request))
+	c['servmdul_obj'] = ServiceModule.objects.get(servmdulid = servmdulid)
+	serv_obj = Service(servicemodule = c['servmdul_obj'])
+	if request.method != "POST":
+		# Serve blank form with no results
+		c["service_configs"] = buildServiceConfigForm(serv_obj, TestServiceForm())
+		return render_to_response('AdminConfig/servicemodule_test.html', c)
+	c["service_configs"] = buildServiceConfigForm(serv_obj, TestServiceForm(), request.POST)
+
+	form_dict = request.POST.copy().dict()
+	form_dict.pop('csrfmiddlewaretoken')
+	# Prepare the service object for use in the module
+	serv_obj.name = c['servmdul_obj'].modulename
+	serv_obj.connectip = form_dict.pop('connectip')
+	serv_obj.networkloc = form_dict.pop('networkloc')
+	serv_obj.defaultport = form_dict.pop('defaultport')
+	serv_obj.points = 100
+	c['score_obj'] = run_pluggin_test(serv_obj, form_dict)
+	return render_to_response('AdminConfig/servicemodule_test.html', c)
+
 
 def users_list(request):
 	"""
