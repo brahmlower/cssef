@@ -65,7 +65,11 @@
 					<!-- actual page content-->
 					<h2> Service Module Test: {{servmdul_obj.modulename}}</h2>
 					{% if score_obj %}
-					<div class="panel panel-default">
+					{% if score_obj.value == 0%}
+					<div class="panel panel-danger">
+					{% else %}
+					<div class="panel panel-success">
+					{% endif %}
 						<div class="panel-heading"> Test Results </div>
 						<div class="panel-body">
 							<strong>Datetime:</strong> {{ score_obj.datetime }}<br>

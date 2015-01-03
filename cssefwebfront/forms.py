@@ -74,6 +74,22 @@ class TestServiceForm(Form):
 	networkloc = CharField(label = "Machine Address", widget = TextInput(attrs={'class':'form-control'}))
 	defaultport = CharField(label = "Default Port", widget = NumberInput(attrs={'class':'form-control'}))
 
+
+class ServiceSelectionForm(Form):
+	def __init__(self, *args, **kwargs):
+		compid = kwargs.pop('compid')
+		super(ServiceSelectionForm, self).__init__(*args, **kwargs)
+		tuple_list = [(-1, "Overall Competition")]
+		for i in Service.objects.filter(compid = compid):
+			tuple_list.append((i.servid, "Service: "+i.name))
+		self.fields['service'].choices = tuple_list
+
+	service = ChoiceField(label = "Select service: ", choices = [], widget = Select(attrs={'class':'form-control', 'required': True}))
+	class Meta:
+		fields = ['service']
+
+
+
 class CreateServiceForm(ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(CreateServiceForm, self).__init__(*args, **kwargs)

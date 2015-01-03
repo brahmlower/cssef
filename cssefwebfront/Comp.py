@@ -16,6 +16,7 @@ from forms import TeamLoginForm
 from forms import InjectResponseForm
 from forms import IncidentResponseForm
 from forms import IncidentResponseReplyForm
+from forms import ServiceSelectionForm
 from utils import get_inject_display_state
 from utils import UserMessages
 from utils import getAuthValues
@@ -106,14 +107,6 @@ def injects(request, competition = None):
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c["inject_list"] = []
 	for i in Inject.objects.filter(compid = request.user.compid, dt_delivery__lte = timezone.now()):
-		# Determine inject state (unanswered, answered, due, closed)
-		# display_state = "default"
-		# if i.dt_response_due <= timezone.now():
-		# 	display_state = "warning"
-		# if i.dt_response_close <= timezone.now():
-		# 	display_state = "danger"
-		# if len(InjectResponse.objects.filter(compid = request.user.compid, teamid = request.user.teamid, ijctid = i.ijctid)) > 0:
-		# 	display_state = "success"
 		c["inject_list"].append({
 			"inject": i,
 			"files": Document.objects.filter(inject = i),
@@ -194,6 +187,40 @@ def servicetimeline(request, competition = None):
 	if c["auth_name"] != "auth_team_blue":
 		return HttpResponseRedirect('/')
 	c["competition_object"] = Competition.objects.get(compurl = competition)
+	# Prepare page for statistics view selector
+	c.update(csrf(request))
+	c["form"] = ServiceSelectionForm(compid = c["competition_object"].compid)
+	score_obj_list = []
+	if request.POST and request.POST['service'] != u'-1':
+		c["form"] = ServiceSelectionForm(initial = {"service": request.POST['service']}, compid = c["competition_object"].compid)
+		comp_seconds = int((c["competition_object"].dt_finish - c["competition_object"].dt_start).total_seconds())
+		score_obj_list = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid, servid = request.POST['service'])
+		prev_date = score_obj_list[0].datetime
+		total_percent = 0
+		c["score_vals"] = []
+		for i in score_obj_list[1:]:
+			diff = int((i.datetime - prev_date).total_seconds())
+			percentage = 100 * float(diff) / float(comp_seconds)
+			if total_percent + percentage > 100:
+				percentage = 100 - total_percent
+			total_percent += percentage
+			prev_date = i.datetime
+			c["score_vals"].append({"value":i.value,"percentage": percentage})
+	else:
+		score_obj_list = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid)
+	# Prepare data for chart_overall_uptime
+	chart_score_up = 0
+	chart_score_down = 0
+	for i in score_obj_list:
+		if i.value == 0:
+			chart_score_down += 1
+		else:
+			chart_score_up += 1
+	c["score_pie_chart"] = [
+		{"value":chart_score_up,"color":"#46BFBD","highlight":"#5AD3D1","label":"Scored Up"},
+		{"value":chart_score_down,"color":"#F7464A","highlight":"#FF5A5E","label":"Scored Down"}
+	]
+	total_scores = chart_score_up + chart_score_down
 	return render_to_response('Comp/servicetimeline.html', c)
 
 def scoreboard(request, competition = None):
@@ -204,14 +231,13 @@ def scoreboard(request, competition = None):
 	if c["auth_name"] != "auth_team_blue":
 		return HttpResponseRedirect('/')
 	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c["scores"] = []
-	score_obj_list = Score.objects.filter(compid = c["competition_object"].compid, teamid = request.user.teamid)
-	for i in score_obj_list:
-		score_obj_dict = {}
-		score_obj_dict["time"] = i.datetime
-		score_obj_dict["name"] = Service.objects.get(servid = i.servid).name
-		score_obj_dict["value"] = i.value
-		c["scores"].append(score_obj_dict)
+	c.update(csrf(request))
+	if request.POST:
+		c["form"] = ServiceSelectionForm(initial = {"service": request.POST['service']}, compid = request.user.compid)
+		c["scores"] = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid, servid = request.POST['service'])
+	else:
+		c["form"] = ServiceSelectionForm(compid = request.user.compid)
+		c["scores"] = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid)
 	return render_to_response('Comp/scoreboard.html', c)
 
 def incidentresponse(request, competition = None):

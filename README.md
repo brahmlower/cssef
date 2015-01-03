@@ -92,10 +92,7 @@ Please enter a(n) 'str' for 'network': 192.168.0
 * Add interface to edit competition details
 * Add interface to modify general site information/content
 * Add content to Service Timeline view for Blue Team
- * Filterable by service
  * General statistics
-* Expand upon Scoreboard view for Blue Team
- * Filterable by service
 * Finish content for Summary pages (Blue and White Teams)
 * Finish content for Details pages (Blue and White Teams)
 * Change networkaddr field in Team model (and surrounding code) to be CIDR or domain name

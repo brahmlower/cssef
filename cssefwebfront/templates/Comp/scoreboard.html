@@ -69,6 +69,17 @@
 				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 					<!-- Actual page content-->
 					{% if auth_name == "auth_team_blue" %}
+					<!-- Service selection form start -->
+					<div>
+						<form action="/competitions/{{ competition_object.compurl }}/scoreboard/" method="post" class="form-inline">
+							{% csrf_token %}
+							{{ form.service.errors }}
+							<label for="{{ form.service.id_for_label }}" class="control-label">{{ form.service.label }}</label>
+							{{ form.service }}
+							<button type="submit" class="btn btn-primary">Go!</button>
+						</form>
+					<div>
+					<!-- Service selection form end -->
 					{% if not scores %}
 					<p> No scores have been recorded at this time.</p><br>
 					{% endif %}
