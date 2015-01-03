@@ -9,9 +9,9 @@
 		<script src="/resources/static/js/bootstrap-datetimepicker.min.js"></script>
 		<script type="text/javascript">
 			$(function() {
-				$('#{{ form.dt_display.id_for_label }}').datetimepicker();
-				$('#{{ form.dt_start.id_for_label }}').datetimepicker();
-				$('#{{ form.dt_finish.id_for_label }}').datetimepicker();
+				$('#{{ form.datetime_display.id_for_label }}').datetimepicker();
+				$('#{{ form.datetime_start.id_for_label }}').datetimepicker();
+				$('#{{ form.datetime_finish.id_for_label }}').datetimepicker();
 				$("#id_compname").keyup( function() { var compname = $("#id_compname").val();
 					$("#id_compurl").val(compname.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/gi, ''));
 				});
@@ -112,41 +112,25 @@
 						<label for="{{ form.compurl.id_for_label }}" class="col-lg-2 control-label">{{ form.compurl.label }}</label>
 						<div class="col-lg-10">{{ form.compurl }}<br></div>
 
-						{{ form.shrt_desc.errors }}
-						<label for="{{ form.shrt_desc.id_for_label }}" class="col-lg-2 control-label">{{ form.shrt_desc.label }}</label>
-						<div class="col-lg-10">{{ form.shrt_desc }}<br></div>
+						{{ form.description_short.errors }}
+						<label for="{{ form.description_short.id_for_label }}" class="col-lg-2 control-label">{{ form.description_short.label }}</label>
+						<div class="col-lg-10">{{ form.description_short }}<br></div>
 
-						{{ form.full_desc.errors }}
-						<label for="{{ form.full_desc.id_for_label }}" class="col-lg-2 control-label">{{ form.full_desc.label }}</label>
-						<div class="col-lg-10">{{ form.full_desc }}<br></div>
-
-						{{ form.viewable.errors }}
-						<label for="{{ form.viewable.id_for_label }}" class="col-lg-2 control-label">{{ form.viewable.label }}</label>
-						<div class="col-lg-10">{{ form.viewable }}<br></div>
-
-						{{ form.autodisplay.errors }}
-						<label for="{{ form.autodisplay.id_for_label }}" class="col-lg-2 control-label">{{ form.autodisplay.label }}</label>
-						<div class="col-lg-10">{{ form.autodisplay }}<br></div>
+						{{ form.description_full.errors }}
+						<label for="{{ form.description_full.id_for_label }}" class="col-lg-2 control-label">{{ form.description_full.label }}</label>
+						<div class="col-lg-10">{{ form.description_full }}<br></div>
 			
-						{{ form.dt_display.errors }}
-						<label for="{{ form.dt_display.id_for_label }}" class="col-lg-2 control-label">{{ form.dt_display.label }}</label>
-						<div class="col-lg-10 input-append">{{ form.dt_display }}<br></div>
+						{{ form.datetime_display.errors }}
+						<label for="{{ form.datetime_display.id_for_label }}" class="col-lg-2 control-label">{{ form.datetime_display.label }}</label>
+						<div class="col-lg-10 input-append">{{ form.datetime_display }}<br></div>
 
-						{{ form.dt_start.errors }}
-						<label for="{{ form.dt_start.id_for_label }}" class="col-lg-2 control-label">{{ form.dt_start.label }}</label>
-						<div class="col-lg-10 input-append">{{ form.dt_start }}<br></div>
+						{{ form.datetime_start.errors }}
+						<label for="{{ form.datetime_start.id_for_label }}" class="col-lg-2 control-label">{{ form.datetime_start.label }}</label>
+						<div class="col-lg-10 input-append">{{ form.datetime_start }}<br></div>
 
-						{{ form.dt_finish.errors }}
-						<label for="{{ form.dt_finish.id_for_label }}" class="col-lg-2 control-label">{{ form.dt_finish.label }}</label>
-						<div class="col-lg-10 input-append">{{ form.dt_finish }}<br></div>
-
-						{{ form.score_delay.errors }}
-						<label for="{{ form.score_delay.id_for_label }}" class="col-lg-2 control-label">{{ form.score_delay.label }}</label>
-						<div class="col-lg-10">{{ form.score_delay }}<br></div>
-
-						{{ form.score_delay_uncert.errors }}
-						<label for="{{ form.score_delay_uncert.id_for_label }}" class="col-lg-2 control-label">{{ form.score_delay_uncert.label }}</label>
-						<div class="col-lg-10">{{ form.score_delay_uncert }}<br></div>
+						{{ form.datetime_finish.errors }}
+						<label for="{{ form.datetime_finish.id_for_label }}" class="col-lg-2 control-label">{{ form.datetime_finish.label }}</label>
+						<div class="col-lg-10 input-append">{{ form.datetime_finish }}<br></div>
 
 						<div class="col-lg-10 col-lg-offset-2">
 							<a class="btn btn-default" href="/admin/competitions/">Cancel</a>

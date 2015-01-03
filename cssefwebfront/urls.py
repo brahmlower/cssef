@@ -42,9 +42,9 @@ urlpatterns = patterns('',
 	url(r'^admin/competitions/create/$',	AdminConfig.comp_create),
 	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/delete/$',	AdminConfig.comp_delete),
 	# General competition configurations
-	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/$',			CompConfig.summary),
-	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/summary/$',	CompConfig.summary),
-	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/details/$',	CompConfig.details),
+	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/$',			CompConfig.comp_summary),
+	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/summary/$',	CompConfig.comp_summary),
+	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/settings/$',	CompConfig.comp_settings),
 	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/scoring/$',	CompConfig.scoring),
 	# Team related competition configurations
 	url(r'^admin/competitions/(?P<competition>[\w\-\_]{0,25})/teams/$',									CompConfig.teams_list),

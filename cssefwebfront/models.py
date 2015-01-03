@@ -14,7 +14,7 @@ from django.forms.widgets import PasswordInput
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-# Import for signal handlers
+# Imports for signal handlers
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from hashlib import md5
@@ -22,17 +22,23 @@ import os
 
 class Competition(Model):
 	compid = AutoField(primary_key = True)
-	compname = CharField(max_length = 50)		# Full name of the competition
-	compurl = CharField(max_length = 50)		# string ID of the competition, used in url
-	shrt_desc = CharField(max_length = 300)		# A short description of the competition - abreviated version of description field
-	full_desc = TextField(max_length = 1000)	# A full description of the competition, what it's about, what the goals are and whatnot
-	viewable = BooleanField(default = False)	# Boolean indicating if it's published on the public competition list
-	autodisplay = BooleanField(default = False)
-	dt_display = DateTimeField()
-	dt_start = DateTimeField()
-	dt_finish = DateTimeField()
-	score_delay = PositiveIntegerField()
-	score_delay_uncert = PositiveIntegerField()
+	compname = CharField(max_length = 50)
+	compurl = CharField(max_length = 50)
+	description_short = CharField(max_length = 300)
+	description_full = TextField(max_length = 1000)
+	datetime_display = DateTimeField()
+	datetime_start = DateTimeField()
+	datetime_finish = DateTimeField()
+	scoring_enabled = BooleanField(default = False)
+	scoring_interval = PositiveIntegerField(null = True)
+	scoring_interval_uncty = PositiveIntegerField(null = True)
+	scoring_method = CharField(max_length = 20, null = True, blank = True)
+	services_enabled = BooleanField(default = False)
+	teams_view_ranking_enabled = BooleanField(default = False)
+	teams_view_scoreboard_enabled = BooleanField(default = False)
+	teams_view_servicestatus_enabled = BooleanField(default = False)
+	teams_view_injects_enabled = BooleanField(default = False)
+	teams_view_incidentresponse_enabled = BooleanField(default = False)
 
 class Team(Model):
 	teamid = AutoField(primary_key = True)

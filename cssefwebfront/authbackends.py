@@ -12,7 +12,7 @@ class TeamAuth(object):
 			team_obj = Team.objects.get(username = username, password = password, compid = compid)
 			comp_obj = Competition.objects.get(compid = compid)
 			# Prevents users from loggin into the competition before it starts
-			if comp_obj.dt_start > timezone.now():
+			if comp_obj.datetime_start > timezone.now():
 				return None
 			return team_obj
 		except:

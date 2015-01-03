@@ -9,6 +9,7 @@ from django.forms import ChoiceField
 from django.forms import FileField
 from django.forms import ModelChoiceField
 from django.forms import CharField
+from django.forms import BooleanField
 from django.forms.widgets import PasswordInput
 from models import Competition
 from models import InjectResponse
@@ -20,36 +21,30 @@ from models import Admin
 from models import Team
 from django.utils import timezone
 
-class CreateCompetitionForm(ModelForm):
-	class Meta:
-		model = Competition
-		fields = ['compname', 'compurl', 'shrt_desc', 'full_desc', 'viewable', 'autodisplay', 'dt_display', 'dt_start', 'dt_finish', 'score_delay', 'score_delay_uncert']
-		labels = {
-			'compname': ('Competition Name'),
-			'compurl': ('Competition URL'),
-			'shrt_desc': ('Short Description'),
-			'full_desc': ('Description'),
-			'viewable': ('Visible'),
-			'autodisplay': ('Auto Display'),
-			'dt_display': ('Viewable Date'),
-			'dt_start': ('Start Time'),
-			'dt_finish': ('Finish Time'),
-			'score_delay': ('Scoring Interval'),
-			'score_delay_uncert': ('Scoring Interval Uncertanty')
-		}
-		widgets = {
-			'compname': TextInput(attrs={'class':'form-control', 'required': True}),
-			'compurl': TextInput(attrs={'class':'form-control', 'required': True}),
-			'shrt_desc': Textarea(attrs={'class': 'form-control','rows':3, 'required': True}),
-			'full_desc': Textarea(attrs={'class':'form-control', 'required': True}),
-			'viewable': CheckboxInput(attrs={'class':'form-control checkbox'}),
-			'autodisplay': CheckboxInput(attrs={'class':'form-control checkbox'}),
-			'dt_display': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
-			'dt_start': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
-			'dt_finish': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
-			'score_delay': NumberInput(attrs={'class':'form-control', 'required': True}),
-			'score_delay_uncert': NumberInput(attrs={'class':'form-control', 'required': True}),
-		}
+class CompetitionSettingsGeneralForm(Form):
+	compname = CharField(label = 'Competition Name', widget = TextInput(attrs={'class':'form-control'}))
+	compurl = CharField(label = 'Competition URL', widget = TextInput(attrs={'class':'form-control'}))
+	description_short = CharField(label = 'Short Description', widget = Textarea(attrs={'class':'form-control'}))
+	description_full = CharField(label = 'Full Description', widget = Textarea(attrs={'class':'form-control'}))
+	datetime_display = CharField(label = 'Viewable Date', widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}))
+	datetime_start = CharField(label = 'Start Time', widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}))
+	datetime_finish = CharField(label = 'Finish Time', widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}))
+
+class CompetitionSettingsScoringForm(Form):
+	scoring_enabled = BooleanField(label = 'Scoring Enabled', initial = False , required = False)
+	scoring_interval = CharField(label = 'Scoring Interval (seconds)', widget = NumberInput(attrs={'class':'form-control'}), required = False)
+	scoring_interval_uncty = CharField(label = 'Scoring Interval Uncertainty (seconds)', widget = NumberInput(attrs={'class':'form-control'}), required = False)
+	scoring_method = CharField(label = 'Scoring Method', widget = TextInput(attrs={'class':'form-control'}), required = False)
+
+class CompetitionSettingsServiceForm(Form):
+	services_enabled = BooleanField(label = 'Services Enabled', initial = False, required = False)
+
+class CompetitionSettingsTeamForm(Form):
+	teams_view_ranking_enabled = BooleanField(label = 'Ranking Enabled', initial = False, required = False)
+	teams_view_scoreboard_enabled = BooleanField(label = 'Score Board Enabled', initial = False, required = False)
+	teams_view_servicestatus_enabled = BooleanField(label = 'Service Status Enabled', initial = False, required = False)
+	teams_view_injects_enabled = BooleanField(label = 'Injects Enabled', initial = False, required = False)
+	teams_view_incidentresponse_enabled = BooleanField(label = 'Incident Response Enabled', initial = False, required = False)
 
 class CreateTeamForm(ModelForm):
 	class Meta:
@@ -169,7 +164,7 @@ class TeamLoginForm(ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(TeamLoginForm, self).__init__(*args, **kwargs)
 		tuple_list = []
-		for i in Competition.objects.filter(dt_start__lte = timezone.now(), dt_finish__gt = timezone.now()):
+		for i in Competition.objects.filter(datetime_start__lte = timezone.now(), datetime_finish__gt = timezone.now()):
 			tuple_list.append((i.compid, i.compname))
 		self.fields['compid'].choices = tuple_list
 

@@ -6,7 +6,6 @@
 		<script src="/resources/static/js/bootstrap.min.js"></script>
 		<script>
 			function toggle_form (){
-				console.log("clicked")
 				$("#new_response_form").toggleClass('hidden');
 				$("#new_response_button_div").toggleClass('hidden');
 			};
@@ -96,7 +95,7 @@
 
 								<div class="bt-component pull-right">
 									<br>
-									<button id="form_cancel_button" class="btn btn-cancel" onclick="toggle_form()">Cancel</button>
+									<button type="button" id="form_cancel_button" class="btn btn-cancel" onclick="toggle_form()">Cancel</button>
 									<button type="submit" class="btn btn-primary">Submit</button>
 								</div>
 							</form>

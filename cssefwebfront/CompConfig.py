@@ -1,15 +1,17 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
-#from django.contrib import auth
 from django.core.context_processors import csrf
 from django.core.files.uploadedfile import UploadedFile
 from django.forms import NumberInput
 from django.forms import TextInput
-from forms import CreateCompetitionForm
 from forms import AdminLoginForm
 from forms import CreateTeamForm
 from forms import CreateInjectForm
 from forms import CreateServiceForm
+from forms import CompetitionSettingsGeneralForm
+from forms import CompetitionSettingsScoringForm
+from forms import CompetitionSettingsServiceForm
+from forms import CompetitionSettingsTeamForm
 from models import InjectResponse
 from models import Competition
 from models import ServiceModule
@@ -27,7 +29,7 @@ import settings
 import json
 
 # General competition configuration modules
-def summary(request, competition = None):
+def comp_summary(request, competition = None):
 	"""
 	Displays general competitions configurations form
 	"""
@@ -44,15 +46,40 @@ def summary(request, competition = None):
 	c["competition_object"] = comp_obj
 	return render_to_response('CompConfig/summary.html', c)
 
-def details(request, competition = None):
+def comp_settings(request, competition = None):
 	"""
 	Displays competitions details form
 	"""
 	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
-	c["competition_object"] = Competition.objects.get(compurl = competition)
-	return render_to_response('CompConfig/details.html', c)
+	c.update(csrf(request))
+	c["comp_obj"] = Competition.objects.get(compurl = competition)
+	form_initial = Competition.objects.filter(compid = c['comp_obj'].compid).values()[0]
+	c["forms"] = {
+		"general_settings": CompetitionSettingsGeneralForm(initial = form_initial),
+		"scoring_settings": CompetitionSettingsScoringForm(initial = form_initial),
+		"service_settings": CompetitionSettingsServiceForm(initial = form_initial),
+		"team_settings": CompetitionSettingsTeamForm(initial = form_initial)
+	}
+	if request.POST:
+		print request.POST
+		forms_list = [CompetitionSettingsGeneralForm, CompetitionSettingsScoringForm, CompetitionSettingsServiceForm, CompetitionSettingsTeamForm]
+		print request.POST['form_num']
+		f = forms_list[int(request.POST['form_num'])](request.POST)
+		if f.is_valid():
+			comp_obj = Competition.objects.filter(compid = c['comp_obj'].compid)
+			clean_copy = f.cleaned_data
+			print clean_copy
+			for i in clean_copy:
+				if clean_copy[i] == u'':
+					clean_copy[i] = None
+			comp_obj.update(**clean_copy)
+		else:
+			print "is not valid"
+		return HttpResponseRedirect('/admin/competitions/%s/settings/' % c["comp_obj"].compurl)
+
+	return render_to_response('CompConfig/settings.html', c)
 
 def scoring(request, competition = None):
 	"""
@@ -318,9 +345,10 @@ def injects_create(request, competition = None):
 		c["form"] = CreateInjectForm()
 		return render_to_response('CompConfig/injects_create-edit.html', c)
 	form_dict = request.POST.copy().dict()
+	print form_dict
 	form_dict["compid"] = c["competition_object"].compid
 	form_dict.pop('csrfmiddlewaretoken', None)
-	form_dict.pop('docfile')
+	form_dict.pop('docfile', None)
 	form_obj = CreateInjectForm(form_dict)
 	if not form_obj.is_valid():
 		c["messages"].new_info("Invalid field data in inject form: %s" % form_obj.errors, 1001)
