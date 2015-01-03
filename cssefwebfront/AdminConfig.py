@@ -182,7 +182,8 @@ def servicemodule_edit(request, servmdulid = None):
 	c["action"] = "edit"
 	if request.method != "POST":
 		servmdul_obj = ServiceModule.objects.filter(servmdulid = servmdulid)
-		c["servmdulid"] = servmdulid
+		c["servmdulid"] = servmdul_obj[0].servmdulid
+		c["docfile"] = Document.objects.get(servicemodule = servmdul_obj[0])
 		c["form"] = CreateServiceModuleForm(initial = servmdul_obj.values()[0])
 		return render_to_response('AdminConfig/servicemodule_create-edit.html', c)
 	form_obj = CreateServiceModuleForm(request.POST, request.FILES)
@@ -190,6 +191,9 @@ def servicemodule_edit(request, servmdulid = None):
 		form_obj.cleaned_data.pop('docfile', None)
 		servmdul_obj = ServiceModule.objects.filter(servmdulid = servmdulid)
 		servmdul_obj.update(**form_obj.cleaned_data)
+		docfile = Document.objects.get(servicemodule = servmdul_obj[0].servmdulid)
+		docfile.delete()
+		save_document(request.FILES['docfile'], settings.CONTENT_PLUGGINS_PATH, servmdul_obj[0], ashash = False)
 		return HttpResponseRedirect('/admin/servicemodules/')
 	else:
 		# Not exactly giving the user an error message here (TODO)

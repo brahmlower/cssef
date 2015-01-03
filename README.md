@@ -89,7 +89,6 @@ Please enter a(n) 'str' for 'network': 192.168.0
 * Test scoring a service from a White Team interface
 
 #####Short Term#####
-* Add interface to edit competition details
 * Add interface to modify general site information/content
 * Add content to Service Timeline view for Blue Team
  * General statistics
