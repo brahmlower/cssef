@@ -153,23 +153,26 @@ def log(score_obj):
     print "[SCORE] (%s) Team:%s Service:%s Value:%s Messages:%s" % \
         (score_obj.datetime, score_obj.teamid, score_obj.servid, score_obj.value, score_obj.message)
 
-def run_loop(comp, team_list, serv_list):
-    condition = True
-    while(condition):
-        rand_sleep(comp.score_delay, comp.score_delay_uncert)
+def run_loop(comp_obj, team_list, serv_list):
+    if timezone.now() < comp_obj.datetime_start:
+        time_until_start = (comp_obj.datetime_start - timezone.now()).total_seconds()
+        print "[INFO] Waiting until competition starts: ~%s seconds" % str(int(time_until_start))
+        sleep(time_until_start)
+    while timezone.now() < comp_obj.datetime_finish:
         for serv in serv_list:
-            for team in team_list:
+            for team_obj in team_list:
                 # Build the score object
-                score_obj = serv.score(team)
-                score_obj.compid = comp.compid
-                score_obj.teamid = team.teamid
+                score_obj = serv.score(team_obj)
+                score_obj.compid = comp_obj.compid
+                score_obj.teamid = team_obj.teamid
                 score_obj.servid = serv.serv_obj.servid
                 score_obj.datetime = timezone.now()
                 # Save the score object
                 score_obj.save()
                 # Log the score object
                 log(score_obj)
-        #break #This is here just for testing!!
+        rand_sleep(comp_obj.scoring_interval, comp_obj.scoring_interval_uncty)
+    print "[INFO] Competition finished. Scoring stopped."
 
 def manage():
     if sys.argv[1] in ["team", "competition", "service"] and len(sys.argv) == 2:
