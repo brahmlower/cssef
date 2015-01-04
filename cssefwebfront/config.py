@@ -1,7 +1,5 @@
 from django.apps import AppConfig
-import logging
 import settings
-import os
 
 class cssefwebfront(AppConfig):
 	name = 'cssefwebfront'
@@ -13,4 +11,4 @@ class cssefwebfront(AppConfig):
 		for i in settings.CONTENT_PLUGGINS_PATH.split("/"):
 			if i != "":
 				cur_path += i + "/"
-				open(cur_path + "__init__.py", 'w')
+				open(cur_path + "__init__.py", 'w').close()

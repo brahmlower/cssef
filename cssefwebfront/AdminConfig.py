@@ -94,6 +94,7 @@ def comp_create(request, competition=None):
 	form_comp = CompetitionSettingsGeneralForm(request.POST)
 	# Checks that submitted form data is valid
 	if not form_comp.is_valid():
+		print form_comp.errors
 		return render(request, 'AdminConfig/competition_create.html', c)
 	# Create the new competition
 	Competition(**form_comp.cleaned_data).save()

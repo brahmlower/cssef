@@ -232,12 +232,26 @@ def scoreboard(request, competition = None):
 		return HttpResponseRedirect('/')
 	c["competition_object"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
+	c["scores"] = []
 	if request.POST:
 		c["form"] = ServiceSelectionForm(initial = {"service": request.POST['service']}, compid = request.user.compid)
-		c["scores"] = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid, servid = request.POST['service'])
+		service_name = Service.objects.get(servid = request.POST['service']).name
+		scores_obj_list = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid, servid = request.POST['service'])
+		for i in scores_obj_list:
+			c["scores"].append({
+				"time": i.datetime,
+				"name": service_name,
+				"value": i.value
+			})
 	else:
 		c["form"] = ServiceSelectionForm(compid = request.user.compid)
-		c["scores"] = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid)
+		scores_obj_list = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid)
+		for i in scores_obj_list:
+			c["scores"].append({
+				"time": i.datetime,
+				"name": Service.objects.get(servid = i.servid).name,
+				"value": i.value
+			})
 	return render_to_response('Comp/scoreboard.html', c)
 
 def incidentresponse(request, competition = None):
