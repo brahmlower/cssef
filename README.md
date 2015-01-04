@@ -4,7 +4,7 @@ The Cyber Security Scoring Engine Framework (cssef) is meant to provide an easy 
 ##Dependancies ##
 Web Interface:
 * Python 2.7.5
-* Django 1.6.5
+* Django 1.7.2
 
 Pluggins:
 * SSH - paramiko 1.15.1
