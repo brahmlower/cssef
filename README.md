@@ -1,5 +1,8 @@
+# Disclaimer #
+This project is still under heavy development. Feel free to use it, but know that it's state of operation may vary drastically from one commit to another. Once the project has reached a stable state, I'll create a stable branch for it.
+
 # Description #
-The Cyber Security Scoring Engine Framework (cssef) is meant to provide an easy to use framework with which to score cyber security competitions. There are two main components: the web frontend, and the backend scoring engine. The goal of the frontend is to give users (including competitors, competitions admins, and site admins) an easy to interface to interact with the the competitions white-team infrustrcture. For competitiors, this might extend only as far as viewing injects. Competition admins will be able to track competitor scores (and service status').
+The Cyber Security Scoring Engine Framework (cssef) is meant to provide an easy to use framework with which to score cyber security competitions. There are two main components: the web frontend, and the backend scoring engine. The goal of the frontend is to give users (including competitors, competitions admins, and site admins) an easy to use interface to interact with the white-team infrastructure.
 
 ##Dependancies ##
 Web Interface:
@@ -11,37 +14,49 @@ Pluggins:
 * SMB - pysmb 1.1.13
 
 # Usage #
-The webfrontend is written using Django14. Starting the webserver (currently) requires running 'python manage.py runserver'. As of this writing, the scoring engine component must be started separately, at the time you wish to begin scoring.
+The web frontend is written using Django. Starting the webserver (currently) requires running 'python manage.py runserver'. As of this writing, the scoring engine component must be started separately.
 
 ## Web Interface ##
 <pre></code>python manage.py syncdb
-python runserver 0.0.0.0</code></pre>
+python runserver 0.0.0.0:80</code></pre>
 
-Administrator authentication doesn't use the builtin user database yet. To create an administroator user, run the create_admin script in the projects root directory. The first argument is the admin username and the second argument is the admins password (plaintext right now, I know...)
+Administrator authentication doesn't use the builtin user database yet. To create an administrator user, run the create_admin script in the projects root directory. The first argument is the admin username and the second argument is the admins password (plaintext right now...)
 <pre><code>./create_admin admin admin</code></pre>
 
 ## Scoring Engine ##
-Please note that this has a very underdeveloped help menu.
-The "help" menu id displayed when the first argument is invalid or not provided:
-<pre><code>./cssef.py
-Must provide an action {run|team|competition|service}</code></pre>
-Run: Starts scoring the competition specified by ID (currently hardcoded)<br>
-Team: team related actions<br>
-Competition: Competition related actions<br>
-Service: Service related actions<br>
+To start the scoring engine, simply provide the competition ID or competition name for the competition you'd like to begin scoring.
 
-Note that the actions were written before much of the web interface was written/functional, so some of it will be relatively redundant.
+Providing the competition ID:
+<pre>$ ./cssef.py 1</pre>
 
-<pre><code>./cssef.py team
-Did not match {dump|delete|create}</code></pre>
-Dump: will list all ove the entries, showing the entries id and name<br>
-Delete: Will delete an entrie based on the ID provided as the next argument<br>
-Create: Will create an entry based on the arguments provided - all values must be provided on the same line (crazy weird, I know). The value for each column must be provided like <code>columnname=value</code>.
+Providing the competition name:
+<pre>$ ./cssef.py "Test Cyber Security Competition"</pre>
+
+Running the script with no arguments or incorrect arguments will present the usage:
+<pre>$ ./cssef.py 
+Usage:
+	./cssef.py [competition id (integer)]
+	./cssef.py [competition name (string)]
+</pre>
+
+As this project is developed, the scoring engine will check and react to various competition settings. There are currently 5 main aspects to the competition that are checked:
+ * The competition has scoring enabled
+  * Fails if if scoring is disabled
+ * The competition has teams
+  * Fails if there are no teams
+ * The competition has services
+  * Fails if there are no services
+ * Checks if the competition start time has been reached
+  * Will sleep until the datetime the competition is set to start, then begin scoring
+ * Checks if the competition finish time has been reached
+  * Stops scoring services and exits
+
+Once celery support has been implemented, the scoring engine won't have to be manually started. In that case, the scoring engine will automatically start once the competitions start time has been reached, and score for the duration of the competition.
 
 # Pluggins #
-Pluggins are the modules that actually score the services you plan to score in your competition. Pluggins are just simple python modules, in which you write how to score the desired service. Each pluggin requires a 'score' method, that returns an integer of 0 or greater. If the service is scored as down, return 0 and if it's up, return some predefined value.
+Pluggins are the modules that score the services you plan to track in your competition. Pluggins are just simple python modules containing the code to score the desired service. Each pluggin requires a 'score' method, that returns an integer of 0 or greater. If the service is scored as down, return 0 and if it's up, return some predefined value.
 
-ScoringUtils.py has been written to simplify the development of pluggins. The following are the three classes it provides.
+ScoringUtils.py has been written to simplify the development of pluggins. The following are the two classes it provides.
 #####Pluggin#####
 All pluggins should be children of this class. This ganrantees that each pluggin has these core values: 'points', 'net_type', 'subdomain', 'address' and 'default_port'. Additionally, 'build_address' is provided to get the full address for the team, regardless if they're being scored by dns or by an ipv4 address.
 * 'points' is a nonnegative integer value. Keep in mind 0 indicates the service failed the scoring criteria.
@@ -87,6 +102,7 @@ Please enter a(n) 'str' for 'network': 192.168.0
 * View and score inject responses as white team
 * Implement better error notification when user attempt to access blocked pages
 * Test scoring a service from a White Team interface
+* Add celery support
 
 #####Short Term#####
 * Add interface to modify general site information/content
