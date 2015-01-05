@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 import settings
 
-class cssefwebfront(AppConfig):
+class cssefwebfront_config(AppConfig):
 	name = 'cssefwebfront'
 	verbose_name = 'CSSEF Web Front'
 
@@ -12,3 +12,9 @@ class cssefwebfront(AppConfig):
 			if i != "":
 				cur_path += i + "/"
 				open(cur_path + "__init__.py", 'w').close()
+
+		# Import the signals handler as was done here: http://chriskief.com/2014/02/28/django-1-7-signals-appconfig/
+		# Not really sure if this is the best way to do it...
+		from cssefwebfront import signals
+		
+

@@ -1,1 +1,1 @@
-default_app_config = 'cssefwebfront.config.cssefwebfront'
+default_app_config = 'cssefwebfront.config.cssefwebfront_config'

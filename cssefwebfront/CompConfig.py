@@ -181,8 +181,9 @@ def services_list(request, competition = None):
 	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
-	c["competition_object"] = Competition.objects.get(compurl = competition)
-	c["service_list"] = Service.objects.filter(compid = c["competition_object"].compid)
+	c["comp_obj"] = Competition.objects.get(compurl = competition)
+	c["service_list"] = Service.objects.filter(compid = c["comp_obj"].compid)
+	c["available_modules"] = bool(len(ServiceModule.objects.all()))
 	return render_to_response('CompConfig/services_list.html', c)
 
 def services_edit(request, competition = None, servid = None):
@@ -193,10 +194,10 @@ def services_edit(request, competition = None, servid = None):
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	c["action"] = "edit"
-	c["competition_object"] = Competition.objects.get(compurl = competition)
+	c["comp_obj"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
 	if request.method != "POST":
-		serv_obj = Service.objects.filter(compid = c["competition_object"].compid, servid = int(servid))
+		serv_obj = Service.objects.filter(compid = c["comp_obj"].compid, servid = int(servid))
 		c["servid"] = serv_obj[0].servid
 		initial_dict = serv_obj.values()[0]
 		initial_dict["connectip"] = int(initial_dict["connectip"])
@@ -216,7 +217,7 @@ def services_edit(request, competition = None, servid = None):
 		form_dict['networkloc'] = form_dict['networkloc'][1:]
 	if form_dict['networkloc'][-1] == ".":
 		form_dict['networkloc'] = form_dict['networkloc'][:-1]
-	serv_obj = Service.objects.filter(compid = c["competition_object"].compid, servid = int(servid))
+	serv_obj = Service.objects.filter(compid = c["comp_obj"].compid, servid = int(servid))
 	serv_obj.update(**form_dict)
 	return HttpResponseRedirect('/admin/competitions/%s/services/' % competition)
 
@@ -239,7 +240,9 @@ def services_create(request, competition = None):
 	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
-	c["competition_object"] = Competition.objects.get(compurl = competition)
+	c["comp_obj"] = Competition.objects.get(compurl = competition)
+	if not bool(len(ServiceModule.objects.all())):
+		return HttpResponseRedirect("/admin/competitions/%s/services/" % c["comp_obj"].compurl)
 	if request.method != "POST":
 		# Serve empty form without acting on any data
 		c.update(csrf(request))
@@ -254,7 +257,7 @@ def services_create(request, competition = None):
 		return render_to_response('CompConfig/services_create-edit.html', c)
 	# Now prepare post data for service object instantiation
 	form_dict.pop('csrfmiddlewaretoken', None)
-	form_dict["compid"] = c["competition_object"].compid
+	form_dict["compid"] = c["comp_obj"].compid
 	form_dict["servicemodule"] = ServiceModule.objects.get(servmdulid = form_dict["servicemodule"])
 	# Set network connection display
 	if int(form_dict["connectip"]) == 1:

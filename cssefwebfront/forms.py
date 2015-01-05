@@ -76,15 +76,13 @@ class ServiceSelectionForm(Form):
 		compid = kwargs.pop('compid')
 		super(ServiceSelectionForm, self).__init__(*args, **kwargs)
 		tuple_list = [(-1, "Overall Competition")]
-		for i in Service.objects.filter(compid = compid):
+		for i in Service.objects.filter(compid = compid, datetime_start__lte = timezone.now()):
 			tuple_list.append((i.servid, "Service: "+i.name))
 		self.fields['service'].choices = tuple_list
 
 	service = ChoiceField(label = "Select service: ", choices = [], widget = Select(attrs={'class':'form-control', 'required': True}))
 	class Meta:
 		fields = ['service']
-
-
 
 class CreateServiceForm(ModelForm):
 	def __init__(self, *args, **kwargs):
@@ -98,10 +96,12 @@ class CreateServiceForm(ModelForm):
 	connectip = ChoiceField(label = "Connection Method", choices = [(0 ,'Domain Name'), (1,'IP Address')], widget = Select(attrs={'class':'form-control', 'required': True}))
 	class Meta:
 		model = Service
-		fields = ['name', 'description', 'points', 'networkloc','defaultport']
+		fields = ['name', 'description', 'datetime_start', 'datetime_finish', 'points', 'networkloc','defaultport']
 		labels = {
 			'name': ('Name'),
 			'description': ('Description'),
+			'datetime_start': ('Start Scoring'),
+			'datetime_finish': ('Stop Scoring'),
 			'points': ('Points'),
 			'networkloc': ('Machine Address'),
 			'defaultport': ('Default Port')
@@ -110,6 +110,8 @@ class CreateServiceForm(ModelForm):
 			'name': TextInput(attrs={'class':'form-control'}),
 			'points': NumberInput(attrs={'class':'form-control'}),
 			'description': Textarea(attrs={'class':'form-control'}),
+			'datetime_start': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
+			'datetime_finish': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
 			'networkloc': TextInput(attrs={'class':'form-control'}),
 			'defaultport': NumberInput(attrs={'class':'form-control'}),
 		}

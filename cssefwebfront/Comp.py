@@ -179,7 +179,7 @@ def servicestatus(request, competition = None):
 	if not c["comp_obj"].teams_view_servicestatus_enabled:
 		return HttpResponseRedirect("/competitions/%s/summary/" % c["comp_obj"].compurl)
 	c["status_list"] = []
-	service_modules = LoadServs(c["comp_obj"].compid)
+	service_modules = serv_objs = Service.objects.filter(compid = c["comp_obj"].compid, datetime_start__lte = timezone.now(), datetime_finish__gt = timezone.now())
 	for i in service_modules:
 		c["status_list"].append({
 			"service": i.serv_obj,

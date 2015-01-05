@@ -2,10 +2,15 @@
 	<head>
 		<link rel="stylesheet" type="text/css" href="/resources/static/css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="/resources/static/css/bootstrap-dashboard.css">
+		<link rel="stylesheet" type="text/css" href="/resources/static/css/bootstrap-datetimepicker.min.css">
 		<script src="/resources/static/js/jquery-1.10.2.min.js"></script>
 		<script src="/resources/static/js/bootstrap.min.js"></script>
+		<script src="/resources/static/js/moment.min.js"></script>
+		<script src="/resources/static/js/bootstrap-datetimepicker.min.js"></script>
 		<script>
 			$(function () {
+				$('#{{ form.datetime_start.id_for_label }}').datetimepicker();
+				$('#{{ form.datetime_finish.id_for_label }}').datetimepicker();
 				var serv_json_conf_obj = $('#{{ form.service.config.id_for_label }}')
 				serv_json_conf_obj.focusout(
 					function() {
@@ -85,11 +90,11 @@
 					<ul class="nav nav-sidebar">
 						<li><a href="/admin/competitions/"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></li>
 						<li class="nav-divider"><li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/summary/">Summary</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/settings/">Settings</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/injects/">Injects</a></li>
-						<li class="active"><a href="/admin/competitions/{{ competition_object.compurl }}/services/">Services</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/teams/">Teams</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/summary/">Summary</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/settings/">Settings</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/injects/">Injects</a></li>
+						<li class="active"><a href="/admin/competitions/{{ comp_obj.compurl }}/services/">Services</a></li>
+						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/teams/">Teams</a></li>
 					</ul>
 				</div>
 				<!-- End competition config navigation sidebar -->
@@ -120,10 +125,10 @@
 
 					{% if action == "create" %}
 					<h2> Create Service </h2>
-					<form action="/admin/competitions/{{ competition_object.compurl }}/services/{{ action }}/" method="post" class="form-horizontal">
+					<form action="/admin/competitions/{{ comp_obj.compurl }}/services/{{ action }}/" method="post" class="form-horizontal">
 					{% else%}
 					<h2> Edit Service </h2>
-					<form action="/admin/competitions/{{ competition_object.compurl }}/services/{{ action }}/{{ servid }}/" method="post" class="form-horizontal">
+					<form action="/admin/competitions/{{ comp_obj.compurl }}/services/{{ action }}/{{ servid }}/" method="post" class="form-horizontal">
 					{% endif %}
 						{% csrf_token %}
 						<!-- Form field for module name -->
@@ -136,6 +141,16 @@
 						<label for="{{ form.name.id_for_label }}" class="col-lg-2 control-label">{{ form.name.label }}</label>
 						<div class="col-lg-10">{{ form.name }}<br></div>
 
+						<!-- Form field for service start datetime -->
+						{{ form.datetime_start.errors }}
+						<label for="{{ form.datetime_start.id_for_label }}" class="col-lg-2 control-label">{{ form.datetime_start.label }}</label>
+						<div class="col-lg-10 input-append">{{ form.datetime_start }}<br></div>
+
+						<!-- Form field for service finish datetime -->
+						{{ form.datetime_finish.errors }}
+						<label for="{{ form.datetime_finish.id_for_label }}" class="col-lg-2 control-label">{{ form.datetime_finish.label }}</label>
+						<div class="col-lg-10 input-append">{{ form.datetime_finish }}<br></div>
+
 						<!-- Form field for points -->
 						{{ form.connectip.errors}}
 						<label for="{{ form.connectip.id_for_label }}" class="col-lg-2 control-label">{{ form.connectip.label }}</label>
@@ -147,22 +162,22 @@
 						<div class="col-lg-10">{{ form.networkloc }}<br></div>
 
 						<!-- Form field for points -->
-						{{ form.points.errors}}
-						<label for="{{ form.points.id_for_label }}" class="col-lg-2 control-label">{{ form.points.label }}</label>
-						<div class="col-lg-10">{{ form.points }}<br></div>
-
-						<!-- Form field for points -->
 						{{ form.defaultport.errors}}
 						<label for="{{ form.defaultport.id_for_label }}" class="col-lg-2 control-label">{{ form.defaultport.label }}</label>
 						<div class="col-lg-10">{{ form.defaultport }}<br></div>
 
+						<!-- Form field for points -->
+						{{ form.points.errors}}
+						<label for="{{ form.points.id_for_label }}" class="col-lg-2 control-label">{{ form.points.label }}</label>
+						<div class="col-lg-10">{{ form.points }}<br></div>
+						
 						<!-- Form field for description -->
 						{{ form.description.errors}}
 						<label for="{{ form.description.id_for_label }}" class="col-lg-2 control-label">{{ form.description.label }}</label>
 						<div class="col-lg-10">{{ form.description }}<br></div>
 
 						<div class="col-lg-offset-2 col-lg-10">
-							<a class="btn btn-default" href="/admin/competitions/{{ competition_object.compurl }}/services/">Cancel</a>
+							<a class="btn btn-default" href="/admin/competitions/{{ comp_obj.compurl }}/services/">Cancel</a>
 							<button id="form_sub_button" type="submit" class="btn btn-primary">Save</button>
 							<label id="form_messages"></label>
 						</div>
