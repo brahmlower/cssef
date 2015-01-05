@@ -117,7 +117,14 @@ class Document(Model):
 	injectresponse = ForeignKey(InjectResponse, null = True, blank = True, unique = False)
 	incidentresponse = ForeignKey(IncidentResponse, null = True, blank = True, unique = False)
 	servicemodule = ForeignKey(ServiceModule, null = True, blank = True, unique = True)
+	content_type = CharField(max_length = 64, null = True)
 	filehash = CharField(max_length = 32)
 	filepath = CharField(max_length = 256)
 	filename = CharField(max_length = 64)
 	urlencfilename = CharField(max_length = 128)
+
+	def get_cleaned_content_type(self):
+		if not self.content_type:
+			return'application/force-download'
+		else:
+			return self.content_type

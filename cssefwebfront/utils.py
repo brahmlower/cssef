@@ -69,6 +69,7 @@ def save_document(request_file, content_subdir, related_obj, ashash = True):
 	doc_obj.filehash = md5(file_content).hexdigest()
 	doc_obj.urlencfilename = quote(uploadedfile.name)
 	doc_obj.filename = uploadedfile.name
+	doc_obj.content_type = uploadedfile.file.content_type
 	if ashash:
 		doc_obj.filepath = settings.BASE_DIR + content_subdir + doc_obj.filehash
 	else:

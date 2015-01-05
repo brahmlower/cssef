@@ -89,9 +89,7 @@
 							<strong> Submitted Text: </strong>
 							<p>{{ firstpost.response.textentry }}</p>
 							{% for i in firstpost.files %}
-							<strong> Attached File </strong><br>
-							<img src="/resources/incidentresponses/{{firstpost.response.compid}}/{{firstpost.response.teamid}}/{{firstpost.response.intrspid}}/{{i.urlencfilename}}">
-							<p>File: <a href="/resources/incidentresponses/{{firstpost.response.compid}}/{{firstpost.response.teamid}}/{{firstpost.response.intrspid}}/{{i.urlencfilename}}">{{ i.filename }}</a></p>
+							<strong> Attached File: </strong><a href="/resources/incidentresponses/{{firstpost.response.compid}}/{{firstpost.response.teamid}}/{{firstpost.response.intrspid}}/{{i.urlencfilename}}">{{ i.filename }}</a><br>
 							{% endfor %}
 						</div>
 					</div>
@@ -104,9 +102,11 @@
 							<strong> Submitted Text: </strong>
 							<p>{{ i.response.textentry }}</p>
 							{% for k in i.files %}
-							<strong> Attached File </strong><br>
-							<img src="/resources/incidentresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.intrspid}}/{{k.urlencfilename}}">
-							<p>File: <a href="/resources/incidentresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.intrspid}}/{{k.urlencfilename}}">{{ k.filename }}</a></p>
+							<strong> Attached File: </strong><a href="/resources/incidentresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.intrspid}}/{{k.urlencfilename}}">{{ k.filename }}</a>
+							{% if "image" in k.content_type %}
+							<br>
+							<img src="/resources/injectresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.teamid}}/{{k.urlencfilename}}">
+							{% endif %}
 							{% endfor %}
 						</div>
 					</div>

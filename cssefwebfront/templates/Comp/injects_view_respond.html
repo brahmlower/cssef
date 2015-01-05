@@ -105,9 +105,11 @@
 							<p>{{ i.response.textentry }}</p>
 							{% endif %}
 							{% for k in i.files %}
-							<strong> Attached File </strong><br>
+							<strong> Attached File: </strong><a href="/resources/injectresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.ijctrespid}}/{{k.urlencfilename}}">{{ k.filename }}</a>
+							{% if "image" in k.content_type %}
+							<br>
 							<img src="/resources/injectresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.ijctrespid}}/{{k.urlencfilename}}">
-							<p>File: <a href="/resources/injectresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.ijctrespid}}/{{k.urlencfilename}}">{{ k.filename }}</a></p>
+							{% endif %}
 							{% endfor %}
 						</div>
 					</div>
