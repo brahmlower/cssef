@@ -77,7 +77,6 @@
 						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/summary/">Summary</a></li>
 						<li class="active"><a href="/admin/competitions/{{ comp_obj.compurl }}/settings/">Settings</a></li>
 						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/injects/">Injects</a></li>
-						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/scoring/">Scoring</a></li>
 						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/services/">Services</a></li>
 						<li><a href="/admin/competitions/{{ comp_obj.compurl }}/teams/">Teams</a></li>
 					</ul>
@@ -235,6 +234,9 @@
 								<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_servicestatus_enabled.label }}</label>
 								<div class="col-lg-10 radio">{{comp_obj.teams_view_servicestatus_enabled}}<br></div>
 
+								<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_servicestatistics_enabled.label }}</label>
+								<div class="col-lg-10 radio">{{comp_obj.teams_view_servicestatistics_enabled}}<br></div>
+
 								<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_injects_enabled.label }}</label>
 								<div class="col-lg-10 radio">{{comp_obj.teams_view_injects_enabled}}<br></div>
 
@@ -262,6 +264,10 @@
 								{{ forms.team_settings.teams_view_servicestatus_enabled.errors }}
 								<label for="{{ forms.team_settings.teams_view_servicestatus_enabled.id_for_label }}" class="col-lg-2 control-label">{{ forms.team_settings.teams_view_servicestatus_enabled.label }}</label>
 								<div class="col-lg-10 radio input-append">{{ forms.team_settings.teams_view_servicestatus_enabled }}<br></div>
+
+								{{ form.team_settings.teams_view_servicestatistics_enabled.errors }}
+								<label for="{{ forms.team_settings.teams_view_servicestatistics_enabled.id_for_label }}" class="col-lg-2 control-label">{{ forms.team_settings.teams_view_servicestatistics_enabled.label }}</label>
+								<div class="col-lg-10 radio input-append">{{ forms.team_settings.teams_view_servicestatistics_enabled }}<br></div>
 
 								{{ forms.team_settings.teams_view_injects_enabled.errors }}
 								<label for="{{ forms.team_settings.teams_view_injects_enabled.id_for_label }}" class="col-lg-2 control-label">{{ forms.team_settings.teams_view_injects_enabled.label }}</label>

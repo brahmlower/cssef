@@ -26,7 +26,7 @@ class CompetitionSettingsGeneralForm(Form):
 	compurl = CharField(label = 'Competition URL', widget = TextInput(attrs={'class':'form-control'}))
 	description_short = CharField(label = 'Short Description', widget = Textarea(attrs={'class':'form-control'}))
 	description_full = CharField(label = 'Full Description', widget = Textarea(attrs={'class':'form-control'}))
-	datetime_display = CharField(label = 'Viewable Date', widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}))
+	datetime_display = CharField(label = 'Date Viewable', widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}))
 	datetime_start = CharField(label = 'Start Time', widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}))
 	datetime_finish = CharField(label = 'Finish Time', widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}))
 
@@ -42,6 +42,7 @@ class CompetitionSettingsServiceForm(Form):
 class CompetitionSettingsTeamForm(Form):
 	teams_view_ranking_enabled = BooleanField(label = 'Ranking Enabled', initial = False, required = False)
 	teams_view_scoreboard_enabled = BooleanField(label = 'Score Board Enabled', initial = False, required = False)
+	teams_view_servicestatistics_enabled = BooleanField(label = 'Service Stats Enabled', initial = False, required = False)
 	teams_view_servicestatus_enabled = BooleanField(label = 'Service Status Enabled', initial = False, required = False)
 	teams_view_injects_enabled = BooleanField(label = 'Injects Enabled', initial = False, required = False)
 	teams_view_incidentresponse_enabled = BooleanField(label = 'Incident Response Enabled', initial = False, required = False)

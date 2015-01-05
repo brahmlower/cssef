@@ -21,13 +21,16 @@ def getAuthValues(request, c):
 		team = request.user.__class__.__name__
 		if team == "Team":
 			c["auth_name"] = "auth_team_blue"
-			c["auth_name_display"] = "Blue Team (%s)" % request.user.teamname
+			c["auth_name_display"] = "%s (Blue Team)" % request.user.teamname
 		elif team == "Admin":
 			c["auth_name"] = "auth_team_white"
-			c["auth_name_display"] = "White Team"
-		else:
+			c["auth_name_display"] = "%s (White Team)" % request.user.username
+		elif team == "": # Since I don't have a red team model to compare against yet
 			c["auth_name"] = "auth_team_red"
-			c["auth_name_display"] = "Red Team"
+			c["auth_name_display"] = "%s (Red Team)" % request.user.username
+		else:
+			c["auth_name"] = "auth_team_orange"
+			c["auth_name_display"] = "%s (Orange Team)" % request.user.username
 	return c
 
 class UserMessages:

@@ -48,7 +48,7 @@
 						{% if auth_name == "auth_team_white" %}
 						<li><a href="/admin/">Admin Config</a></li>
 						{% elif auth_name == "auth_team_blue" %}
-						<li class="active"><a href="/competitions/{{ competition_object.compurl }}/summary/">Competition</a></li>
+						<li class="active"><a href="/competitions/{{ comp_obj.compurl }}/summary/">Competition</a></li>
 						{% endif %}
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
@@ -80,14 +80,27 @@
 			<div class="row">
 				<div class="col-sm-3 col-md-2 sidebar">
 					<ul class="nav nav-sidebar">
-						<li><a href="/competitions/{{ competition_object.compurl }}/summary/">Summary</a></li>
-						<li><a href="/competitions/{{ competition_object.compurl }}/details/">Details</a></li>
+						<li><a href="/competitions/{{ comp_obj.compurl }}/summary/">Summary</a></li>
+						<li><a href="/competitions/{{ comp_obj.compurl }}/details/">Details</a></li>
 						{% if auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/{{ competition_object.compurl }}/servicestatus/">Service Status</a></li>
-						<li><a href="/competitions/{{ competition_object.compurl }}/scoreboard/">Score Board</a></li>
-						<li class="active"><a href="/competitions/{{ competition_object.compurl }}/servicetimeline/">Service Timeline</a></li>
-						<li><a href="/competitions/{{ competition_object.compurl }}/injects/">Injects</a></li>
-						<li><a href="/competitions/{{ competition_object.compurl }}/incidentresponse/">Incident Response</a></li>
+						{% if comp_obj.teams_view_ranking_enabled %}
+						<li><a href="/competitions/{{ comp_obj.compurl }}/ranking/">Team Ranking</a></li>
+						{% endif %}
+						{% if comp_obj.teams_view_servicestatus_enabled %}
+						<li><a href="/competitions/{{ comp_obj.compurl }}/servicestatus/">Service Status</a></li>
+						{% endif %}
+						{% if comp_obj.teams_view_scoreboard_enabled %}
+						<li><a href="/competitions/{{ comp_obj.compurl }}/scoreboard/">Score Board</a></li>
+						{% endif %}
+						{% if comp_obj.teams_view_servicestatistics_enabled %}
+						<li class="active"><a href="/competitions/{{ comp_obj.compurl }}/servicestatistics/">Service Statistics</a></li>
+						{% endif %}
+						{% if comp_obj.teams_view_injects_enabled %}
+						<li><a href="/competitions/{{ comp_obj.compurl }}/injects/">Injects</a></li>
+						{% endif %}
+						{% if comp_obj.teams_view_incidentresponse_enabled %}
+						<li><a href="/competitions/{{ comp_obj.compurl }}/incidentresponse/">Incident Response</a></li>
+						{% endif %}
 						{% else %}
 						{% endif %}
 					</ul>
@@ -97,7 +110,7 @@
 					{% if auth_name == "auth_team_blue" %}
 					<!-- Service selection form start -->
 					<div>
-						<form action="/competitions/{{ competition_object.compurl }}/servicetimeline/" method="post" class="form-inline">
+						<form action="/competitions/{{ comp_obj.compurl }}/servicetimeline/" method="post" class="form-inline">
 							{% csrf_token %}
 							{{ form.service.errors }}
 							<label for="{{ form.service.id_for_label }}" class="control-label">{{ form.service.label }}</label>

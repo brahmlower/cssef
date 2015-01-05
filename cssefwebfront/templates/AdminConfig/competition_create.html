@@ -112,14 +112,6 @@
 						<label for="{{ form.compurl.id_for_label }}" class="col-lg-2 control-label">{{ form.compurl.label }}</label>
 						<div class="col-lg-10">{{ form.compurl }}<br></div>
 
-						{{ form.description_short.errors }}
-						<label for="{{ form.description_short.id_for_label }}" class="col-lg-2 control-label">{{ form.description_short.label }}</label>
-						<div class="col-lg-10">{{ form.description_short }}<br></div>
-
-						{{ form.description_full.errors }}
-						<label for="{{ form.description_full.id_for_label }}" class="col-lg-2 control-label">{{ form.description_full.label }}</label>
-						<div class="col-lg-10">{{ form.description_full }}<br></div>
-			
 						{{ form.datetime_display.errors }}
 						<label for="{{ form.datetime_display.id_for_label }}" class="col-lg-2 control-label">{{ form.datetime_display.label }}</label>
 						<div class="col-lg-10 input-append">{{ form.datetime_display }}<br></div>
@@ -132,6 +124,14 @@
 						<label for="{{ form.datetime_finish.id_for_label }}" class="col-lg-2 control-label">{{ form.datetime_finish.label }}</label>
 						<div class="col-lg-10 input-append">{{ form.datetime_finish }}<br></div>
 
+						{{ form.description_short.errors }}
+						<label for="{{ form.description_short.id_for_label }}" class="col-lg-2 control-label">{{ form.description_short.label }}</label>
+						<div class="col-lg-10">{{ form.description_short }}<br></div>
+
+						{{ form.description_full.errors }}
+						<label for="{{ form.description_full.id_for_label }}" class="col-lg-2 control-label">{{ form.description_full.label }}</label>
+						<div class="col-lg-10">{{ form.description_full }}<br></div>
+			
 						<div class="col-lg-10 col-lg-offset-2">
 							<a class="btn btn-default" href="/admin/competitions/">Cancel</a>
 							<button type="submit" class="btn btn-primary">Create</button>
