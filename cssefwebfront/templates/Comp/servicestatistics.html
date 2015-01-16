@@ -110,7 +110,7 @@
 					{% if auth_name == "auth_team_blue" %}
 					<!-- Service selection form start -->
 					<div>
-						<form action="/competitions/{{ comp_obj.compurl }}/servicetimeline/" method="post" class="form-inline">
+						<form action="/competitions/{{ comp_obj.compurl }}/servicestatistics/" method="post" class="form-inline">
 							{% csrf_token %}
 							{{ form.service.errors }}
 							<label for="{{ form.service.id_for_label }}" class="control-label">{{ form.service.label }}</label>

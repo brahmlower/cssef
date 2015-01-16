@@ -103,11 +103,14 @@ Please enter a(n) 'str' for 'network': 192.168.0
 * Implement better error notification when user attempt to access blocked pages
 * Test scoring a service from a White Team interface
 * Add celery support
+* Refactor to be a proper django site (too much stuff in the django root directory)
 
 #####Short Term#####
 * Add interface to modify general site information/content
-* Add content to Service Timeline view for Blue Team
+* Add content to Service Statistics view for Blue Team
  * General statistics
 * Finish content for Summary pages (Blue and White Teams)
 * Finish content for Details pages (Blue and White Teams)
 * Change networkaddr field in Team model (and surrounding code) to be CIDR or domain name
+* Add unit tests
+* Add integration tests

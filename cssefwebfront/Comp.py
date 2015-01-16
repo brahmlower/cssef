@@ -247,7 +247,7 @@ def scoreboard(request, competition = None):
 	c["scores"] = []
 	if request.POST:
 		c["form"] = ServiceSelectionForm(initial = {"service": request.POST['service']}, compid = request.user.compid)
-		service_name = Service.objects.get(servid = request.POST['service']).name
+		#service_name = Service.objects.get(servid = request.POST['service']).name
 		scores_obj_list = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid, servid = request.POST['service'])
 		for i in scores_obj_list:
 			c["scores"].append({
