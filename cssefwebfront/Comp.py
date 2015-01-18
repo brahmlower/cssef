@@ -179,10 +179,10 @@ def servicestatus(request, competition = None):
 	if not c["comp_obj"].teams_view_servicestatus_enabled:
 		return HttpResponseRedirect("/competitions/%s/summary/" % c["comp_obj"].compurl)
 	c["status_list"] = []
-	service_modules = serv_objs = Service.objects.filter(compid = c["comp_obj"].compid, datetime_start__lte = timezone.now(), datetime_finish__gt = timezone.now())
-	for i in service_modules:
+	service_objs = Service.objects.filter(compid = c["comp_obj"].compid, datetime_start__lte = timezone.now(), datetime_finish__gt = timezone.now())
+	for i in service_objs:
 		c["status_list"].append({
-			"service": i.serv_obj,
+			"service": i,
 			"score": i.score(request.user)
 		})
 	return render_to_response('Comp/servicestatus.html', c)
@@ -247,7 +247,6 @@ def scoreboard(request, competition = None):
 	c["scores"] = []
 	if request.POST:
 		c["form"] = ServiceSelectionForm(initial = {"service": request.POST['service']}, compid = request.user.compid)
-		#service_name = Service.objects.get(servid = request.POST['service']).name
 		scores_obj_list = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid, servid = request.POST['service'])
 		for i in scores_obj_list:
 			c["scores"].append({

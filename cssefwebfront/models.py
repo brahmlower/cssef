@@ -13,6 +13,7 @@ from django.db.models import ForeignKey
 from django.forms.widgets import PasswordInput
 from django.contrib.auth.models import User
 from django.utils import timezone
+from cssefwebfront import settings
 
 class Competition(Model):
 	compid = AutoField(primary_key = True)
@@ -66,6 +67,18 @@ class Service(Model):
 	connect_display = CharField(max_length = 15)
 	networkloc = CharField(max_length = 15)
 	defaultport = PositiveIntegerField()
+
+	# Service object now has the ability to score itself
+	def score(self, team_obj):
+		instance = self.load_pluggin()
+		score_obj = instance.score(team_obj)
+		score_obj.datetime = timezone.now()
+		return score_obj
+
+	def load_pluggin(self):
+		module_name = Document.objects.get(servicemodule = self.servicemodule).filename.split(".")[0]
+		module = __import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name])
+		return getattr(module, module_name)(self)
 
 class Score(Model):
 	scorid = AutoField(primary_key = True)

@@ -97,22 +97,25 @@ def run_loop(comp_obj, team_list, serv_list):
 
 def run_comp(compid = None, compname = None):
     # Get the competition object based on provided input
-    comp = LoadComp(compid = compid, compname = compname)
-    # Check if scoring is enabled before continueing
-    if not comp.scoring_enabled:
+    comp_obj = LoadComp(compid = compid, compname = compname)
+    # Check if the competition hasn't passed
+    if timezone.now() >= comp_obj.datetime_finish:
+        sys.exit("[ERROR] This competition cannot be started. It has already finished.")
+    # Check if scoring is enabled before continuing
+    if not comp_obj.scoring_enabled:
         sys.exit("[ERROR] Scoring is not enabled for this competition.")
     else:
         # Just checking the required fields are available
-        if not comp.scoring_interval:
+        if not comp_obj.scoring_interval:
             sys.exit("[ERROR] Scoring is enabled, but 'scoring_interval' is invalid.")
-        if not comp.scoring_interval_uncty:
+        if not comp_obj.scoring_interval_uncty:
             sys.exit("[ERROR] Scoring is enabled, but 'scoring_interval_uncty' is invalid.")
         # This will eventually need to check if it's a valid CIDR or domain name (todo)
-        if not comp.scoring_method:
+        if not comp_obj.scoring_method:
             sys.exit("[ERROR] Scoring is enabled, but 'scoring_method' is invalid.")
-    teams = LoadTeams(comp.compid)
-    servs = LoadServs(comp.compid)
-    run_loop(comp, teams, servs)
+    teams = LoadTeams(comp_obj.compid)
+    servs = LoadServs(comp_obj.compid)
+    run_loop(comp_obj, teams, servs)
 
 def main():
     if len(sys.argv) == 1 or len(sys.argv) > 2:
