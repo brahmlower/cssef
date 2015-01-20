@@ -89,13 +89,13 @@ USE_TZ = True
 
 STATIC_ROOT = ''
 
-STATICFILES_DIRS = (BASE_DIR + '/resources/static/',)
+STATICFILES_DIRS = (BASE_DIR + '/static/',)
 
-STATIC_URL = '/resources/static/'
+STATIC_URL = '/static/'
 
 # CSSEF Specific
-CONTENT_PLUGGINS_PATH =         "/resources/pluggins/"
-CONTENT_INJECT_PATH =           "/resources/content/injects/"
-CONTENT_INJECT_REPONSE_PATH =   "/resources/content/injectresponses/"
-CONTENT_INCIDENT_REPONSE_PATH = "/resources/content/incidentresponses/"
+CONTENT_PLUGGINS_PATH =         "/cssefwebfront/resources/pluggins/"
+CONTENT_INJECT_PATH =           "/cssefwebfront/resources/content/injects/"
+CONTENT_INJECT_REPONSE_PATH =   "/cssefwebfront/resources/content/injectresponses/"
+CONTENT_INCIDENT_REPONSE_PATH = "/cssefwebfront/resources/content/incidentresponses/"
 

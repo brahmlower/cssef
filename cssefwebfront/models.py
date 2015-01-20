@@ -77,6 +77,7 @@ class Service(Model):
 
 	def load_pluggin(self):
 		module_name = Document.objects.get(servicemodule = self.servicemodule).filename.split(".")[0]
+		print settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name
 		module = __import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name])
 		return getattr(module, module_name)(self)
 

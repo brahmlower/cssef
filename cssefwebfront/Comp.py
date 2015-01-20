@@ -203,7 +203,7 @@ def servicestatistics(request, competition = None):
 	score_obj_list = []
 	if request.POST and request.POST['service'] != u'-1':
 		c["form"] = ServiceSelectionForm(initial = {"service": request.POST['service']}, compid = c["comp_obj"].compid)
-		comp_seconds = int((c["comp_obj"].dt_finish - c["comp_obj"].dt_start).total_seconds())
+		comp_seconds = int((c["comp_obj"].datetime_finish - c["comp_obj"].datetime_start).total_seconds())
 		score_obj_list = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid, servid = request.POST['service'])
 		prev_date = score_obj_list[0].datetime
 		total_percent = 0
