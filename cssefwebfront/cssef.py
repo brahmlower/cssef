@@ -18,22 +18,6 @@ from cssefwebfront.models import Service
 from cssefwebfront.models import Score
 from cssefwebfront.models import Document
 
-class ServiceModule:
-    def __init__(self, serv_obj):
-        # serv_obj is used in other locations (don't remove)
-        self.serv_obj = serv_obj
-        self.instance = self.load_pluggin(serv_obj)
-
-    def load_pluggin(self, serv_obj):
-        module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
-        module = __import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name])
-        return getattr(module, module_name)(serv_obj)
-
-    def score(self, team_obj):
-        score_obj = self.instance.score(team_obj)
-        score_obj.datetime = timezone.now()
-        return score_obj
-
 def LoadComp(compid = None, compname = None):
     try:
         if compid != None:
@@ -57,10 +41,7 @@ def LoadServs(compid):
         serv_objs = Service.objects.filter(compid = compid)
     except:
         sys.exit("No services were associated with competition with id '%s' in table 'services'" % str(compid))
-    serv_list = []
-    for i in serv_objs:
-        serv_list.append(ServiceModule(i))
-    return serv_list
+    return serv_objs
 
 def rand_sleep(score_delay, score_delay_uncert):
     min_seconds = score_delay - score_delay_uncert
@@ -80,13 +61,13 @@ def run_loop(comp_obj, team_list, serv_list):
         print "[INFO] Waiting until competition starts: ~%s seconds" % str(int(time_until_start))
         sleep(time_until_start)
     while timezone.now() < comp_obj.datetime_finish:
-        for serv in serv_list:
+        for serv_obj in serv_list:
             for team_obj in team_list:
                 # Build the score object
-                score_obj = serv.score(team_obj)
+                score_obj = serv_obj.score(team_obj)
                 score_obj.compid = comp_obj.compid
                 score_obj.teamid = team_obj.teamid
-                score_obj.servid = serv.serv_obj.servid
+                score_obj.servid = serv_obj.servid
                 score_obj.datetime = timezone.now()
                 # Save the score object
                 score_obj.save()

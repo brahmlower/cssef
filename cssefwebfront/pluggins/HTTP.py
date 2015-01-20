@@ -5,8 +5,8 @@ from django.conf import settings
 
 # Imports required for base pluggin
 from cssefwebfront.models import Score
-from ScoringUtils import Pluggin
-from ScoringUtils import PlugginTest
+from cssefwebfront.ScoringUtils import Pluggin
+from cssefwebfront.ScoringUtils import PlugginTest
 
 # Imports required for specific pluggin
 from django.utils.html import escape
