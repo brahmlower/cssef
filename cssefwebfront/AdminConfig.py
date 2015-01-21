@@ -44,9 +44,10 @@ def login(request):
 	# Checks if the user is submitting the form, or requesting the form
 	if request.method != "POST":
 		return render_to_response('AdminConfig/login.html', c)
-	form_dict = request.POST.copy()
+	username = request.POST.get('username')
+	password = request.POST.get('password')
 	# TODO: The following line can throw a MultiValueDictKeyError
-	admin = auth.authenticate(username = form_dict["username"], password = form_dict["password"])
+	admin = auth.authenticate(username = username, password = password)
 	if admin == None:
 		c["messages"].new_info("Incorrect credentials.", 4321)
 		return render_to_response('AdminConfig/login.html', c)

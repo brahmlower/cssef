@@ -1,5 +1,8 @@
 from django.http import HttpResponseRedirect
+from django.http import HttpResponseForbidden
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render_to_response
+from django.template.loader import render_to_string
 from django.contrib import auth
 from django.core.context_processors import csrf
 from django.core.files.uploadedfile import UploadedFile
@@ -44,7 +47,7 @@ def login(request):
 	if team == None:
 		c["messages"].new_info("Incorrect team credentials.", 4321)
 		c["form"] = {'login': TeamLoginForm()}
-		return render_to_response('Comp/login.html', c)
+		return HttpResponseBadRequest(render_to_string('Comp/login.html', c))
 	auth.login(request, team)
 	competition = Competition.objects.get(compid = compid)
 	return HttpResponseRedirect("/competitions/%s/summary/" % competition.compurl)
@@ -54,9 +57,7 @@ def logout(request, competition = None):
 	Page for teams to logout of a competition
 	"""
 	c = getAuthValues(request, {})
-	if c["auth_name"] != "auth_team_blue":
-		print "Cannot sign you out of something you're not logged in as."
-	else:
+	if c["auth_name"] == "auth_team_blue":
 		auth.logout(request)
 	return HttpResponseRedirect("/")
 
@@ -87,8 +88,10 @@ def ranking(request, competition = None):
 	"""
 	c = getAuthValues(request, {})
 	c["comp_obj"] = Competition.objects.get(compurl = competition)
+	# If the view is disabled
 	if not c["comp_obj"].teams_view_ranking_enabled:
-		return HttpResponseRedirect("/competitions/%s/summary/" % c["comp_obj"].compurl)
+		c["message"] = "This feature is disabled for this competition."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c["ranks"] = []
 	team_objs = Team.objects.filter(compid = c["comp_obj"].compid)
 	for i in team_objs:
@@ -104,11 +107,15 @@ def injects(request, competition = None):
 	Display inject list for selected competition
 	"""
 	c = getAuthValues(request, {})
+	# If the user isn't authed as a Blue Team
 	if c["auth_name"] != "auth_team_blue":
-		return HttpResponseRedirect('/')
+		c["message"] = "You must log in as a Blue Team to view this page."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c["comp_obj"] = Competition.objects.get(compurl = competition)
+	# If the view is disabled
 	if not c["comp_obj"].teams_view_injects_enabled:
-		return HttpResponseRedirect("/competitions/%s/summary/" % c["comp_obj"].compurl)
+		c["message"] = "This feature is disabled for this competition."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c["inject_list"] = []
 	for i in Inject.objects.filter(compid = request.user.compid, dt_delivery__lte = timezone.now()):
 		c["inject_list"].append({
@@ -123,11 +130,15 @@ def injects_respond(request, competition = None, ijctid = None):
 	Displays a specific inject and provides either upload or text entry for inject response
 	"""
 	c = getAuthValues(request, {})
+	# If the user isn't authed as a Blue Team
 	if c["auth_name"] != "auth_team_blue":
-		return HttpResponseRedirect('/')
+		c["message"] = "You must log in as a Blue Team to view this page."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c["comp_obj"] = Competition.objects.get(compurl = competition)
+	# If the view is disabled
 	if not c["comp_obj"].teams_view_injects_enabled:
-		return HttpResponseRedirect("/competitions/%s/summary/" % c["comp_obj"].compurl)
+		c["message"] = "This feature is disabled for this competition."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c.update(csrf(request))
 	# If we're not getting POST data, serve the page normally
 	if request.method != "POST":
@@ -173,11 +184,15 @@ def servicestatus(request, competition = None):
 	Display current service status for selected team in selected competition
 	"""
 	c = getAuthValues(request, {})
+	# If the user isn't authed as a Blue Team
 	if c["auth_name"] != "auth_team_blue":
-		return HttpResponseRedirect('/')
+		c["message"] = "You must log in as a Blue Team to view this page."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c["comp_obj"] = Competition.objects.get(compurl = competition)
+	# If the view is disabled
 	if not c["comp_obj"].teams_view_servicestatus_enabled:
-		return HttpResponseRedirect("/competitions/%s/summary/" % c["comp_obj"].compurl)
+		c["message"] = "This feature is disabled for this competition."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c["status_list"] = []
 	service_objs = Service.objects.filter(compid = c["comp_obj"].compid, datetime_start__lte = timezone.now(), datetime_finish__gt = timezone.now())
 	for i in service_objs:
@@ -192,11 +207,15 @@ def servicestatistics(request, competition = None):
 	Display status timeline of services for selected team in selected competition
 	"""
 	c = getAuthValues(request, {})
+	# If the user isn't authed as a Blue Team
 	if c["auth_name"] != "auth_team_blue":
-		return HttpResponseRedirect('/')
+		c["message"] = "You must log in as a Blue Team to view this page."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c["comp_obj"] = Competition.objects.get(compurl = competition)
+	# If the view is disabled
 	if not c["comp_obj"].teams_view_servicestatistics_enabled:
-		return HttpResponseRedirect("/competitions/%s/summary/" % c["comp_obj"].compurl)
+		c["message"] = "This feature is disabled for this competition."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	# Prepare page for statistics view selector
 	c.update(csrf(request))
 	c["form"] = ServiceSelectionForm(compid = c["comp_obj"].compid)
@@ -238,11 +257,15 @@ def scoreboard(request, competition = None):
 	Display the list of scores for the selected team of the selected competition
 	"""
 	c = getAuthValues(request, {})
+	# If the user isn't authed as a Blue Team
 	if c["auth_name"] != "auth_team_blue":
-		return HttpResponseRedirect('/')
+		c["message"] = "You must log in as a Blue Team to view this page."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c["comp_obj"] = Competition.objects.get(compurl = competition)
+	# If the view is disabled
 	if not c["comp_obj"].teams_view_scoreboard_enabled:
-		return HttpResponseRedirect("/competitions/%s/summary/" % c["comp_obj"].compurl)
+		c["message"] = "This feature is disabled for this competition."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c.update(csrf(request))
 	c["scores"] = []
 	if request.POST:
@@ -270,11 +293,15 @@ def incidentresponse(request, competition = None):
 	Provides a submission portal for selected team of selected competition to submit incident responses
 	"""
 	c = getAuthValues(request, {})
+	# If the user isn't authed as a Blue Team
 	if c["auth_name"] != "auth_team_blue":
-		return HttpResponseRedirect('/')
+		c["message"] = "You must log in as a Blue Team to view this page."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c["comp_obj"] = Competition.objects.get(compurl = competition)
+	# If the view id disabled
 	if not c["comp_obj"].teams_view_incidentresponse_enabled:
-		return HttpResponseRedirect("/competitions/%s/summary/" % c["comp_obj"].compurl)
+		c["message"] = "This feature is disabled for this competition."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c.update(csrf(request))
 	# Get any already opened intrusion responses
 	c["responseform"] = IncidentResponseForm()
@@ -308,11 +335,15 @@ def incidentresponse(request, competition = None):
 
 def incidentresponse_respond(request, competition = None, intrspid = None):
 	c = getAuthValues(request, {})
+	# If the user isn't authed as a Blue Team
 	if c["auth_name"] != "auth_team_blue":
-		return HttpResponseRedirect('/')
+		c["message"] = "You must log in as a Blue Team to view this page."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c["comp_obj"] = Competition.objects.get(compurl = competition)
+	# If the view is disabled
 	if not c["comp_obj"].teams_view_incidentresponse_enabled:
-		return HttpResponseRedirect("/competitions/%s/summary/" % c["comp_obj"].compurl)
+		c["message"] = "This feature is disabled for this competition."
+		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c.update(csrf(request))
 	# Get any already opened intrusion responses
 	c["responseform"] = IncidentResponseReplyForm()
