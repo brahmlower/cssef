@@ -271,13 +271,13 @@ def scoreboard(request, competition = None):
 		return HttpResponseForbidden(render_to_string('status_400.html', c))
 	c.update(csrf(request))
 	c["scores"] = []
-	if request.POST:
+	if request.POST and request.POST['service'] != u'-1' :
 		c["form"] = ServiceSelectionForm(initial = {"service": request.POST['service']}, compid = request.user.compid)
 		scores_obj_list = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid, servid = request.POST['service'])
 		for i in scores_obj_list:
 			c["scores"].append({
 				"time": i.datetime,
-				"name": service_name,
+				"name": Service.objects.get(servid = i.servid).name,
 				"value": i.value
 			})
 	else:

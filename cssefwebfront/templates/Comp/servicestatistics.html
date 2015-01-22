@@ -1,6 +1,7 @@
 {% extends "Comp/comp_template.html" %}
 
 {% block headers_js %}
+{% load staticfiles %}
 <script src="{% static "js/chart.min.js" %}"></script>
 <script>
 	var pieData = [
