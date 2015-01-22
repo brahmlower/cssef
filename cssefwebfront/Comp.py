@@ -70,6 +70,8 @@ def summary(request, competition = None):
 		return HttpResponseRedirect(current_url + "summary/")
 	c = getAuthValues(request, {})
 	c["comp_obj"] = Competition.objects.get(compurl = competition)
+	c["services"] = Service.objects.filter(compid = c["comp_obj"].compid)
+	c["teams"] = Team.objects.filter(compid = c["comp_obj"].compid)
 	return render_to_response('Comp/summary.html', c)
 
 def details(request, competition = None):
@@ -224,17 +226,18 @@ def servicestatistics(request, competition = None):
 		c["form"] = ServiceSelectionForm(initial = {"service": request.POST['service']}, compid = c["comp_obj"].compid)
 		comp_seconds = int((c["comp_obj"].datetime_finish - c["comp_obj"].datetime_start).total_seconds())
 		score_obj_list = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid, servid = request.POST['service'])
-		prev_date = score_obj_list[0].datetime
-		total_percent = 0
-		c["score_vals"] = []
-		for i in score_obj_list[1:]:
-			diff = int((i.datetime - prev_date).total_seconds())
-			percentage = 100 * float(diff) / float(comp_seconds)
-			if total_percent + percentage > 100:
-				percentage = 100 - total_percent
-			total_percent += percentage
-			prev_date = i.datetime
-			c["score_vals"].append({"value":i.value,"percentage": percentage})
+		if len(score_obj_list) > 0:
+			prev_date = score_obj_list[0].datetime
+			total_percent = 0
+			c["score_vals"] = []
+			for i in score_obj_list[1:]:
+				diff = int((i.datetime - prev_date).total_seconds())
+				percentage = 100 * float(diff) / float(comp_seconds)
+				if total_percent + percentage > 100:
+					percentage = 100 - total_percent
+				total_percent += percentage
+				prev_date = i.datetime
+				c["score_vals"].append({"value":i.value,"percentage": percentage})
 	else:
 		score_obj_list = Score.objects.filter(compid = request.user.compid, teamid = request.user.teamid)
 	# Prepare data for chart_overall_uptime

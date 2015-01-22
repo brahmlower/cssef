@@ -63,7 +63,7 @@ class Service(Model):
 	datetime_start = DateTimeField()
 	datetime_finish = DateTimeField()
 	points = PositiveIntegerField()
-	connectip = BooleanField()
+	connectip = BooleanField(default = True)
 	connect_display = CharField(max_length = 15)
 	networkloc = CharField(max_length = 15)
 	defaultport = PositiveIntegerField()
