@@ -1,10 +1,11 @@
-{% extends "CompConfig/compconfig_template.html %}
+{% extends "CompConfig/compconfig_template.html" %}
 
-{% headers_css %}
+{% block headers_css %}
+{% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-datetimepicker.min.css" %}">
 {% endblock %}
 
-{% headers_js %}
+{% block headers_js %}
 <script src="{% static "js/moment.min.js" %}"></script>
 <script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
 <script type="text/javascript">
