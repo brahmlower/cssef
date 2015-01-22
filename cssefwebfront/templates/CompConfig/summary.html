@@ -1,106 +1,28 @@
-<html>
-	<head>
-		{% load staticfiles %}
-		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.min.css" %}">
-		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-dashboard.css" %}">
-		<script src="{% static "js/jquery-1.10.2.min.js" %}"></script>
-		<script src="{% static "js/bootstrap.min.js" %}"></script>
-	</head>
-	<body>
-		<div class="navbar navbar-inverse navbar-fixed-top">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<a href="/" class="navbar-brand">CSC CSSEF</a>
-					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-				</div>
-				<div class="navbar-collapse collapse" id="navbar-main">
-					<ul class="nav navbar-nav">
-						<li><a href="/">Home</a></li>
-						{% if auth_name == "auth_team_white" %}
-						<li class="active"><a href="/admin/">Admin Config</a></li>
-						{% elif auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/">Competitions</a></li>
-						{% endif %}
-					</ul>
-					<ul class="nav navbar-nav navbar-right">
-						{% if auth %}
-						<li class="navbar-text">{{ auth_name_display }}</li>
-						<li class="divider-vertical"></li>
-						{% if auth_name == "auth_team_white" %}
-						<li><a href="/admin/logout/">Logout</a></li>
-						{% elif auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/logout/">Logout</a></li>
-						{% endif %}
-						{% else %}
-						<li class="dropdown">
-							<a id="login_dropdown" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login<span class="caret"></span></a>
-							<ul class="dropdown-menu" role="menu" aria-labelledby="login_dropdown">
-								<li><a href="/competitions/login/" role="menuitem" tabindex="-1">Blue Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Orange Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Red Team</a></li>
-								<li><a href="/admin/login/" role="menuitem" tabindex="-1">White Team</a></li>
-							</ul>
-						</li>
-						{% endif %}
-					</ul>
-				</div>
-			</div>
+{% extends "CompConfig/compconfig_template.html %}
+
+{% block sidebar_id %}sidebar_summary{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<div class="page-header">
+		<h1> {{ comp_obj.compname }} - Summary</h1>
+	</div>
+
+	<!-- displays the short description -->
+	<div class="panel panel-default">
+		<div class="panel-heading">Short Description</div>
+		<div class="panel-body">
+			<p>{{ comp_obj.description_short }}</p>
 		</div>
+	</div>
 
-		<div class="container-fluid">
-			<div class="row">
-				<!-- Start competition config navigation sidebar -->
-				<div class="col-sm-3 col-md-2 sidebar">
-					<ul class="nav nav-sidebar">
-						<li><a href="/admin/competitions/"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></li>
-						<li class="nav-divider"><li>
-						<li class="active"><a href="/admin/competitions/{{ competition_object.compurl }}/summary/">Summary</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/settings/">Settings</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/injects/">Injects</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/services/">Services</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/teams/">Teams</a></li>
-					</ul>
-				</div>
-				<!-- End competition config navigation sidebar -->
-				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-					<div class="page-header">
-						<h1> {{competition_object.compname}} - Summary</h1>
-					</div>
-
-					<!-- displays the short description -->
-					<div class="panel panel-default">
-						<div class="panel-heading">Short Description</div>
-						<div class="panel-body">
-							<p>{{ competition_object.description_short }}</p>
-							<!-- <a href="/admin/competitions/{{ competition_object.compurl }}/" class="btn btn-primary pull-right">Edit</a> -->
-						</div>
-					</div>
-
-					<!-- displays the full description -->
-					<div class="panel panel-default">
-						<div class="panel-heading">Full Description</div>
-						<div class="panel-body">
-							<p>{{ competition_object.description_full }}</p>
-							<!-- <a href="/admin/competitions/{{ competition_object.compurl }}/" class="btn btn-primary pull-right">Edit</a> -->
-						</div>
-					</div>
-
-					<!-- <h2>Current Viewable</h2>
-					<p>{{ competition_object.viewable }}</p>
-					{% if not competition_object.viewable %}
-					<h2>Auto Display</h2>
-					<p>{{ competition_object.autodisplay }}</p>
-					{% if not competition_object.autodisplay %}
-					<h2>Display Time</h2>
-					<p>{{ competition_object.displaytime }}</p>
-					{% endif %}
-					{% endif %} -->
-				</div>
-			</div>
+	<!-- displays the full description -->
+	<div class="panel panel-default">
+		<div class="panel-heading">Full Description</div>
+		<div class="panel-body">
+			<p>{{ comp_obj.description_full }}</p>
 		</div>
-	</body>
-</html>
+	</div>
+
+</div>
+{% endblock %}

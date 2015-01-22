@@ -1,100 +1,37 @@
-<html>
-	<head>
-		{% load staticfiles %}
-		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.min.css" %}">
-		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-dashboard.css" %}">
-		<script src="{% static "js/jquery-1.10.2.min.js" %}"></script>
-		<script src="{% static "js/bootstrap.min.js" %}"></script>
-	</head>
-	<body>
-		<div class="navbar navbar-inverse navbar-fixed-top">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<a href="/" class="navbar-brand">CSC CSSEF</a>
-					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-				</div>
-				<div class="navbar-collapse collapse" id="navbar-main">
-					<ul class="nav navbar-nav">
-						<li><a href="/">Home</a></li>
-						{% if auth_name == "auth_team_white" %}
-						<li class="active"><a href="/admin/">Admin Config</a></li>
-						{% elif auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/">Competitions</a></li>
-						{% endif %}
-					</ul>
-					<ul class="nav navbar-nav navbar-right">
-						{% if auth %}
-						<li class="navbar-text">{{ auth_name_display }}</li>
-						<li class="divider-vertical"></li>
-						{% if auth_name == "auth_team_white" %}
-						<li><a href="/admin/logout/">Logout</a></li>
-						{% elif auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/logout/">Logout</a></li>
-						{% endif %}
-						{% else %}
-						<li class="dropdown">
-							<a id="login_dropdown" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login<span class="caret"></span></a>
-							<ul class="dropdown-menu" role="menu" aria-labelledby="login_dropdown">
-								<li><a href="/competitions/login/" role="menuitem" tabindex="-1">Blue Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Orange Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Red Team</a></li>
-								<li><a href="/admin/login/" role="menuitem" tabindex="-1">White Team</a></li>
-							</ul>
-						</li>
-						{% endif %}
-					</ul>
-				</div>
-			</div>
+{% extends "AdminConfig/admin_template.html" %}
+
+{% block sidebar_id %}sidebar_servicemodules{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	{% if action == "create" %}
+	<form action="/admin/servicemodules/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	{% else %}
+	<form action="/admin/servicemodules/edit/{{servmdulid}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	{% endif %}
+		{% csrf_token %}
+		{{ form.modulename.errors }}
+		<label for="{{ form.modulename.id_for_label }}" class="col-lg-2 control-label">{{ form.modulename.label }}</label>
+		<div class="col-lg-10">{{ form.modulename }}<br></div>
+
+		{{ form.description.errors }}
+		<label for="{{ form.description.id_for_label }}" class="col-lg-2 control-label">{{ form.description.label }}</label>
+		<div class="col-lg-10">{{ form.description }}<br></div>
+
+		{% if docfile %}
+		<label class = "col-lg-2 control-label">Current file</label>
+		<div class="col-lg-10"><p>{{docfile.filename}} (md5: {{docfile.filehash}})</p><br></div>
+		{% endif %}
+
+		{{ form.docfile.errors }}
+		<label for="{{ form.docfile.id_for_label }}" class="col-lg-2 control-label">{{ form.docfile.label }}</label>
+		<div class="col-lg-10">{{ form.docfile }}<br></div>
+
+		<div class="col-lg-10 col-lg-offset-2">
+			<a class="btn btn-default" href="/admin/servicemodules/">Cancel</a>
+			<button id="form_sub_button" type="submit" class="btn btn-primary">Save</button>
+			<p id="form_messages"></p>
 		</div>
-
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-sm-3 col-md-2 sidebar">
-					<ul class="nav nav-sidebar">
-						<li><a href="/admin/home/">Home</a></li>
-						<li><a href="/admin/users/">Users</a></li>
-						<li><a href="/admin/competitions/">Competitions</a></li>
-						<li class="active"><a href="/admin/servicemodules/">Service Modules</a></li>
-						<li><a href="#">Account</a></li>
-					</ul>
-				</div>
-				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-					<!-- actual page content-->
-					{% if action == "create" %}
-					<form action="/admin/servicemodules/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
-					{% else %}
-					<form action="/admin/servicemodules/edit/{{servmdulid}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
-					{% endif %}
-						{% csrf_token %}
-						{{ form.modulename.errors }}
-						<label for="{{ form.modulename.id_for_label }}" class="col-lg-2 control-label">{{ form.modulename.label }}</label>
-						<div class="col-lg-10">{{ form.modulename }}<br></div>
-
-						{{ form.description.errors }}
-						<label for="{{ form.description.id_for_label }}" class="col-lg-2 control-label">{{ form.description.label }}</label>
-						<div class="col-lg-10">{{ form.description }}<br></div>
-
-						{% if docfile %}
-						<label class = "col-lg-2 control-label">Current file</label>
-						<div class="col-lg-10"><p>{{docfile.filename}} (md5: {{docfile.filehash}})</p><br></div>
-						{% endif %}
-
-						{{ form.docfile.errors }}
-						<label for="{{ form.docfile.id_for_label }}" class="col-lg-2 control-label">{{ form.docfile.label }}</label>
-						<div class="col-lg-10">{{ form.docfile }}<br></div>
-
-						<div class="col-lg-10 col-lg-offset-2">
-							<a class="btn btn-default" href="/admin/servicemodules/">Cancel</a>
-							<button id="form_sub_button" type="submit" class="btn btn-primary">Save</button>
-							<p id="form_messages"></p>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</body>
-</html>
+	</form>
+</div>
+{% endblock %}

@@ -1,116 +1,35 @@
-<html>
-	<head>
-		{% load staticfiles %}
-		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.min.css" %}">
-		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-dashboard.css" %}">
-		<script src="{% static "js/jquery-1.10.2.min.js" %}"></script>
-		<script src="{% static "js/bootstrap.min.js" %}"></script>
-	</head>
-	<body>
-		<div class="navbar navbar-inverse navbar-fixed-top">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<a href="/" class="navbar-brand">CSC CSSEF</a>
-					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-				</div>
-				<div class="navbar-collapse collapse" id="navbar-main">
-					<ul class="nav navbar-nav">
-						<li><a href="/">Home</a></li>
-						{% if auth_name == "auth_team_white" %}
-						<li><a href="/admin/">Admin Config</a></li>
-						{% elif auth_name == "auth_team_blue" %}
-						<li class="active"><a href="/competitions/{{ comp_obj.compurl }}/summary/">Competition</a></li>
-						{% endif %}
-					</ul>
-					<ul class="nav navbar-nav navbar-right">
-						{% if auth %}
-						<li class="navbar-text">{{ auth_name_display }}</li>
-						<li class="divider-vertical"></li>
-						{% if auth_name == "auth_team_white" %}
-						<li><a href="/admin/logout/">Logout</a></li>
-						{% elif auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/logout/">Logout</a></li>
-						{% endif %}
-						{% else %}
-						<li class="dropdown">
-							<a id="login_dropdown" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login<span class="caret"></span></a>
-							<ul class="dropdown-menu" role="menu" aria-labelledby="login_dropdown">
-								<li><a href="/competitions/login/" role="menuitem" tabindex="-1">Blue Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Orange Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Red Team</a></li>
-								<li><a href="/admin/login/" role="menuitem" tabindex="-1">White Team</a></li>
-							</ul>
-						</li>
-						{% endif %}
-					</ul>
-				</div>
-			</div>
-		</div>
+{% extends "Comp/comp_template.html" %}
 
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-sm-3 col-md-2 sidebar">
-					<ul class="nav nav-sidebar">
-						<li><a href="/competitions/{{ comp_obj.compurl }}/summary/">Summary</a></li>
-						<li><a href="/competitions/{{ comp_obj.compurl }}/details/">Details</a></li>
-						{% if auth_name == "auth_team_blue" %}
-						{% if comp_obj.teams_view_ranking_enabled %}
-						<li><a href="/competitions/{{ comp_obj.compurl }}/ranking/">Team Ranking</a></li>
-						{% endif %}
-						{% if comp_obj.teams_view_servicestatus_enabled %}
-						<li><a href="/competitions/{{ comp_obj.compurl }}/servicestatus/">Service Status</a></li>
-						{% endif %}
-						{% if comp_obj.teams_view_scoreboard_enabled %}
-						<li><a href="/competitions/{{ comp_obj.compurl }}/scoreboard/">Score Board</a></li>
-						{% endif %}
-						{% if comp_obj.teams_view_servicestatistics_enabled %}
-						<li><a href="/competitions/{{ comp_obj.compurl }}/servicestatistics/">Service Statistics</a></li>
-						{% endif %}
-						{% if comp_obj.teams_view_injects_enabled %}
-						<li class="active"><a href="/competitions/{{ comp_obj.compurl }}/injects/">Injects</a></li>
-						{% endif %}
-						{% if comp_obj.teams_view_incidentresponse_enabled %}
-						<li><a href="/competitions/{{ comp_obj.compurl }}/incidentresponse/">Incident Response</a></li>
-						{% endif %}
-						{% else %}
-						{% endif %}
-					</ul>
-				</div>
-				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-					<!-- Actual page content -->
-					{% if auth_name == "auth_team_blue" %}
-					{% if not inject_list %}
-					<p>No injects have been released yet.</p>
-					{% endif %}
-					{% for i in inject_list %}
-					<div class="panel panel-{{i.display_state}}">
-						<div class="panel-heading"> {{ i.inject.title }} </div>
-						<div class="panel-body">
-							<strong>Released at: </strong>{{ i.inject.dt_delivery }}<br>
-							<strong>Due at: </strong>{{ i.inject.dt_response_due }}<br>
-							<strong>Closes at: </strong>{{ i.inject.dt_response_close }}<br>
-							{% for k in i.files %}
-							<strong> Attached File: </strong><a href="/resources/injects/{{i.inject.compid}}/{{i.inject.ijctid}}/{{k.urlencfilename}}">{{ k.filename }}</a><br>
-							{% endfor %}
-							<strong>Inject body:</strong><br>
-							{{ i.inject.body }}
-							<div class="bt-component pull-right">
-								<a href="/competitions/{{ comp_obj.compurl }}/injects/{{ i.inject.ijctid }}" class="btn btn-primary">View/Respond</a>
-							</div>
-						</div>
-					</div>
-					{% endfor %}
-					{% else %}
-					<p>
-						You must be authenticated as a team of this competition to view the page contents.
-					</p>
-					{% endif %}
-				</div>
+{% block sidebar_id %}sidebar_injects{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	{% if auth_name == "auth_team_blue" %}
+	{% if not inject_list %}
+	<p>No injects have been released yet.</p>
+	{% endif %}
+	{% for i in inject_list %}
+	<div class="panel panel-{{i.display_state}}">
+		<div class="panel-heading"> {{ i.inject.title }} </div>
+		<div class="panel-body">
+			<strong>Released at: </strong>{{ i.inject.dt_delivery }}<br>
+			<strong>Due at: </strong>{{ i.inject.dt_response_due }}<br>
+			<strong>Closes at: </strong>{{ i.inject.dt_response_close }}<br>
+			{% for k in i.files %}
+			<strong> Attached File: </strong><a href="/resources/injects/{{i.inject.compid}}/{{i.inject.ijctid}}/{{k.urlencfilename}}">{{ k.filename }}</a><br>
+			{% endfor %}
+			<strong>Inject body:</strong><br>
+			{{ i.inject.body }}
+			<div class="bt-component pull-right">
+				<a href="/competitions/{{ comp_obj.compurl }}/injects/{{ i.inject.ijctid }}" class="btn btn-primary">View/Respond</a>
 			</div>
 		</div>
-	</body>
-</html>
+	</div>
+	{% endfor %}
+	{% else %}
+	<p>
+		You must be authenticated as a team of this competition to view the page contents.
+	</p>
+	{% endif %}
+</div>
+{% endblock %}

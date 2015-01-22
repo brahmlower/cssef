@@ -3,8 +3,16 @@
 		{% load staticfiles %}
 		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.min.css" %}">
 		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-dashboard.css" %}">
+		{% block headers_css %}{% endblock %}
 		<script src="{% static "js/jquery-1.10.2.min.js" %}"></script>
 		<script src="{% static "js/bootstrap.min.js" %}"></script>
+		{% block headers_js %}{% endblock %}
+		<script>
+		$(function() {
+			var sidebar_id = "{% block sidebar_id %}{% endblock %}";
+			$("#"+sidebar_id).toggleClass("active")
+		});
+		</script>
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top">
@@ -20,11 +28,7 @@
 				<div class="navbar-collapse collapse" id="navbar-main">
 					<ul class="nav navbar-nav">
 						<li><a href="/">Home</a></li>
-						{% if auth_name == "auth_team_white" %}
-						<li class="active"><a href="/admin/">Admin Config</a></li>
-						{% elif auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/">Competitions</a></li>
-						{% endif %}
+						{% block authed_navbar_links %}{% endblock %}
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
 						{% if auth %}
@@ -40,8 +44,8 @@
 							<a id="login_dropdown" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login<span class="caret"></span></a>
 							<ul class="dropdown-menu" role="menu" aria-labelledby="login_dropdown">
 								<li><a href="/competitions/login/" role="menuitem" tabindex="-1">Blue Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Orange Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Red Team</a></li>
+								<li class="disabled"><a href="#" role="menuitem" tabindex="-1">Orange Team</a></li>
+								<li class="disabled"><a href="#" role="menuitem" tabindex="-1">Red Team</a></li>
 								<li><a href="/admin/login/" role="menuitem" tabindex="-1">White Team</a></li>
 							</ul>
 						</li>
@@ -53,25 +57,9 @@
 
 		<div class="container-fluid">
 			<div class="row">
-				<!-- Start competition config navigation sidebar -->
-				<div class="col-sm-3 col-md-2 sidebar">
-					<ul class="nav nav-sidebar">
-						<li><a href="/admin/competitions/"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></li>
-						<li class="nav-divider"><li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/summary/">Summary</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/settings/">Settings</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/injects/">Injects</a></li>
-						<li class="active"><a href="/admin/competitions/{{ competition_object.compurl }}/scoring/">Scoring</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/services/">Services</a></li>
-						<li><a href="/admin/competitions/{{ competition_object.compurl }}/teams/">Teams</a></li>
-					</ul>
-				</div>
-				<!-- End competition config navigation sidebar -->
-				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-					<div class="page-header">
-						<h1> {{competition_object.compname}} - Scoring</h1>
-					</div>
-				</div>
+				{% block sidebar %}{% endblock %}
+				<!-- End admin navigation sidebar -->
+				{% block page_content %}{% endblock %}
 			</div>
 		</div>
 	</body>

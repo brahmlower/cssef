@@ -1,108 +1,58 @@
-<html>
-	<head>
-		{% load staticfiles %}
-		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.min.css" %}">
-		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-dashboard.css" %}">
-		<script src="{% static "js/jquery-1.10.2.min.js" %}"></script>
-		<script src="{% static "js/bootstrap.min.js" %}"></script>
-		<script type="text/javascript">
-			$(document).ready(function() {
-				window.onload = function() {
-					$("#{{ form.login.username.id_for_label }}").focus();
-				};  
-			}); 
-		</script>
-	</head>
-	<body>
-		<div class="navbar navbar-inverse navbar-fixed-top">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<a href="/" class="navbar-brand">CSC CSSEF</a>
-					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-				</div>
-				<div class="navbar-collapse collapse" id="navbar-main">
-					<ul class="nav navbar-nav">
-						<li><a href="/">Home</a></li>
-						{% if auth_name == "auth_team_white" %}
-						<li><a href="/admin/">Admin Config</a></li>
-						{% elif auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/{{ competition_object.compurl }}/summary/">Competition</a></li>
-						{% endif %}
-					</ul>
-					<ul class="nav navbar-nav navbar-right">
-						{% if auth %}
-						<li class="navbar-text">{{ auth_name_display }}</li>
-						<li class="divider-vertical"></li>
-						{% if auth_name == "auth_team_white" %}
-						<li><a href="/admin/logout/">Logout</a></li>
-						{% elif auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/logout/">Logout</a></li>
-						{% endif %}
-						{% else %}
-						<li class="dropdown active">
-							<a id="login_dropdown" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login<span class="caret"></span></a>
-							<ul class="dropdown-menu" role="menu" aria-labelledby="login_dropdown">
-								<li><a href="/competitions/login/" role="menuitem" tabindex="-1">Blue Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Orange Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Red Team</a></li>
-								<li><a href="/admin/login/" role="menuitem" tabindex="-1">White Team</a></li>
-							</ul>
-						</li>
-						{% endif %}
-					</ul>
-				</div>
-			</div>
+{% extends "site_template.html" %}
+
+{% block headers_js %}
+<script type="text/javascript">
+	$(document).ready(function() {
+		window.onload = function() {
+			$("#{{ form.login.username.id_for_label }}").focus();
+		};  
+	}); 
+</script>
+{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-6 col-md-offset-3 main">
+	<div class="page-header"><h2>Team Login</h2></div>
+	<!-- BEGIN MESSAGE REPORTING -->
+	{% if messages != None %}
+	{% for i in messages.error %}
+	<div class="alert alert-dismissable alert-error">
+		<button type="button" class="close" data-dismiss="alert">x</button>
+		<strong>Error: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
+	</div>
+	{% endfor %}
+	{% for i in messages.info %}
+	<div class="alert alert-dismissable alert-info">
+		<button type="button" class="close" data-dismiss="alert">x</button>
+		<strong>Info: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
+	</div>
+	{% endfor %}
+	{% for i in messages.success %}
+	<div class="alert alert-dismissable alert-success">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		<strong>Success: </string>{{ i.string }} <!-- ({{ i.num }}) -->
+	</div>
+	{% endfor %}
+	{% endif %}
+	<!-- END MESSAGE REPORTING -->
+
+	<form action="/competitions/login/" method="post" class="form-horizontal">
+		{% csrf_token %}
+		{{ form.login.compid.errors }}
+		<label for="{{ form.login.compid.id_for_label }}" class="col-lg-3 control-label">{{ form.login.compid.label }}</label>
+		<div class="col-lg-9">{{ form.login.compid }}<br></div>
+
+		{{ form.login.username.errors }}
+		<label for="{{ form.login.username.id_for_label }}" class="col-lg-3 control-label">{{ form.login.username.label }}</label>
+		<div class="col-lg-9">{{ form.login.username }}<br></div>
+
+		{{ form.login.password.errors }}
+		<label for="{{ form.login.password.id_for_label }}" class="col-lg-3 control-label">{{ form.login.password.label }}</label>
+		<div class="col-lg-9">{{ form.login.password }}<br></div>
+
+		<div class="col-lg-10 col-lg-offset-3">
+			<button type="submit" class="btn btn-primary">Login</button>
 		</div>
-
-		<div class="container-fluid">
-			<div class="col-sm-9 col-sm-offset-3 col-md-6 col-md-offset-3 main">
-				<div class="page-header"><h2>Team Login</h2></div>
-				<!-- BEGIN MESSAGE REPORTING -->
-				{% if messages != None %}
-				{% for i in messages.error %}
-				<div class="alert alert-dismissable alert-error">
-					<button type="button" class="close" data-dismiss="alert">x</button>
-					<strong>Error: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
-				</div>
-				{% endfor %}
-				{% for i in messages.info %}
-				<div class="alert alert-dismissable alert-info">
-					<button type="button" class="close" data-dismiss="alert">x</button>
-					<strong>Info: </strong>{{ i.string }} <!-- ({{ i.num }}) -->
-				</div>
-				{% endfor %}
-				{% for i in messages.success %}
-				<div class="alert alert-dismissable alert-success">
-					<button type="button" class="close" data-dismiss="alert">×</button>
-					<strong>Success: </string>{{ i.string }} <!-- ({{ i.num }}) -->
-				</div>
-				{% endfor %}
-				{% endif %}
-				<!-- END MESSAGE REPORTING -->
-
-				<form action="/competitions/login/" method="post" class="form-horizontal">
-					{% csrf_token %}
-					{{ form.login.compid.errors }}
-					<label for="{{ form.login.compid.id_for_label }}" class="col-lg-3 control-label">{{ form.login.compid.label }}</label>
-					<div class="col-lg-9">{{ form.login.compid }}<br></div>
-
-					{{ form.login.username.errors }}
-					<label for="{{ form.login.username.id_for_label }}" class="col-lg-3 control-label">{{ form.login.username.label }}</label>
-					<div class="col-lg-9">{{ form.login.username }}<br></div>
-
-					{{ form.login.password.errors }}
-					<label for="{{ form.login.password.id_for_label }}" class="col-lg-3 control-label">{{ form.login.password.label }}</label>
-					<div class="col-lg-9">{{ form.login.password }}<br></div>
-
-					<div class="col-lg-10 col-lg-offset-3">
-						<button type="submit" class="btn btn-primary">Login</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</body>
-</html>
+	</form>
+</div>
+{% endblock %}

@@ -39,11 +39,7 @@ def comp_summary(request, competition = None):
 	current_url = request.build_absolute_uri()
 	if request.build_absolute_uri()[-8:] != "summary/":
 		return HttpResponseRedirect(current_url + "summary/")
-	comp_obj = Competition.objects.filter(compurl = competition)
-	if len(comp_obj) > 1:
-		return render_to_response('CompConfig/summary.html', c)
-	comp_obj = comp_obj[0]
-	c["competition_object"] = comp_obj
+	c["comp_obj"] = Competition.objects.get(compurl = competition)
 	return render_to_response('CompConfig/summary.html', c)
 
 def comp_settings(request, competition = None):
@@ -80,16 +76,6 @@ def comp_settings(request, competition = None):
 		return HttpResponseRedirect('/admin/competitions/%s/settings/' % c["comp_obj"].compurl)
 
 	return render_to_response('CompConfig/settings.html', c)
-
-def scoring(request, competition = None):
-	"""
-	Displays competitions scoring methods form
-	"""
-	c = getAuthValues(request, {})
-	if c["auth_name"] != "auth_team_white":
-		return HttpResponseRedirect("/")
-	c["competition_object"] = Competition.objects.get(compurl = competition)
-	return render_to_response('CompConfig/scoring.html', c)
 
 # Team related configuration modules
 def teams_list(request, competition = None):
@@ -281,9 +267,9 @@ def injects_list(request, competition = None):
 	c = getAuthValues(request, {})
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
-	c["competition_object"] = Competition.objects.get(compurl = competition)
+	c["comp_obj"] = Competition.objects.get(compurl = competition)
 	c["inject_list"] = []
-	for i in Inject.objects.filter(compid = c["competition_object"].compid):
+	for i in Inject.objects.filter(compid = c["comp_obj"].compid):
 		c["inject_list"].append({
 			"inject": i,
 			"files": Document.objects.filter(inject = i)
@@ -298,18 +284,18 @@ def injects_edit(request, competition = None, ijctid = None):
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	c["action"] = "edit"
-	c["competition_object"] = Competition.objects.get(compurl = competition)
+	c["comp_obj"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
 	if request.method != "POST":
 		# Have to use filter here, otherwise we get 'Inject object is not iterable' errors
-		ijct_obj = Inject.objects.filter(compid = c["competition_object"].compid, ijctid = int(ijctid))
+		ijct_obj = Inject.objects.filter(compid = c["comp_obj"].compid, ijctid = int(ijctid))
 		c["ijctid"] = ijct_obj[0].ijctid
 		c["form"] = CreateInjectForm(initial = ijct_obj.values()[0])
 		return render_to_response('CompConfig/injects_create-edit.html', c)
 	# Note this will only work when there are no lists
 	tmp_dict = request.POST.copy().dict()
 	tmp_dict.pop('csrfmiddlewaretoken', None)
-	ijct_obj = Inject.objects.filter(compid = c["competition_object"].compid, ijctid = int(ijctid))
+	ijct_obj = Inject.objects.filter(compid = c["comp_obj"].compid, ijctid = int(ijctid))
 	ijct_obj.update(**tmp_dict)
 	# Was there a file? If so, save it!
 	if 'docfile' in request.FILES:
@@ -341,7 +327,7 @@ def injects_create(request, competition = None):
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	c["action"] = "create"
-	c["competition_object"] = Competition.objects.get(compurl = competition)
+	c["comp_obj"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
 	# Just displays the form if we're not handling any input
 	if request.method != "POST":
@@ -349,7 +335,7 @@ def injects_create(request, competition = None):
 		return render_to_response('CompConfig/injects_create-edit.html', c)
 	form_dict = request.POST.copy().dict()
 	print form_dict
-	form_dict["compid"] = c["competition_object"].compid
+	form_dict["compid"] = c["comp_obj"].compid
 	form_dict.pop('csrfmiddlewaretoken', None)
 	form_dict.pop('docfile', None)
 	form_obj = CreateInjectForm(form_dict)

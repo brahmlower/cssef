@@ -1,105 +1,42 @@
-<html>
-	<head>
-		{% load staticfiles %}
-		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.min.css" %}">
-		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-dashboard.css" %}">
-		<script src="{% static "js/jquery-1.10.2.min.js" %}"></script>
-		<script src="{% static "js/bootstrap.min.js" %}"></script>
-	</head>
-	<body>
-		<div class="navbar navbar-inverse navbar-fixed-top">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<a href="/" class="navbar-brand">CSC CSSEF</a>
-					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-				</div>
-				<div class="navbar-collapse collapse" id="navbar-main">
-					<ul class="nav navbar-nav">
-						<li><a href="/">Home</a></li>
-						{% if auth_name == "auth_team_white" %}
-						<li class="active"><a href="/admin/">Admin Config</a></li>
-						{% elif auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/">Competitions</a></li>
-						{% endif %}
-					</ul>
-					<ul class="nav navbar-nav navbar-right">
-						{% if auth %}
-						<li class="navbar-text">{{ auth_name_display }}</li>
-						<li class="divider-vertical"></li>
-						{% if auth_name == "auth_team_white" %}
-						<li><a href="/admin/logout/">Logout</a></li>
-						{% elif auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/logout/">Logout</a></li>
-						{% endif %}
-						{% else %}
-						<li class="dropdown">
-							<a id="login_dropdown" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login<span class="caret"></span></a>
-							<ul class="dropdown-menu" role="menu" aria-labelledby="login_dropdown">
-								<li><a href="/competitions/login/" role="menuitem" tabindex="-1">Blue Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Orange Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Red Team</a></li>
-								<li><a href="/admin/login/" role="menuitem" tabindex="-1">White Team</a></li>
-							</ul>
-						</li>
-						{% endif %}
-					</ul>
-				</div>
-			</div>
-		</div>
+{% extends "AdminConfig/admin_template.html" %}
 
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-sm-3 col-md-2 sidebar">
-					<ul class="nav nav-sidebar">
-						<li><a href="/admin/home/">Home</a></li>
-						<li><a href="/admin/users/">Users</a></li>
-						<li><a href="/admin/competitions/">Competitions</a></li>
-						<li class="active"><a href="/admin/servicemodules/">Service Modules</a></li>
-						<li><a href="#">Account</a></li>
-					</ul>
-				</div>
-				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-					<!-- actual page content-->
-					<h2> Service Module Test: {{servmdul_obj.modulename}}</h2>
-					{% if score_obj %}
-					{% if score_obj.value == 0%}
-					<div class="panel panel-danger">
-					{% else %}
-					<div class="panel panel-success">
-					{% endif %}
-						<div class="panel-heading"> Test Results </div>
-						<div class="panel-body">
-							<strong>Datetime:</strong> {{ score_obj.datetime }}<br>
-							<strong>Value:</strong> {{ score_obj.value }}<br>
-							<strong>Message:</strong>
-							<p>{{ score_obj.message }}</p>
-						</div>
-					</div>
-					<hr>
-					{% endif%}
-					<form action="/admin/servicemodules/test/{{servmdul_obj.servmdulid}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
-						{% csrf_token %}
-						<h4> Service Configurations </h4>
-						{% for i in service_configs %}
-						{% if forloop.counter0 == 4 %}
-						<h4> Service Specific Configurations </h4>
-						{% endif %}
-						{{ i.errors }}
-						<label for="{{ i.id_for_label }}" class="col-lg-2 control-label">{{ i.label }}</label>
-						<div class="col-lg-10 input-append">{{ i }}<br></div>
-						{% endfor %}
+{% block sidebar_id %}sidebar_servicemodules{% endblock %}
 
-						<div class="col-lg-10 col-lg-offset-2">
-							<a class="btn btn-default" href="/admin/servicemodules/">Cancel</a>
-							<button type="submit" class="btn btn-primary"> Test </button>
-						</div>
-					</form>
-				</div>
-			</div>
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<h2> Service Module Test: {{servmdul_obj.modulename}}</h2>
+	{% if score_obj %}
+	{% if score_obj.value == 0 %}
+	<div class="panel panel-danger">
+	{% else %}
+	<div class="panel panel-success">
+	{% endif %}
+		<div class="panel-heading"> Test Results </div>
+		<div class="panel-body">
+			<strong>Datetime:</strong> {{ score_obj.datetime }}<br>
+			<strong>Value:</strong> {{ score_obj.value }}<br>
+			<strong>Message:</strong>
+			<p>{{ score_obj.message }}</p>
 		</div>
-	</body>
-</html>
+	</div>
+	<hr>
+	{% endif%}
+	<form action="/admin/servicemodules/test/{{servmdul_obj.servmdulid}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+		{% csrf_token %}
+		<h4> Service Configurations </h4>
+		{% for i in service_configs %}
+		{% if forloop.counter0 == 4 %}
+		<h4> Service Specific Configurations </h4>
+		{% endif %}
+		{{ i.errors }}
+		<label for="{{ i.id_for_label }}" class="col-lg-2 control-label">{{ i.label }}</label>
+		<div class="col-lg-10 input-append">{{ i }}<br></div>
+		{% endfor %}
+
+		<div class="col-lg-10 col-lg-offset-2">
+			<a class="btn btn-default" href="/admin/servicemodules/">Cancel</a>
+			<button type="submit" class="btn btn-primary"> Test </button>
+		</div>
+	</form>
+</div>
+{% endblock %}

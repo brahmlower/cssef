@@ -1,145 +1,64 @@
-<html>
-	<head>
-		{% load staticfiles %}
-		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.min.css" %}">
-		<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-dashboard.css" %}">
-		<script src="{% static "js/jquery-1.10.2.min.js" %}"></script>
-		<script src="{% static "js/bootstrap.min.js" %}"></script>
-	</head>
-	<body>
-		<div class="navbar navbar-inverse navbar-fixed-top">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<a href="/" class="navbar-brand">CSC CSSEF</a>
-					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-				</div>
-				<div class="navbar-collapse collapse" id="navbar-main">
-					<ul class="nav navbar-nav">
-						<li><a href="/">Home</a></li>
-						{% if auth_name == "auth_team_white" %}
-						<li><a href="/admin/">Admin Config</a></li>
-						{% elif auth_name == "auth_team_blue" %}
-						<li class="active"><a href="/competitions/{{ comp_obj.compurl }}/summary/">Competition</a></li>
-						{% endif %}
-					</ul>
-					<ul class="nav navbar-nav navbar-right">
-						{% if auth %}
-						<li class="navbar-text">{{ auth_name_display }}</li>
-						<li class="divider-vertical"></li>
-						{% if auth_name == "auth_team_white" %}
-						<li><a href="/admin/logout/">Logout</a></li>
-						{% elif auth_name == "auth_team_blue" %}
-						<li><a href="/competitions/logout/">Logout</a></li>
-						{% endif %}
-						{% else %}
-						<li class="dropdown">
-							<a id="login_dropdown" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Login<span class="caret"></span></a>
-							<ul class="dropdown-menu" role="menu" aria-labelledby="login_dropdown">
-								<li><a href="/competitions/login/" role="menuitem" tabindex="-1">Blue Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Orange Team</a></li>
-								<li><a href="#" role="menuitem" tabindex="-1">Red Team</a></li>
-								<li><a href="/admin/login/" role="menuitem" tabindex="-1">White Team</a></li>
-							</ul>
-						</li>
-						{% endif %}
-					</ul>
-				</div>
-			</div>
+{% extends "Comp/comp_template.html" %}
+
+{% block sidebar_id %}sidebar_incidentresponse{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	{% if auth_name == "auth_team_blue" %}
+	<div class="panel panel-default">
+		<div class="panel-heading">{{ firstpost.response.subject }}</div>
+		<div class="panel-body">
+			<strong> Submitted at: </strong> {{ firstpost.response.datetime }} <br>
+			<strong> Submitted Text: </strong>
+			<p>{{ firstpost.response.textentry }}</p>
+			{% for i in firstpost.files %}
+			<strong> Attached File: </strong><a href="/resources/incidentresponses/{{firstpost.response.compid}}/{{firstpost.response.teamid}}/{{firstpost.response.intrspid}}/{{i.urlencfilename}}">{{ i.filename }}</a><br>
+			{% endfor %}
 		</div>
+	</div>
 
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-sm-3 col-md-2 sidebar">
-					<ul class="nav nav-sidebar">
-						<li><a href="/competitions/{{ comp_obj.compurl }}/summary/">Summary</a></li>
-						<li><a href="/competitions/{{ comp_obj.compurl }}/details/">Details</a></li>
-						{% if auth_name == "auth_team_blue" %}
-						{% if comp_obj.teams_view_ranking_enabled %}
-						<li><a href="/competitions/{{ comp_obj.compurl }}/ranking/">Team Ranking</a></li>
-						{% endif %}
-						{% if comp_obj.teams_view_servicestatus_enabled %}
-						<li><a href="/competitions/{{ comp_obj.compurl }}/servicestatus/">Service Status</a></li>
-						{% endif %}
-						{% if comp_obj.teams_view_scoreboard_enabled %}
-						<li><a href="/competitions/{{ comp_obj.compurl }}/scoreboard/">Score Board</a></li>
-						{% endif %}
-						{% if comp_obj.teams_view_servicestatistics_enabled %}
-						<li><a href="/competitions/{{ comp_obj.compurl }}/servicestatistics/">Service Statistics</a></li>
-						{% endif %}
-						{% if comp_obj.teams_view_injects_enabled %}
-						<li><a href="/competitions/{{ comp_obj.compurl }}/injects/">Injects</a></li>
-						{% endif %}
-						{% if comp_obj.teams_view_incidentresponse_enabled %}
-						<li class="active"><a href="/competitions/{{ comp_obj.compurl }}/incidentresponse/">Incident Response</a></li>
-						{% endif %}
-						{% else %}
-						{% endif %}
-					</ul>
-				</div>
-				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-					<!-- Actual page content -->
-					{% if auth_name == "auth_team_blue" %}
-					<div class="panel panel-default">
-						<div class="panel-heading">{{ firstpost.response.subject }}</div>
-						<div class="panel-body">
-							<strong> Submitted at: </strong> {{ firstpost.response.datetime }} <br>
-							<strong> Submitted Text: </strong>
-							<p>{{ firstpost.response.textentry }}</p>
-							{% for i in firstpost.files %}
-							<strong> Attached File: </strong><a href="/resources/incidentresponses/{{firstpost.response.compid}}/{{firstpost.response.teamid}}/{{firstpost.response.intrspid}}/{{i.urlencfilename}}">{{ i.filename }}</a><br>
-							{% endfor %}
-						</div>
-					</div>
-
-					{% for i in response_list %}
-					<div class="panel panel-default">
-						<div class="panel-heading">Reply to: {{ firstpost.response.subject }}</div>
-						<div class="panel-body">
-							<strong> Submitted at: </strong> {{ i.response.datetime }} <br>
-							<strong> Submitted Text: </strong>
-							<p>{{ i.response.textentry }}</p>
-							{% for k in i.files %}
-							<strong> Attached File: </strong><a href="/resources/incidentresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.intrspid}}/{{k.urlencfilename}}">{{ k.filename }}</a>
-							{% if "image" in k.content_type %}
-							<br>
-							<img src="/resources/injectresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.teamid}}/{{k.urlencfilename}}">
-							{% endif %}
-							{% endfor %}
-						</div>
-					</div>
-					{% endfor %}
-
-					<div class="panel panel-default">
-						<div class="panel-heading"> Reply </div>
-						<div class="panel-body">
-							<form action="/competitions/{{ comp_obj.compurl }}/incidentresponse/{{firstpost.response.intrspid}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
-								{% csrf_token %}
-								{{ responseform.textentry.errors }}
-								<label for="{{ responseform.textentry.id_for_label }}" class="col-lg-2 control-label">{{ responseform.textentry.label }}</label>
-								<div class="col-lg-10">{{ responseform.textentry }}<br></div>
-
-								{{ responseform.docfile.errors }}
-								<label for="{{ responseform.docfile.id_for_label }}" class="col-lg-2 control-label">{{ responseform.docfile.label }}</label>
-								<div class="col-lg-10">{{ responseform.docfile }}</div>
-
-								<div class="bt-component pull-right">
-									<br>
-									<button type="submit" class="btn btn-primary">Submit</button>
-								</div>
-							</form>
-						</div>
-					</div>
-					{% else %}
-					<p>
-						You must be authenticated as a team of this competition to view the page contents.
-					</p>
-					{% endif %}
-				</div>
-			</div>
+	{% for i in response_list %}
+	<div class="panel panel-default">
+		<div class="panel-heading">Reply to: {{ firstpost.response.subject }}</div>
+		<div class="panel-body">
+			<strong> Submitted at: </strong> {{ i.response.datetime }} <br>
+			<strong> Submitted Text: </strong>
+			<p>{{ i.response.textentry }}</p>
+			{% for k in i.files %}
+			<strong> Attached File: </strong><a href="/resources/incidentresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.intrspid}}/{{k.urlencfilename}}">{{ k.filename }}</a>
+			{% if "image" in k.content_type %}
+			<br>
+			<img src="/resources/injectresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.teamid}}/{{k.urlencfilename}}">
+			{% endif %}
+			{% endfor %}
 		</div>
-	</body>
-</html>
+	</div>
+	{% endfor %}
+
+	<div class="panel panel-default">
+		<div class="panel-heading"> Reply </div>
+		<div class="panel-body">
+			<form action="/competitions/{{ comp_obj.compurl }}/incidentresponse/{{firstpost.response.intrspid}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+				{% csrf_token %}
+				{{ responseform.textentry.errors }}
+				<label for="{{ responseform.textentry.id_for_label }}" class="col-lg-2 control-label">{{ responseform.textentry.label }}</label>
+				<div class="col-lg-10">{{ responseform.textentry }}<br></div>
+
+				{{ responseform.docfile.errors }}
+				<label for="{{ responseform.docfile.id_for_label }}" class="col-lg-2 control-label">{{ responseform.docfile.label }}</label>
+				<div class="col-lg-10">{{ responseform.docfile }}</div>
+
+				<div class="bt-component pull-right">
+					<br>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	{% else %}
+	<p>
+		You must be authenticated as a team of this competition to view the page contents.
+	</p>
+	{% endif %}
+</div>
+{% endblock %}
