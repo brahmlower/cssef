@@ -26,12 +26,18 @@ class Pluggin:
 				if (isinstance(value, self.team_config_type_dict[key]) or isinstance(value, unicode)) and len(str(value)) > 0:
 					setattr(self, key, score_config_dict[self.service_name][key])
 
-	def build_address(self, withport = None):
+	def build_address(self, machineaddr = None, withport = None):
 		addr = ""
 		if self.connectip:
-			addr = self.networkaddr + "." + self.networkloc
+			if not machineaddr:
+				addr = self.networkaddr + "." + self.networkloc
+			else:
+				addr = machineaddr + "." + self.networkloc
 		else:
-			addr = self.networkloc + "." + self.networkaddr
+			if not machineaddr:
+				addr = self.networkloc + "." + self.networkaddr
+			else:
+				addr = machineaddr + "." + self.networkaddr
 		if withport:
 			return addr + ":" + str(self.port)
 		return addr

@@ -230,8 +230,11 @@ def servicemodule_test(request, servmdulid = None):
 	if form_dict['networkloc'][-1] == ".":
 		form_dict['networkloc'] = form_dict['networkloc'][:-1]
 	# Prepare the service object for use in the module
+	if form_dict.pop('connectip') == u'0':
+		serv_obj.connectip = False
+	else:
+		serv_obj.connectip = True
 	serv_obj.name = c['servmdul_obj'].modulename
-	serv_obj.connectip = form_dict.pop('connectip')
 	serv_obj.networkloc = str(form_dict.pop('networkloc'))
 	serv_obj.defaultport = int(form_dict.pop('defaultport'))
 	serv_obj.points = 100

@@ -16,7 +16,9 @@
 			<strong>Datetime:</strong> {{ score_obj.datetime }}<br>
 			<strong>Value:</strong> {{ score_obj.value }}<br>
 			<strong>Message:</strong>
+			{% autoescape off %}
 			<p>{{ score_obj.message }}</p>
+			{% endautoescape %}
 		</div>
 	</div>
 	<hr>

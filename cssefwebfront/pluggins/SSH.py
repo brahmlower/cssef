@@ -9,6 +9,7 @@ from cssefwebfront.ScoringUtils import Pluggin
 from cssefwebfront.ScoringUtils import PlugginTest
 
 # Imports required for specific pluggin
+from django.utils.html import escape
 import paramiko
 import traceback
 
@@ -43,5 +44,5 @@ class SSH(Pluggin):
 			new_score.message = ""
 		except:
 			new_score.value = 0
-			new_score.message = traceback.format_exc()
+			new_score.message = "Address: %s<br>Traceback: %s" % (self.build_address(), escape(traceback.format_exc().splitlines()[-1]))
 		return new_score
