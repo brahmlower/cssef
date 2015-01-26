@@ -196,8 +196,10 @@ def services_edit(request, competition = None, servid = None):
 	# Set network connection display
 	if int(form_dict["connectip"]) == 1:
 		form_dict["connect_display"] = "IP Address"
+		form_dict["connectip"] = True
 	else:
 		form_dict["connect_display"] = "Domain Name"
+		form_dict["connectip"] = False
 	# Clean machine address value
 	if form_dict['networkloc'][0] == ".":
 		form_dict['networkloc'] = form_dict['networkloc'][1:]
@@ -247,8 +249,10 @@ def services_create(request, competition = None):
 	form_dict["servicemodule"] = ServiceModule.objects.get(servmdulid = form_dict["servicemodule"])
 	# Set network connection display
 	if int(form_dict["connectip"]) == 1:
+		form_dict['connectip'] = True
 		form_dict["connect_display"] = "IP Address"
 	else:
+		form_dict['connectip'] = False
 		form_dict["connect_display"] = "Domain Name"
 	# Clean machine address value
 	if form_dict['connectip'] and form_dict['networkloc'][0] == ".":
@@ -295,6 +299,7 @@ def injects_edit(request, competition = None, ijctid = None):
 	# Note this will only work when there are no lists
 	tmp_dict = request.POST.copy().dict()
 	tmp_dict.pop('csrfmiddlewaretoken', None)
+	tmp_dict.pop('docfile', None)
 	ijct_obj = Inject.objects.filter(compid = c["comp_obj"].compid, ijctid = int(ijctid))
 	ijct_obj.update(**tmp_dict)
 	# Was there a file? If so, save it!

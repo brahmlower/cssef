@@ -17,7 +17,13 @@ Pluggins:
 The web frontend is written using Django. Starting the webserver (currently) requires running 'python manage.py runserver'. As of this writing, the scoring engine component must be started separately.
 
 ## Web Interface ##
-<pre></code>python manage.py syncdb
+<pre></code>
+# These are paths set in settings.py
+# These directories will eventually have to be created/verified at first run
+mkdir -p cssefwebfront/resources/content/injects
+mkdir cssefwebfront/resources/content/incidentresponse
+mkdir cssefwebfront/resources/content/injectresponses
+python manage.py syncdb
 python runserver 0.0.0.0:80</code></pre>
 
 Administrator authentication doesn't use the builtin user database yet. To create an administrator user, run the create_admin script in the projects root directory. The first argument is the admin username and the second argument is the admins password (plaintext right now...)

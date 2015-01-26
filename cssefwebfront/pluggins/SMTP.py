@@ -17,7 +17,8 @@ import traceback
 
 class SMTP(Pluggin):
 	team_config_type_dict = {
-		"address": str,
+		"to_user": str,
+		"from_user": str,
 		"port": int,
 		"timeout": int,
 	}
@@ -29,16 +30,14 @@ class SMTP(Pluggin):
 		self.update_configuration(team_obj)
 		address = self.build_address()
 
-		field_to = 'tesst2@example.com' 
-		field_from = 'test@example.com'
 		msg = MIMEText('This is the text body')
 		msg['Subject'] = 'Testing email'
-		msg['From'] = field_from
-		msg['To'] = field_to
+		msg['From'] = self.from_user + '@galactica.fleet'
+		msg['To'] = self.to_user + '@galactica.fleet'
 
 		try:
 			s = smtplib.SMTP(address, self.port, timeout = self.timeout)
-			s.sendmail(field_from, [field_to], msg.as_string())
+			s.sendmail(self.from_address, [self.to_address], msg.as_string())
 			s.quit()
 		except smtplib.SMTPException:
 			new_score = Score()
@@ -46,6 +45,11 @@ class SMTP(Pluggin):
 			new_score.message = "Address: %s<br>Traceback: %s" % (address, escape(traceback.format_exc().splitlines()[-1]))
 			return new_score
 		except socket.timeout:
+			new_score = Score()
+			new_score.value = 0
+			new_score.message = "Address: %s<br>Traceback: %s" % (address, escape(traceback.format_exc().splitlines()[-1]))
+			return new_score
+		except socket.gaierror:
 			new_score = Score()
 			new_score.value = 0
 			new_score.message = "Address: %s<br>Traceback: %s" % (address, escape(traceback.format_exc().splitlines()[-1]))
