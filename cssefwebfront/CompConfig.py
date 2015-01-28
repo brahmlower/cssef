@@ -27,6 +27,8 @@ from utils import buildTeamServiceConfigForms
 from utils import save_document
 import settings
 import json
+import logging
+logger = logging.getLogger(__name__)
 
 # General competition configuration modules
 def comp_summary(request, competition = None):
@@ -58,23 +60,26 @@ def comp_settings(request, competition = None):
 		"service_settings": CompetitionSettingsServiceForm(initial = form_initial),
 		"team_settings": CompetitionSettingsTeamForm(initial = form_initial)
 	}
+	print "form content: "
+	print c['forms']['general_settings']
+	print c['forms']['scoring_settings']
 	if request.POST:
-		print request.POST
-		forms_list = [CompetitionSettingsGeneralForm, CompetitionSettingsScoringForm, CompetitionSettingsServiceForm, CompetitionSettingsTeamForm]
-		print request.POST['form_num']
+		forms_list = [	CompetitionSettingsGeneralForm,
+						CompetitionSettingsScoringForm,
+						CompetitionSettingsServiceForm,
+						CompetitionSettingsTeamForm]
 		f = forms_list[int(request.POST['form_num'])](request.POST)
 		if f.is_valid():
 			comp_obj = Competition.objects.filter(compid = c['comp_obj'].compid)
 			clean_copy = f.cleaned_data
-			print clean_copy
 			for i in clean_copy:
 				if clean_copy[i] == u'':
 					clean_copy[i] = None
 			comp_obj.update(**clean_copy)
 		else:
-			print "is not valid"
+			logger.error("is not valid")
+		logger.debug('saved competition')
 		return HttpResponseRedirect('/admin/competitions/%s/settings/' % c["comp_obj"].compurl)
-
 	return render_to_response('CompConfig/settings.html', c)
 
 # Team related configuration modules

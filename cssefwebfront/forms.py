@@ -21,14 +21,24 @@ from models import Admin
 from models import Team
 from django.utils import timezone
 
-class CompetitionSettingsGeneralForm(Form):
-	compname = CharField(label = 'Competition Name', widget = TextInput(attrs={'class':'form-control'}))
-	compurl = CharField(label = 'Competition URL', widget = TextInput(attrs={'class':'form-control'}))
-	description_short = CharField(label = 'Short Description', widget = Textarea(attrs={'class':'form-control'}))
-	description_full = CharField(label = 'Full Description', widget = Textarea(attrs={'class':'form-control'}))
-	datetime_display = CharField(label = 'Date Viewable', widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}))
-	datetime_start = CharField(label = 'Start Time', widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}))
-	datetime_finish = CharField(label = 'Finish Time', widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}))
+class CompetitionSettingsGeneralForm(ModelForm):
+	class Meta:
+		model = Competition
+		fields = ['compname', 'compurl', 'description_short', 'description_full', 'datetime_display', 'datetime_start', 'datetime_finish']
+		labels = {
+			'datetime_display': ('Date Viewable'),
+			'datetime_start': ('Start Time'),
+			'datetime_finish': ('Finish Time')
+		}
+		widgets = {
+			'compname': TextInput(attrs={'class':'form-control'}),
+			'compurl': TextInput(attrs={'class':'form-control'}),
+			'description_short': Textarea(attrs={'class':'form-control'}),
+			'description_full': Textarea(attrs={'class':'form-control'}),
+			'datetime_display': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
+			'datetime_start': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"}),
+			'datetime_finish': TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm"})
+		}
 
 class CompetitionSettingsScoringForm(Form):
 	scoring_enabled = BooleanField(label = 'Scoring Enabled', initial = False , required = False)
@@ -96,7 +106,7 @@ class CreateServiceForm(ModelForm):
 	connectip = ChoiceField(label = "Connection Method", choices = [(0 ,'Domain Name'), (1,'IP Address')], widget = Select(attrs={'class':'form-control', 'required': True}))
 	class Meta:
 		model = Service
-		fields = ['name', 'description', 'datetime_start', 'datetime_finish', 'points', 'networkloc','defaultport']
+		fields = ['name', 'description', 'datetime_start', 'datetime_finish', 'points', 'networkloc', 'defaultport']
 		labels = {
 			'name': ('Name'),
 			'description': ('Description'),
@@ -120,7 +130,7 @@ class CreateInjectForm(ModelForm):
 	docfile = FileField(label = "File Upload", required = False)
 	class Meta:
 		model = Inject
-		fields = ['compid','title', 'body', 'dt_delivery', 'dt_response_due', 'dt_response_close']
+		fields = ['compid', 'title', 'body', 'dt_delivery', 'dt_response_due', 'dt_response_close']
 		labels = {
 			'title': ('Title'),
 			'body': ('Content'),

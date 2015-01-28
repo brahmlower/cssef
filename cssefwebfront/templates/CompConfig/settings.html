@@ -28,25 +28,18 @@
 
 {% block page_content %}
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-	<div class="page-header"><h1> {{comp_obj.compname}} - Details</h1></div>
+	<div class="page-header"><h1> {{comp_obj.compname}} - Settings</h1></div>
 	<div class="panel panel-default">
 		<div class="panel-heading"> General Settings </div>
 		<div class="panel-body" id="general_settings">
 			<div class="form-horizontal">
-				<label class="col-lg-2 control-label">{{ forms.general_settings.compname.label }}</label>
-				<div class="col-lg-10"><p>{{comp_obj.compname}}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.compurl.label }}</label>
-				<div class="col-lg-10"><p>{{comp_obj.compurl}}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.datetime_display.label }}</label>
-				<div class="col-lg-10"><p>{{comp_obj.datetime_display}}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.datetime_start.label }}</label>
-				<div class="col-lg-10"><p>{{comp_obj.datetime_start}}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.datetime_finish.label }}</label>
-				<div class="col-lg-10"><p>{{comp_obj.datetime_finish}}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.description_short.label }}</label>
-				<div class="col-lg-10"><p>{{comp_obj.description_short}}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.description_full.label }}</label>
-				<div class="col-lg-10"><p>{{comp_obj.description_full}}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.compname.label }}</label>			<div class="col-lg-10"><p>{{ comp_obj.compname }}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.compurl.label }}</label>			<div class="col-lg-10"><p>{{ comp_obj.compurl }}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.datetime_display.label }}</label>	<div class="col-lg-10"><p>{{ comp_obj.datetime_display }}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.datetime_start.label }}</label>		<div class="col-lg-10"><p>{{ comp_obj.datetime_start }}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.datetime_finish.label }}</label>	<div class="col-lg-10"><p>{{ comp_obj.datetime_finish }}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.description_short.label }}</label>	<div class="col-lg-10"><p>{{ comp_obj.description_short }}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.description_full.label }}</label>	<div class="col-lg-10"><p>{{ comp_obj.description_full }}</p><br></div>
 				
 				<div class="col-lg-10 col-lg-offset-2">
 					<br>

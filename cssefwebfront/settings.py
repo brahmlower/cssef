@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+import djcelery
+djcelery.setup_loader()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -32,6 +34,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
+    'djcelery',
     'cssefwebfront',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -93,9 +96,54 @@ STATICFILES_DIRS = (BASE_DIR + '/static/',)
 
 STATIC_URL = '/static/'
 
+# Celery Settings
+BROKER_URL = 'amqp://guest:guest@localhost:5672/'
+
 # CSSEF Specific
 CONTENT_PLUGGINS_PATH =         "/cssefwebfront/resources/pluggins/"
 CONTENT_INJECT_PATH =           "/cssefwebfront/resources/content/injects/"
 CONTENT_INJECT_REPONSE_PATH =   "/cssefwebfront/resources/content/injectresponses/"
 CONTENT_INCIDENT_REPONSE_PATH = "/cssefwebfront/resources/content/incidentresponses/"
+
+
+# settings.py
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'django_debug': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'django_debug.log',
+            'formatter': 'verbose'
+        },
+        'cssefwebfront_debug': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'cssefwebfront_debug.log',
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers':['django_debug'],
+            'propagate': True,
+            'level':'DEBUG',
+        },
+        'cssefwebfront': {
+            'handlers': ['cssefwebfront_debug'],
+            'level': 'DEBUG',
+        },
+    }
+}
+
 
