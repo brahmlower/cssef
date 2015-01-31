@@ -10,7 +10,7 @@ from models import Document
 from models import InjectResponse
 from hashlib import md5
 from urllib import quote
-from ScoringUtils import PlugginTest
+from ScoringUtils import PluginTest
 import settings
 import json
 
@@ -87,7 +87,7 @@ def save_document(request_file, content_subdir, related_obj, ashash = True):
 	wfile.write(file_content)
 	wfile.close()
 
-def run_pluggin_test(serv_obj, team_config_dict):
+def run_plugin_test(serv_obj, team_config_dict):
 	module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
 	module = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)
 	config_dict = getattr(module(serv_obj), "team_config_type_dict")
@@ -96,15 +96,15 @@ def run_pluggin_test(serv_obj, team_config_dict):
 		if "serv_config_" in key:
 			new_key = key.split('serv_config_')[1]
 			if team_config_dict[key] == u'':
-				# Value is blank, so set it to None so it can be ignored by the pluggin
+				# Value is blank, so set it to None so it can be ignored by the plugin
 				team_config_dict.pop(key)
 				team_config_dict[new_key] = None
 			else:
 				# Casts the unicdoe value to a python string, to be converted to it's proper type
 				team_config_dict[key] = team_config_dict[key].encode('ascii','ignore')
-				# Casts the unicode value as the type defined by the pluggin configuration types dict
+				# Casts the unicode value as the type defined by the plugin configuration types dict
 				team_config_dict[new_key] = config_dict[new_key](team_config_dict.pop(key))
-	pt = PlugginTest(module, {"serv_obj": serv_obj, "team_configs": team_config_dict})
+	pt = PluginTest(module, {"serv_obj": serv_obj, "team_configs": team_config_dict})
 	return pt.score_obj
 
 def buildServiceConfigForm(serv_obj, form_obj, team_score_dict = None):

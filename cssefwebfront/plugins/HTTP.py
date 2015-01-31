@@ -3,25 +3,25 @@ import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'cssefwebfront.settings'
 from django.conf import settings
 
-# Imports required for base pluggin
+# Imports required for base plugin
 from cssefwebfront.models import Score
-from cssefwebfront.ScoringUtils import Pluggin
-from cssefwebfront.ScoringUtils import PlugginTest
+from cssefwebfront.ScoringUtils import Plugin
+from cssefwebfront.ScoringUtils import PluginTest
 
-# Imports required for specific pluggin
+# Imports required for specific plugin
 from django.utils.html import escape
 from urllib2 import urlopen
 import traceback
 
 
-class HTTP(Pluggin):
+class HTTP(Plugin):
 	team_config_type_dict = {
 		"port": int,
 		"timeout": int
 	}
 
 	def __init__(self, service_obj):
-		Pluggin.__init__(self, service_obj)
+		Plugin.__init__(self, service_obj)
 
 	def score(self, team_obj):
 		self.update_configuration(team_obj)

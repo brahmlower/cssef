@@ -25,10 +25,11 @@ from utils import getAuthValues
 from utils import buildTeamServiceConfigDict
 from utils import buildTeamServiceConfigForms
 from utils import save_document
+from django.utils import timezone
+from cssefwebfront.tasks import run_comp
 import settings
 import json
-import logging
-logger = logging.getLogger(__name__)
+from settings import logger
 
 # General competition configuration modules
 def comp_summary(request, competition = None):
@@ -60,9 +61,6 @@ def comp_settings(request, competition = None):
 		"service_settings": CompetitionSettingsServiceForm(initial = form_initial),
 		"team_settings": CompetitionSettingsTeamForm(initial = form_initial)
 	}
-	print "form content: "
-	print c['forms']['general_settings']
-	print c['forms']['scoring_settings']
 	if request.POST:
 		forms_list = [	CompetitionSettingsGeneralForm,
 						CompetitionSettingsScoringForm,
@@ -76,9 +74,12 @@ def comp_settings(request, competition = None):
 				if clean_copy[i] == u'':
 					clean_copy[i] = None
 			comp_obj.update(**clean_copy)
+			# Schedules the job to start the scoring engine
+			sec_until_start = (comp_obj[0].datetime_start - timezone.now()).seconds
+			result = run_comp.apply_async((comp_obj[0].compid,), countdown = int(sec_until_start))
+			logger.debug('Scheduled competition: Seconds until start: %s, Event UUID: %s' % (str(sec_until_start), str(result.id)))
 		else:
 			logger.error("is not valid")
-		logger.debug('saved competition')
 		return HttpResponseRedirect('/admin/competitions/%s/settings/' % c["comp_obj"].compurl)
 	return render_to_response('CompConfig/settings.html', c)
 

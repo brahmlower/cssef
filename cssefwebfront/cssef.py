@@ -11,6 +11,7 @@ import sys
 from time import sleep
 from random import randrange
 from django.utils import timezone
+from cssefwebfront.settings import logger
 from django.core.exceptions import ObjectDoesNotExist
 from cssefwebfront.models import Competition
 from cssefwebfront.models import Team
@@ -77,26 +78,33 @@ def run_loop(comp_obj, team_list, serv_list):
     print "[INFO] Competition finished. Scoring stopped."
 
 def run_comp(compid = None, compname = None):
+    logger.debug("Scoring engine execution has started.")
     # Get the competition object based on provided input
     comp_obj = LoadComp(compid = compid, compname = compname)
     # Check if the competition hasn't passed
     if timezone.now() >= comp_obj.datetime_finish:
-        sys.exit("[ERROR] This competition cannot be started. It has already finished.")
+        logger.debug("[ERROR] This competition cannot be started. It has already finished.")
+        return "[ERROR] This competition cannot be started. It has already finished."
     # Check if scoring is enabled before continuing
     if not comp_obj.scoring_enabled:
-        sys.exit("[ERROR] Scoring is not enabled for this competition.")
+        logger.debug("[ERROR] Scoring is not enabled for this competition.")
+        return "[ERROR] Scoring is not enabled for this competition."
     else:
         # Just checking the required fields are available
         if not comp_obj.scoring_interval:
-            sys.exit("[ERROR] Scoring is enabled, but 'scoring_interval' is invalid.")
+            logger.debug("[ERROR] Scoring is enabled, but 'scoring_interval' is invalid.")
+            return "[ERROR] Scoring is enabled, but 'scoring_interval' is invalid."
         if not comp_obj.scoring_interval_uncty:
-            sys.exit("[ERROR] Scoring is enabled, but 'scoring_interval_uncty' is invalid.")
+            logger.debug("[ERROR] Scoring is enabled, but 'scoring_interval_uncty' is invalid.")
+            return "[ERROR] Scoring is enabled, but 'scoring_interval_uncty' is invalid."
         # This will eventually need to check if it's a valid CIDR or domain name (todo)
         if not comp_obj.scoring_method:
-            sys.exit("[ERROR] Scoring is enabled, but 'scoring_method' is invalid.")
+            logger.debug("[ERROR] Scoring is enabled, but 'scoring_method' is invalid.")
+            return "[ERROR] Scoring is enabled, but 'scoring_method' is invalid."
     teams = LoadTeams(comp_obj.compid)
     servs = LoadServs(comp_obj.compid)
     run_loop(comp_obj, teams, servs)
+    return None
 
 def main():
     if len(sys.argv) == 1 or len(sys.argv) > 2:
@@ -107,4 +115,6 @@ def main():
         run_comp(compname = sys.argv[1])
 
 if __name__ == "__main__":
-	main()
+	ret_val = main()
+	if ret_val != None:
+		sys.exit(ret_val)

@@ -1,9 +1,9 @@
 from django.utils import timezone
 import json
-class Pluggin:
+class Plugin:
 	"""
-	All pluggins should be children of this class. This ganrantees that each
-	pluggin has these core values: 'points', 'net_type', 'subdomain', 'address'
+	All plugins should be children of this class. This ganrantees that each
+	plugin has these core values: 'points', 'net_type', 'subdomain', 'address'
 	and 'default_port'. Additionally, 'build_address' is provided to get the
 	full address for the team, regardless if they're being scored by dns or
 	by an ipv4 address.
@@ -45,16 +45,16 @@ class Pluggin:
 	class Test:
 		def __init__(self, *args, **kwargs):
 			if len(kwargs) == 1 and 'test_dict' in kwargs:
-				self.pt = PlugginTest(self.__class__, kwargs['test_dict'])
+				self.pt = PluginTest(self.__class__, kwargs['test_dict'])
 			else:
-				self.pt = PlugginsTest(self.__class__)
+				self.pt = PluginsTest(self.__class__)
 
-class PlugginTest:
+class PluginTest:
 	"""
-	This class handles the testing of the pluggin. It asks the user/tester for
-	values that should be used for testing. These values are for the pluggin
+	This class handles the testing of the plugin. It asks the user/tester for
+	values that should be used for testing. These values are for the plugin
 	configuration overall, as well as specific configurations a team might
-	have. Because the Pluggin.score() expects a Team object with score_configs,
+	have. Because the Plugin.score() expects a Team object with score_configs,
 	the Team class is emulated. This class provides EmulatedTeam, which only
 	has score_configs, which holds the team specific configurations provided by
 	the user/tester.
@@ -66,20 +66,20 @@ class PlugginTest:
 			self.networkaddr = self.configs_dict['team_configs'].pop('networkaddr')
 			self.team_config = self.configs_dict['team_configs']
 		else:
-			self.config_list = ["points","connectip","networkaddr","networkloc","port"]
-			self.class_inst = class_obj(self.get_pluggin_configs())
+			self.config_list = ["points", "connectip", "networkaddr", "networkloc", "port"]
+			self.class_inst = class_obj(self.get_plugin_configs())
 			self.team_config = self.get_team_config(class_obj)
 		self.score_obj = self.score()
 
-	def get_pluggin_configs(self):
-		print "\nGeneral service pluggin configurations."
+	def get_plugin_configs(self):
+		print "\nGeneral service plugin configurations."
 		tmp_dict = {}
 		for i in self.config_list:
 			tmp_dict[i] = raw_input("Please enter a value for '%s': " % i)
 		return tmp_dict
 
 	def get_team_config(self, class_obj):
-		print "\nTeam specific pluggin configurations."
+		print "\nTeam specific plugin configurations."
 		tmp_dict = {}
 		class_dict = class_obj.team_config_type_dict
 		for i in class_dict:

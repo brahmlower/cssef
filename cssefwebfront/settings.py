@@ -15,6 +15,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 import djcelery
 djcelery.setup_loader()
 
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
@@ -98,15 +100,16 @@ STATIC_URL = '/static/'
 
 # Celery Settings
 BROKER_URL = 'amqp://guest:guest@localhost:5672/'
+BROKER_POOL_LIMIT = 1
 
 # CSSEF Specific
-CONTENT_PLUGGINS_PATH =         "/cssefwebfront/resources/pluggins/"
+CONTENT_PLUGGINS_PATH =         "/cssefwebfront/resources/plugins/"
 CONTENT_INJECT_PATH =           "/cssefwebfront/resources/content/injects/"
 CONTENT_INJECT_REPONSE_PATH =   "/cssefwebfront/resources/content/injectresponses/"
 CONTENT_INCIDENT_REPONSE_PATH = "/cssefwebfront/resources/content/incidentresponses/"
 
 
-# settings.py
+# Logging configurations
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -116,7 +119,7 @@ LOGGING = {
             'datefmt' : "%d/%b/%Y %H:%M:%S"
         },
         'simple': {
-            'format': '%(levelname)s %(message)s'
+            'format': '[%(levelname)s] %(message)s'
         },
     },
     'handlers': {
@@ -130,7 +133,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': 'cssefwebfront_debug.log',
-            'formatter': 'verbose'
+            'formatter': 'simple'
         }
     },
     'loggers': {
@@ -145,5 +148,8 @@ LOGGING = {
         },
     }
 }
+
+import logging
+logger = logging.getLogger(__name__)
 
 

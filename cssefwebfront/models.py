@@ -70,12 +70,12 @@ class Service(Model):
 
 	# Service object now has the ability to score itself
 	def score(self, team_obj):
-		instance = self.load_pluggin()
+		instance = self.load_plugin()
 		score_obj = instance.score(team_obj)
 		score_obj.datetime = timezone.now()
 		return score_obj
 
-	def load_pluggin(self):
+	def load_plugin(self):
 		module_name = Document.objects.get(servicemodule = self.servicemodule).filename.split(".")[0]
 		module = __import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name])
 		return getattr(module, module_name)(self)
