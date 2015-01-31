@@ -5,8 +5,8 @@ from django.conf import settings
 
 # Imports required for base pluggin
 from cssefwebfront.models import Score
-from cssefwebfront.ScoringUtils import Pluggin
-from cssefwebfront.ScoringUtils import PlugginTest
+from cssefwebfront.ScoringUtils import Plugin
+from cssefwebfront.ScoringUtils import PluginTest
 import json
 
 # Imports required for specific pluggin
@@ -22,7 +22,7 @@ import traceback
 # http://stackoverflow.com/questions/10248796/example-of-pysmb
 # https://pythonhosted.org/pysmb/api/smb_SharedFile.html
 
-class SMB(Pluggin):
+class SMB(Plugin):
 	team_config_type_dict = {
 		#"port":int,
 		"username":str,
@@ -31,7 +31,7 @@ class SMB(Pluggin):
 		#"timeout":int}
 
 	def __init__(self, service_obj):
-		Pluggin.__init__(self, service_obj)
+		Plugin.__init__(self, service_obj)
 
 	def score(self, team_obj, service_name):
 		self.update_configuration(team_obj)

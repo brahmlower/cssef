@@ -5,20 +5,20 @@ from django.conf import settings
 
 # Imports required for base pluggin
 from cssefwebfront.models import Score
-from cssefwebfront.ScoringUtils import Pluggin
-from cssefwebfront.ScoringUtils import PlugginTest
+from cssefwebfront.ScoringUtils import Plugin
+from cssefwebfront.ScoringUtils import PluginTest
 import json
 
 # Imports required for specific pluggin
 import socket
 
-class OpenPort(Pluggin):
+class OpenPort(Plugin):
     team_config_type_dict = {
         "port": int,
         "timeout": int
     }
     def __init__(self, service_obj):
-        Pluggin.__init__(self, service_obj)
+        Plugin.__init__(self, service_obj)
 
     def score(self, team_obj):
         self.update_configuration(team_obj)
