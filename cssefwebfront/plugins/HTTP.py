@@ -28,7 +28,15 @@ class HTTP(Plugin):
 		address = "http://" + self.build_address(withport = True)
 		new_score = Score()
 		try:
-			request = urlopen(address, timeout = self.timeout)
+			timeout
+			use_timeout = True
+		except NameError:
+			use_timeout = False
+		try:
+			if use_timeout:
+				request = urlopen(address, timeout = self.timeout)
+			else:
+				request = urlopen(address)
 			html = request.read()
 			new_score.value = self.points
 			new_score.message = ""
