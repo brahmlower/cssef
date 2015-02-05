@@ -98,6 +98,12 @@
 				<div class="col-lg-10"><p>{{comp_obj.scoring_interval_uncty}}</p><br></div>
 				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_method.label }}</label>
 				<div class="col-lg-10"><p>{{comp_obj.scoring_method}}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_enabled.label }}</label>
+				<div class="col-lg-10"><p>{{comp_obj.scoring_sla_enabled}}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_threashold.label }}</label>
+				<div class="col-lg-10"><p>{{comp_obj.scoring_sla_threashold}}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_penalty.label }}</label>
+				<div class="col-lg-10"><p>{{comp_obj.scoring_sla_penalty}}</p><br></div>
 				<div class="col-lg-10 col-lg-offset-2">
 					<br>
 					<button id="new_response_button" class="btn btn-primary" onclick="toggle_form('scoring_settings')">Edit</button>
@@ -123,6 +129,18 @@
 				{{ forms.scoring_settings.scoring_method.errors }}
 				<label for="{{ forms.scoring_settings.scoring_method.id_for_label }}" class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_method.label }}</label>
 				<div class="col-lg-10 input-append">{{ forms.scoring_settings.scoring_method }}<br></div>
+
+				{{ forms.scoring_settings.scoring_sla_enabled.errors }}
+				<label for="{{ forms.scoring_settings.scoring_method.id_for_label }}" class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_enabled.label }}</label>
+				<div class="col-lg-10 input-append">{{ forms.scoring_settings.scoring_sla_enabled }}<br><br></div>
+
+				{{ forms.scoring_settings.scoring_sla_threashold.errors }}
+				<label for="{{ forms.scoring_settings.scoring_method.id_for_label }}" class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_threashold.label }}</label>
+				<div class="col-lg-10 input-append">{{ forms.scoring_settings.scoring_sla_threashold }}<br></div>
+
+				{{ forms.scoring_settings.scoring_sla_penalty.errors }}
+				<label for="{{ forms.scoring_settings.scoring_method.id_for_label }}" class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_penalty.label }}</label>
+				<div class="col-lg-10 input-append">{{ forms.scoring_settings.scoring_sla_penalty }}<br></div>
 
 				<div class="col-lg-10 col-lg-offset-2">
 					<button type="button" class="btn btn-default" onclick="toggle_form('scoring_settings')">Cancel</button>

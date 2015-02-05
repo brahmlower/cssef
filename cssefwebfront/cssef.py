@@ -56,6 +56,18 @@ def log(score_obj):
     print "[SCORE] (%s) Team:%s Service:%s Value:%s Messages:%s" % \
         (score_obj.datetime, score_obj.teamid, score_obj.servid, score_obj.value, score_obj.message)
 
+def sla_violation(comp_obj, servid, teamid):
+    #sla_threashold = 6
+    sla_threashold = comp_obj.scoring_sla_threashold
+    last_n_scores = Score.objects.filter(compid = comp_obj.compid, servid = servid, teamid = teamid).order_by('-scorid')[:sla_threashold]
+    if len(last_n_scores) < sla_threashold:
+        return 0
+    for i in last_n_scores:
+        if i.value > 0:
+            return 0
+    return -1 * comp_obj.scoring_sla_penalty
+    #return -100
+
 def run_loop(comp_obj, team_list, serv_list):
     if timezone.now() < comp_obj.datetime_start:
         time_until_start = (comp_obj.datetime_start - timezone.now()).total_seconds()
@@ -70,6 +82,9 @@ def run_loop(comp_obj, team_list, serv_list):
                 score_obj.teamid = team_obj.teamid
                 score_obj.servid = serv_obj.servid
                 score_obj.datetime = timezone.now()
+                # Check if we need to apply a SLA violation
+                if score_obj.value == 0 and comp_obj.scoring_sla_enabled:
+                    score_obj.value = sla_violation(comp_obj, serv_obj.servid, team_obj.teamid)
                 # Save the score object
                 score_obj.save()
                 # Log the score object

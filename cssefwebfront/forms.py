@@ -45,6 +45,9 @@ class CompetitionSettingsScoringForm(Form):
 	scoring_interval = CharField(label = 'Scoring Interval (seconds)', widget = NumberInput(attrs={'class':'form-control'}), required = False)
 	scoring_interval_uncty = CharField(label = 'Scoring Interval Uncertainty (seconds)', widget = NumberInput(attrs={'class':'form-control'}), required = False)
 	scoring_method = CharField(label = 'Scoring Method', widget = TextInput(attrs={'class':'form-control'}), required = False)
+	scoring_sla_enabled = BooleanField(label = 'SLA Violations Enabled', initial = True, required = False)
+	scoring_sla_threashold = CharField(label = 'SLA Violation Threashold', initial = 6, widget = TextInput(attrs={'class':'form-control'}), required = False)
+	scoring_sla_penalty = CharField(label = 'SLA Violation Penalty', initial = 50, widget = TextInput(attrs={'class':'form-control'}), required = False)
 
 class CompetitionSettingsServiceForm(Form):
 	services_enabled = BooleanField(label = 'Services Enabled', initial = False, required = False)

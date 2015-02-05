@@ -23,6 +23,8 @@
 		<tr><th>Datetime</th><th>Service</th><th>Points</th></tr>
 		{% for i in scores %}
 		{% if i.value == 0%}
+		<tr class="warning">
+		{% elif i.value < 0%}
 		<tr class="danger">
 		{% else %}
 		<tr class="success">

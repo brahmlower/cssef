@@ -28,6 +28,9 @@ class Competition(Model):
 	scoring_interval = PositiveIntegerField(null = True)
 	scoring_interval_uncty = PositiveIntegerField(null = True)
 	scoring_method = CharField(max_length = 20, null = True, blank = True)
+	scoring_sla_enabled = BooleanField(default = True)
+	scoring_sla_threashold = PositiveIntegerField(null = True)
+	scoring_sla_penalty = PositiveIntegerField(null = True)
 	services_enabled = BooleanField(default = True)
 	teams_view_ranking_enabled = BooleanField(default = True)
 	teams_view_scoreboard_enabled = BooleanField(default = True)
@@ -35,6 +38,7 @@ class Competition(Model):
 	teams_view_servicestatus_enabled = BooleanField(default = True)
 	teams_view_injects_enabled = BooleanField(default = True)
 	teams_view_incidentresponse_enabled = BooleanField(default = True)
+
 
 class Team(Model):
 	teamid = AutoField(primary_key = True)
