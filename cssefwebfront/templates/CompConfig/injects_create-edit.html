@@ -40,6 +40,10 @@
 		<label for="{{ form.dt_delivery.id_for_label }}" class="col-lg-2 control-label">{{ form.dt_delivery.label }}</label>
 		<div class="col-lg-10">{{ form.dt_delivery }}<br></div>
 
+		{{ form.require_response.errors}}
+		<label for="{{ form.require_response.id_for_label }}" class="col-lg-2 control-label">{{ form.require_response.label }}</label>
+		<div class="col-lg-10">{{ form.require_response }}<br><br></div>
+
 		{{ form.dt_response_due.errors}}
 		<label for="{{ form.dt_response_due.id_for_label }}" class="col-lg-2 control-label">{{ form.dt_response_due.label }}</label>
 		<div class="col-lg-10">{{ form.dt_response_due }}<br></div>

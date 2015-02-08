@@ -303,11 +303,15 @@ def injects_edit(request, competition = None, ijctid = None):
 		c["form"] = CreateInjectForm(initial = ijct_obj.values()[0])
 		return render_to_response('CompConfig/injects_create-edit.html', c)
 	# Note this will only work when there are no lists
-	tmp_dict = request.POST.copy().dict()
-	tmp_dict.pop('csrfmiddlewaretoken', None)
-	tmp_dict.pop('docfile', None)
+	form_dict = request.POST.copy().dict()
+	form_dict.pop('csrfmiddlewaretoken', None)
+	form_dict.pop('docfile', None)
+	if 'require_response' in form_dict:
+		form_dict['require_response'] = True
+	else:
+		form_dict['require_response'] = False
 	ijct_obj = Inject.objects.filter(compid = c["comp_obj"].compid, ijctid = int(ijctid))
-	ijct_obj.update(**tmp_dict)
+	ijct_obj.update(**form_dict)
 	# Was there a file? If so, save it!
 	if 'docfile' in request.FILES:
 		save_document(request.FILES['docfile'], settings.CONTENT_INJECT_PATH, ijct_obj)
@@ -349,6 +353,10 @@ def injects_create(request, competition = None):
 	form_dict["compid"] = c["comp_obj"].compid
 	form_dict.pop('csrfmiddlewaretoken', None)
 	form_dict.pop('docfile', None)
+	if 'require_response' in form_dict:
+		form_dict['require_response'] = True
+	else:
+		form_dict['require_response'] = False
 	form_obj = CreateInjectForm(form_dict)
 	if not form_obj.is_valid():
 		c["messages"].new_info("Invalid field data in inject form: %s" % form_obj.errors, 1001)

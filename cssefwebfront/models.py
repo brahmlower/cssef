@@ -99,6 +99,7 @@ class Inject(Model):
 	dt_delivery = DateTimeField()
 	dt_response_due = DateTimeField()
 	dt_response_close = DateTimeField()
+	require_response = BooleanField()
 	title = CharField(max_length = 50)
 	body = CharField(max_length = 1000)
 

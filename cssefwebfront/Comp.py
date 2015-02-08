@@ -145,6 +145,8 @@ def injects_respond(request, competition = None, ijctid = None):
 	# If we're not getting POST data, serve the page normally
 	if request.method != "POST":
 		ijct_obj = Inject.objects.get(compid = c["comp_obj"].compid, ijctid = ijctid)
+		if not ijct_obj.require_response:
+			return HttpResponseRedirect('/competitions/%s/injects/' % (competition))
 		c["inject"] = {
 			"ijct_obj": ijct_obj,
 			"files": Document.objects.filter(inject = ijctid),
@@ -164,6 +166,8 @@ def injects_respond(request, competition = None, ijctid = None):
 		return render_to_response('Comp/injects_view_respond.html', c)
 	# Check if we're allowed to take the submission (time restrictions)
 	ijct_obj = Inject.objects.get(compid = c["comp_obj"].compid, ijctid = ijctid)
+	if not ijct_obj.require_response:
+		return HttpResponseRedirect('/competitions/%s/injects/' % (competition))
 	if ijct_obj.dt_response_close <= timezone.now():
 		# Very clever person - submission form was closed, but they're attempting to POST anyway
 		return HttpResponseRedirect('/competitions/%s/injects/%s/' % (competition, ijctid))
