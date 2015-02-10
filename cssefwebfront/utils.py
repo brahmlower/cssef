@@ -54,6 +54,8 @@ class UserMessages:
 
 def get_inject_display_state(user_obj, injct_obj):
 	display_state = "default"
+	if not injct_obj.require_response:
+		return display_state
 	if injct_obj.dt_response_due <= timezone.now():
 		display_state = "warning"
 	if injct_obj.dt_response_close <= timezone.now():
