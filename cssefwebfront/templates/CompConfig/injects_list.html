@@ -17,8 +17,12 @@
 		<div class="panel-heading"> {{ i.inject.title }} </div>
 		<div class="panel-body">
 			<strong>Released at: </strong>{{ i.inject.dt_delivery }}<br>
+			{% if i.inject.require_response %}
 			<strong>Due at: </strong>{{ i.inject.dt_response_due }}<br>
 			<strong>Closes at: </strong>{{ i.inject.dt_response_close }}<br>
+			{% else %}
+			<strong>Due at: </strong>No response required<br>
+			{% endif %}
 			{% for k in i.files %}
 			<strong> Attached File: </strong><a href="/resources/injects/{{i.inject.compid}}/{{i.inject.ijctid}}/{{k.urlencfilename}}">{{ k.filename }}</a><br>
 			{% endfor %}

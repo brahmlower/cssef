@@ -310,6 +310,8 @@ def injects_edit(request, competition = None, ijctid = None):
 		form_dict['require_response'] = True
 	else:
 		form_dict['require_response'] = False
+		form_dict['dt_response_due'] = None
+		form_dict['dt_response_close'] = None
 	ijct_obj = Inject.objects.filter(compid = c["comp_obj"].compid, ijctid = int(ijctid))
 	ijct_obj.update(**form_dict)
 	# Was there a file? If so, save it!
@@ -349,7 +351,6 @@ def injects_create(request, competition = None):
 		c["form"] = CreateInjectForm()
 		return render_to_response('CompConfig/injects_create-edit.html', c)
 	form_dict = request.POST.copy().dict()
-	print form_dict
 	form_dict["compid"] = c["comp_obj"].compid
 	form_dict.pop('csrfmiddlewaretoken', None)
 	form_dict.pop('docfile', None)
@@ -357,11 +358,14 @@ def injects_create(request, competition = None):
 		form_dict['require_response'] = True
 	else:
 		form_dict['require_response'] = False
+		form_dict['dt_response_due'] = None
+		form_dict['dt_response_close'] = None
 	form_obj = CreateInjectForm(form_dict)
 	if not form_obj.is_valid():
-		c["messages"].new_info("Invalid field data in inject form: %s" % form_obj.errors, 1001)
+		#c["messages"].new_info("Invalid field data in inject form: %s" % form_obj.errors, 1001)
 		return render_to_response('CompConfig/injects_create-edit.html', c)
 	# Start saving the inject!
+	print form_dict
 	ijct_obj = Inject(**form_dict)
 	ijct_obj.save()
 	# Was there a file? If so, save it!

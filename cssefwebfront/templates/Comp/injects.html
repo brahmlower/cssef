@@ -13,7 +13,7 @@
 		<div class="panel-heading"> {{ i.inject.title }} </div>
 		<div class="panel-body">
 			<strong>Released at: </strong>{{ i.inject.dt_delivery }}<br>
-			{% if i.require_response %}
+			{% if i.inject.require_response %}
 			<strong>Due at: </strong>{{ i.inject.dt_response_due }}<br>
 			<strong>Closes at: </strong>{{ i.inject.dt_response_close }}<br>
 			{% else %}
