@@ -13,6 +13,18 @@
 		$('#{{ form.dt_delivery.id_for_label }}').datetimepicker();
 		$('#{{ form.dt_response_due.id_for_label }}').datetimepicker();
 		$('#{{ form.dt_response_close.id_for_label }}').datetimepicker();
+		$('#id_require_response').click(function () {
+			$('#id_dt_response_due').prop('disabled', function(idx, oldProp) { return !oldProp; });
+			$('#id_dt_response_close').prop('disabled', function(idx, oldProp) { return !oldProp; });
+			$('#id_dt_response_due').val('');
+			$('#id_dt_response_close').val('');
+		});
+	});
+	$(document).ready(function() {
+		if (!$('#id_require_response').attr('checked')) {
+			$('#id_dt_response_due').attr('disabled', true);
+			$('#id_dt_response_close').attr('disabled', true);
+		}
 	});
 </script>
 {% endblock %}
