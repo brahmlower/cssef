@@ -1,6 +1,8 @@
 from django.forms import CharField
+from django.forms import BooleanField
 from django.forms import NumberInput
 from django.forms import TextInput
+from django.forms import CheckboxInput
 from django.utils import timezone
 from django.core.files.uploadedfile import UploadedFile
 from models import Service
@@ -113,17 +115,22 @@ def buildServiceConfigForm(serv_obj, form_obj, team_score_dict = None):
 	if team_score_dict != None and isinstance(team_score_dict, str):
 		# This might cause problems since Form.initial is expecting a querydict
 		team_score_dict = json.loads(team_score_dict)
+	# Gets the module name, which is then used to import the plugin from the file
 	module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
+	# Creates an instance of the plugin
 	module_inst = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)(serv_obj)
-	config_dict = getattr(module_inst, "team_config_type_dict")
+	# Copies the configuration dict from the plugin instance
+	config_dict = getattr(module_inst, "plugin_config")
 	config_list = []
-	for key in config_dict:
-		if config_dict[key] == int:
-			field_obj = CharField(label = key.title(), widget = NumberInput(attrs={'class':'form-control'}))
-		elif config_dict[key] == str:
-			field_obj = CharField(label = key.title(), widget = TextInput(attrs={'class':'form-control'}))
-		# HOLY BUTT NUTS BATMAN!
-		form_obj.fields['serv_config_'+key] = field_obj
+	for field in config_dict["fields"]:
+		print field["instance"].label
+		if field["instance"].value_type == int:
+			field_obj = CharField(label = field["instance"].label, widget = NumberInput(attrs={'class':'form-control'}))
+		elif field["instance"].value_type == str:
+			field_obj = CharField(label = field["instance"].label, widget = TextInput(attrs={'class':'form-control'}))
+		elif field["instance"].value_type == bool:
+			field_obj = BooleanField(label = field["instance"].label, widget = CheckboxInput(attrs={'class':'form-control'}))
+		form_obj.fields['serv_config_'+field["name"]] = field_obj
 		if team_score_dict != None:
 			form_obj.initial = team_score_dict
 	return form_obj

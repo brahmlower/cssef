@@ -20,11 +20,16 @@ class Plugin:
 		self.networkaddr = team_obj.networkaddr
 		# Set the score configurations
 		score_config_dict = json.loads(team_obj.score_configs)
+		# Retrieves the configurations for this particular service
 		if self.service_name in score_config_dict:
-			for key in score_config_dict[self.service_name]:
-				value = score_config_dict[self.service_name][key]
-				if (isinstance(value, self.team_config_type_dict[key]) or isinstance(value, unicode)) and len(str(value)) > 0:
-					setattr(self, key, score_config_dict[self.service_name][key])
+			for field_id in score_config_dict[self.service_name]:
+				field_dict = score_config_dict[self.service_name][field_id]
+				field_name = field_dict["name"]
+				field_instance = field_dict["instance"]
+				field_value = field_dict["instance"].get_value() # Does this mean that this istance is what holds the value set on a per team basis?
+				if isinstance(field_value, field_instance.value_type):
+					setattr(self, field_name, field_value)
+
 
 	def build_address(self, machineaddr = None, withport = None):
 		addr = ""
@@ -41,6 +46,34 @@ class Plugin:
 		if withport:
 			return addr + ":" + str(self.port)
 		return addr
+
+	class Integer:
+		value_type = int
+		def __init__(self, label=None, default_value=None, depends=None, required=False):
+			self.label = label
+			self.default_value = default_value
+			self.required = required
+			self.depends = depends
+
+		def get_value(self):
+			return self.default_value
+
+	class Boolean:
+		value_type = bool
+		def __init__(self, label=None, default_value=None, depends=None, required=False):
+			self.label = label
+			self.default_value = default_value
+			self.required = required
+			self.depends = depends
+
+	class String:
+		value_type = str
+		def __init__(self, label=None, default_value=None, depends=None, required=False):
+			self.label = label
+			self.default_value = default_value
+			self.required = required
+			self.depends = depends
+
 
 	class Test:
 		def __init__(self, *args, **kwargs):

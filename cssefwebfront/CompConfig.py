@@ -75,9 +75,9 @@ def comp_settings(request, competition = None):
 					clean_copy[i] = None
 			comp_obj.update(**clean_copy)
 			# Schedules the job to start the scoring engine
-			sec_until_start = (comp_obj[0].datetime_start - timezone.now()).seconds
-			result = run_comp.apply_async((comp_obj[0].compid,), countdown = int(sec_until_start))
-			logger.debug('Scheduled competition: Seconds until start: %s, Event UUID: %s' % (str(sec_until_start), str(result.id)))
+			#sec_until_start = (comp_obj[0].datetime_start - timezone.now()).seconds
+			#result = run_comp.apply_async((comp_obj[0].compid,), countdown = int(sec_until_start))
+			#logger.debug('Scheduled competition: Seconds until start: %s, Event UUID: %s' % (str(sec_until_start), str(result.id)))
 		else:
 			logger.error("is not valid")
 		return HttpResponseRedirect('/admin/competitions/%s/settings/' % c["comp_obj"].compurl)

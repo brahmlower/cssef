@@ -15,10 +15,21 @@ import traceback
 
 
 class HTTP(Plugin):
-	team_config_type_dict = {
-		"port": int,
-		"timeout": int
+	plugin_config = {
+		"fields": [
+			{"name": "port", "instance": Plugin.Integer(label="Port", default_value=80, required=True)},
+			{"name": "timeout", "instance": Plugin.Integer(label="Timeout", required=True)},
+			{"name": "str_match", "instance": Plugin.Boolean(label="Match String", required=False)},
+			{"name": "str_value", "instance": Plugin.String(label="String", depends="str_match", required = True)},
+			{"name": "md5_match", "instance": Plugin.Boolean(label="Match MD5", required=False)},
+			{"name": "md5_value", "instance": Plugin.String(label="MD5", depends="md5_match", required = False)}
+		]
 	}
+
+	# team_config_type_dict = {
+	# 	"port": int,
+	# 	"timeout": int
+	# }
 
 	def __init__(self, service_obj):
 		Plugin.__init__(self, service_obj)
