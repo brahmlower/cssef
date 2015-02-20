@@ -238,6 +238,7 @@ def servicemodule_test(request, servmdulid = None):
 	serv_obj.networkloc = str(form_dict.pop('networkloc'))
 	serv_obj.defaultport = int(form_dict.pop('defaultport'))
 	serv_obj.points = 100
+	print form_dict
 	c['score_obj'] = run_plugin_test(serv_obj, form_dict)
 	return render_to_response('AdminConfig/servicemodule_test.html', c)
 

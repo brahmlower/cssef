@@ -12,7 +12,7 @@ from models import Document
 from models import InjectResponse
 from hashlib import md5
 from urllib import quote
-from ScoringUtils import PluginTest
+from ScoringUtils import EmulatedTeam
 import settings
 import json
 
@@ -91,25 +91,32 @@ def save_document(request_file, content_subdir, related_obj, ashash = True):
 	wfile.write(file_content)
 	wfile.close()
 
-def run_plugin_test(serv_obj, team_config_dict):
+def run_plugin_test(serv_obj, form_dict):
+	"""
+	Handles everything to test the specified service module
+
+	arguements:
+	serv_obj 	Service		is an instance of Service containing values provided in the test form
+	form_dict	dict		is the result of 'request.POST.copy().dict()', but with fields related to the serv_obj removed
+	returns:
+	Score object with values as a result of running the specified service module
+	"""
 	module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
 	module = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)
-	config_dict = getattr(module(serv_obj), "team_config_type_dict")
+	# Create an instance of the service module
+	module_instance = module(serv_obj)	
+	#config_dict = getattr(module(serv_obj), "plugin_config")
+	config_dict = module_instance.plugin_config
 	# Fix key names in the config dict
-	for key in team_config_dict:
+	for key in form_dict:
 		if "serv_config_" in key:
-			new_key = key.split('serv_config_')[1]
-			if team_config_dict[key] == u'':
-				# Value is blank, so set it to None so it can be ignored by the plugin
-				team_config_dict.pop(key)
-				team_config_dict[new_key] = None
-			else:
-				# Casts the unicdoe value to a python string, to be converted to it's proper type
-				team_config_dict[key] = team_config_dict[key].encode('ascii','ignore')
-				# Casts the unicode value as the type defined by the plugin configuration types dict
-				team_config_dict[new_key] = config_dict[new_key](team_config_dict.pop(key))
-	pt = PluginTest(module, {"serv_obj": serv_obj, "team_configs": team_config_dict})
-	return pt.score_obj
+			clean_key = str(key.split('serv_config_')[1])
+			key_value = form_dict[key].encode('ascii', 'ignore')
+			config_dict['fields'][clean_key]['instance'].set_value(key_value)
+	# Create an instance of an emulated team
+	emu_team = EmulatedTeam(form_dict['networkaddr'])
+	emu_team.add_service(serv_obj, config_dict['fields'])
+	return module_instance.score(emu_team)
 
 def buildServiceConfigForm(serv_obj, form_obj, team_score_dict = None):
 	if team_score_dict != None and isinstance(team_score_dict, str):
@@ -123,14 +130,14 @@ def buildServiceConfigForm(serv_obj, form_obj, team_score_dict = None):
 	config_dict = getattr(module_inst, "plugin_config")
 	config_list = []
 	for field in config_dict["fields"]:
-		print field["instance"].label
-		if field["instance"].value_type == int:
-			field_obj = CharField(label = field["instance"].label, widget = NumberInput(attrs={'class':'form-control'}))
-		elif field["instance"].value_type == str:
-			field_obj = CharField(label = field["instance"].label, widget = TextInput(attrs={'class':'form-control'}))
-		elif field["instance"].value_type == bool:
-			field_obj = BooleanField(label = field["instance"].label, widget = CheckboxInput(attrs={'class':'form-control'}))
-		form_obj.fields['serv_config_'+field["name"]] = field_obj
+		#print field["instance"].label
+		if config_dict["fields"][field]["instance"].value_type == int:
+			field_obj = CharField(label = config_dict["fields"][field]["instance"].label, widget = NumberInput(attrs={'class':'form-control'}))
+		elif config_dict["fields"][field]["instance"].value_type == str:
+			field_obj = CharField(label = config_dict["fields"][field]["instance"].label, widget = TextInput(attrs={'class':'form-control'}))
+		elif config_dict["fields"][field]["instance"].value_type == bool:
+			field_obj = BooleanField(label = config_dict["fields"][field]["instance"].label, widget = CheckboxInput(attrs={'class':'form-control'}))
+		form_obj.fields['serv_config_'+field] = field_obj
 		if team_score_dict != None:
 			form_obj.initial = team_score_dict
 	return form_obj
