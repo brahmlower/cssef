@@ -20,6 +20,7 @@ from utils import getAuthValues
 from utils import save_document
 from utils import run_plugin_test
 from utils import buildServiceConfigForm
+from utils import buildServiceDependencyList
 import settings
 
 def home(request):
@@ -211,6 +212,7 @@ def servicemodule_test(request, servmdulid = None):
 	c.update(csrf(request))
 	c['servmdul_obj'] = ServiceModule.objects.get(servmdulid = servmdulid)
 	serv_obj = Service(servicemodule = c['servmdul_obj'])
+	c["depend_list"] = buildServiceDependencyList(serv_obj)
 	if request.method != "POST":
 		# Serve blank form with no results
 		c["service_configs"] = buildServiceConfigForm(serv_obj, TestServiceForm())
@@ -238,7 +240,6 @@ def servicemodule_test(request, servmdulid = None):
 	serv_obj.networkloc = str(form_dict.pop('networkloc'))
 	serv_obj.defaultport = int(form_dict.pop('defaultport'))
 	serv_obj.points = 100
-	print form_dict
 	c['score_obj'] = run_plugin_test(serv_obj, form_dict)
 	return render_to_response('AdminConfig/servicemodule_test.html', c)
 

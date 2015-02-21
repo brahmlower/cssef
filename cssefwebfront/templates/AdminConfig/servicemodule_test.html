@@ -1,5 +1,21 @@
 {% extends "AdminConfig/admin_template.html" %}
 
+{% block headers_js %}
+<script type="text/javascript">
+	function toggledisable(targetdom) {
+		console.log('toggling '+targetdom);
+		$(targetdom).prop('disabled', function(idx, oldProp) { return !oldProp; });
+		$(targetdom).val('');
+	}
+
+	$(function () {
+		{% for i in depend_list %}
+		$('#id_{{i.switch}}').click(toggledisable('#id_{{i.dependent}}'));
+		{% endfor %}
+	});
+</script>
+{% endblock %}
+
 {% block sidebar_id %}sidebar_servicemodules{% endblock %}
 
 {% block page_content %}

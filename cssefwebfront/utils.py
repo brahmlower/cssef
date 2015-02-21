@@ -105,14 +105,20 @@ def run_plugin_test(serv_obj, form_dict):
 	module = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)
 	# Create an instance of the service module
 	module_instance = module(serv_obj)	
-	#config_dict = getattr(module(serv_obj), "plugin_config")
 	config_dict = module_instance.plugin_config
 	# Fix key names in the config dict
-	for key in form_dict:
-		if "serv_config_" in key:
-			clean_key = str(key.split('serv_config_')[1])
-			key_value = form_dict[key].encode('ascii', 'ignore')
-			config_dict['fields'][clean_key]['instance'].set_value(key_value)
+	# for key in form_dict:
+	# 	if "serv_config_" in key:
+	# 		clean_key = str(key.split('serv_config_')[1])
+	# 		key_value = form_dict[key].encode('ascii', 'ignore')
+	# 		config_dict['fields'][clean_key]['instance'].set_value(key_value)
+	for key in config_dict['fields']:
+		if "serv_config_"+key in form_dict:
+			key_value = form_dict['serv_config_'+key].encode('ascii', 'ignore')
+			config_dict['fields'][key]['instance'].set_value(key_value)
+		else:
+			config_dict['fields'][key]['instance'].set_value(None)
+
 	# Create an instance of an emulated team
 	emu_team = EmulatedTeam(form_dict['networkaddr'])
 	emu_team.add_service(serv_obj, config_dict['fields'])
@@ -131,16 +137,40 @@ def buildServiceConfigForm(serv_obj, form_obj, team_score_dict = None):
 	config_list = []
 	for field in config_dict["fields"]:
 		#print field["instance"].label
-		if config_dict["fields"][field]["instance"].value_type == int:
-			field_obj = CharField(label = config_dict["fields"][field]["instance"].label, widget = NumberInput(attrs={'class':'form-control'}))
-		elif config_dict["fields"][field]["instance"].value_type == str:
-			field_obj = CharField(label = config_dict["fields"][field]["instance"].label, widget = TextInput(attrs={'class':'form-control'}))
-		elif config_dict["fields"][field]["instance"].value_type == bool:
-			field_obj = BooleanField(label = config_dict["fields"][field]["instance"].label, widget = CheckboxInput(attrs={'class':'form-control'}))
+		instance = config_dict["fields"][field]["instance"]
+		if instance.value_type == int:
+			if not instance.default_value:
+				field_obj = CharField(label = instance.label, widget = NumberInput(attrs={'class':'form-control'}))
+			else:
+				field_obj = CharField(label = instance.label, widget = NumberInput(attrs={'class':'form-control'}), initial = instance.default_value)
+		elif instance.value_type == str:
+			if not instance.default_value:
+				field_obj = CharField(label = instance.label, widget = TextInput(attrs={'class':'form-control'}))
+			else:
+				field_obj = CharField(label = instance.label, widget = TextInput(attrs={'class':'form-control'}), initial = instance.default_value)
+		elif instance.value_type == bool:
+			if not instance.default_value:
+				field_obj = BooleanField(label = instance.label, widget = CheckboxInput(attrs={'class':'form-control'}))
+			else:
+				field_obj = BooleanField(label = instance.label, widget = CheckboxInput(attrs={'class':'form-control'}), initial = instance.default_value)
 		form_obj.fields['serv_config_'+field] = field_obj
 		if team_score_dict != None:
 			form_obj.initial = team_score_dict
 	return form_obj
+
+def buildServiceDependencyList(serv_obj):
+	# Gets the module name, which is then used to import the plugin from the file
+	module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
+	# Creates an instance of the plugin
+	module_inst = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)(serv_obj)
+	# Copies the configuration dict from the plugin instance
+	config_dict = getattr(module_inst, "plugin_config")
+	dependency_list = []
+	for field in config_dict["fields"]:
+		instance = config_dict["fields"][field]["instance"]
+		if instance.depends:
+			dependency_list.append({"switch": 'serv_config_'+instance.depends, "dependent": 'serv_config_'+field})
+	return dependency_list
 
 def buildTeamServiceConfigForms(compid, team_score_dict = None):
 	if team_score_dict != None:

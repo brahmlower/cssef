@@ -67,6 +67,8 @@ class Integer:
 				self.value = int(value)
 			except ValueError:
 				print "GOT A VALUE ERROR while trying to convert the string '%s'" % value
+		else:
+			self.value = None
 
 	def __str__(self):
 		return "label='%s' required='%s' depends='%s' default_value='%s' value='%s'" % (self.label, str(self.required), str(self.depends), str(self.default_value), str(self.value))
@@ -88,6 +90,8 @@ class Boolean:
 	def set_value(self, value):
 		if value == 'False' or value == 'True':
 			self.value = value
+		else:
+			self.value = None
 
 	def __str__(self):
 		return "label='%s' required='%s' depends='%s' default_value='%s' value='%s'" % (self.label, str(self.required), str(self.depends), str(self.default_value), str(self.value))
@@ -109,6 +113,8 @@ class String:
 	def set_value(self, value):
 		if value != '':
 			self.value = value
+		else:
+			self.value = None
 
 	def __str__(self):
 		return "label='%s' required='%s' depends='%s' default_value='%s' value='%s'" % (self.label, str(self.required), str(self.depends), self.default_value, self.value)
