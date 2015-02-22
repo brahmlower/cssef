@@ -107,11 +107,6 @@ def run_plugin_test(serv_obj, form_dict):
 	module_instance = module(serv_obj)	
 	config_dict = module_instance.plugin_config
 	# Fix key names in the config dict
-	# for key in form_dict:
-	# 	if "serv_config_" in key:
-	# 		clean_key = str(key.split('serv_config_')[1])
-	# 		key_value = form_dict[key].encode('ascii', 'ignore')
-	# 		config_dict['fields'][clean_key]['instance'].set_value(key_value)
 	for key in config_dict['fields']:
 		if "serv_config_"+key in form_dict:
 			key_value = form_dict['serv_config_'+key].encode('ascii', 'ignore')
@@ -134,7 +129,7 @@ def buildServiceConfigForm(serv_obj, form_obj, team_score_dict = None):
 	module_inst = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)(serv_obj)
 	# Copies the configuration dict from the plugin instance
 	config_dict = getattr(module_inst, "plugin_config")
-	config_list = []
+	field_list = []
 	for field in config_dict["fields"]:
 		#print field["instance"].label
 		instance = config_dict["fields"][field]["instance"]
@@ -153,9 +148,27 @@ def buildServiceConfigForm(serv_obj, form_obj, team_score_dict = None):
 				field_obj = BooleanField(label = instance.label, widget = CheckboxInput(attrs={'class':'form-control'}))
 			else:
 				field_obj = BooleanField(label = instance.label, widget = CheckboxInput(attrs={'class':'form-control'}), initial = instance.default_value)
-		form_obj.fields['serv_config_'+field] = field_obj
-		if team_score_dict != None:
-			form_obj.initial = team_score_dict
+
+		try:
+			field_list.append({"position": config_dict["fields"][field]["position"], "field_name": "serv_config_"+field, "field_obj": field_obj})
+		except KeyError:
+			if not instance.depends:
+				# # This field does not depend on any other field so we set the position value to the end of the list
+				field_list.append({"position": len(config_dict["fields"]), "field_name": "serv_config_"+field, "field_obj": field_obj})
+			else:
+				# This field does depend on another field so we set the position to the same as that field
+				position = config_dict["fields"][instance.depends]["position"] + 1
+				field_list.append({"position": position, "field_name": "serv_config_"+field, "field_obj": field_obj})
+	# Add the fields in the order
+	for i in sorted(field_list, key=lambda k: k['position']):
+		form_obj.fields[i["field_name"]] = i["field_obj"]
+	# Now set the inital values
+	if team_score_dict != None:
+		form_obj.initial = team_score_dict
+	print "form_obj.fields ============="
+	print form_obj.fields
+	print "============================="
+	print form_obj.fields.__class__.__name__
 	return form_obj
 
 def buildServiceDependencyList(serv_obj):

@@ -19,11 +19,11 @@ import traceback
 class HTTP(Plugin):
 	plugin_config = {
 		"fields": {
-			"port":			{"name": "port",		"instance": Integer(label="Port", default_value=80, required=True)},
-			"timeout":		{"name": "timeout",		"instance": Integer(label="Timeout", required=True)},
-			"str_match":	{"name": "str_match",	"instance": Boolean(label="Match String", default_value=True, required=False)},
+			"port":			{"name": "port",		"position": 1, "instance": Integer(label="Port", default_value=80, required=True)},
+			"timeout":		{"name": "timeout",		"position": 2, "instance": Integer(label="Timeout", required=True)},
+			"str_match":	{"name": "str_match",	"position": 3, "instance": Boolean(label="Match String", default_value=True, required=False)},
 			"str_value":	{"name": "str_value",	"instance": String(label="String", depends="str_match", required = True)},
-			"md5_match":	{"name": "md5_match",	"instance": Boolean(label="Match MD5", default_value=False, required=False)},
+			"md5_match":	{"name": "md5_match",	"position": 4, "instance": Boolean(label="Match MD5", default_value=False, required=False)},
 			"md5_value":	{"name": "md5_value",	"instance": String(label="MD5", depends="md5_match", required = False)}
 		}
 	}
