@@ -24,6 +24,7 @@ from utils import UserMessages
 from utils import getAuthValues
 from utils import buildTeamServiceConfigDict
 from utils import buildTeamServiceConfigForms
+from utils import buildTeamServiceDependencyList
 from utils import save_document
 from django.utils import timezone
 from cssefwebfront.tasks import run_comp
@@ -144,12 +145,11 @@ def teams_create(request, competition = None):
 	if c["auth_name"] != "auth_team_white":
 		return HttpResponseRedirect("/")
 	c["action"] = "create"
-	c["form"] = CreateTeamForm()
 	c["comp_obj"] = Competition.objects.get(compurl = competition)
 	c.update(csrf(request))
 	if request.method != "POST":
-		# Get a list of the services
-		c["service_configs_list"] = buildTeamServiceConfigForms(c["comp_obj"].compid)
+		c['form'] = buildTeamServiceConfigForms(c["comp_obj"].compid, CreateTeamForm())
+		c["depend_list"] = buildTeamServiceDependencyList(c["comp_obj"].compid)
 		return render_to_response('CompConfig/teams_create-edit.html', c)
 	form_dict = request.POST.copy()
 	form_dict["compid"] = c["comp_obj"].compid
@@ -161,6 +161,7 @@ def teams_create(request, competition = None):
 		form_dict['networkaddr'] = form_dict['networkaddr'][1:]
 	team = CreateTeamForm(form_dict)
 	if not team.is_valid():
+		c['form'] = buildTeamServiceConfigForms(c["comp_obj"].compid, CreateTeamForm(), form_dict)
 		return render_to_response('CompConfig/teams_create-edit.html', c)
 	team.save()
 	return HttpResponseRedirect("/admin/competitions/%s/teams/" % competition)

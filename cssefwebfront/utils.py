@@ -113,16 +113,12 @@ def run_plugin_test(serv_obj, form_dict):
 			config_dict['fields'][key]['instance'].set_value(key_value)
 		else:
 			config_dict['fields'][key]['instance'].set_value(None)
-
 	# Create an instance of an emulated team
 	emu_team = EmulatedTeam(form_dict['networkaddr'])
 	emu_team.add_service(serv_obj, config_dict['fields'])
 	return module_instance.score(emu_team)
 
 def buildServiceConfigForm(serv_obj, form_obj, team_score_dict = None):
-	if team_score_dict != None and isinstance(team_score_dict, str):
-		# This might cause problems since Form.initial is expecting a querydict
-		team_score_dict = json.loads(team_score_dict)
 	# Gets the module name, which is then used to import the plugin from the file
 	module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
 	# Creates an instance of the plugin
@@ -131,7 +127,6 @@ def buildServiceConfigForm(serv_obj, form_obj, team_score_dict = None):
 	config_dict = getattr(module_inst, "plugin_config")
 	field_list = []
 	for field in config_dict["fields"]:
-		#print field["instance"].label
 		instance = config_dict["fields"][field]["instance"]
 		if instance.value_type == int:
 			if not instance.default_value:
@@ -163,12 +158,9 @@ def buildServiceConfigForm(serv_obj, form_obj, team_score_dict = None):
 	for i in sorted(field_list, key=lambda k: k['position']):
 		form_obj.fields[i["field_name"]] = i["field_obj"]
 	# Now set the inital values
-	if team_score_dict != None:
-		form_obj.initial = team_score_dict
-	print "form_obj.fields ============="
-	print form_obj.fields
-	print "============================="
-	print form_obj.fields.__class__.__name__
+	if team_score_dict != None and isinstance(team_score_dict, str):
+		# This might cause problems since Form.initial is expecting a querydict
+		form_obj.initial = json.loads(team_score_dict)
 	return form_obj
 
 def buildServiceDependencyList(serv_obj):
@@ -185,32 +177,21 @@ def buildServiceDependencyList(serv_obj):
 			dependency_list.append({"switch": 'serv_config_'+instance.depends, "dependent": 'serv_config_'+field})
 	return dependency_list
 
-def buildTeamServiceConfigForms(compid, team_score_dict = None):
+def buildTeamServiceConfigForms(compid, form_obj, team_score_dict = None):
 	if team_score_dict != None:
 		team_score_dict = json.loads(team_score_dict)
 	tmp_list = []
 	for serv_obj in Service.objects.filter(compid = compid):
-		module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
-		module_inst = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)(serv_obj)
-		config_dict = getattr(module_inst, "team_config_type_dict")
-		#print config_dict
-		config_list = []
-		for key in config_dict:
-			tmp_dict = {}
-			tmp_dict["label"] = key.title()
-			tmp_dict["id_for_label"] = "%s-%s" % (serv_obj.name, key)
-			if config_dict[key] == int:
-				tmp_dict["type"] = "number"
-			elif config_dict[key] == str:
-				tmp_dict["type"] = "text"
-			if team_score_dict != None and serv_obj.name in team_score_dict:
-				tmp_dict["value"] = team_score_dict[serv_obj.name][key]
-			config_list.append(tmp_dict)
-		tmp_list.append({
-			"service": serv_obj,
-			"configs": config_list
-		})
-	return tmp_list
+		#form_obj.fields[serv_obj.name] = "Service: "+serv_obj.name
+		form_obj = buildServiceConfigForm(serv_obj, form_obj)
+	print form_obj.fields
+	return form_obj
+
+def buildTeamServiceDependencyList(compid):
+	dependency_list = []
+	for serv_obj in Service.objects.filter(compid = compid):
+		dependency_list += buildServiceDependencyList(serv_obj)
+	return dependency_list
 
 def buildTeamServiceConfigDict(compid, post_dict):
 	tmp_dict = {}

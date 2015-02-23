@@ -14,9 +14,7 @@
 	});
 	$(document).ready(function() {
 		{% for i in depend_list %}
-		if (!$('#id_{{i.switch}}').attr('checked')) {
-			$('#id_{{i.dependent}}').attr('disabled', true);
-		}
+		if (!$('#id_{{i.switch}}').attr('checked')) {$('#id_{{i.dependent}}').attr('disabled', true);}
 		{% endfor %}
 	});
 </script>

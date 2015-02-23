@@ -63,7 +63,7 @@ class CompetitionSettingsTeamForm(Form):
 class CreateTeamForm(ModelForm):
 	class Meta:
 		model = Team
-		fields = ['teamname','username','password','networkaddr','compid','score_configs']
+		fields = ['teamname','username','password','networkaddr']
 		labels = {
 			'teamname': ('Team Name'),
 			'username': ('Team Username'),
