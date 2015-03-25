@@ -119,6 +119,7 @@ def run_plugin_test(serv_obj, form_dict):
 	return module_instance.score(emu_team)
 
 def buildServiceConfigForm(serv_obj, form_obj, team_score_dict = None):
+	print form_obj
 	# Gets the module name, which is then used to import the plugin from the file
 	module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
 	# Creates an instance of the plugin
@@ -198,9 +199,9 @@ def buildTeamServiceConfigDict(compid, post_dict):
 	for serv_obj in Service.objects.filter(compid = compid):
 		module_name = Document.objects.get(servicemodule = serv_obj.servicemodule).filename.split(".")[0]
 		module_inst = getattr(__import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name]), module_name)(serv_obj)
-		config_dict = getattr(module_inst, "team_config_type_dict")
+		config_dict = getattr(module_inst, "plugin_config")
 		serv_dict = {}
-		for key in config_dict:
+		for key in config_dict['fields']:
 			if serv_obj.name + "-" + key in post_dict:
 				serv_dict[key] = post_dict.pop(serv_obj.name + "-" + key)
 				# If it's in a list, pull it out of the list

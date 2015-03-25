@@ -4,8 +4,10 @@ from . import Comp
 from . import CompConfig
 from . import AdminConfig
 from . import Resources
+import WebApi
 
 urlpatterns = patterns('',
+	url(r'^api/v1/', include('WebApi.urls')),
 	url(r'^$', views.home),
 	url(r'^competitions/login/$',												Comp.login),			# Sign in page for teams
 	url(r'^competitions/logout/$',												Comp.logout),			# Sign out 'page' for teams

@@ -16,61 +16,60 @@ from django.utils import timezone
 from cssefwebfront import settings
 
 class Competition(Model):
-	compid = AutoField(primary_key = True)
-	compname = CharField(max_length = 50)
-	compurl = CharField(max_length = 50)
-	description_short = CharField(max_length = 300)
-	description_full = TextField(max_length = 1000)
-	datetime_display = DateTimeField()
-	datetime_start = DateTimeField()
-	datetime_finish = DateTimeField()
-	scoring_enabled = BooleanField(default = True)
-	scoring_interval = PositiveIntegerField(null = True)
-	scoring_interval_uncty = PositiveIntegerField(null = True)
-	scoring_method = CharField(max_length = 20, null = True, blank = True)
-	scoring_sla_enabled = BooleanField(default = True)
-	scoring_sla_threashold = PositiveIntegerField(null = True)
-	scoring_sla_penalty = PositiveIntegerField(null = True)
-	services_enabled = BooleanField(default = True)
-	teams_view_ranking_enabled = BooleanField(default = True)
-	teams_view_scoreboard_enabled = BooleanField(default = True)
-	teams_view_servicestatistics_enabled = BooleanField(default = True)
-	teams_view_servicestatus_enabled = BooleanField(default = True)
-	teams_view_injects_enabled = BooleanField(default = True)
-	teams_view_incidentresponse_enabled = BooleanField(default = True)
-
+	competitionId = AutoField(primary_key = True)
+	name = CharField(max_length = 50)
+	url = CharField(max_length = 50)
+	descriptionShort = CharField(max_length = 300)
+	descriptionFull = TextField(max_length = 1000)
+	datetimeDisplay = DateTimeField()
+	datetimeStart = DateTimeField()
+	datetimeFinish = DateTimeField()
+	scoringEnabled = BooleanField(default = True)
+	scoringInterval = PositiveIntegerField(null = True)
+	scoringIntervalUncertainty = PositiveIntegerField(null = True)
+	scoringMethod = CharField(max_length = 20, null = True, blank = True)
+	scoringSlaEnabled = BooleanField(default = True)
+	scoringSlaThreashold = PositiveIntegerField(null = True)
+	scoringSlaPenalty = PositiveIntegerField(null = True)
+	servicesEnabled = BooleanField(default = True)
+	teamsViewRankingEnabled = BooleanField(default = True)
+	teamsViewScoreboardEnabled = BooleanField(default = True)
+	teamsViewServiceStatisticsEnabled = BooleanField(default = True)
+	teamsViewServiceStatusEnabled = BooleanField(default = True)
+	teamsViewInjectsEnabled = BooleanField(default = True)
+	teamsViewIncidentResponseEnabled = BooleanField(default = True)
 
 class Team(Model):
-	teamid = AutoField(primary_key = True)
-	compid = PositiveIntegerField()
+	teamId = AutoField(primary_key = True)
+	competitionId = PositiveIntegerField()
 	last_login = DateTimeField(default = timezone.now())
 	teamname = CharField(max_length = 30)
 	username = CharField(max_length = 30)
 	password = CharField(max_length = 64)
 	networkaddr = CharField(max_length = 30)
-	score_configs = TextField(max_length = 500, default = "{}")
+	scoreConfigurations = TextField(max_length = 500, default = "{}")
 
 	def is_authenticated(self):
 		return True
 
-class ServiceModule(Model):
-	servmdulid = AutoField(primary_key = True)
-	modulename = CharField(max_length = 20)
+class Plugin(Model):
+	pluginId = AutoField(primary_key = True)
+	name = CharField(max_length = 20)
 	description = TextField(max_length = 500)
 
 class Service(Model):
-	servid = AutoField(primary_key = True)
-	compid = PositiveIntegerField()
-	servicemodule = ForeignKey(ServiceModule, unique = False)
+	serviceId = AutoField(primary_key = True)
+	competitionId = PositiveIntegerField()
+	plugin = ForeignKey(Plugin, unique = False)
 	name = CharField(max_length = 30)
 	description = CharField(max_length = 200)
-	datetime_start = DateTimeField()
-	datetime_finish = DateTimeField()
+	datetimeStart = DateTimeField()
+	datetimeFinish = DateTimeField()
 	points = PositiveIntegerField()
-	connectip = BooleanField(default = True)
-	connect_display = CharField(max_length = 15)
-	networkloc = CharField(max_length = 15)
-	defaultport = PositiveIntegerField()
+	connectIp = BooleanField(default = True)
+	connectDisplay = CharField(max_length = 15)
+	networkLocation = CharField(max_length = 15)
+	defaultPort = PositiveIntegerField()
 
 	# Service object now has the ability to score itself
 	def score(self, team_obj):
@@ -85,27 +84,27 @@ class Service(Model):
 		return getattr(module, module_name)(self)
 
 class Score(Model):
-	scorid = AutoField(primary_key = True)
-	compid = PositiveIntegerField()
-	teamid = PositiveIntegerField()
-	servid = PositiveIntegerField()
+	scoreId = AutoField(primary_key = True)
+	competitionId = PositiveIntegerField()
+	teamId = PositiveIntegerField()
+	serviceId = PositiveIntegerField()
 	datetime = DateTimeField(default = timezone.now())
 	value = PositiveIntegerField()
 	message = CharField(max_length = 100)
 
 class Inject(Model):
-	ijctid = AutoField(primary_key = True)
-	compid = PositiveIntegerField()
-	dt_delivery = DateTimeField()
-	dt_response_due = DateTimeField(null = True, blank = True)
-	dt_response_close = DateTimeField(null = True, blank = True)
-	require_response = BooleanField(default=False)
+	injectId = AutoField(primary_key = True)
+	competitionId = PositiveIntegerField()
+	datetimeDelivery = DateTimeField()
+	datetimeResponseDue = DateTimeField(null = True, blank = True)
+	datetimeResponseClose = DateTimeField(null = True, blank = True)
+	requireResponse = BooleanField(default=False)
 	title = CharField(max_length = 50)
 	body = CharField(max_length = 1000)
 
-class Admin(Model):
+class User(Model):
 	last_login = DateTimeField(default = timezone.now())
-	userid = AutoField(primary_key = True)
+	userId = AutoField(primary_key = True)
 	username = CharField(max_length = 20)
 	password = CharField(max_length = 64)
 
@@ -113,28 +112,28 @@ class Admin(Model):
 		return True
 
 class InjectResponse(Model):
-	ijctrespid = AutoField(primary_key = True)
-	compid = PositiveIntegerField()
-	teamid = PositiveIntegerField()
-	ijctid = PositiveIntegerField()
+	injectResponseId = AutoField(primary_key = True)
+	competitionId = PositiveIntegerField()
+	teamId = PositiveIntegerField()
+	injectId = PositiveIntegerField()
 	datetime = DateTimeField(default = timezone.now())
-	textentry = TextField(max_length = 1000)
+	content = TextField(max_length = 1000)
 
 class IncidentResponse(Model):
-	intrspid = AutoField(primary_key = True)
-	compid = PositiveIntegerField()
-	teamid = PositiveIntegerField()
+	incidentResponseId = AutoField(primary_key = True)
+	competitionId = PositiveIntegerField()
+	teamId = PositiveIntegerField()
 	replyto = IntegerField()
 	datetime = DateTimeField(default = timezone.now())
 	subject = CharField(max_length = 100, default = "")
-	textentry = TextField(max_length = 1000)
+	content = TextField(max_length = 1000)
 
 class Document(Model):
-	docid = AutoField(primary_key = True)
+	documentId = AutoField(primary_key = True)
 	inject = ForeignKey(Inject, null = True, blank = True, unique = False)
 	injectresponse = ForeignKey(InjectResponse, null = True, blank = True, unique = False)
 	incidentresponse = ForeignKey(IncidentResponse, null = True, blank = True, unique = False)
-	servicemodule = ForeignKey(ServiceModule, null = True, blank = True, unique = True)
+	plugin = ForeignKey(Plugin, null = True, blank = True, unique = True)
 	content_type = CharField(max_length = 64, null = True)
 	filehash = CharField(max_length = 32)
 	filepath = CharField(max_length = 256)
@@ -146,3 +145,7 @@ class Document(Model):
 			return'application/force-download'
 		else:
 			return self.content_type
+
+class Organization(Model):
+	organizationId = AutoField(primary_key = True)
+	name = CharField(max_length = 256, blank = False, null = False)

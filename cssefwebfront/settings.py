@@ -36,8 +36,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
+    'rest_framework',
     'djcelery',
     'cssefwebfront',
+    'ScoringEngine',
+    'WebApi',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
