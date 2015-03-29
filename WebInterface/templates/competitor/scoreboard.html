@@ -1,0 +1,42 @@
+{% extends "Comp/comp_template.html" %}
+
+{% block sidebar_id %}sidebar_scoreboard{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	{% if auth_name == "auth_team_blue" %}
+	<!-- Service selection form start -->
+	<div>
+		<form action="/competitions/{{ comp_obj.compurl }}/scoreboard/" method="post" class="form-inline">
+			{% csrf_token %}
+			{{ form.service.errors }}
+			<label for="{{ form.service.id_for_label }}" class="control-label">{{ form.service.label }}</label>
+			{{ form.service }}
+			<button type="submit" class="btn btn-primary">Go!</button>
+		</form>
+	<div>
+	<!-- Service selection form end -->
+	{% if not scores %}
+	<p> No scores have been recorded at this time.</p><br>
+	{% endif %}
+	<table class="table">
+		<tr><th>Datetime</th><th>Service</th><th>Points</th></tr>
+		{% for i in scores %}
+		{% if i.value == 0%}
+		<tr class="warning">
+		{% elif i.value < 0%}
+		<tr class="danger">
+		{% else %}
+		<tr class="success">
+		{% endif %}
+			<td>{{ i.time }}</td><td>{{ i.name }}</td><td>{{ i.value }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+	{% else %}
+	<p>
+		You must be authenticated as a team of this competition to view the page contents.
+	</p>
+	{% endif %}
+</div>
+{% endblock %}

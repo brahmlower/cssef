@@ -1,0 +1,32 @@
+{% extends "site_template.html" %}
+
+{% block navbar_links %}
+<li class="active"><a href="/competitions/{{ comp_obj.compurl }}/summary/">Competition</a></li>
+{% endblock %}
+
+{% block sidebar %}
+<div class="col-sm-3 col-md-2 sidebar">
+	<ul class="nav nav-sidebar">
+		<li id="sidebar_summary"><a href="/competitions/{{ comp_obj.compurl }}/summary/">Summary</a></li>
+		<li id="sidebar_details"><a href="/competitions/{{ comp_obj.compurl }}/details/">Details</a></li>
+		{% if comp_obj.teams_view_ranking_enabled %}
+		<li id="sidebar_rankings"><a href="/competitions/{{ comp_obj.compurl }}/ranking/">Team Ranking</a></li>
+		{% endif %}
+		{% if comp_obj.teams_view_servicestatus_enabled %}
+		<li id="sidebar_servicestatus"><a href="/competitions/{{ comp_obj.compurl }}/servicestatus/">Service Status</a></li>
+		{% endif %}
+		{% if comp_obj.teams_view_scoreboard_enabled %}
+		<li id="sidebar_scoreboard"><a href="/competitions/{{ comp_obj.compurl }}/scoreboard/">Score Board</a></li>
+		{% endif %}
+		{% if comp_obj.teams_view_servicestatistics_enabled %}
+		<li id="sidebar_servicestatistics"><a href="/competitions/{{ comp_obj.compurl }}/servicestatistics/">Service Statistics</a></li>
+		{% endif %}
+		{% if comp_obj.teams_view_injects_enabled %}
+		<li id="sidebar_injects"><a href="/competitions/{{ comp_obj.compurl }}/injects/">Injects</a></li>
+		{% endif %}
+		{% if comp_obj.teams_view_incidentresponse_enabled %}
+		<li id="sidebar_incidentresponse"><a href="/competitions/{{ comp_obj.compurl }}/incidentresponse/">Incident Response</a></li>
+		{% endif %}
+	</ul>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "CompConfig/compconfig_template.html" %}
+
+{% block headers_js %}
+<script type="text/javascript">
+	$(function () {
+		$('#{{ form.team.score_configs.id_for_label }}').focusout(
+			function() {
+				// Replaces any single quotes with double quotes (screws up apostophes TODO: fix this somehow)
+				$("#{{ form.score_configs.id_for_label }}").val($("#{{ form.score_configs.id_for_label }}").val().replace(/\'/g, '\"'));
+				// Checks if the submission should be locked
+				var score_config = $("#{{ form.score_configs.id_for_label }}").val();
+				try {
+					JSON.parse(score_config);
+				} catch (e) {
+					// Bad json object, need to disable submit button
+					if (!$('#form_sub_button').hasClass('disabled')) {
+						$('#form_sub_button').addClass('disabled')
+						$('#form_messages').html('Unable to parse json object in \'Score Configuration\' field.')
+					}
+					return
+				}
+				// The json object is good, and we should remove the disabled class if it's there
+				if ($('#form_sub_button').hasClass('disabled')) {
+					$('#form_sub_button').removeClass('disabled')
+					$('#form_messages').html('')
+				}
+			}
+		);
+	});
+	function toggledisable(targetdom) {
+		$(targetdom).prop('disabled', function(idx, oldProp) { return !oldProp; });
+		$(targetdom).val('');
+	}
+	$(function () {
+		{% for i in depend_list %}
+		$('#id_{{i.switch}}').click(function () {toggledisable('#id_{{i.dependent}}')});
+		{% endfor %}
+		$("#{{ form.teamname.id_for_label }}").keyup( function() { var teamname = $("#{{ form.teamname.id_for_label }}").val();
+			$("#{{ form.username.id_for_label }}").val(teamname.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/gi, ''));
+		});
+	});
+	$(document).ready(function() {
+		{% for i in depend_list %}
+		if (!$('#id_{{i.switch}}').attr('checked')) {$('#id_{{i.dependent}}').attr('disabled', true);}
+		{% endfor %}
+	});
+</script>
+{% endblock %}
+
+{% block sidebar_id %}sidebar_teams{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">	
+	{% if action == "create" %}
+	<h2> Create Team </h2>
+	<form action="/admin/competitions/{{ comp_obj.compurl }}/teams/{{ action }}/" method="post" class="form-horizontal">
+	{% else%}
+	<h2> Edit Team </h2>
+	<form action="/admin/competitions/{{ comp_obj.compurl }}/teams/{{ action }}/{{ teamid }}/" method="post" class="form-horizontal">
+	{% endif %}	
+		{% csrf_token %}
+		{% load extras %}
+		{% for i in form %}
+			{{ i.errors }}
+			<label for="{{ i.id_for_label }}" class="col-lg-2 control-label">{{ i.label }}</label>
+			<div class="col-lg-10 input-append">{{ i }}<br></div>
+		{% endfor %}
+
+		<div class="col-lg-10 col-lg-offset-2">
+			<a class="btn btn-default" href="/admin/competitions/{{ comp_obj.compurl }}/teams/">Cancel</a>
+			<button id="form_sub_button" type="submit" class="btn btn-primary">Save</button>
+			<p id="form_messages"></p>
+		</div>
+	</form>
+</div>
+{% endblock %}

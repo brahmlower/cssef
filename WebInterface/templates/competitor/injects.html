@@ -1,0 +1,41 @@
+{% extends "Comp/comp_template.html" %}
+
+{% block sidebar_id %}sidebar_injects{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	{% if auth_name == "auth_team_blue" %}
+	{% if not inject_list %}
+	<p>No injects have been released yet.</p>
+	{% endif %}
+	{% for i in inject_list %}
+	<div class="panel panel-{{i.display_state}}">
+		<div class="panel-heading"> {{ i.inject.title }} </div>
+		<div class="panel-body">
+			<strong>Released at: </strong>{{ i.inject.dt_delivery }}<br>
+			{% if i.inject.require_response %}
+			<strong>Due at: </strong>{{ i.inject.dt_response_due }}<br>
+			<strong>Closes at: </strong>{{ i.inject.dt_response_close }}<br>
+			{% else %}
+			<strong>Due at: </strong>No response required<br>
+			{% endif %}
+			{% for k in i.files %}
+			<strong> Attached File: </strong><a href="/resources/injects/{{i.inject.compid}}/{{i.inject.ijctid}}/{{k.urlencfilename}}">{{ k.filename }}</a><br>
+			{% endfor %}
+			<strong>Inject body:</strong><br>
+			{{ i.inject.body }}
+			{% if i.require_response %}
+			<div class="bt-component pull-right">
+				<a href="/competitions/{{ comp_obj.compurl }}/injects/{{ i.inject.ijctid }}" class="btn btn-primary">View/Respond</a>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+	{% endfor %}
+	{% else %}
+	<p>
+		You must be authenticated as a team of this competition to view the page contents.
+	</p>
+	{% endif %}
+</div>
+{% endblock %}

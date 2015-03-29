@@ -1,0 +1,26 @@
+{% extends "AdminConfig/admin_template.html" %}
+
+{% block sidebar_id %}sidebar_users{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<div class="jumbotron">
+		<h1>User List</h1>
+		<p>The following is the list of users. Users may be allowed to configure one or more competitions depending on their settings.</p>
+		<br>
+		<a class="btn btn-primary btn-lg">New User</a>
+	</div>
+
+	<div id="user_list">
+		{% autoescape off %}
+		{% for i in competition_list %}
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				{{ i.name }}
+			</div>
+		</div>
+		{% endfor %}
+		{% endautoescape %}
+	</div>
+</div>
+{% endblock %}

@@ -24,10 +24,11 @@ class Competition(Model):
 	datetimeDisplay = DateTimeField()
 	datetimeStart = DateTimeField()
 	datetimeFinish = DateTimeField()
+	autoStart = BooleanField(default = False)
 	scoringEnabled = BooleanField(default = True)
 	scoringInterval = PositiveIntegerField(null = True)
 	scoringIntervalUncertainty = PositiveIntegerField(null = True)
-	scoringMethod = CharField(max_length = 20, null = True, blank = True)
+	scoringMethod = CharField(max_length = 20, null = True, blank = True)	# set to either CIDR or domain name
 	scoringSlaEnabled = BooleanField(default = True)
 	scoringSlaThreashold = PositiveIntegerField(null = True)
 	scoringSlaPenalty = PositiveIntegerField(null = True)
@@ -38,6 +39,18 @@ class Competition(Model):
 	teamsViewServiceStatusEnabled = BooleanField(default = True)
 	teamsViewInjectsEnabled = BooleanField(default = True)
 	teamsViewIncidentResponseEnabled = BooleanField(default = True)
+
+	def getServices(self):
+		return Service.objects.filter(competitionId = self.competitionId)
+
+	def getTeams(self):
+		return Team.objects.filter(competitionId = competitionId)
+
+	def sleepScoreInterval(self):
+		min_seconds = score_delay - score_delay_uncert
+		max_seconds = score_delay + score_delay_uncert
+		sleep(randrange(min_seconds, max_seconds))
+
 
 class Team(Model):
 	teamId = AutoField(primary_key = True)
@@ -72,16 +85,19 @@ class Service(Model):
 	defaultPort = PositiveIntegerField()
 
 	# Service object now has the ability to score itself
-	def score(self, team_obj):
-		instance = self.load_plugin()
-		score_obj = instance.score(team_obj)
-		score_obj.datetime = timezone.now()
+	def score(self, team):
+		instance = self.loadPlugin()
+		scoreInstance = instance.score(team)
+		scoreInstance.datetime = timezone.now()
+		scoreInstance.teamId = team.teamId
+		scoreInstance.serviceId = self.serviceId
+		scoreInstance.competitionId = self.competitionId
 		return score_obj
 
-	def load_plugin(self):
-		module_name = Document.objects.get(servicemodule = self.servicemodule).filename.split(".")[0]
-		module = __import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + module_name, fromlist=[module_name])
-		return getattr(module, module_name)(self)
+	def loadPlugin(self):
+		moduleName = Document.objects.get(servicemodule = self.servicemodule).filename.split(".")[0]
+		module = __import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + moduleName, fromlist=[moduleName])
+		return getattr(module, moduleName)(self)
 
 class Score(Model):
 	scoreId = AutoField(primary_key = True)

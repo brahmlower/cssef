@@ -1,0 +1,46 @@
+{% extends "CompConfig/compconfig_template.html" %}
+
+{% block sidebar_id %}sidebar_services{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<!-- displays actual page content -->
+	<div class="page-header">
+		<h1> {{ comp_obj.compname }} - Services</h1>
+	</div>
+	{% if available_modules %}
+	<a href="/admin/competitions/{{ comp_obj.compurl }}/services/create/" class="btn btn-primary">Create Service</a>
+	{% else %}
+	<p>There are no service modules available. Service creation requires the use of a Service Module. Contact your site administrator to resolve this problem.</p>
+	{% endif %}
+	<br><br>
+
+	{% if service_list %}
+	{% for i in service_list %}
+	<div class="panel panel-default">
+		<div class="panel-heading"> {{i.name}} </div>
+		<div class="panel-body">
+			<strong>Module: </strong>{{ i.servicemodule.modulename }}<br>
+			<strong>Name: </strong>{{ i.name }}<br>
+			<strong>Start Scoring: </strong>{{ i.datetime_start }}<br>
+			<strong>Finish Scoring: </strong>{{ i.datetime_finish }}<br>
+			<strong>Connection Method: </strong>{{ i.connect_display }}<br>
+			<strong>Machine Address: </strong>{{ i.networkloc }}<br>
+			<strong>Default Port: </strong>{{ i.defaultport }}<br>
+			<strong>Points: </strong>{{ i.points}}<br>
+			<strong>Description: </strong><br>
+			{{ i.description }}
+			<div class="bt-component pull-right">
+				<a href="/admin/competitions/{{ comp_obj.compurl }}/services/edit/{{ i.servid }}/" class="btn btn-primary">Edit</a>
+				<a href="/admin/competitions/{{ comp_obj.compurl }}/services/delete/{{ i.servid }}/" class="btn btn-danger">Delete</a>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+	{% else %}
+	{% if available_modules %}
+	<p>No services have been created yet. Go ahead and make one!</p>
+	{% endif %}
+	{% endif %}
+</div>
+{% endblock %}

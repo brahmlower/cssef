@@ -1,0 +1,32 @@
+{% extends "CompConfig/compconfig_template.html" %}
+
+{% block sidebar_id %}sidebar_teams{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<div class="page-header">
+		<h1> {{comp_obj.compname}} - Teams</h1>
+	</div>
+	<a href="/admin/competitions/{{ comp_obj.compurl }}/teams/create/" class="btn btn-primary">Create Team</a>
+	<br><br>
+	{% if teams %}
+	{% for i in teams %}
+	<div class="panel panel-default">
+		<div class="panel-heading"> {{i.teamname}} </div>
+		<div class="panel-body">
+			<strong>Name: </strong>{{ i.teamname }}<br>
+			<strong>Username: </strong>{{ i.username }}<br>
+			<strong>Domain: </strong>{{ i.networkaddr }}<br>
+			<strong>Score Configurations: </strong>{{ i.score_configs }}
+			<div class="bt-component pull-right">
+				<a href="/admin/competitions/{{ comp_obj.compurl }}/teams/edit/{{ i.teamid }}" class="btn btn-primary">Edit</a>
+				<a href="/admin/competitions/{{ comp_obj.compurl }}/teams/delete/{{ i.teamid }}" class="btn btn-danger">Delete</a>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+	{% else %}
+	<p>No teams have been created yet. Go ahead and make one!</p>
+	{% endif %}
+</div>
+{% endblock %}
