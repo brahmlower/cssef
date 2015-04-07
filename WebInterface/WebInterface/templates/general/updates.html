@@ -1,0 +1,31 @@
+{% extends "sitePageTemplate.html" %}
+
+{% block sidebar_id %}sidebar_updates{% endblock %}
+
+{% block authed_navbar_links %}
+{% if auth_name == "auth_team_white" %}
+<li><a href="/admin/">Admin Config</a></li>
+{% elif auth_name == "auth_team_blue" %}
+<li><a href="/competitions/{{ competition_object.compurl }}/summary/">Competition</a></li>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<div class="col-sm-3 col-md-2 sidebar">
+	<ul class="nav nav-sidebar">
+		<li id="sidebar_home"><a href="/">Home</a></li>
+		<li id="sidebar_updates"><a href="/updates">Updates</a></li>
+		<li id="sidebar_contact"><a href="/contact">Contact</a></li>
+	</ul>
+</div>
+{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<div class="page-header">
+		<h1>Updates</h1>
+	</div>
+	<h4>Refactoring Work:</h4>
+	<p>I've started working on refactoring the project, which should make continued development considerably easier...</p>
+</div>
+{% endblock %}

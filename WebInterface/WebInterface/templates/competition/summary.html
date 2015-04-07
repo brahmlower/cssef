@@ -1,0 +1,28 @@
+{% extends "CompConfig/compConfigPageTemplate.html" %}
+
+{% block sidebar_id %}sidebar_summary{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<div class="page-header">
+		<h1> {{ comp_obj.compname }} - Summary</h1>
+	</div>
+
+	<!-- displays the short description -->
+	<div class="panel panel-default">
+		<div class="panel-heading">Short Description</div>
+		<div class="panel-body">
+			<p>{{ comp_obj.description_short }}</p>
+		</div>
+	</div>
+
+	<!-- displays the full description -->
+	<div class="panel panel-default">
+		<div class="panel-heading">Full Description</div>
+		<div class="panel-body">
+			<p>{{ comp_obj.description_full }}</p>
+		</div>
+	</div>
+
+</div>
+{% endblock %}

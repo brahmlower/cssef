@@ -1,0 +1,26 @@
+{% extends "administrator/adminPageTemplate.html" %}
+
+{% block sidebar_id %}sidebar_organizations{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<div class="jumbotron">
+		<h1>Organization List</h1>
+		<p>The following is the list of organizations.</p>
+		<br>
+		<a class="btn btn-primary btn-lg">New Organization</a>
+	</div>
+
+	<div id="user_list">
+		{% autoescape off %}
+		{% for i in organizations %}
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				{{ i.name }}
+			</div>
+		</div>
+		{% endfor %}
+		{% endautoescape %}
+	</div>
+</div>
+{% endblock %}

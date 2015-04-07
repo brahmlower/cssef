@@ -1,0 +1,34 @@
+{% extends "sitePageTemplate.html" %}
+
+{% block sidebar_id %}sidebar_home{% endblock %}
+
+{% block authed_navbar_links %}
+{% if auth_name == "auth_team_white" %}
+<li><a href="/admin/">Admin Config</a></li>
+{% elif auth_name == "auth_team_blue" %}
+<li><a href="/competitions/{{ competition_object.compurl }}/summary/">Competition</a></li>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<div class="col-sm-3 col-md-2 sidebar">
+	<ul class="nav nav-sidebar">
+		<li id="sidebar_home"><a href="/">Home</a></li>
+		<li id="sidebar_updates"><a href="/updates">Updates</a></li>
+		<li id="sidebar_contact"><a href="/contact">Contact</a></li>
+	</ul>
+</div>
+{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<div class="page-header">
+		<h1>UAF CSC CSSEF Home</h1>
+	</div>
+	<h4>A note to users:</h4>
+	<p>Please note that this tool is still a work in progress, and therfore may yield unexpected results in some cases. The project is being heavily refactored so there may be some heavy descrepancies between the project and its documentation.<p>
+	<p>
+	View this project on GitHub: <a href="https://github.com/bplower/cssef">https://github.com/bplower/cssef</a><br>View projects documentation: <a href="https://github.com/bplower/cssef/wiki">https://github.com/bplower/cssef/wiki</a>
+	</p>
+</div>
+{% endblock %}

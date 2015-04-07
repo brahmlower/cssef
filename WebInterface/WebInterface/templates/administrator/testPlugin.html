@@ -1,0 +1,64 @@
+{% extends "administrator/adminPageTemplate.html" %}
+
+{% block headers_js %}
+<script type="text/javascript">
+	function toggledisable(targetdom) {
+		$(targetdom).prop('disabled', function(idx, oldProp) { return !oldProp; });
+		$(targetdom).val('');
+	}
+
+	$(function () {
+		{% for i in depend_list %}
+		$('#id_{{i.switch}}').click(function () {toggledisable('#id_{{i.dependent}}')});
+		{% endfor %}
+	});
+	$(document).ready(function() {
+		{% for i in depend_list %}
+		if (!$('#id_{{i.switch}}').attr('checked')) {$('#id_{{i.dependent}}').attr('disabled', true);}
+		{% endfor %}
+	});
+</script>
+{% endblock %}
+
+{% block sidebar_id %}sidebar_servicemodules{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<h2> Service Module Test: {{servmdul_obj.modulename}}</h2>
+	{% if score_obj %}
+	{% if score_obj.value == 0 %}
+	<div class="panel panel-danger">
+	{% else %}
+	<div class="panel panel-success">
+	{% endif %}
+		<div class="panel-heading"> Test Results </div>
+		<div class="panel-body">
+			<strong>Datetime:</strong> {{ score_obj.datetime }}<br>
+			<strong>Value:</strong> {{ score_obj.value }}<br>
+			<strong>Message:</strong>
+			{% autoescape off %}
+			<p>{{ score_obj.message }}</p>
+			{% endautoescape %}
+		</div>
+	</div>
+	<hr>
+	{% endif%}
+	<form action="/admin/servicemodules/test/{{servmdul_obj.servmdulid}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+		{% csrf_token %}
+		<h4> Service Configurations </h4>
+		{% for i in service_configs %}
+		{% if forloop.counter0 == 4 %}
+		<h4> Service Specific Configurations </h4>
+		{% endif %}
+		{{ i.errors }}
+		<label for="{{ i.id_for_label }}" class="col-lg-2 control-label">{{ i.label }}</label>
+		<div class="col-lg-10 input-append">{{ i }}<br></div>
+		{% endfor %}
+
+		<div class="col-lg-10 col-lg-offset-2">
+			<a class="btn btn-default" href="/admin/servicemodules/">Cancel</a>
+			<button type="submit" class="btn btn-primary"> Test </button>
+		</div>
+	</form>
+</div>
+{% endblock %}

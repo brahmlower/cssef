@@ -1,0 +1,39 @@
+{% extends "Comp/comp_template.html" %}
+
+{% block sidebar_id %}sidebar_servicestatus{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	{% if auth_name == "auth_team_blue" %}
+	{% if not status_list %}
+	<p>There are no services yet, so there are no statuses to report.</p>
+	{% endif %}
+	{% for i in status_list %}
+	{% if i.score.value == 0 %}
+	<div class="panel panel-danger">
+	{% else %}
+	<div class="panel panel-success">
+	{% endif%}
+		<div class="panel-heading"> {{ i.service.name }} </div>
+		<div class="panel-body">
+			<strong>Service Description:</strong> {{ i.service.description }}<br>
+			<strong>Service Port:</strong> {{ i.service.defaultport }}<br>
+			<strong>Service Host:</strong> {{ i.service.networkloc}}<br>
+			<hr>
+			<strong>Score Time: </strong> {{ i.score.datetime }} <br>
+			<strong>Scored Value: </strong> {{ i.score.value }} <br>
+			{% if i.score.message != "" %}
+			{% autoescape off %}
+			<strong>Score Message: </strong> <p>{{ i.score.message }}</p>
+			{% endautoescape %}
+			{% endif %}
+		</div>
+	</div>
+	{% endfor %}
+	{% else %}
+	<p>
+		You must be authenticated as a team of this competition to view the page contents.
+	</p>
+	{% endif %}
+</div>
+{% endblock %}
