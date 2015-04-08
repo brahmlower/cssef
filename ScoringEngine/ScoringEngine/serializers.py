@@ -82,6 +82,7 @@ class ScoreSerializer(serializers.ModelSerializer):
 		model = Score
 		fields = (
 			'scoreId',
+			'competitionId',
 			'teamId',
 			'serviceId',
 			'datetime',
@@ -94,7 +95,8 @@ class InjectSerializer(serializers.ModelSerializer):
 		fields = (
 			'injectId',
 			'competitionId',
-			'datetimeDeliver',
+			'manualDelivery',
+			'datetimeDelivery',
 			'datetimeResponseDue',
 			'datetimeResponseClose',
 			'requireResponse',
@@ -117,7 +119,7 @@ class InjectResponseSerializer(serializers.ModelSerializer):
 		fields = (
 			'injectResponseId',
 			'competitionId',
-			'teamdId',
+			'teamId',
 			'injectId',
 			'datetime',
 			'content')
