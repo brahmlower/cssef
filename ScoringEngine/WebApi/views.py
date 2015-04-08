@@ -17,6 +17,7 @@ from ScoringEngine.serializers import ServiceSerializer
 from ScoringEngine.serializers import ScoreSerializer
 from ScoringEngine.serializers import InjectSerializer
 from ScoringEngine.serializers import UserSerializer
+from ScoringEngine.serializers import InjectResponseSerializer
 from ScoringEngine.serializers import IncidentResponseSerializer
 from ScoringEngine.serializers import DocumentSerializer    # TODO: Not sure if necessary
 from ScoringEngine.serializers import OrganizationSerializer
@@ -49,9 +50,8 @@ def listObjects(objectType, objectTypeSerializer):
     return JSONResponse(serializer.data)
 
 def postObject(request, objectTypeSerializer, objectInstance=None):
-    data = JSONParser().parse(request)
     if not objectInstance:
-        serializer = objectTypeSerializer(data = data)
+        serializer = objectTypeSerializer(data = request.POST)
     else:
         serializer = objectTypeSerializer(objectInstance, data = data)
     if serializer.is_valid():
