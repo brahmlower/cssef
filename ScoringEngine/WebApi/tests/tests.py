@@ -8,6 +8,104 @@ URL_PREFIX = "/"
 def prefixedUrl(url):
 	return URL_PREFIX + url
 
+def submitPostData(url, data, instance = None):
+	client = Client()
+	response = client.post(url, data)
+	if instance:
+		instance.assertEqual(response.status_code, HTTP_201_CREATED)
+	return json.loads(response.content)
+
+def createCompetition(instance):
+	data = {'name': 'New Competition', 'url': 'new_competition'}
+	url = prefixedUrl('competitions.json')
+	return submitPostData(url, data, instance)
+
+def createTeam(instance, competitionId):
+	data = {
+		'competitionId': int(competitionId),
+		'teamname': 'Testing Team',
+		'username': 'testingteam',
+		'password': 'Pa$$w0rd',
+		'networkCidr': 'team1.tld'
+		}
+	url = prefixedUrl('competitions/%s/teams.json' % str(competitionId))
+	return submitPostData(url, data, instance)
+
+def createService(instance, competitionId, pluginId):
+	data = { 
+		'competitionId': int(competitionId),
+		'plugin': int(pluginId),
+		'name': 'Test SSH',
+		'description': 'A test service.',
+		'points': 100,
+		'connectIp': True,
+		'connectDisplay': "What's this?",
+		'networkLocation': 'www',
+		'defaultPort': 22}
+	url = prefixedUrl('competitions/%s/services.json' % str(competitionId))
+	return submitPostData(url, data, instance)
+
+def createScore(instance, competitionId, teamId, serviceId):
+	data = {
+		'competitionId': int(competitionId),
+		'teamId': int(teamId),
+		'serviceId': int(serviceId),
+		'value': 100,
+		'message': 'Service is up.'}
+	url = prefixedUrl('competitions/%s/scores.json' % str(competitionId))
+	return submitPostData(url, data, instance)
+
+def createInject(instance, competitionId):
+	data = {
+		'competitionId': int(competitionId),
+		'manualDelivery': True,
+		'requireResponse': True,
+		'title': 'Title of Inject',
+		'body': 'Body of new inject.'}
+	url = prefixedUrl('competitions/%s/injects.json' % str(competitionId))
+	return submitPostData(url, data, instance)
+
+def createInjectResponse(instance, competitionId, teamId, injectId):
+	data = {
+		'competitionId': int(competitionId),
+		'teamId': int(teamId),
+		'injectId': int(injectId),
+		'content': 'Testing inject response content'
+	}
+	url = prefixedUrl('competitions/%s/injectresponses.json' % str(competitionId))
+	return submitPostData(url, data, instance)
+
+def createIncidentResponse(instance, competitionId, teamId):
+	data = {
+		'competitionId': int(competitionId),
+		'teamId': int(teamId),
+		'replyTo': -1,
+		'subject': 'Test Incident Response Subject',
+		'content': 'Testing incident response content'}
+	url = prefixedUrl('competitions/%s/incidentresponses.json' % str(competitionId))
+	return submitPostData(url, data, instance)
+
+def createPlugin(instance):
+	data = {
+		'name': 'Test Plugin',
+		'description': 'This is a test plugin'}
+	url = prefixedUrl('plugins.json')
+	return submitPostData(url, data, instance)
+
+def createUser(instance):
+	data = {
+		'username': 'TestUser',
+		'password': 'testUserP@sSw0rd'}
+	url = prefixedUrl('users.json')
+	return submitPostData(url, data, instance)
+
+def createOrganization(instance):
+	data = {
+		'name': 'Test Organization'}
+	url = prefixedUrl('organizations.json')
+	return submitPostData(url, data, instance)
+
+
 class Competitions(TestCase):
 	def setUp(self):
 		pass
@@ -19,33 +117,23 @@ class Competitions(TestCase):
 
 	def testExistingCompetition(self):
 		client = Client()
-		postData = {'name': 'New Competition', 'url': 'new_competition'}
-		response = client.post(prefixedUrl('competitions.json'), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		content = json.loads(response.content)
-		competitionId = content['competitionId']
+		competitionId = createCompetition(self)['competitionId']
 		response = client.get(prefixedUrl('competitions/%s.json' % competitionId))
 		content = json.loads(response.content)
 		self.assertEqual(content['competitionId'], competitionId)
 
 	def testAbsentCompetition(self):
 		client = Client()
-		response = client.get(prefixedUrl('competitions/02.json'))
-		self.assertEqual(response.content, "")
+		response = client.get(prefixedUrl('competitions/2.json'))
+		self.assertEqual(response.content, '')
 
 	def testCreateCompetition(self):
-		client = Client()
-		postData = {'name': 'New Competition', 'url': 'new_competition'}
-		response = client.post(prefixedUrl('competitions.json'), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
+		createCompetition(self)
 
 class Teams(TestCase):
 	def setUp(self):
 		client = Client()
-		postData = {'name': 'New Competition', 'url': 'new_competition'}
-		response = client.post(prefixedUrl('competitions.json'), postData)
-		content = json.loads(response.content)
-		self.competitionId = content['competitionId']
+		self.competitionId = createCompetition(self)['competitionId']
 
 	def testListTeams(self):
 		client = Client()
@@ -54,43 +142,23 @@ class Teams(TestCase):
 
 	def testExistingTeam(self):
 		client = Client()
-		postData = {\
-			'competitionId': int(self.competitionId), \
-			'teamname': 'Testing Team', \
-			'username': 'testingteam', \
-			'password': 'Pa$$w0rd', \
-			'networkCidr': 'team1.tld'}
-		response = client.post(prefixedUrl('competitions/%s/teams.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		content = json.loads(response.content)
-		teamId = content['teamId']
+		teamId = createTeam(self, self.competitionId)['teamId']
 		response = client.get(prefixedUrl('competitions/%s/teams/%s.json' % (self.competitionId, teamId)))
 		content = json.loads(response.content)
 		self.assertEqual(content['teamId'], teamId)
 
 	def testAbsentTeam(self):
 		client = Client()
-		response = client.get(prefixedUrl('competitions/01/teams/02.json'))
+		response = client.get(prefixedUrl('competitions/%s/teams/2.json' % self.competitionId))
 		self.assertEqual(response.content, '')
 
 	def testCreateTeam(self):
-		client = Client()
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'teamname': 'Testing Team', \
-			'username': 'testingteam', \
-			'password': 'Pa$$w0rd', \
-			'networkCidr': 'team1.tld'}
-		response = client.post(prefixedUrl('competitions/%s/teams.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
+		createTeam(self, self.competitionId)
 
 class Services(TestCase):
 	def setUp(self):
-		client = Client()
-		postData = {'name': 'New Competition', 'url': 'new_competition'}
-		response = client.post(prefixedUrl('competitions.json'), postData)
-		content = json.loads(response.content)
-		self.competitionId = content['competitionId']
+		self.competitionId = createCompetition(self)['competitionId']
+		self.pluginId = createPlugin(self)['pluginId']
 
 	def testListServices(self):
 		client = Client()
@@ -99,29 +167,7 @@ class Services(TestCase):
 
 	def testExistingService(self):
 		client = Client()
-		# Create a plugin for the service
-		postData = { \
-			'name': 'Test Plugin', \
-			'description': 'This is a test plugin' \
-			}
-		response = client.post(prefixedUrl('plugins.json'), postData)
-		content = json.loads(response.content)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		# Now create the service
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'plugin': content['pluginId'], \
-			'name': 'Test SSH', \
-			'description': 'A test service.', \
-			'points': 100, \
-			'connectIp': True, \
-			'connectDisplay': "What's this?", \
-			'networkLocation': 'www', \
-			'defaultPort': 22}
-		response = client.post(prefixedUrl('competitions/%s/services.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		content = json.loads(response.content)
-		serviceId = content['serviceId']
+		serviceId = createService(self, self.competitionId, self.pluginId)['serviceId']
 		response = client.get(prefixedUrl('competitions/%s/services/%s.json' % (self.competitionId, serviceId)))
 		content = json.loads(response.content)
 		self.assertEqual(content['serviceId'], serviceId)
@@ -132,36 +178,14 @@ class Services(TestCase):
 		self.assertEqual(response.content, '')
 
 	def testCreateService(self):
-		client = Client()
-		# Create a plugin for the service
-		postData = { \
-			'name': 'Test Plugin', \
-			'description': 'This is a test plugin' \
-			}
-		response = client.post(prefixedUrl('plugins.json'), postData)
-		content = json.loads(response.content)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		# Now create the service
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'plugin': content['pluginId'], \
-			'name': 'Test SSH', \
-			'description': 'A test service.', \
-			'points': 100, \
-			'connectIp': True, \
-			'connectDisplay': "What's this?", \
-			'networkLocation': 'www', \
-			'defaultPort': 22}
-		response = client.post(prefixedUrl('competitions/%s/services.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
+		createService(self, self.competitionId, self.pluginId)
 
 class Scores(TestCase):
 	def setUp(self):
-		client = Client()
-		postData = {'name': 'New Competition', 'url': 'new_competition'}
-		response = client.post(prefixedUrl('competitions.json'), postData)
-		content = json.loads(response.content)
-		self.competitionId = content['competitionId']
+		self.competitionId = createCompetition(self)['competitionId']
+		self.pluginId = createPlugin(self)['pluginId']
+		self.serviceId = createService(self, self.competitionId, self.pluginId)['serviceId']
+		self.teamId = createTeam(self, self.competitionId)['teamId']
 
 	def testListScores(self):
 		client = Client()
@@ -170,16 +194,7 @@ class Scores(TestCase):
 
 	def testExistingScore(self):
 		client = Client()
-		postData = { \
-			'competitionId': int(self.competitionId),
-			'teamId': 1, \
-			'serviceId': 1, \
-			'value': 100, \
-			'message': 'Service is up.'}
-		response = client.post(prefixedUrl('competitions/%s/scores.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		content = json.loads(response.content)
-		scoreId = content['scoreId']
+		scoreId = createScore(self, self.competitionId, self.teamId, self.serviceId)['scoreId']
 		response = client.get(prefixedUrl('competitions/%s/scores/%s.json' % (self.competitionId, scoreId)))
 		content = json.loads(response.content)
 		self.assertEqual(content['scoreId'], scoreId)
@@ -190,23 +205,11 @@ class Scores(TestCase):
 		self.assertEqual(response.content, '')
 
 	def testCreateScore(self):
-		client = Client()
-		postData = { \
-			'competitionId': int(self.competitionId),
-			'teamId': 1, \
-			'serviceId': 1, \
-			'value': 100, \
-			'message': 'Service is up.'}
-		response = client.post(prefixedUrl('competitions/%s/scores.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
+		createScore(self, self.competitionId, self.teamId, self.serviceId)
 
 class Injects(TestCase):
 	def setUp(self):
-		client = Client()
-		postData = {'name': 'New Competition', 'url': 'new_competition'}
-		response = client.post(prefixedUrl('competitions.json'), postData)
-		content = json.loads(response.content)
-		self.competitionId = content['competitionId']
+		self.competitionId = createCompetition(self)['competitionId']
 
 	def testListInjects(self):
 		client = Client()
@@ -215,16 +218,7 @@ class Injects(TestCase):
 
 	def testExistingInject(self):
 		client = Client()
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'manualDelivery': True, \
-			'requireResponse': True, \
-			'title': 'Title of Inject', \
-			'body': 'Body of new inject.'}
-		response = client.post(prefixedUrl('competitions/%s/injects.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		content = json.loads(response.content)
-		injectId = content['injectId']
+		injectId = createInject(self, self.competitionId)['injectId']
 		response = client.get(prefixedUrl('competitions/%s/injects/%s.json' % (self.competitionId, injectId)))
 		content = json.loads(response.content)
 		self.assertEqual(content['injectId'], injectId)
@@ -235,62 +229,22 @@ class Injects(TestCase):
 		self.assertEqual(response.content, "")
 
 	def testCreateInject(self):
-		client = Client()
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'manualDelivery': True, \
-			'requireResponse': True, \
-			'title': 'Title of Inject', \
-			'body': 'Body of new inject.'}
-		response = client.post(prefixedUrl('competitions/%s/injects.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-
+		createInject(self, self.competitionId)
 
 class InjectResponses(TestCase):
 	def setUp(self):
-		client = Client()
-		postData = {'name': 'New Competition', 'url': 'new_competition'}
-		response = client.post(prefixedUrl('competitions.json'), postData)
-		content = json.loads(response.content)
-		self.competitionId = content['competitionId']
+		self.competitionId = createCompetition(self)['competitionId']
+		self.teamId = createTeam(self, self.competitionId)['teamId']
+		self.injectId = createInject(self, self.competitionId)['injectId']
 
 	def testListInjectResponses(self):
 		client = Client()
-		response = client.get(prefixedUrl('competitions/01/injectresponses.json'))
+		response = client.get(prefixedUrl('competitions/%s/injectresponses.json' % self.competitionId))
 		self.assertEqual(response.content, "[]")
 
 	def testExistingInjectResponse(self):
 		client = Client()
-		# create inject
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'manualDelivery': True, \
-			'requireResponse': True, \
-			'title': 'Title of Inject', \
-			'body': 'Body of new inject.'}
-		response = client.post(prefixedUrl('competitions/%s/injects.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		injectId = json.loads(response.content)['injectId']
-		# create team
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'teamname': 'Testing Team', \
-			'username': 'testingteam', \
-			'password': 'Pa$$w0rd', \
-			'networkCidr': 'team1.tld'}
-		response = client.post(prefixedUrl('competitions/%s/teams.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		teamId = json.loads(response.content)['teamId']
-		# create inject response
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'teamId': int(teamId), \
-			'injectId': int(injectId), \
-			'content': 'Testing inject response content'}
-		response = client.post(prefixedUrl('competitions/%s/injectresponses.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		content = json.loads(response.content)
-		injectResponseId = content['injectResponseId']
+		injectResponseId = createInjectResponse(self, self.competitionId, self.teamId, self.injectId)['injectResponseId']
 		response = client.get(prefixedUrl('competitions/%s/injectresponses/%s.json' % (self.competitionId, injectResponseId)))
 		content = json.loads(response.content)
 		self.assertEqual(content['injectResponseId'], injectResponseId)
@@ -301,44 +255,12 @@ class InjectResponses(TestCase):
 		self.assertEqual(response.content, '')
 
 	def testCreateInjectResponse(self):
-		client = Client()
-		# create inject
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'manualDelivery': True, \
-			'requireResponse': True, \
-			'title': 'Title of Inject', \
-			'body': 'Body of new inject.'}
-		response = client.post(prefixedUrl('competitions/%s/injects.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		injectId = json.loads(response.content)['injectId']
-		# create team
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'teamname': 'Testing Team', \
-			'username': 'testingteam', \
-			'password': 'Pa$$w0rd', \
-			'networkCidr': 'team1.tld'}
-		response = client.post(prefixedUrl('competitions/%s/teams.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		teamId = json.loads(response.content)['teamId']
-		# create inject response
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'teamId': int(teamId), \
-			'injectId': int(injectId), \
-			'content': 'Testing inject response content'}
-		response = client.post(prefixedUrl('competitions/%s/injectresponses.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-
+		createInjectResponse(self, self.competitionId, self.teamId, self.injectId)
 
 class IncidentResponses(TestCase):
 	def setUp(self):
-		client = Client()
-		postData = {'name': 'New Competition', 'url': 'new_competition'}
-		response = client.post(prefixedUrl('competitions.json'), postData)
-		content = json.loads(response.content)
-		self.competitionId = content['competitionId']
+		self.competitionId = createCompetition(self)['competitionId']
+		self.teamId = createTeam(self, self.competitionId)['teamId']
 
 	def testListIncidentResponses(self):
 		client = Client()
@@ -347,57 +269,18 @@ class IncidentResponses(TestCase):
 
 	def testExistingIncidentResponse(self):
 		client = Client()
-		# create team
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'teamname': 'Testing Team', \
-			'username': 'testingteam', \
-			'password': 'Pa$$w0rd', \
-			'networkCidr': 'team1.tld'}
-		response = client.post(prefixedUrl('competitions/%s/teams.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		teamId = json.loads(response.content)['teamId']
-		# create incident response
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'teamId': int(teamId), \
-			'replyTo': -1, \
-			'subject': 'Test Incident Response Subject', \
-			'content': 'Testing incident response content'}
-		response = client.post(prefixedUrl('competitions/%s/incidentresponses.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		content = json.loads(response.content)
-		incidentResponseId = content['incidentResponseId']
+		incidentResponseId = createIncidentResponse(self, self.competitionId, self.teamId)['incidentResponseId']
 		response = client.get(prefixedUrl('competitions/%s/incidentresponses/%s.json' % (self.competitionId, incidentResponseId)))
 		content = json.loads(response.content)
 		self.assertEqual(content['incidentResponseId'], incidentResponseId)
 
 	def testAbsentIncidentResponse(self):
 		client = Client()
-		response = client.get(prefixedUrl('competitions/01/incidentresponses/02.json'))
-		self.assertEqual(response.content, "")
+		response = client.get(prefixedUrl('competitions/%s/incidentresponses/2.json' % self.competitionId))
+		self.assertEqual(response.content, '')
 
 	def testCreateIncidentResponse(self):
-		client = Client()
-		# create team
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'teamname': 'Testing Team', \
-			'username': 'testingteam', \
-			'password': 'Pa$$w0rd', \
-			'networkCidr': 'team1.tld'}
-		response = client.post(prefixedUrl('competitions/%s/teams.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		teamId = json.loads(response.content)['teamId']
-		# create incident response
-		postData = { \
-			'competitionId': int(self.competitionId), \
-			'teamId': int(teamId), \
-			'replyTo': -1, \
-			'subject': 'Test Incident Response Subject', \
-			'content': 'Testing incident response content'}
-		response = client.post(prefixedUrl('competitions/%s/incidentresponses.json' % self.competitionId), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
+		createIncidentResponse(self, self.competitionId, self.teamId)
 
 class Plugins(TestCase):
 	def setUp(self):
@@ -410,14 +293,7 @@ class Plugins(TestCase):
 
 	def testExistingPlugin(self):
 		client = Client()
-		postData = { \
-			'name': 'Test Plugin', \
-			'description': 'This is a test plugin' \
-			}
-		response = client.post(prefixedUrl('plugins.json'), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
-		content = json.loads(response.content)
-		pluginId = content['pluginId']
+		pluginId = createPlugin(self)['pluginId']
 		response = client.get(prefixedUrl('plugins/%s.json' % pluginId))
 		content = json.loads(response.content)
 		self.assertEqual(content['pluginId'], pluginId)
@@ -428,13 +304,7 @@ class Plugins(TestCase):
 		self.assertEqual(response.content, '')
 
 	def testCreatePlugin(self):
-		client = Client()
-		postData = { \
-			'name': 'Test Plugin', \
-			'description': 'This is a test plugin' \
-			}
-		response = client.post(prefixedUrl('plugins.json'), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
+		createPlugin(self)
 
 class Users(TestCase):
 	def setUp(self):
@@ -447,23 +317,18 @@ class Users(TestCase):
 
 	def testExistingUser(self):
 		client = Client()
-		postData = {'username': 'TestUser', 'password': 'testUserP@sSw0rd'}
-		response = client.post(prefixedUrl('users.json'), postData)
-		userId = json.loads(response.content)['userId']
+		userId = createUser(self)['userId']
 		response = client.get(prefixedUrl('users/%s.json' % userId))
 		content = json.loads(response.content)
 		self.assertEqual(content['userId'], userId)
 
 	def testAbsentUser(self):
 		client = Client()
-		response = client.get(prefixedUrl('users/02.json'))
-		self.assertEqual(response.content, "")
+		response = client.get(prefixedUrl('users/2.json'))
+		self.assertEqual(response.content, '')
 
 	def testCreateUser(self):
-		client = Client()
-		postData = {'username': 'TestUser', 'password': 'testUserP@sSw0rd'}
-		response = client.post(prefixedUrl('users.json'), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
+		createUser(self)
 
 class Organizations(TestCase):
 	def setUp(self):
@@ -476,9 +341,7 @@ class Organizations(TestCase):
 
 	def testExistingOrganization(self):
 		client = Client()
-		postData = {'name': 'Test Organization'}
-		response = client.post(prefixedUrl('organizations.json'), postData)
-		organizationId = json.loads(response.content)['organizationId']
+		organizationId = createOrganization(self)['organizationId']
 		response = client.get(prefixedUrl('organizations/%s.json' % organizationId))
 		content = json.loads(response.content)
 		self.assertEqual(content['organizationId'], organizationId)
@@ -489,7 +352,4 @@ class Organizations(TestCase):
 		self.assertEqual(response.content, '')
 
 	def testCreateOrganization(self):
-		client = Client()
-		postData = {'name': 'Test Organization'}
-		response = client.post(prefixedUrl('organizations.json'), postData)
-		self.assertEqual(response.status_code, HTTP_201_CREATED)
+		createOrganization(self)
