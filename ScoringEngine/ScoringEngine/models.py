@@ -17,6 +17,7 @@ import settings
 
 class Competition(Model):
 	competitionId = AutoField(primary_key = True)
+	organization = PositiveIntegerField()
 	name = CharField(max_length = 50)
 	url = CharField(max_length = 50)
 	descriptionShort = CharField(max_length = 300, default = '')
@@ -122,8 +123,10 @@ class Inject(Model):
 class User(Model):
 	last_login = DateTimeField(default = timezone.now())
 	userId = AutoField(primary_key = True)
+	name = CharField(max_length = 20)
 	username = CharField(max_length = 20)
 	password = CharField(max_length = 64)
+	organization = PositiveIntegerField()
 
 	def is_authenticated(self):
 		return True
@@ -165,4 +168,6 @@ class Document(Model):
 
 class Organization(Model):
 	organizationId = AutoField(primary_key = True)
+	deleteable = BooleanField(default = True)
 	name = CharField(max_length = 256, blank = False, null = False)
+	url = CharField(max_length = 256, blank = False, null = False)

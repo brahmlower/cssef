@@ -6,21 +6,28 @@
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 	<div class="jumbotron">
 		<h1>Organization List</h1>
-		<p>The following is the list of organizations.</p>
+		<p>The following are currently available organizations. Here you can create, edit or delete organizations.</p>
 		<br>
-		<a class="btn btn-primary btn-lg">New Organization</a>
+		<a class="btn btn-primary btn-lg" href="/admin/organizations/create/">New Organization</a>
 	</div>
-
-	<div id="user_list">
-		{% autoescape off %}
-		{% for i in organizations %}
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				{{ i.name }}
+	{% if organizations %}
+	{% for i in organizations %}
+	<div class="panel panel-default">
+		<div class="panel-heading">{{ i.name }}</div>
+		<div class="panel-body">
+			<strong>Description: </strong><br>
+			<p>{{ i.description }}</p>
+			<div class="bt-component pull-right">
+				<a href="/admin/organizations/edit/{{ i.organizationId }}/" class="btn btn-primary">Edit</a>
+				<!-- <a href="/admin/organizations/delete/{{ i.organizationId }}/" class="btn btn-danger">Delete</a> -->
+				<form class="pull-right" action="/admin/organizations/" method="POST"> {% csrf_token %}
+				{{ i.deleteForm }} <input class="btn btn-danger" type="submit" value="Delete"> </form>
 			</div>
 		</div>
-		{% endfor %}
-		{% endautoescape %}
 	</div>
+	{% endfor %}
+	{% else %}
+	<p>No organizations have been created yet. Go ahead and make one!</p>
+	{% endif %}
 </div>
 {% endblock %}

@@ -8,22 +8,22 @@
 		<h1>Competition List</h1>
 		<p>The following are currently scheduled and past competitions ordered chronologically. Select a competition to see more information about it.</p>
 		<br>
-		<a class="btn btn-primary btn-lg" href="/admin/competitions/create/">New Competition</a>
+		<a class="btn btn-primary btn-lg" href="/organization/{{organization.url}}/competitions/create/">New Competition</a>
 	</div>
 
 	<div id="competition_list">
 		{% autoescape off %}
-		{% if competition_list %}
+		{% if competitions %}
 		{% for i in competitions %}
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				{{ i.compname }}
+				{{ i.name }}
 			</div>
 			<div class="panel-body">
 				<p>{{ i.descriptionFull }}</p>
 				<div class="bt-component pull-right">
-					<a href="/admin/competitions/{{ i.compurl }}/" class="btn btn-primary">Edit</a>
-					<a href="/admin/competitions/{{ i.compurl }}/delete/" class="btn btn-danger">Delete</a>
+					<a href="/organization/{{organization.url}}/competitions/{{ i.url }}/" class="btn btn-primary">Configure</a>
+					<a href="#" class="btn btn-danger">Delete</a>
 				</div>
 			</div>
 		</div>

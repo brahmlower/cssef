@@ -7,10 +7,10 @@
 {% block sidebar %}
 <div class="col-sm-3 col-md-2 sidebar">
 	<ul class="nav nav-sidebar">
-		<li id="sidebar_home"><a href="/organization/{{organization}}/home/">Home</a></li>
-		<li id="sidebar_members"><a href="/organization/{{organization}}/members/">Members</a></li>
-		<li id="sidebar_competitions"><a href="/organization/{{organization}}/competitions/">Competitions</a></li>
-		<li id="sidebar_settings"><a href="/organization/{{organization}}/settings/">Settings</a></li>
+		<li id="sidebar_home"><a href="/organization/{{organization.url}}/home/">Home</a></li>
+		<li id="sidebar_members"><a href="/organization/{{organization.url}}/members/">Members</a></li>
+		<li id="sidebar_competitions"><a href="/organization/{{organization.url}}/competitions/">Competitions</a></li>
+		<li id="sidebar_settings"><a href="/organization/{{organization.url}}/settings/">Settings</a></li>
 		<li id="sidebar_account" class="disabled"><a href="#">Account</a></li>
 	</ul>
 </div>

@@ -1,17 +1,35 @@
 # Disclaimer #
-This project is still under heavy development. Feel free to use it, but know that it's state of operation may vary drastically from one commit to another. Once the project has reached a stable state, I'll create a stable branch for it.
+The project was not written with clean code, making further development difficult and time consuming. I'm refactoring in this branch, which will eventually overwrite the content of the master branch. Development should hopefully make continued and future development easier.
 
 # Description #
-The Cyber Security Scoring Engine Framework (cssef) is meant to provide an easy to use framework with which to score cyber security competitions. There are two main components: the web frontend, and the backend scoring engine. The goal of the frontend is to give users (including competitors, competitions admins, and site admins) an easy to use interface to interact with the white-team infrastructure.
+The Cyber Security Scoring Engine Framework (CSSEF) is meant to provide an easy to use framework with which to score cyber security competitions. Cyber security competitions are increasing in popularity, however preparation for such competitions can be difficult. The UAF CSC decided to make practice competitions to give members a feeling of what regional or national CCDC competitions would feel like. We were missing a feedback mechanism though, which is where the CSSEF comes in.
+
+The CSSEF is meant to provide an easy to use interface for the competition managers and competitors (white and blue team respectively). Some of the features include:
+* Automatic and/or manual inject delivery to blue teams
+* Automatic or manual start of service scoring
+* Blue team incident response field
+* Blue team score board
+* Team rankings by points
+* Blue team service status (checks services each time the pages is loaded)
+* Support for custom service plugins (write your own modules for services)
+
+Future goals include the addition of interfaces for Red and Orange teams.
+
+# Framework #
+The project is now broken into two main pieces: the scoring engine and the web interface.
+
+## Scoring Engine ##
+To keep the framework mentality, the scoring engine is strictly the engine tracking scores and points. It provides some other functionality such as inject and incident response tracking and scoring, however these features can be disabled if all you want is the scoring mechanics. Within the ScoringEngine class, there is a WebApi class which provides a semi-RESTful JSON API. If you already have your own frontend interface, or want to write your own, you can use the WebApi bindings to pupulate the content on your interface. Further documentation on the API can be found below.
+
+## Web Interface ##
+The web interface aims to provide an out-of-the-box working tool with which to interact with the scoring engine. The web interface has various pages for site/service administrators, organization users (white team) and competitors (blue team). The web interface will grow to support additional functionality as it's added to the scoring engine.
 
 ##Dependancies ##
 Web Interface:
 * Python 2.7.5
+* celery 3.1.17
 * Django 1.7.2
-
-Pluggins:
-* SSH - paramiko 1.15.1
-* SMB - pysmb 1.1.13
+* django-celery 3.1.16
 
 # Usage #
 The web frontend is written using Django. Starting the webserver (currently) requires running 'python manage.py runserver'. As of this writing, the scoring engine component must be started separately.

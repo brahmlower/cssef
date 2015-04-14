@@ -6,21 +6,29 @@
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 	<div class="jumbotron">
 		<h1>User List</h1>
-		<p>The following is the list of users. Users may be allowed to configure one or more competitions depending on their settings.</p>
+		<p>The following are currently available users. Here you can create, edit or delete users.</p>
 		<br>
-		<a class="btn btn-primary btn-lg">New User</a>
+		<a class="btn btn-primary btn-lg" href="/admin/users/create/">New User</a>
 	</div>
 
-	<div id="user_list">
-		{% autoescape off %}
-		{% for i in competition_list %}
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				{{ i.name }}
+	{% if users %}
+	{% for i in users %}
+	<div class="panel panel-default">
+		<div class="panel-heading">{{ i.name }}</div>
+		<div class="panel-body">
+			<strong>Username: </strong>{{ i.username }}<br>
+			<strong>Organization: </strong>{{ i.organization }}<br>
+			<strong>Description: </strong><p>{{ i.description }}</p>
+			<div class="bt-component pull-right">
+				<form class="pull-right" action="/admin/users/" method="POST"> {% csrf_token %}
+				{{ i.deleteForm }} <input class="btn btn-danger" type="submit" value="Delete"> </form>
+				<a href="/admin/users/edit/{{ i.userId }}/" class="pull-right btn btn-primary">Edit</a>
 			</div>
 		</div>
-		{% endfor %}
-		{% endautoescape %}
 	</div>
-</div>
+	{% endfor %}
+	{% else %}
+	<p>No users have been created yet. Go ahead and make one!</p>
+	{% endif %}
+
 {% endblock %}
