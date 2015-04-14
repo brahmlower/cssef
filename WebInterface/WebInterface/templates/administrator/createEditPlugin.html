@@ -5,14 +5,14 @@
 {% block page_content %}
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 	{% if action == "create" %}
-	<form action="/admin/servicemodules/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	<form action="/admin/plugins/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
 	{% else %}
-	<form action="/admin/servicemodules/edit/{{servmdulid}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	<form action="/admin/plugins/edit/{{servmdulid}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 	{% endif %}
 		{% csrf_token %}
-		{{ form.modulename.errors }}
-		<label for="{{ form.modulename.id_for_label }}" class="col-lg-2 control-label">{{ form.modulename.label }}</label>
-		<div class="col-lg-10">{{ form.modulename }}<br></div>
+		{{ form.name.errors }}
+		<label for="{{ form.name.id_for_label }}" class="col-lg-2 control-label">{{ form.name.label }}</label>
+		<div class="col-lg-10">{{ form.name }}<br></div>
 
 		{{ form.description.errors }}
 		<label for="{{ form.description.id_for_label }}" class="col-lg-2 control-label">{{ form.description.label }}</label>
@@ -28,9 +28,8 @@
 		<div class="col-lg-10">{{ form.docfile }}<br></div>
 
 		<div class="col-lg-10 col-lg-offset-2">
-			<a class="btn btn-default" href="/admin/servicemodules/">Cancel</a>
+			<a class="btn btn-default" href="/admin/plugins/">Cancel</a>
 			<button id="form_sub_button" type="submit" class="btn btn-primary">Save</button>
-			<p id="form_messages"></p>
 		</div>
 	</form>
 </div>

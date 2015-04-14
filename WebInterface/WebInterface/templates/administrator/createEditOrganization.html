@@ -1,0 +1,40 @@
+{% extends "administrator/adminPageTemplate.html" %}
+
+{% block sidebar_id %}sidebar_organizations{% endblock %}
+
+{% block headers_js %}
+{% load staticfiles %}
+<script src="{% static "js/moment.min.js" %}"></script>
+<script type="text/javascript">
+	$(function() {
+		$("#id_name").keyup( function() { var name = $("#id_name").val();
+			$("#id_url").val(name.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/gi, ''));
+		});
+	});
+</script>
+{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	{% if action == "create" %}
+	<form action="/admin/organizations/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	{% else %}
+	<form action="/admin/organizations/edit/{{organizationId}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	{% endif %}
+		{% csrf_token %}
+		{{ form.name.errors }}
+		<label for="{{ form.name.id_for_label }}" class="col-lg-2 control-label">{{ form.name.label }}</label>
+		<div class="col-lg-10">{{ form.name }}<br></div>
+
+		{{ form.url.errors }}
+		<label for="{{ form.url.id_for_label }}" class="col-lg-2 control-label">{{ form.url.label }}</label>
+		<div class="col-lg-10">{{ form.url }}<br></div>
+
+		<div class="col-lg-10 col-lg-offset-2">
+			<a class="btn btn-default" href="/admin/organizations/">Cancel</a>
+			<button id="form_sub_button" type="submit" class="btn btn-primary">Save</button>
+			<p id="form_messages"></p>
+		</div>
+	</form>
+</div>
+{% endblock %}

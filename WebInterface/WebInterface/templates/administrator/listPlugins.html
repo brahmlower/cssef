@@ -9,8 +9,8 @@
 		<p>The following are currently available plugins. Select a plugin to edit or test it, or create a new one.</p><br>
 		<a class="btn btn-primary btn-lg" href="/admin/plugins/create/">New Plugin</a>
 	</div>
-	{% if pluginList %}
-	{% for i in pluginList %}
+	{% if plugins %}
+	{% for i in plugins %}
 	<div class="panel panel-default">
 		<div class="panel-heading">{{ i.name }}</div>
 		<div class="panel-body">
@@ -21,13 +21,15 @@
 			<div class="bt-component pull-right">
 				<a href="/admin/plugins/test/{{ i.module.servmdulid }}/" class="btn btn-primary">Test</a>
 				<a href="/admin/plugins/edit/{{ i.module.servmdulid }}/" class="btn btn-primary">Edit</a>
-				<a href="/admin/plugins/delete/{{ i.module.servmdulid }}/" class="btn btn-danger">Delete</a>
+				<!-- <a href="/admin/plugins/delete/{{ i.module.servmdulid }}/" class="btn btn-danger">Delete</a> -->
+				<form class="pull-right" action="/admin/plugins/" method="POST"> {% csrf_token %}
+				{{ i.deleteForm }} <input class="btn btn-danger" type="submit" value="Delete"> </form>
 			</div>
 		</div>
 	</div>
 	{% endfor %}
 	{% else %}
-	<p>No service modules have been created yet. Go ahead and make one!</p>
+	<p>No plugins have been created yet. Go ahead and make one!</p>
 	{% endif %}
 </div>
 {% endblock %}

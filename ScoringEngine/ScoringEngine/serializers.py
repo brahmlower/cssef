@@ -19,6 +19,7 @@ class CompetitionSerializer(serializers.ModelSerializer):
 			'competitionId',
 			'name',
 			'url',
+			'organization',
 			'descriptionShort',
 			'descriptionFull',
 			'datetimeDisplay',
@@ -110,8 +111,10 @@ class UserSerializer(serializers.ModelSerializer):
 		fields = (
 			'last_login',
 			'userId',
+			'name',
 			'username',
-			'password')
+			'password',
+			'organization')
 
 class InjectResponseSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -156,7 +159,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
 		model = Organization
 		fields = (
 			'organizationId',
-			'name')
+			'name',
+			'url')
 
 	def create(self, validatedData):
 		return Organization.objects.create(**validatedData)
