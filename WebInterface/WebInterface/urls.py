@@ -4,8 +4,7 @@ from django.conf.urls import url
 from views import general
 from views import organization
 from views import administrator
-#from views import organization
-#from views import competitionWhite
+from views import competitionWhite
 #from views import competitionBlue
 
 urlpatterns = patterns('',
@@ -30,28 +29,25 @@ urlpatterns = patterns('',
 
 	# # Organization pages
 	url(r'^organization/login/$',													organization.login),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/home/$',					organization.home),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/home/$',				organization.home),
 	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/members/$',				organization.members),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/$',			organization.listCompetitions),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/$',		organization.listCompetitions),
 	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/create/$',	organization.createCompetition),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/settings/$',				organization.settings),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/settings/$',			organization.settings),
 
 	# # White Team Competition pages
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/$',												competitionWhite.summary),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/summary/$',										competitionWhite.summary),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/settings/$',										competitionWhite.settings),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/teams/$',										competitionWhite.listTeams),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/teams/edit/(?P<teamId>[1-9][1-9]*)/$',			competitionWhite.editTeam),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/teams/delete/(?P<teamId>[1-9][1-9]*)/$',			competitionWhite.deleteTeam),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/teams/create/$',									competitionWhite.createTeam),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/services/$',										competitionWhite.listServices),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/services/edit/(?P<serviceId>[1-9][1-9]*)/$',		competitionWhite.editService),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/services/delete/(?P<serviceId>[1-9][1-9]*)/$',	competitionWhite.deleteService),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/services/create/$',								competitionWhite.createService),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/injects/$',										competitionWhite.listInjects),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/injects/edit/(?P<injectId>[1-9][1-9]*)/$',		competitionWhite.editInject),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/injects/delete/(?P<injectId>[1-9][1-9]*)/$',		competitionWhite.deleteInject),
-	# url(r'^organizations/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competition>[\w\-\_]{0,50})/injects/create/$',								competitionWhite.createInject),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/$',												competitionWhite.summary),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/summary/$',										competitionWhite.summary),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/settings/$',										competitionWhite.settings),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/teams/$',											competitionWhite.listTeams),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/teams/create/$',									competitionWhite.createTeam),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/teams/edit/(?P<teamId>[1-9][1-9]*)/$',			competitionWhite.editTeam),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/services/$',										competitionWhite.listServices),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/services/create/$',								competitionWhite.createService),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/services/edit/(?P<serviceId>[1-9][1-9]*)/$',		competitionWhite.editService),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/injects/$',										competitionWhite.listInjects),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/injects/create/$',								competitionWhite.createInject),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/injects/edit/(?P<injectId>[1-9][1-9]*)/$',		competitionWhite.editInject),
 
 	# Administrator pages
 	url(r'^admin/$',											administrator.home),

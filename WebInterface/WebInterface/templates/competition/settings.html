@@ -1,4 +1,4 @@
-{% extends "CompConfig/compConfigPageTemplate.html" %}
+{% extends "competition/competitionTemplate.html" %}
 
 {% load staticfiles %}
 {% block headers_css %}
@@ -48,7 +48,7 @@
 			</div>
 		</div>
 		<div class="panel-body hidden" id="general_settings_form">
-			<form action="/admin/competitions/{{comp_obj.compurl}}/settings/" method="post" class="form-horizontal">
+			<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/settings/" method="post" class="form-horizontal">
 				{% csrf_token %}
 				<input type="hidden" name="form_num" value = "0">
 				{{ forms.general_settings.compname.errors}}
@@ -111,7 +111,7 @@
 			</div>
 		</div>
 		<div class="panel-body hidden" id="scoring_settings_form">
-			<form action="/admin/competitions/{{comp_obj.compurl}}/settings/" method="post" class="form-horizontal">
+			<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/settings/" method="post" class="form-horizontal">
 				{% csrf_token %}
 				<input type="hidden" name="form_num" value = "1">
 				{{ forms.scoring_settings.scoring_enabled.errors }}
@@ -162,7 +162,7 @@
 			</div>
 		</div>
 		<div class="panel-body hidden" id="service_settings_form">
-			<form action="/admin/competitions/{{comp_obj.compurl}}/settings/" method="post" class="form-horizontal">
+			<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/settings/" method="post" class="form-horizontal">
 				{% csrf_token %}
 				<input type="hidden" name="form_num" value = "2">
 				{{ forms.service_settings.services_enabled.errors }}
@@ -206,7 +206,7 @@
 			</div>
 		</div>
 		<div class="panel-body hidden" id="team_settings_form">
-			<form action="/admin/competitions/{{comp_obj.compurl}}/settings/" method="post" class="form-horizontal">
+			<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/settings/" method="post" class="form-horizontal">
 				{% csrf_token %}
 				<input type="hidden" name="form_num" value = "3">
 				{{ forms.team_settings.teams_view_ranking_enabled.errors }}

@@ -1,4 +1,4 @@
-{% extends "CompConfig/compConfigPageTemplate.html" %}
+{% extends "competition/competitionTemplate.html" %}
 
 {% block sidebar_id %}sidebar_injects{% endblock %}
 
@@ -8,7 +8,7 @@
 	<div class="page-header">
 		<h1> {{ comp_obj.compname }} - Injects</h1>
 	</div>
-	<a href="/admin/competitions/{{ comp_obj.compurl }}/injects/create/" class="btn btn-primary">Create Inject</a>
+	<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/create/" class="btn btn-primary">Create Inject</a>
 	<br>
 	<br>
 	{% if inject_list %}
@@ -29,8 +29,8 @@
 			<strong>Inject body:</strong><br>
 			{{ i.inject.body }}
 			<div class="bt-component pull-right">
-				<a href="/admin/competitions/{{ comp_obj.compurl }}/injects/edit/{{ i.inject.ijctid }}/" class="btn btn-primary">Edit</a>
-				<a href="/admin/competitions/{{ comp_obj.compurl }}/injects/delete/{{ i.inject.ijctid }}/" class="btn btn-danger">Delete</a>
+				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/edit/{{ i.inject.ijctid }}/" class="btn btn-primary">Edit</a>
+				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/delete/{{ i.inject.ijctid }}/" class="btn btn-danger">Delete</a>
 			</div>
 			<br>
 		</div>

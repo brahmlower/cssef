@@ -4,15 +4,13 @@ from django.shortcuts import render_to_response
 from django.shortcuts import render
 from django.contrib import auth
 from django.core.context_processors import csrf
-from urllib import urlencode
-import urllib2
 from WebInterface.forms import LoginSiteAdmin
 from WebInterface.forms import CreateOrganization
 from WebInterface.forms import CreateUser
 from WebInterface.forms import CreatePlugin
 from WebInterface.forms import DeleteObject
 from WebInterface.settings import SCORING_ENGINE_API_URL
-import json
+from WebInterface import cssefApi
 
 class ContextFactory():
 	ACTION_EDIT = 'create'
@@ -33,37 +31,16 @@ class ContextFactory():
 	def Organization(self):
 		if self.objectId:
 			self.context['organizationId'] = self.objectId
-			self.data = apiQuery('organizations/%s.json' % self.objectId)
+			self.data = cssefApi.get('organizations/%s.json' % self.objectId)
 		self.context['form'] = CreateOrganization(initial = self.data)
 		return self.context
 
 	def User(self):
 		if self.objectId:
 			self.context['userId'] = self.objectId
-			self.data = apiQuery('users/%s.json' % self.objectId)
+			self.data = cssefApi.get('users/%s.json' % self.objectId)
 		self.context['form'] = CreateUser(initial = self.data)
 		return self.context
-
-def apiPost(page, unencodedData):
-	url = SCORING_ENGINE_API_URL + page
-	data = urlencode(unencodedData)
-	return urllib2.urlopen(url, data)
-
-def apiGet(page):
-	url = SCORING_ENGINE_API_URL + page
-	return urllib2.urlopen(url)
-
-def apiDelete(page):
-	url = SCORING_ENGINE_API_URL + page
-	opener = urllib2.build_opener(urllib2.HTTPHandler)
-	request = urllib2.Request(url, None)
-	request.get_method = lambda: 'DELETE'
-	return urllib2.urlopen(request)
-
-def apiQuery(page):
-	response = apiGet(page)
-	jsonString = response.read()
-	return json.loads(jsonString)
 
 def home(request):
 	context = {}
@@ -96,11 +73,11 @@ def siteConfig(request):
 
 def listUsers(request):
 	if request.method == 'POST':
-		response = apiDelete('users/%s.json' % request.POST['objectId'])
+		response = cssefApi.delete('users/%s.json' % request.POST['objectId'])
 		return HttpResponseRedirect('/admin/users/')
 	context = {}
 	context.update(csrf(request))
-	context['users'] = apiQuery('users.json')
+	context['users'] = cssefApi.get('users.json')
 	for i in context['users']:
 		i['deleteForm'] = DeleteObject(objectId = i['userId'])
 	return render_to_response('administrator/listUsers.html', context)
@@ -112,16 +89,16 @@ def createEditUser(request, userId = None):
 	formData = CreateUser(request.POST)
 	if not formData.is_valid():
 		return render_to_response('administrator/createEditUser.html', context.User())
-	response = apiPost('users.json', formData.cleaned_data)
+	response = cssefApi.post('users.json', formData.cleaned_data)
 	return HttpResponseRedirect('/admin/users/')
 
 def listOrganizations(request):
 	if request.method == 'POST':
-		response = apiDelete('organizations/%s.json' % request.POST['objectId'])
+		response = cssefApi.delete('organizations/%s.json' % request.POST['objectId'])
 		return HttpResponseRedirect('/admin/organizations/')
 	context = {}
 	context.update(csrf(request))
-	context['organizations'] = apiQuery('organizations.json')
+	context['organizations'] = cssefApi.get('organizations.json')
 	for i in context['organizations']:
 		i['deleteForm'] = DeleteObject(objectId = i['organizationId'])
 	return render_to_response('administrator/listOrganizations.html', context)
@@ -133,16 +110,16 @@ def createEditOrganization(request, organizationId = None):
 	formData = CreateOrganization(request.POST)
 	if not formData.is_valid():
 		return render_to_response('administrator/createEditOrganization.html', context.Organization())
-	response = apiPost('organizations.json', formData.cleaned_data)
+	response = cssefApi.post('organizations.json', formData.cleaned_data)
 	return HttpResponseRedirect('/admin/organizations/')
 
 def listPlugins(request):
 	if request.method == 'POST':
-		response = apiDelete('plugins/%s.json' % request.POST['objectId'])
+		response = cssefApi.delete('plugins/%s.json' % request.POST['objectId'])
 		return HttpResponseRedirect('/admin/plugins/')
 	context = {}
 	context.update(csrf(request))
-	context['plugins'] = apiQuery('plugins.json')
+	context['plugins'] = cssefApi.get('plugins.json')
 	for i in context['plugins']:
 		i['deleteForm'] = DeleteObject(objectId = i['pluginId'])
 	return render_to_response('administrator/listPlugins.html', context)
@@ -160,7 +137,7 @@ def createPlugin(request):
 		return render_to_response('administrator/createEditPlugin.html', context)
 	form_obj.cleaned_data.pop('docfile', None)
 	# Create the plugin via the webAPI
-	response = apiPost('plugins.json', form_obj.cleaned_data)
+	response = cssefApi.post('plugins.json', form_obj.cleaned_data)
 	# Need to handle a file that was uploaded (field isn't currently showing up for some reason...)
 	#save_document(request.FILES['docfile'], settings.CONTENT_PLUGGINS_PATH, plugin, ashash = False)		
 	return HttpResponseRedirect('/admin/plugins/')
