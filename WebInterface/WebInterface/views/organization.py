@@ -7,24 +7,8 @@ from django.core.context_processors import csrf
 from WebInterface.forms import LoginOrganizationUser
 from WebInterface.forms import CreateCompetition
 from WebInterface.settings import SCORING_ENGINE_API_URL
-from urllib import urlencode
-import urllib2
-import json
+from WebInterface import cssefApi
 
-
-def apiPost(page, unencodedData):
-	url = SCORING_ENGINE_API_URL + page
-	data = urlencode(unencodedData)
-	return urllib2.urlopen(url, data)
-
-def apiGet(page):
-	url = SCORING_ENGINE_API_URL + page
-	return urllib2.urlopen(url)
-
-def apiQuery(page):
-	response = apiGet(page)
-	jsonString = response.read()
-	return json.loads(jsonString)
 
 def login(request):
 	context = {}
@@ -46,7 +30,7 @@ def login(request):
 
 def getOrganization(organizationUrl):
 	# TODO: This should eventually use GET queries instead of searching the whole list
-	results = apiQuery('organizations.json')
+	results = cssefApi.get('organizations.json')
 	for i in results:
 		if i['url'] == organizationUrl:
 			return i
@@ -64,7 +48,7 @@ def members(request, organizationUrl):
 	context = {}
 	context['organization'] = getOrganization(organizationUrl)
 	context['members'] = []
-	users = apiQuery('users.json')
+	users = cssefApi.get('users.json')
 	members = []
 	for i in users:
 		if i['organization'] == context['organization']['organizationId']:
@@ -72,24 +56,15 @@ def members(request, organizationUrl):
 	return render_to_response('organization/members.html', context)
 
 def listCompetitions(request, organizationUrl):
-	"""
-	Displays list of competitions, add and remove competition options
-	"""
-	queryUrl = SCORING_ENGINE_API_URL + "competitions.json"
-	jsonString = urllib2.urlopen(queryUrl).read()
-	competitions = json.loads(jsonString)
 	context = {}
 	context['competitions'] = []
 	context['organization'] = getOrganization(organizationUrl)
-	for i in apiQuery('competitions.json'):
+	for i in cssefApi.get('competitions.json'):
 		if i['organization'] == context['organization']['organizationId']:
 			context['competitions'].append(i)
 	return render_to_response('organization/listCompetitions.html', context)
 
 def createCompetition(request, organizationUrl, competition=None):
-	"""
-	Creates a new competition
-	"""
 	context = {}
 	context.update(csrf(request))
 	context['organization'] = getOrganization(organizationUrl)
@@ -100,7 +75,7 @@ def createCompetition(request, organizationUrl, competition=None):
 	if not formData.is_valid():
 		return render_to_response('organization/createCompetition.html', context)
 	formData.cleaned_data['organization'] = context['organization']['organizationId']
-	response = apiPost('competitions.json', formData.cleaned_data)
+	response = cssefApi.post('competitions.json', formData.cleaned_data)
 	return HttpResponseRedirect('/organization/%s/competitions/' % context['organization']['url'])
 
 def settings(request, organizationUrl):

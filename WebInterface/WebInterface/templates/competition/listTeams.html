@@ -1,4 +1,4 @@
-{% extends "CompConfig/compConfigPageTemplate.html" %}
+{% extends "competition/competitionTemplate.html" %}
 
 {% block sidebar_id %}sidebar_teams{% endblock %}
 
@@ -7,7 +7,7 @@
 	<div class="page-header">
 		<h1> {{comp_obj.compname}} - Teams</h1>
 	</div>
-	<a href="/admin/competitions/{{ comp_obj.compurl }}/teams/create/" class="btn btn-primary">Create Team</a>
+	<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/teams/create/" class="btn btn-primary">Create Team</a>
 	<br><br>
 	{% if teams %}
 	{% for i in teams %}
@@ -19,8 +19,8 @@
 			<strong>Domain: </strong>{{ i.networkaddr }}<br>
 			<strong>Score Configurations: </strong>{{ i.score_configs }}
 			<div class="bt-component pull-right">
-				<a href="/admin/competitions/{{ comp_obj.compurl }}/teams/edit/{{ i.teamid }}" class="btn btn-primary">Edit</a>
-				<a href="/admin/competitions/{{ comp_obj.compurl }}/teams/delete/{{ i.teamid }}" class="btn btn-danger">Delete</a>
+				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/teams/edit/{{ i.teamid }}" class="btn btn-primary">Edit</a>
+				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/teams/delete/{{ i.teamid }}" class="btn btn-danger">Delete</a>
 			</div>
 		</div>
 	</div>

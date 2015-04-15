@@ -1,0 +1,19 @@
+{% extends "sitePageTemplate.html" %}
+
+{% block authed_navbar_links %}
+<li class="active"><a href="/admin/">Admin Config</a></li>
+{% endblock %}
+
+{% block sidebar %}
+<div class="col-sm-3 col-md-2 sidebar">
+	<ul class="nav nav-sidebar">
+		<li><a href="/organization/{{ organization.url }}/competitions/"><span class="glyphicon glyphicon-chevron-left"></span>Back</a></li>
+		<li class="nav-divider"><li>
+		<li id="sidebar_summary"><a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/summary/">Summary</a></li>
+		<li id="sidebar_settings"><a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/settings/">Settings</a></li>
+		<li id="sidebar_injects"><a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/">Injects</a></li>
+		<li id="sidebar_services"><a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/services/">Services</a></li>
+		<li id="sidebar_teams"><a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/teams/">Teams</a></li>
+	</ul>
+</div>
+{% endblock %}

@@ -1,5 +1,5 @@
 # Disclaimer #
-The project was not written with clean code, making further development difficult and time consuming. I'm refactoring in this branch, which will eventually overwrite the content of the master branch. Development should hopefully make continued and future development easier.
+The project was not written with clean code, making further development difficult and time consuming. I'm refactoring in this branch, which will eventually overwrite the content of the master branch. Refactoring should hopefully make continued and future development easier.
 
 # Description #
 The Cyber Security Scoring Engine Framework (CSSEF) is meant to provide an easy to use framework with which to score cyber security competitions. Cyber security competitions are increasing in popularity, however preparation for such competitions can be difficult. The UAF CSC decided to make practice competitions to give members a feeling of what regional or national CCDC competitions would feel like. We were missing a feedback mechanism though, which is where the CSSEF comes in.

@@ -1,4 +1,4 @@
-{% extends "CompConfig/compConfigPageTemplate.html" %}
+{% extends "competition/competitionTemplate.html" %}
 
 {% block headers_css %}
 {% load staticfiles %}
@@ -35,9 +35,9 @@
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 	<h2> Create Inject </h2>
 	{% if action == "create" %}
-	<form action="/admin/competitions/{{ comp_obj.compurl }}/injects/{{ action }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/{{ action }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 	{% else%}
-	<form action="/admin/competitions/{{ comp_obj.compurl }}/injects/{{ action }}/{{ ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/{{ action }}/{{ ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 	{% endif %}
 		{% csrf_token %}
 		{{ form.title.errors}}
@@ -69,7 +69,7 @@
 		<div class="col-lg-10">{{ form.docfile }}<br></div>
 
 		<div class="col-lg-10 col-lg-offset-2">
-			<a class="btn btn-default" href="/admin/competitions/{{ comp_obj.compurl }}/injects/">Cancel</a>
+			<a class="btn btn-default" href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/">Cancel</a>
 			<button type="submit" class="btn btn-primary">Save</button>
 		</div>
 	</form>

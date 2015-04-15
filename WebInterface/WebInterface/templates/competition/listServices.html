@@ -1,4 +1,4 @@
-{% extends "CompConfig/compConfigPageTemplate.html" %}
+{% extends "competition/competitionTemplate.html" %}
 
 {% block sidebar_id %}sidebar_services{% endblock %}
 
@@ -9,7 +9,7 @@
 		<h1> {{ comp_obj.compname }} - Services</h1>
 	</div>
 	{% if available_modules %}
-	<a href="/admin/competitions/{{ comp_obj.compurl }}/services/create/" class="btn btn-primary">Create Service</a>
+	<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/services/create/" class="btn btn-primary">Create Service</a>
 	{% else %}
 	<p>There are no service modules available. Service creation requires the use of a Service Module. Contact your site administrator to resolve this problem.</p>
 	{% endif %}
@@ -31,8 +31,8 @@
 			<strong>Description: </strong><br>
 			{{ i.description }}
 			<div class="bt-component pull-right">
-				<a href="/admin/competitions/{{ comp_obj.compurl }}/services/edit/{{ i.servid }}/" class="btn btn-primary">Edit</a>
-				<a href="/admin/competitions/{{ comp_obj.compurl }}/services/delete/{{ i.servid }}/" class="btn btn-danger">Delete</a>
+				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/services/edit/{{ i.servid }}/" class="btn btn-primary">Edit</a>
+				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/services/delete/{{ i.servid }}/" class="btn btn-danger">Delete</a>
 			</div>
 		</div>
 	</div>
