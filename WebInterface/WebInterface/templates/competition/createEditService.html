@@ -10,32 +10,25 @@
 <script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
 <script>
 	$(function () {
-		$('#{{ form.datetimeStart.id_for_label }}').datetimepicker();
-		$('#{{ form.datetimeFinish.id_for_label }}').datetimepicker();
-		var serv_json_conf_obj = $('#{{ form.service.config.id_for_label }}')
-		serv_json_conf_obj.focusout(
-			function() {
-				// Replaces any single quotes with double quotes (screws up apostophes TODO: fix this somehow)
-				serv_json_conf_obj.val(serv_json_conf_obj.val().replace(/\'/g, '\"'));
-				// Checks if the submission should be locked
-				var score_config = serv_json_conf_obj.val();
-				try {
-					JSON.parse(score_config);
-				} catch (e) {
-					// Bad json object, need to disable submit button
-					if (!$('#form_sub_button').hasClass('disabled')) {
-						$('#form_sub_button').addClass('disabled')
-						$('#form_messages').html('Unable to parse json object in \'Score Configuration\' field.')
-					}
-					return
-				}
-				// The json object is good, and we should remove the disabled class if it's there
-				if ($('#form_sub_button').hasClass('disabled')) {
-					$('#form_sub_button').removeClass('disabled')
-					$('#form_messages').html('')
-				}
+		var datetimeStart = $('#{{ form.datetimeStart.id_for_label }}');
+		var datetimeFinish = $('#{{ form.datetimeFinish.id_for_label }}');
+		var manualStart = $('#{{ form.manualStart.id_for_label }}');
+		datetimeStart.datetimepicker();
+		datetimeFinish.datetimepicker();
+
+		function toggleDisable (targetField) {
+			targetField.prop('disabled', function(idx, oldProp) { return !oldProp; });
+			targetField.val('');
+		}
+		manualStart.click(function () {
+			toggleDisable(datetimeStart);
+		});
+
+		$(document).ready(function() {
+			if (manualStart.attr('checked')) {
+				datetimeStart.attr('disabled', true);
 			}
-		);
+		});
 	});
 </script>
 {% endblock %}
