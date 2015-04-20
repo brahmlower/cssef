@@ -10,12 +10,37 @@
 <script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
 <script>
 	$(function() {
-		$('#{{ forms.general_settings.datetime_display.id_for_label }}').datetimepicker();
-		$('#{{ forms.general_settings.datetime_start.id_for_label }}').datetimepicker();
-		$('#{{ forms.general_settings.datetime_finish.id_for_label }}').datetimepicker();
-		$("#{{ forms.general_settings.compname.id_for_label }}").keyup( function() { var compname = $("#{{ forms.general_settings.compname.id_for_label }}").val();
-			$("#{{ forms.general_settings.compurl.id_for_label }}").val(compname.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/gi, ''));
+		$('#{{ form.datetimeDisplay.id_for_label }}').datetimepicker();
+		$('#{{ form.datetimeStart.id_for_label }}').datetimepicker();
+		$('#{{ form.datetimeFinish.id_for_label }}').datetimepicker();
+		$("#{{ form.name.id_for_label }}").keyup( function() { var compname = $("#{{ form.name.id_for_label }}").val();
+			$("#{{ form.url.id_for_label }}").val(compname.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/gi, ''));
 		});
+
+		$('#{{ form.audoStart.id_for_label }}').click(function () {
+			var startField = '#{{ form.datetimeStart.id_for_label }}'
+			$(startField).prop('disabled', function(idx, oldProp) { return !oldProp; });
+			$(startField).val('');
+		});
+
+		$('#{{ form.scoringEnabled.id_for_label }}').click(function () {
+			$('#{{ form.scoringInterval.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
+			$('#{{ form.scoringInterval.id_for_label }}').val('');
+			$('#{{ form.scoringIntervalUncertainty.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
+			$('#{{ form.scoringIntervalUncertainty.id_for_label }}').val('');
+			$('#{{ form.scoringMethod.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
+			$('#{{ form.scoringMethod.id_for_label }}').val('');
+		});
+
+		$('#{{ form.scoringSlaEnabled.id_for_label }}').click(function () {
+			$('#{{ form.scoringSlaThreashold.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
+			$('#{{ form.scoringSlaThreashold.id_for_label }}').val('');
+			$('#{{ form.scoringSlaPenalty.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
+			$('#{{ form.scoringSlaPenalty.id_for_label }}').val('');
+		});
+
+
+
 	});
 	function toggle_form (panel_name){
 		$("#"+panel_name).toggleClass('hidden');

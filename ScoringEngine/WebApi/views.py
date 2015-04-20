@@ -53,7 +53,7 @@ def postObject(request, objectTypeSerializer, objectInstance=None):
     if not objectInstance:
         serializer = objectTypeSerializer(data = request.POST)
     else:
-        serializer = objectTypeSerializer(objectInstance, data = data)
+        serializer = objectTypeSerializer(objectInstance, data = request.POST)
     if serializer.is_valid():
         serializer.save()
         return JSONResponse(serializer.data, status = HTTP_201_CREATED)
@@ -77,7 +77,7 @@ def competition(request, competitionId):
     if request.method == 'GET':
         return listObject(Competition, CompetitionSerializer, competitionId = competitionId)
     elif request.method == 'POST':
-        competition = CompetitionSerializer.objects.get(competitionId = competitionId)
+        competition = Competition.objects.get(competitionId = competitionId)
         return postObject(request, CompetitionSerializer, competition)
     elif request.method == 'DELETE':
         Competition.objects.get(competitionId = competitionId).delete()
