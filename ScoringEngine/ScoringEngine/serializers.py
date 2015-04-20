@@ -48,7 +48,7 @@ class TeamSerializer(serializers.ModelSerializer):
 			'competitionId',
 			'last_login',
 			'teamname',
-			'username',
+			'loginname',
 			'password',
 			'networkCidr',
 			'scoreConfigurations')
@@ -70,12 +70,12 @@ class ServiceSerializer(serializers.ModelSerializer):
 			'plugin',
 			'name',
 			'description',
+			'manualStart',
 			'datetimeStart',
 			'datetimeFinish',
 			'points',
-			'connectIp',
-			'connectDisplay',
-			'networkLocation',
+			'machineIp',
+			'machineFqdn',
 			'defaultPort')
 
 class ScoreSerializer(serializers.ModelSerializer):
@@ -96,11 +96,11 @@ class InjectSerializer(serializers.ModelSerializer):
 		fields = (
 			'injectId',
 			'competitionId',
+			'requireResponse',
 			'manualDelivery',
 			'datetimeDelivery',
 			'datetimeResponseDue',
 			'datetimeResponseClose',
-			'requireResponse',
 			'title',
 			'body')
 

@@ -52,13 +52,12 @@ class Competition(Model):
 		max_seconds = score_delay + score_delay_uncert
 		sleep(randrange(min_seconds, max_seconds))
 
-
 class Team(Model):
 	teamId = AutoField(primary_key = True)
 	competitionId = PositiveIntegerField()
 	last_login = DateTimeField(default = timezone.now())
 	teamname = CharField(max_length = 30)
-	username = CharField(max_length = 30)
+	loginname = CharField(max_length = 30)
 	password = CharField(max_length = 64)
 	networkCidr = CharField(max_length = 30)
 	scoreConfigurations = TextField(max_length = 500, default = "{}")
@@ -77,12 +76,12 @@ class Service(Model):
 	plugin = ForeignKey(Plugin, unique = False)
 	name = CharField(max_length = 30)
 	description = CharField(max_length = 200)
+	manualStart = BooleanField(default = True)
 	datetimeStart = DateTimeField(null = True)
 	datetimeFinish = DateTimeField(null = True)
 	points = PositiveIntegerField()
-	connectIp = BooleanField(default = True)
-	connectDisplay = CharField(max_length = 15)
-	networkLocation = CharField(max_length = 15)
+	machineIp = CharField(max_length = 15)
+	machineFqdn = CharField(max_length = 15)
 	defaultPort = PositiveIntegerField()
 
 	# Service object now has the ability to score itself
@@ -112,11 +111,11 @@ class Score(Model):
 class Inject(Model):
 	injectId = AutoField(primary_key = True)
 	competitionId = PositiveIntegerField()
+	requireResponse = BooleanField(default=False)
 	manualDelivery = BooleanField(default = False)
 	datetimeDelivery = DateTimeField(null = True, blank = True)
 	datetimeResponseDue = DateTimeField(null = True, blank = True)
 	datetimeResponseClose = DateTimeField(null = True, blank = True)
-	requireResponse = BooleanField(default=False)
 	title = CharField(max_length = 50)
 	body = CharField(max_length = 1000)
 

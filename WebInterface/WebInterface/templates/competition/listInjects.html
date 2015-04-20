@@ -4,33 +4,35 @@
 
 {% block page_content %}
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-	<!-- displays actual page content -->
 	<div class="page-header">
-		<h1> {{ comp_obj.compname }} - Injects</h1>
+		<h1> {{ competition.name }} - Injects</h1>
 	</div>
 	<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/create/" class="btn btn-primary">Create Inject</a>
-	<br>
-	<br>
-	{% if inject_list %}
-	{% for i in inject_list %}
+	<br><br>
+	{% if injects %}
+	{% for i in injects %}
 	<div class="panel panel-default">
-		<div class="panel-heading"> {{ i.inject.title }} </div>
+		<div class="panel-heading"> {{ i.title }} </div>
 		<div class="panel-body">
-			<strong>Released at: </strong>{{ i.inject.dt_delivery }}<br>
-			{% if i.inject.require_response %}
-			<strong>Due at: </strong>{{ i.inject.dt_response_due }}<br>
-			<strong>Closes at: </strong>{{ i.inject.dt_response_close }}<br>
+			{% if i.manualDelivery %}
+			<strong>Released at: </strong>Delivered Manually<br>
+			{% else %}
+			<strong>Released at: </strong>{{ i.datetimeDelivery }}<br>
+			{% endif %}
+			{% if i.requireResponse %}
+			<strong>Due at: </strong>{{ i.datetimeResponseDue }}<br>
+			<strong>Closes at: </strong>{{ i.datetimeResponseClose }}<br>
 			{% else %}
 			<strong>Due at: </strong>No response required<br>
 			{% endif %}
 			{% for k in i.files %}
-			<strong> Attached File: </strong><a href="/resources/injects/{{i.inject.compid}}/{{i.inject.ijctid}}/{{k.urlencfilename}}">{{ k.filename }}</a><br>
+			<strong> Attached File: </strong><a href="/resources/injects/{{ i.competitionId }}/{{ i.injectId }}/{{ k.urlencfilename }}">{{ k.filename }}</a><br>
 			{% endfor %}
 			<strong>Inject body:</strong><br>
-			{{ i.inject.body }}
+			{{ i.body }}
 			<div class="bt-component pull-right">
-				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/edit/{{ i.inject.ijctid }}/" class="btn btn-primary">Edit</a>
-				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/delete/{{ i.inject.ijctid }}/" class="btn btn-danger">Delete</a>
+				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/edit/{{ i.injectId }}/" class="btn btn-primary">Edit</a>
+				<a href="#" class="btn btn-danger">Delete</a>
 			</div>
 			<br>
 		</div>

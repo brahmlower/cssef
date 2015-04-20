@@ -4,41 +4,40 @@
 
 {% block page_content %}
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-	<!-- displays actual page content -->
 	<div class="page-header">
-		<h1> {{ comp_obj.compname }} - Services</h1>
+		<h1> {{ competition.name }} - Services</h1>
 	</div>
-	{% if available_modules %}
+	{% if pluginsAvailable %}
 	<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/services/create/" class="btn btn-primary">Create Service</a>
 	{% else %}
 	<p>There are no service modules available. Service creation requires the use of a Service Module. Contact your site administrator to resolve this problem.</p>
 	{% endif %}
 	<br><br>
 
-	{% if service_list %}
-	{% for i in service_list %}
+	{% if services %}
+	{% for i in services %}
 	<div class="panel panel-default">
 		<div class="panel-heading"> {{i.name}} </div>
 		<div class="panel-body">
 			<strong>Module: </strong>{{ i.servicemodule.modulename }}<br>
 			<strong>Name: </strong>{{ i.name }}<br>
-			<strong>Start Scoring: </strong>{{ i.datetime_start }}<br>
-			<strong>Finish Scoring: </strong>{{ i.datetime_finish }}<br>
-			<strong>Connection Method: </strong>{{ i.connect_display }}<br>
-			<strong>Machine Address: </strong>{{ i.networkloc }}<br>
-			<strong>Default Port: </strong>{{ i.defaultport }}<br>
-			<strong>Points: </strong>{{ i.points}}<br>
+			<strong>Start Scoring: </strong>{{ i.datetimeStart }}<br>
+			<strong>Finish Scoring: </strong>{{ i.datetimeFinish }}<br>
+			<strong>Machine IP: </strong>{{ i.machineIp }}<br>
+			<strong>Machine FQDN: </strong>{{ i.machineFqdn }}<br>
+			<strong>Default Port: </strong>{{ i.defaultPort }}<br>
+			<strong>Points: </strong>{{ i.points }}<br>
 			<strong>Description: </strong><br>
 			{{ i.description }}
 			<div class="bt-component pull-right">
-				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/services/edit/{{ i.servid }}/" class="btn btn-primary">Edit</a>
-				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/services/delete/{{ i.servid }}/" class="btn btn-danger">Delete</a>
+				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/services/edit/{{ i.serviceId }}/" class="btn btn-primary">Edit</a>
+				<a href="#" class="btn btn-danger">Delete</a>
 			</div>
 		</div>
 	</div>
 	{% endfor %}
 	{% else %}
-	{% if available_modules %}
+	{% if pluginsAvailable %}
 	<p>No services have been created yet. Go ahead and make one!</p>
 	{% endif %}
 	{% endif %}

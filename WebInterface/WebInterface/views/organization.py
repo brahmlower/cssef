@@ -28,25 +28,18 @@ def login(request):
 	organizationName = 'testingorg'
 	return HttpResponseRedirect("/organization/%s/home" % organizationName)
 
-def getOrganization(organizationUrl):
-	# TODO: This should eventually use GET queries instead of searching the whole list
-	results = cssefApi.get('organizations.json')
-	for i in results:
-		if i['url'] == organizationUrl:
-			return i
-
 def logout(request):
 	auth.logout(request)
 	return HttpResponseRedirect("/")
 
 def home(request, organizationUrl):
 	context = {}
-	context['organization'] = getOrganization(organizationUrl)
+	context['organization'] = cssefApi.getOrganization(organizationUrl)
 	return render_to_response('organization/home.html', context)
 
 def members(request, organizationUrl):
 	context = {}
-	context['organization'] = getOrganization(organizationUrl)
+	context['organization'] = cssefApi.getOrganization(organizationUrl)
 	context['members'] = []
 	users = cssefApi.get('users.json')
 	members = []
@@ -58,7 +51,7 @@ def members(request, organizationUrl):
 def listCompetitions(request, organizationUrl):
 	context = {}
 	context['competitions'] = []
-	context['organization'] = getOrganization(organizationUrl)
+	context['organization'] = cssefApi.getOrganization(organizationUrl)
 	for i in cssefApi.get('competitions.json'):
 		if i['organization'] == context['organization']['organizationId']:
 			context['competitions'].append(i)
@@ -67,7 +60,7 @@ def listCompetitions(request, organizationUrl):
 def createCompetition(request, organizationUrl, competition=None):
 	context = {}
 	context.update(csrf(request))
-	context['organization'] = getOrganization(organizationUrl)
+	context['organization'] = cssefApi.getOrganization(organizationUrl)
 	context["form"] = CreateCompetition()
 	if request.method != "POST":
 		return render_to_response('organization/createCompetition.html', context)
@@ -80,5 +73,5 @@ def createCompetition(request, organizationUrl, competition=None):
 
 def settings(request, organizationUrl):
 	context = {}
-	context['organization'] = getOrganization(organizationUrl)
+	context['organization'] = cssefApi.getOrganization(organizationUrl)
 	return render_to_response('organization/settings.html', context)

@@ -56,15 +56,16 @@
 	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/teams/{{ action }}/" method="post" class="form-horizontal">
 	{% else%}
 	<h2> Edit Team </h2>
-	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/teams/{{ action }}/{{ teamid }}/" method="post" class="form-horizontal">
+	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/teams/{{ action }}/{{ team.teamId }}/" method="post" class="form-horizontal">
 	{% endif %}	
 		{% csrf_token %}
-		{% load extras %}
+		{{ form }}
+<!-- 
 		{% for i in form %}
 			{{ i.errors }}
 			<label for="{{ i.id_for_label }}" class="col-lg-2 control-label">{{ i.label }}</label>
 			<div class="col-lg-10 input-append">{{ i }}<br></div>
-		{% endfor %}
+		{% endfor %} -->
 
 		<div class="col-lg-10 col-lg-offset-2">
 			<a class="btn btn-default" href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/teams/">Cancel</a>
