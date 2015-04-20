@@ -10,42 +10,62 @@
 <script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
 <script>
 	$(function() {
-		$('#{{ form.datetimeDisplay.id_for_label }}').datetimepicker();
-		$('#{{ form.datetimeStart.id_for_label }}').datetimepicker();
-		$('#{{ form.datetimeFinish.id_for_label }}').datetimepicker();
-		$("#{{ form.name.id_for_label }}").keyup( function() { var compname = $("#{{ form.name.id_for_label }}").val();
-			$("#{{ form.url.id_for_label }}").val(compname.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/gi, ''));
+		var competitionName = $("#{{ form.name.id_for_label }}");
+		var competitionUrl = $("#{{ form.url.id_for_label }}");
+		var datetimeDisplay = $('#{{ form.datetimeDisplay.id_for_label }}');
+		var datetimeStart = $('#{{ form.datetimeStart.id_for_label }}');
+		var datetimeFinish = $('#{{ form.datetimeFinish.id_for_label }}');
+		var autoStart = $('#{{ form.autoStart.id_for_label }}');
+		var scoringEnabled = $('#{{ form.scoringEnabled.id_for_label }}');
+		var scoringInterval = $('#{{ form.scoringInterval.id_for_label }}');
+		var scoringIntervalUncertainty = $('#{{ form.scoringIntervalUncertainty.id_for_label }}');
+		var scoringMethod = $('#{{ form.scoringMethod.id_for_label }}');
+		var scoringSlaEnabled = $('#{{ form.scoringSlaEnabled.id_for_label }}');
+		var scoringSlaThreashold = $('#{{ form.scoringSlaThreashold.id_for_label }}');
+		var scoringSlaPenalty = $('#{{ form.scoringSlaPenalty.id_for_label }}');
+
+		datetimeDisplay.datetimepicker();
+		datetimeStart.datetimepicker();
+		datetimeFinish.datetimepicker();
+
+		competitionName.keyup( function() {
+			var compname = competitionName.val();
+			competitionUrl.val(compname.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/gi, ''));
 		});
 
-		$('#{{ form.audoStart.id_for_label }}').click(function () {
-			var startField = '#{{ form.datetimeStart.id_for_label }}'
-			$(startField).prop('disabled', function(idx, oldProp) { return !oldProp; });
-			$(startField).val('');
+		function toggleDisable (targetField) {
+			targetField.prop('disabled', function(idx, oldProp) { return !oldProp; });
+			targetField.val('');
+		}
+		scoringEnabled.click(function () {
+			toggleDisable(scoringInterval);
+			toggleDisable(scoringIntervalUncertainty);
+			toggleDisable(scoringMethod);
+		});
+		scoringSlaEnabled.click(function () {
+			toggleDisable(scoringSlaThreashold);
+			toggleDisable(scoringSlaPenalty);
+		});
+		autoStart.click(function () {
+			toggleDisable(datetimeStart)
 		});
 
-		$('#{{ form.scoringEnabled.id_for_label }}').click(function () {
-			$('#{{ form.scoringInterval.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
-			$('#{{ form.scoringInterval.id_for_label }}').val('');
-			$('#{{ form.scoringIntervalUncertainty.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
-			$('#{{ form.scoringIntervalUncertainty.id_for_label }}').val('');
-			$('#{{ form.scoringMethod.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
-			$('#{{ form.scoringMethod.id_for_label }}').val('');
+		$(document).ready(function() {
+			if (!autoStart.attr('checked')) {
+				datetimeStart.attr('disabled', true);
+			}
+			if (!scoringEnabled.attr('checked')) {
+				scoringInterval.attr('disabled', true);
+				scoringIntervalUncertainty.attr('disabled', true);
+				scoringMethod.attr('disabled', true);
+			}
+			if (!scoringSlaEnabled.attr('checked')) {
+				scoringSlaThreashold.attr('disabled', true);
+				scoringSlaPenalty.attr('disabled', true);
+			}
 		});
-
-		$('#{{ form.scoringSlaEnabled.id_for_label }}').click(function () {
-			$('#{{ form.scoringSlaThreashold.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
-			$('#{{ form.scoringSlaThreashold.id_for_label }}').val('');
-			$('#{{ form.scoringSlaPenalty.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
-			$('#{{ form.scoringSlaPenalty.id_for_label }}').val('');
-		});
-
-
-
 	});
-	function toggle_form (panel_name){
-		$("#"+panel_name).toggleClass('hidden');
-		$("#"+panel_name+"_form").toggleClass('hidden');
-	};
+
 </script>
 {% endblock %}
 
@@ -63,224 +83,5 @@
 			<button type="submit" class="btn btn-primary">Save</button>
 		</div>
 	</form>
-	<!-- <div class="panel panel-default">
-		<div class="panel-heading"> General Settings </div>
-		<div class="panel-body" id="general_settings">
-			<div class="form-horizontal">
-				<label class="col-lg-2 control-label">{{ forms.general_settings.name.label }}</label>
-				<div class="col-lg-10"><p>{{ competition.name }}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.url.label }}</label>
-				<div class="col-lg-10"><p>{{ competition.url }}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.datetimeDisplay.label }}</label>
-				<div class="col-lg-10"><p>{{ competition.datetimeDisplay }}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.datetimeStart.label }}</label>
-				<div class="col-lg-10"><p>{{ competition.datetimeStart }}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.datetimeFinish.label }}</label>
-				<div class="col-lg-10"><p>{{ competition.datetimeFinish }}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.descriptionShort.label }}</label>
-				<div class="col-lg-10"><p>{{ competition.descriptionShort }}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.descriptionFull.label }}</label>
-				<div class="col-lg-10"><p>{{ competition.descriptionFull }}</p><br></div>
-				
-				<div class="col-lg-10 col-lg-offset-2">
-					<br>
-					<button id="new_response_button" class="btn btn-primary" onclick="toggle_form('general_settings')">Edit</button>
-				</div>
-			</div>
-		</div>
-		<div class="panel-body hidden" id="general_settings_form">
-			<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/settings/" method="post" class="form-horizontal">
-				{% csrf_token %}
-				<input type="hidden" name="form_num" value = "0">
-				{{ forms.general_settings.compname.errors}}
-				<label for="{{ forms.general_settings.compname.id_for_label }}" class="col-lg-2 control-label">{{ forms.general_settings.compname.label }}</label>
-				<div class="col-lg-10">{{ forms.general_settings.compname }}<br></div>
-
-				{{ form.compurl.errors }}
-				<label for="{{ forms.general_settings.compurl.id_for_label }}" class="col-lg-2 control-label">{{ forms.general_settings.compurl.label }}</label>
-				<div class="col-lg-10">{{ forms.general_settings.compurl }}<br></div>
-
-				{{ forms.general_settings.datetime_display.errors }}
-				<label for="{{ forms.general_settings.datetime_display.id_for_label }}" class="col-lg-2 control-label">{{ forms.general_settings.datetime_display.label }}</label>
-				<div class="col-lg-10 input-append">{{ forms.general_settings.datetime_display }}<br></div>
-
-				{{ forms.general_settings.datetime_start.errors }}
-				<label for="{{ forms.general_settings.datetime_start.id_for_label }}" class="col-lg-2 control-label">{{ forms.general_settings.datetime_start.label }}</label>
-				<div class="col-lg-10 input-append">{{ forms.general_settings.datetime_start }}<br></div>
-
-				{{ forms.general_settings.datetime_finish.errors }}
-				<label for="{{ forms.general_settings.datetime_finish.id_for_label }}" class="col-lg-2 control-label">{{ forms.general_settings.datetime_finish.label }}</label>
-				<div class="col-lg-10 input-append">{{ forms.general_settings.datetime_finish }}<br></div>
-
-				{{ forms.general_settings.description_short.errors }}
-				<label for="{{ forms.general_settings.description_short.id_for_label }}" class="col-lg-2 control-label">{{ forms.general_settings.description_short.label }}</label>
-				<div class="col-lg-10">{{ forms.general_settings.description_short }}<br></div>
-
-				{{ forms.general_settings.description_full.errors }}
-				<label for="{{ forms.general_settings.description_full.id_for_label }}" class="col-lg-2 control-label">{{ forms.general_settings.description_full.label }}</label>
-				<div class="col-lg-10">{{ forms.general_settings.description_full }}<br></div>
-
-				<div class="col-lg-10 col-lg-offset-2">
-					<button type="button" class="btn btn-default" onclick="toggle_form('general_settings')">Cancel</button>
-					<button type="submit" class="btn btn-primary">Save</button>
-				</div>
-			</form>
-		</div>
-	</div>
-	<div class="panel panel-default">
-		<div class="panel-heading"> Scoring Settings </div>
-		<div class="panel-body" id="scoring_settings">
-			<div class="form-horizontal">
-				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{competition.scoring_enabled}}<br><br></div>
-				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_interval.label }}</label>
-				<div class="col-lg-10"><p>{{competition.scoring_interval}}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_interval_uncty.label }}</label>
-				<div class="col-lg-10"><p>{{competition.scoring_interval_uncty}}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_method.label }}</label>
-				<div class="col-lg-10"><p>{{competition.scoring_method}}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_enabled.label }}</label>
-				<div class="col-lg-10"><p>{{competition.scoring_sla_enabled}}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_threashold.label }}</label>
-				<div class="col-lg-10"><p>{{competition.scoring_sla_threashold}}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_penalty.label }}</label>
-				<div class="col-lg-10"><p>{{competition.scoring_sla_penalty}}</p><br></div>
-				<div class="col-lg-10 col-lg-offset-2">
-					<br>
-					<button id="new_response_button" class="btn btn-primary" onclick="toggle_form('scoring_settings')">Edit</button>
-				</div>
-			</div>
-		</div>
-		<div class="panel-body hidden" id="scoring_settings_form">
-			<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/settings/" method="post" class="form-horizontal">
-				{% csrf_token %}
-				<input type="hidden" name="form_num" value = "1">
-				{{ forms.scoring_settings.scoring_enabled.errors }}
-				<label for="{{ forms.scoring_settings.scoring_enabled.id_for_label }}" class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_enabled.label }}</label>
-				<div class="col-lg-10 radio input-append">{{ forms.scoring_settings.scoring_enabled }}<br><br></div>
-
-				{{ forms.scoring_settings.scoring_interval.errors }}
-				<label for="{{ forms.scoring_settings.scoring_interval.id_for_label }}" class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_interval.label }}</label>
-				<div class="col-lg-10 input-append">{{ forms.scoring_settings.scoring_interval }}<br></div>
-
-				{{ forms.scoring_settings.scoring_interval_uncty.errors }}
-				<label for="{{ forms.scoring_settings.scoring_interval_uncty.id_for_label }}" class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_interval_uncty.label }}</label>
-				<div class="col-lg-10 input-append">{{ forms.scoring_settings.scoring_interval_uncty }}<br></div>
-
-				{{ forms.scoring_settings.scoring_method.errors }}
-				<label for="{{ forms.scoring_settings.scoring_method.id_for_label }}" class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_method.label }}</label>
-				<div class="col-lg-10 input-append">{{ forms.scoring_settings.scoring_method }}<br></div>
-
-				{{ forms.scoring_settings.scoring_sla_enabled.errors }}
-				<label for="{{ forms.scoring_settings.scoring_method.id_for_label }}" class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_enabled.label }}</label>
-				<div class="col-lg-10 input-append">{{ forms.scoring_settings.scoring_sla_enabled }}<br><br></div>
-
-				{{ forms.scoring_settings.scoring_sla_threashold.errors }}
-				<label for="{{ forms.scoring_settings.scoring_method.id_for_label }}" class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_threashold.label }}</label>
-				<div class="col-lg-10 input-append">{{ forms.scoring_settings.scoring_sla_threashold }}<br></div>
-
-				{{ forms.scoring_settings.scoring_sla_penalty.errors }}
-				<label for="{{ forms.scoring_settings.scoring_method.id_for_label }}" class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_penalty.label }}</label>
-				<div class="col-lg-10 input-append">{{ forms.scoring_settings.scoring_sla_penalty }}<br></div>
-
-				<div class="col-lg-10 col-lg-offset-2">
-					<button type="button" class="btn btn-default" onclick="toggle_form('scoring_settings')">Cancel</button>
-					<button type="submit" class="btn btn-primary">Save</button>
-				</div>
-			</form>
-		</div>
-	</div>
-	<div class="panel panel-default">
-		<div class="panel-heading"> Service Settings </div>
-		<div class="panel-body" id="service_settings">
-			<div class="form-horizontal">
-				<label class="col-lg-2 control-label">{{ forms.service_settings.services_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{competition.services_enabled}}<br></div>
-				<div class="col-lg-10 col-lg-offset-2">
-					<br>
-					<button id="new_response_button" class="btn btn-primary" onclick="toggle_form('service_settings')">Edit</button>
-				</div>
-			</div>
-		</div>
-		<div class="panel-body hidden" id="service_settings_form">
-			<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/settings/" method="post" class="form-horizontal">
-				{% csrf_token %}
-				<input type="hidden" name="form_num" value = "2">
-				{{ forms.service_settings.services_enabled.errors }}
-				<label for="{{ forms.service_settings.service_enabled.id_for_label }}" class="col-lg-2 control-label">{{ forms.service_settings.services_enabled.label }}</label>
-				<div class="col-lg-10 radio input-append">{{ forms.service_settings.services_enabled }}<br></div>
-
-				<div class="col-lg-10 col-lg-offset-2">
-					<br>
-					<button type="button" class="btn btn-default" onclick="toggle_form('service_settings')">Cancel</button>
-					<button type="submit" class="btn btn-primary">Save</button>
-				</div>
-			</form>
-		</div>
-	</div>
-	<div class="panel panel-default">
-		<div class="panel-heading"> Team Settings </div>
-		<div class="panel-body" id="team_settings">
-			<div class="form-horizontal">
-				<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_ranking_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{competition.teams_view_ranking_enabled}}<br></div>
-
-				<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_scoreboard_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{competition.teams_view_scoreboard_enabled}}<br></div>
-
-				<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_servicestatus_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{competition.teams_view_servicestatus_enabled}}<br></div>
-
-				<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_servicestatistics_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{competition.teams_view_servicestatistics_enabled}}<br></div>
-
-				<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_injects_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{competition.teams_view_injects_enabled}}<br></div>
-
-				<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_incidentresponse_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{competition.teams_view_incidentresponse_enabled}}<br></div>
-
-				<div class="col-lg-10 col-lg-offset-2">
-					<br>
-					<button id="new_response_button" class="btn btn-primary" onclick="toggle_form('team_settings')">Edit</button>
-				</div>
-			</div>
-		</div>
-		<div class="panel-body hidden" id="team_settings_form">
-			<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/settings/" method="post" class="form-horizontal">
-				{% csrf_token %}
-				<input type="hidden" name="form_num" value = "3">
-				{{ forms.team_settings.teams_view_ranking_enabled.errors }}
-				<label for="{{ forms.team_settings.teams_view_ranking_enabled.id_for_label }}" class="col-lg-2 control-label">{{ forms.team_settings.teams_view_ranking_enabled.label }}</label>
-				<div class="col-lg-10 radio input-append">{{ forms.team_settings.teams_view_ranking_enabled }}<br></div>
-
-				{{ forms.team_settings.teams_view_scoreboard_enabled.errors }}
-				<label for="{{ forms.team_settings.teams_view_scoreboard_enabled.id_for_label }}" class="col-lg-2 control-label">{{ forms.team_settings.teams_view_scoreboard_enabled.label }}</label>
-				<div class="col-lg-10 radio input-append">{{ forms.team_settings.teams_view_scoreboard_enabled }}<br></div>
-
-				{{ forms.team_settings.teams_view_servicestatus_enabled.errors }}
-				<label for="{{ forms.team_settings.teams_view_servicestatus_enabled.id_for_label }}" class="col-lg-2 control-label">{{ forms.team_settings.teams_view_servicestatus_enabled.label }}</label>
-				<div class="col-lg-10 radio input-append">{{ forms.team_settings.teams_view_servicestatus_enabled }}<br></div>
-
-				{{ form.team_settings.teams_view_servicestatistics_enabled.errors }}
-				<label for="{{ forms.team_settings.teams_view_servicestatistics_enabled.id_for_label }}" class="col-lg-2 control-label">{{ forms.team_settings.teams_view_servicestatistics_enabled.label }}</label>
-				<div class="col-lg-10 radio input-append">{{ forms.team_settings.teams_view_servicestatistics_enabled }}<br></div>
-
-				{{ forms.team_settings.teams_view_injects_enabled.errors }}
-				<label for="{{ forms.team_settings.teams_view_injects_enabled.id_for_label }}" class="col-lg-2 control-label">{{ forms.team_settings.teams_view_injects_enabled.label }}</label>
-				<div class="col-lg-10 radio input-append">{{ forms.team_settings.teams_view_injects_enabled }}<br></div>
-
-				{{ forms.team_settings.teams_view_incidentresponse_enabled.errors }}
-				<label for="{{ forms.team_settings.teams_view_incidentresponse_enabled.id_for_label }}" class="col-lg-2 control-label">{{ forms.team_settings.teams_view_incidentresponse_enabled.label }}</label>
-				<div class="col-lg-10 radio input-append">{{ forms.team_settings.teams_view_incidentresponse_enabled }}<br></div>
-
-				<div class="col-lg-10 col-lg-offset-2">
-					<br>
-					<button type="button" class="btn btn-default" onclick="toggle_form('team_settings')">Cancel</button>
-					<button type="submit" class="btn btn-primary">Save</button>
-				</div>
-			</form>
-		</div>
-	</div> -->
 </div>
 {% endblock %}

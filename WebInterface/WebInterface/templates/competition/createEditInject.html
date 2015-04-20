@@ -10,22 +10,40 @@
 <script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
 <script type="text/javascript">
 	$(function() {
-		$('#{{ form.datetimeDelivery.id_for_label }}').datetimepicker();
-		$('#{{ form.datetimeResponseDue.id_for_label }}').datetimepicker();
-		$('#{{ form.datetimeResponseClose.id_for_label }}').datetimepicker();
-		$('#{{ form.requireResponse.id_for_label }}').click(function () {
-			$('#{{ form.datetimeResponseDue.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
-			$('#{{ form.datetimeResponseClose.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
-			$('#{{ form.datetimeResponseDue.id_for_label }}').val('');
-			$('#{{ form.datetimeResponseClose.id_for_label }}').val('');
+		var requireResponse = $("#{{ form.requireResponse.id_for_label }}");
+		var competitionUrl = $("#{{ form.url.id_for_label }}");
+		var requireResponse = $('#{{ form.requireResponse.id_for_label }}');
+		var manualDelivery = $('#{{ form.manualDelivery.id_for_label }}');
+		var datetimeDelivery = $('#{{ form.datetimeDelivery.id_for_label }}')
+		var datetimeResponseDue = $('#{{ form.datetimeResponseDue.id_for_label }}')
+		var datetimeResponseClose = $('#{{ form.datetimeResponseClose.id_for_label }}')
+		datetimeDelivery.datetimepicker();
+		datetimeResponseDue.datetimepicker();
+		datetimeResponseClose.datetimepicker();
+
+		function toggleDisable (targetField) {
+			targetField.prop('disabled', function(idx, oldProp) { return !oldProp; });
+			targetField.val('');
+		}
+		requireResponse.click(function () {
+			toggleDisable(datetimeResponseDue);
+			toggleDisable(datetimeResponseClose);
+		});
+		manualDelivery.click(function () {
+			toggleDisable(datetimeDelivery)
+		});
+
+		$(document).ready(function() {
+			if (!requireResponse.attr('checked')) {
+				datetimeResponseDue.attr('disabled', true);
+				datetimeResponseClose.attr('disabled', true);
+			}
+			if (manualDelivery.attr('checked')) {
+				datetimeDelivery.attr('disabled', true);
+			}
 		});
 	});
-	$(document).ready(function() {
-		if (!$('#{{ form.requireResponse.id_for_label }}').attr('checked')) {
-			$('#{{ form.datetimeResponseDue.id_for_label }}').attr('disabled', true);
-			$('#{{ form.datetimeResponseClose.id_for_label }}').attr('disabled', true);
-		}
-	});
+
 </script>
 {% endblock %}
 
