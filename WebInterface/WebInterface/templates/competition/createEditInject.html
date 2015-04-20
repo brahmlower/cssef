@@ -10,20 +10,20 @@
 <script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
 <script type="text/javascript">
 	$(function() {
-		$('#{{ form.dt_delivery.id_for_label }}').datetimepicker();
-		$('#{{ form.dt_response_due.id_for_label }}').datetimepicker();
-		$('#{{ form.dt_response_close.id_for_label }}').datetimepicker();
-		$('#id_require_response').click(function () {
-			$('#id_dt_response_due').prop('disabled', function(idx, oldProp) { return !oldProp; });
-			$('#id_dt_response_close').prop('disabled', function(idx, oldProp) { return !oldProp; });
-			$('#id_dt_response_due').val('');
-			$('#id_dt_response_close').val('');
+		$('#{{ form.datetimeDelivery.id_for_label }}').datetimepicker();
+		$('#{{ form.datetimeResponseDue.id_for_label }}').datetimepicker();
+		$('#{{ form.datetimeResponseClose.id_for_label }}').datetimepicker();
+		$('#{{ form.requireResponse.id_for_label }}').click(function () {
+			$('#{{ form.datetimeResponseDue.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
+			$('#{{ form.datetimeResponseClose.id_for_label }}').prop('disabled', function(idx, oldProp) { return !oldProp; });
+			$('#{{ form.datetimeResponseDue.id_for_label }}').val('');
+			$('#{{ form.datetimeResponseClose.id_for_label }}').val('');
 		});
 	});
 	$(document).ready(function() {
-		if (!$('#id_require_response').attr('checked')) {
-			$('#id_dt_response_due').attr('disabled', true);
-			$('#id_dt_response_close').attr('disabled', true);
+		if (!$('#{{ form.requireResponse.id_for_label }}').attr('checked')) {
+			$('#{{ form.datetimeResponseDue.id_for_label }}').attr('disabled', true);
+			$('#{{ form.datetimeResponseClose.id_for_label }}').attr('disabled', true);
 		}
 	});
 </script>
@@ -37,37 +37,10 @@
 	{% if action == "create" %}
 	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/{{ action }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 	{% else%}
-	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/{{ action }}/{{ ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/{{ action }}/{{ inject.injectId }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 	{% endif %}
 		{% csrf_token %}
-		{{ form.title.errors}}
-		<label for="{{ form.title.id_for_label }}" class="col-lg-2 control-label">{{ form.title.label }}</label>
-		<div class="col-lg-10">{{ form.title }}<br></div>
-
-		{{ form.body.errors}}
-		<label for="{{ form.body.id_for_label }}" class="col-lg-2 control-label">{{ form.body.label }}</label>
-		<div class="col-lg-10">{{ form.body }}<br></div>
-
-		{{ form.dt_delivery.errors}}
-		<label for="{{ form.dt_delivery.id_for_label }}" class="col-lg-2 control-label">{{ form.dt_delivery.label }}</label>
-		<div class="col-lg-10">{{ form.dt_delivery }}<br></div>
-
-		{{ form.require_response.errors}}
-		<label for="{{ form.require_response.id_for_label }}" class="col-lg-2 control-label">{{ form.require_response.label }}</label>
-		<div class="col-lg-10">{{ form.require_response }}<br><br></div>
-
-		{{ form.dt_response_due.errors}}
-		<label for="{{ form.dt_response_due.id_for_label }}" class="col-lg-2 control-label">{{ form.dt_response_due.label }}</label>
-		<div class="col-lg-10">{{ form.dt_response_due }}<br></div>
-
-		{{ form.dt_response_close.errors}}
-		<label for="{{ form.dt_response_close.id_for_label }}" class="col-lg-2 control-label">{{ form.dt_response_close.label }}</label>
-		<div class="col-lg-10">{{ form.dt_response_close }}<br></div>
-
-		{{ form.docfile.errors }}
-		<label for="{{ form.docfile.id_for_label }}" class="col-lg-2 control-label">{{ form.docfile.label }}</label>
-		<div class="col-lg-10">{{ form.docfile }}<br></div>
-
+		{{form}}
 		<div class="col-lg-10 col-lg-offset-2">
 			<a class="btn btn-default" href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/">Cancel</a>
 			<button type="submit" class="btn btn-primary">Save</button>

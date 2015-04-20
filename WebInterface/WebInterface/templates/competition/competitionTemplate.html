@@ -1,7 +1,7 @@
 {% extends "sitePageTemplate.html" %}
 
 {% block authed_navbar_links %}
-<li class="active"><a href="/admin/">Admin Config</a></li>
+<li class="active"><a href="/organization{{ organization.url }}/home/">{{ organization.name}} Home</a></li>
 {% endblock %}
 
 {% block sidebar %}

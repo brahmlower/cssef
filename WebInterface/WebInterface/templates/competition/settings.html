@@ -28,18 +28,34 @@
 
 {% block page_content %}
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-	<div class="page-header"><h1> {{comp_obj.compname}} - Settings</h1></div>
-	<div class="panel panel-default">
+	<div class="page-header"><h1> {{ competition.name }} - Settings</h1></div>
+
+	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/settings/" method="post" class="form-horizontal" enctype="multipart/form-data">
+		{% csrf_token %}
+		{{form}}
+		<div class="col-lg-10 col-lg-offset-2">
+			<a class="btn btn-default" href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/">Cancel</a>
+			<button type="submit" class="btn btn-primary">Save</button>
+		</div>
+	</form>
+	<!-- <div class="panel panel-default">
 		<div class="panel-heading"> General Settings </div>
 		<div class="panel-body" id="general_settings">
 			<div class="form-horizontal">
-				<label class="col-lg-2 control-label">{{ forms.general_settings.compname.label }}</label>			<div class="col-lg-10"><p>{{ comp_obj.compname }}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.compurl.label }}</label>			<div class="col-lg-10"><p>{{ comp_obj.compurl }}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.datetime_display.label }}</label>	<div class="col-lg-10"><p>{{ comp_obj.datetime_display }}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.datetime_start.label }}</label>		<div class="col-lg-10"><p>{{ comp_obj.datetime_start }}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.datetime_finish.label }}</label>	<div class="col-lg-10"><p>{{ comp_obj.datetime_finish }}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.description_short.label }}</label>	<div class="col-lg-10"><p>{{ comp_obj.description_short }}</p><br></div>
-				<label class="col-lg-2 control-label">{{ forms.general_settings.description_full.label }}</label>	<div class="col-lg-10"><p>{{ comp_obj.description_full }}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.name.label }}</label>
+				<div class="col-lg-10"><p>{{ competition.name }}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.url.label }}</label>
+				<div class="col-lg-10"><p>{{ competition.url }}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.datetimeDisplay.label }}</label>
+				<div class="col-lg-10"><p>{{ competition.datetimeDisplay }}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.datetimeStart.label }}</label>
+				<div class="col-lg-10"><p>{{ competition.datetimeStart }}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.datetimeFinish.label }}</label>
+				<div class="col-lg-10"><p>{{ competition.datetimeFinish }}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.descriptionShort.label }}</label>
+				<div class="col-lg-10"><p>{{ competition.descriptionShort }}</p><br></div>
+				<label class="col-lg-2 control-label">{{ forms.general_settings.descriptionFull.label }}</label>
+				<div class="col-lg-10"><p>{{ competition.descriptionFull }}</p><br></div>
 				
 				<div class="col-lg-10 col-lg-offset-2">
 					<br>
@@ -91,19 +107,19 @@
 		<div class="panel-body" id="scoring_settings">
 			<div class="form-horizontal">
 				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{comp_obj.scoring_enabled}}<br><br></div>
+				<div class="col-lg-10 radio">{{competition.scoring_enabled}}<br><br></div>
 				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_interval.label }}</label>
-				<div class="col-lg-10"><p>{{comp_obj.scoring_interval}}</p><br></div>
+				<div class="col-lg-10"><p>{{competition.scoring_interval}}</p><br></div>
 				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_interval_uncty.label }}</label>
-				<div class="col-lg-10"><p>{{comp_obj.scoring_interval_uncty}}</p><br></div>
+				<div class="col-lg-10"><p>{{competition.scoring_interval_uncty}}</p><br></div>
 				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_method.label }}</label>
-				<div class="col-lg-10"><p>{{comp_obj.scoring_method}}</p><br></div>
+				<div class="col-lg-10"><p>{{competition.scoring_method}}</p><br></div>
 				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_enabled.label }}</label>
-				<div class="col-lg-10"><p>{{comp_obj.scoring_sla_enabled}}</p><br></div>
+				<div class="col-lg-10"><p>{{competition.scoring_sla_enabled}}</p><br></div>
 				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_threashold.label }}</label>
-				<div class="col-lg-10"><p>{{comp_obj.scoring_sla_threashold}}</p><br></div>
+				<div class="col-lg-10"><p>{{competition.scoring_sla_threashold}}</p><br></div>
 				<label class="col-lg-2 control-label">{{ forms.scoring_settings.scoring_sla_penalty.label }}</label>
-				<div class="col-lg-10"><p>{{comp_obj.scoring_sla_penalty}}</p><br></div>
+				<div class="col-lg-10"><p>{{competition.scoring_sla_penalty}}</p><br></div>
 				<div class="col-lg-10 col-lg-offset-2">
 					<br>
 					<button id="new_response_button" class="btn btn-primary" onclick="toggle_form('scoring_settings')">Edit</button>
@@ -154,7 +170,7 @@
 		<div class="panel-body" id="service_settings">
 			<div class="form-horizontal">
 				<label class="col-lg-2 control-label">{{ forms.service_settings.services_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{comp_obj.services_enabled}}<br></div>
+				<div class="col-lg-10 radio">{{competition.services_enabled}}<br></div>
 				<div class="col-lg-10 col-lg-offset-2">
 					<br>
 					<button id="new_response_button" class="btn btn-primary" onclick="toggle_form('service_settings')">Edit</button>
@@ -182,22 +198,22 @@
 		<div class="panel-body" id="team_settings">
 			<div class="form-horizontal">
 				<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_ranking_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{comp_obj.teams_view_ranking_enabled}}<br></div>
+				<div class="col-lg-10 radio">{{competition.teams_view_ranking_enabled}}<br></div>
 
 				<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_scoreboard_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{comp_obj.teams_view_scoreboard_enabled}}<br></div>
+				<div class="col-lg-10 radio">{{competition.teams_view_scoreboard_enabled}}<br></div>
 
 				<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_servicestatus_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{comp_obj.teams_view_servicestatus_enabled}}<br></div>
+				<div class="col-lg-10 radio">{{competition.teams_view_servicestatus_enabled}}<br></div>
 
 				<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_servicestatistics_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{comp_obj.teams_view_servicestatistics_enabled}}<br></div>
+				<div class="col-lg-10 radio">{{competition.teams_view_servicestatistics_enabled}}<br></div>
 
 				<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_injects_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{comp_obj.teams_view_injects_enabled}}<br></div>
+				<div class="col-lg-10 radio">{{competition.teams_view_injects_enabled}}<br></div>
 
 				<label class="col-lg-2 control-label">{{ forms.team_settings.teams_view_incidentresponse_enabled.label }}</label>
-				<div class="col-lg-10 radio">{{comp_obj.teams_view_incidentresponse_enabled}}<br></div>
+				<div class="col-lg-10 radio">{{competition.teams_view_incidentresponse_enabled}}<br></div>
 
 				<div class="col-lg-10 col-lg-offset-2">
 					<br>
@@ -240,6 +256,6 @@
 				</div>
 			</form>
 		</div>
-	</div>
+	</div> -->
 </div>
 {% endblock %}

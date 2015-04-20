@@ -37,3 +37,27 @@ def getCompetition(organizationId, competitionUrl):
 	for i in results:
 		if i['url'] == competitionUrl and i['organization'] == organizationId:
 			return i
+
+def getServices(competitionId):
+	return get('competitions/%s/services.json' % competitionId)
+
+def getTeams(competitionId):
+	return get('competitions/%s/teams.json' % competitionId)
+
+def getInjects(competitionId):
+	return get('competitions/%s/injects.json' % competitionId)
+
+def getService(competitionId, serviceId):
+	if serviceId:
+		return get('competitions/%s/teams/%s.json' % (competitionId, serviceId))
+
+def getTeam(competitionId, teamId):
+	if teamId:
+		return get('competitions/%s/teams/%s.json' % (competitionId, teamId))
+
+def getInject(competitionId, injectId):
+	if injectId:
+		return get('competitions/%s/injects/%s.json' % (competitionId, injectId))
+
+def getPlugins():
+	return get('plugins.json')
