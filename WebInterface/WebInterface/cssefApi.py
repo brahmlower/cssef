@@ -2,6 +2,7 @@ from WebInterface.settings import SCORING_ENGINE_API_URL
 from urllib import urlencode
 import urllib2
 import json
+import requests
 
 def request(page):
 	url = SCORING_ENGINE_API_URL + page
@@ -14,10 +15,12 @@ def delete(page):
 	request.get_method = lambda: 'DELETE'
 	return urllib2.urlopen(request)
 
-def post(page, unencodedData):
+def post(page, unencodedData, files = None):
 	url = SCORING_ENGINE_API_URL + page
-	data = urlencode(unencodedData)
-	return urllib2.urlopen(url, data)
+	if files:
+		return requests.post(url, data = unencodedData, files=files)
+	else:
+		return requests.post(url, data = unencodedData)
 
 def get(page):
 	response = request(page)

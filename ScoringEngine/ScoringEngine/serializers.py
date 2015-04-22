@@ -54,12 +54,19 @@ class TeamSerializer(serializers.ModelSerializer):
 			'scoreConfigurations')
 
 class PluginSerializer(serializers.ModelSerializer):
+	document = serializers.SerializerMethodField()
 	class Meta:
 		model = Plugin
 		fields = (
 			'pluginId',
 			'name',
-			'description')
+			'description',
+			'document')
+
+	def get_document(self, obj):
+		document = Document.objects.get(plugin = obj)
+		serializer = DocumentSerializer(document)
+		return serializer.data
 
 class ServiceSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -149,8 +156,8 @@ class DocumentSerializer(serializers.ModelSerializer):
 			'incidentResponse',
 			'plugin',
 			'contentType',
-			'filehash',
-			'filepath',
+			'fileHash',
+			'filePath',
 			'filename',
 			'urlEncodedFilename')
 

@@ -1,4 +1,5 @@
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import render
@@ -11,6 +12,8 @@ from WebInterface.forms import CreatePlugin
 from WebInterface.forms import DeleteObject
 from WebInterface.settings import SCORING_ENGINE_API_URL
 from WebInterface import cssefApi
+
+from django.core.files.uploadedfile import UploadedFile
 
 class ContextFactory():
 	ACTION_EDIT = 'create'
@@ -124,7 +127,7 @@ def listPlugins(request):
 		i['deleteForm'] = DeleteObject(objectId = i['pluginId'])
 	return render_to_response('administrator/listPlugins.html', context)
 
-def createPlugin(request):
+def createEditPlugin(request, pluginId = None):
 	context = {}
 	context.update(csrf(request))
 	context["form"] = CreatePlugin()
@@ -135,36 +138,37 @@ def createPlugin(request):
 	if 'docfile' not in request.FILES and not form_obj.is_valid():
 		# TODO: Not exactly giving the user an error message here
 		return render_to_response('administrator/createEditPlugin.html', context)
-	form_obj.cleaned_data.pop('docfile', None)
-	# Create the plugin via the webAPI
-	response = cssefApi.post('plugins.json', form_obj.cleaned_data)
-	# Need to handle a file that was uploaded (field isn't currently showing up for some reason...)
-	#save_document(request.FILES['docfile'], settings.CONTENT_PLUGGINS_PATH, plugin, ashash = False)		
+	uploadedFile = UploadedFile(request.FILES['pluginFile'])
+	fileDict = {uploadedFile.name: uploadedFile.read()}
+	del form_obj.cleaned_data['pluginFile']
+	response = cssefApi.post('plugins.json', form_obj.cleaned_data, files=fileDict)
+	if response.status_code/200 != 1:
+		return HttpResponse(response.text)
 	return HttpResponseRedirect('/admin/plugins/')
 
-def editPlugin(request, servmdulid = None):
-	c.update(csrf(request))
-	c["action"] = "edit"
-	if request.method != "POST":
-		plugin = ServiceModule.objects.filter(servmdulid = servmdulid)
-		c["servmdulid"] = plugin[0].servmdulid
-		c["docfile"] = Document.objects.get(servicemodule = plugin[0])
-		c["form"] = CreatePlugin(initial = plugin.values()[0])
-		return render_to_response('administrator/createEditPlugin.html', c)
-	form_obj = CreatePlugin(request.POST, request.FILES)
-	if 'docfile' in request.FILES and form_obj.is_valid():
-		form_obj.cleaned_data.pop('docfile', None)
-		plugin = ServiceModule.objects.filter(servmdulid = servmdulid)
-		plugin.update(**form_obj.cleaned_data)
-		docfile = Document.objects.get(servicemodule = plugin[0].servmdulid)
-		docfile.delete()
-		save_document(request.FILES['docfile'], settings.CONTENT_PLUGGINS_PATH, plugin[0], ashash = False)
-		return HttpResponseRedirect('/admin/plugins/')
-	else:
-		# Not exactly giving the user an error message here (TODO)
-		print "there were errors"
-		c["form"] = CreatePlugin()
-		return render_to_response('administrator/createEditPlugin.html', c)
+# def editPlugin(request, servmdulid = None):
+# 	c.update(csrf(request))
+# 	c["action"] = "edit"
+# 	if request.method != "POST":
+# 		plugin = ServiceModule.objects.filter(servmdulid = servmdulid)
+# 		c["servmdulid"] = plugin[0].servmdulid
+# 		c["docfile"] = Document.objects.get(servicemodule = plugin[0])
+# 		c["form"] = CreatePlugin(initial = plugin.values()[0])
+# 		return render_to_response('administrator/createEditPlugin.html', c)
+# 	form_obj = CreatePlugin(request.POST, request.FILES)
+# 	if 'docfile' in request.FILES and form_obj.is_valid():
+# 		form_obj.cleaned_data.pop('docfile', None)
+# 		plugin = ServiceModule.objects.filter(servmdulid = servmdulid)
+# 		plugin.update(**form_obj.cleaned_data)
+# 		docfile = Document.objects.get(servicemodule = plugin[0].servmdulid)
+# 		docfile.delete()
+# 		save_document(request.FILES['docfile'], settings.CONTENT_PLUGGINS_PATH, plugin[0], ashash = False)
+# 		return HttpResponseRedirect('/admin/plugins/')
+# 	else:
+# 		# Not exactly giving the user an error message here (TODO)
+# 		print "there were errors"
+# 		c["form"] = CreatePlugin()
+# 		return render_to_response('administrator/createEditPlugin.html', c)
 
 def testPlugin(request, servmdulid = None):
 	c.update(csrf(request))

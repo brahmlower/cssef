@@ -63,9 +63,9 @@ urlpatterns = patterns('',
 	url(r'^admin/organizations/create/$',						administrator.createEditOrganization),
 	url(r'^admin/organizations/edit/(?P<organizationId>[\w\-\_]{0,50})/$',	administrator.createEditOrganization),
 	url(r'^admin/plugins/$',									administrator.listPlugins),
-	url(r'^admin/plugins/create/$',								administrator.createPlugin),
-	url(r'^admin/plugins/edit/(?P<servmdulid>[1-9][1-9]*)/$',	administrator.editPlugin),
-	url(r'^admin/plugins/test/(?P<servmdulid>[1-9][1-9]*)/$',	administrator.testPlugin),
+	url(r'^admin/plugins/create/$',								administrator.createEditPlugin),
+	url(r'^admin/plugins/edit/(?P<pluginId>[1-9][1-9]*)/$',	administrator.createEditPlugin),
+	url(r'^admin/plugins/test/(?P<pluginId>[1-9][1-9]*)/$',	administrator.testPlugin),
 
 	# # Uploaded file related urls
 	# url(r'^resources/injects/(?P<compid>[1-9][1-9]*)/(?P<ijctid>[1-9][1-9]*)/(?P<filename>[\w\-\_\.\s\#]{0,64})$',	Resources.inject),

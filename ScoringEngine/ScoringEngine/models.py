@@ -69,6 +69,7 @@ class Plugin(Model):
 	pluginId = AutoField(primary_key = True)
 	name = CharField(max_length = 20)
 	description = TextField(max_length = 500)
+	#pluginFile = ForeignKey(Document, unique = True)
 
 class Service(Model):
 	serviceId = AutoField(primary_key = True)
@@ -147,26 +148,26 @@ class IncidentResponse(Model):
 	subject = CharField(max_length = 100, default = "")
 	content = TextField(max_length = 1000)
 
+class Organization(Model):
+	organizationId = AutoField(primary_key = True)
+	deleteable = BooleanField(default = True)
+	name = CharField(max_length = 256, blank = False, null = False)
+	url = CharField(max_length = 256, blank = False, null = False)
+
 class Document(Model):
 	documentId = AutoField(primary_key = True)
 	inject = ForeignKey(Inject, null = True, blank = True, unique = False)
-	injectresponse = ForeignKey(InjectResponse, null = True, blank = True, unique = False)
-	incidentresponse = ForeignKey(IncidentResponse, null = True, blank = True, unique = False)
+	injectResponse = ForeignKey(InjectResponse, null = True, blank = True, unique = False)
+	incidentResponse = ForeignKey(IncidentResponse, null = True, blank = True, unique = False)
 	plugin = ForeignKey(Plugin, null = True, blank = True, unique = True)
-	content_type = CharField(max_length = 64, null = True)
-	filehash = CharField(max_length = 32)
-	filepath = CharField(max_length = 256)
+	contentType = CharField(max_length = 64, null = True)
+	fileHash = CharField(max_length = 32)
+	filePath = CharField(max_length = 256)
 	filename = CharField(max_length = 64)
-	urlencfilename = CharField(max_length = 128)
+	urlEncodedFilename = CharField(max_length = 128)
 
 	def get_cleaned_content_type(self):
 		if not self.content_type:
 			return'application/force-download'
 		else:
 			return self.content_type
-
-class Organization(Model):
-	organizationId = AutoField(primary_key = True)
-	deleteable = BooleanField(default = True)
-	name = CharField(max_length = 256, blank = False, null = False)
-	url = CharField(max_length = 256, blank = False, null = False)

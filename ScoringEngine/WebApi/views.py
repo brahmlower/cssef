@@ -32,6 +32,10 @@ from ScoringEngine.models import InjectResponse
 from ScoringEngine.models import IncidentResponse
 from ScoringEngine.models import Document   # TODO: Not sure if necessary
 from ScoringEngine.models import Organization
+from ScoringEngine import settings
+from django.core.files.uploadedfile import UploadedFile
+from hashlib import md5
+from urllib import quote
 
 class JSONResponse(HttpResponse):
     def __init__(self, data, **kwargs):
@@ -55,9 +59,36 @@ def postObject(request, objectTypeSerializer, objectInstance=None):
     else:
         serializer = objectTypeSerializer(objectInstance, data = request.POST)
     if serializer.is_valid():
-        serializer.save()
+        serializerResult = serializer.save()
+        if request.FILES:
+            print request.FILES
+            for i in request.FILES:
+                saveDocument(request.FILES[i], serializerResult)
         return JSONResponse(serializer.data, status = HTTP_201_CREATED)
     return JSONResponse(serializer.errors, status = HTTP_400_BAD_REQUEST)
+
+def saveDocument(postedFile, relatedObject):
+    uploadedFile = UploadedFile(postedFile)
+    fileContent = uploadedFile.read()
+    document = Document()
+    document.fileHash = md5(fileContent).hexdigest()
+    document.urlEncodedFilename = quote(uploadedFile.name)
+    document.filename = uploadedFile.name
+    document.contentType = uploadedFile.file.content_type
+    document.filePath = settings.BASE_DIR + '/' + document.filename
+    if relatedObject.__class__.__name__.lower() == "queryset":
+        if len(relatedObject) == 1:
+            setattr(document, relatedObject[0].__class__.__name__.lower(), relatedObject[0])
+        else:
+            print "ERROR: The queryset object had %d elements to it. Expected only one." % len(relatedObject)
+            return None
+    else:
+        setattr(document, relatedObject.__class__.__name__.lower(), relatedObject)
+    print document.filePath
+    wfile = open(document.filePath, "w")
+    wfile.write(fileContent)
+    wfile.close()
+    document.save()
 
 @csrf_exempt
 def competitions(request):

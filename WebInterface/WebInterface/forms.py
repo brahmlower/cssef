@@ -51,6 +51,7 @@ class CreateOrganization(Form):
 class CreatePlugin(Form):
 	name = CharField(label = 'Name', widget = TextInput(attrs={'class':'form-control', 'required': True}))
 	description = CharField(label = 'Description', widget = Textarea(attrs={'class':'form-control', 'required': True}))
+	pluginFile = FileField(label = "File Upload", required = False)
 
 class CreateUser(Form):
 	def __init__(self, *args, **kwargs):
