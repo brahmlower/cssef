@@ -1,5 +1,5 @@
 # Disclaimer #
-The project was not written with clean code, making further development difficult and time consuming. I'm refactoring in this branch, which will eventually overwrite the content of the master branch. Refactoring should hopefully make continued and future development easier.
+This branch is for refactoring the project. Refactoring should hopefully make continued and future development easier.
 
 # Description #
 The Cyber Security Scoring Engine Framework (CSSEF) is meant to provide an easy to use framework with which to score cyber security competitions. Cyber security competitions are increasing in popularity, however preparation for such competitions can be difficult. The UAF CSC decided to make practice competitions to give members a feeling of what regional or national CCDC competitions would feel like. We were missing a feedback mechanism though, which is where the CSSEF comes in.
@@ -15,42 +15,37 @@ The CSSEF is meant to provide an easy to use interface for the competition manag
 
 Future goals include the addition of interfaces for Red and Orange teams.
 
-# Framework #
-The project is now broken into two main pieces: the scoring engine and the web interface.
-
-## Scoring Engine ##
-To keep the framework mentality, the scoring engine is strictly the engine tracking scores and points. It provides some other functionality such as inject and incident response tracking and scoring, however these features can be disabled if all you want is the scoring mechanics. Within the ScoringEngine class, there is a WebApi class which provides a semi-RESTful JSON API. If you already have your own frontend interface, or want to write your own, you can use the WebApi bindings to pupulate the content on your interface. Further documentation on the API can be found below.
-
-### Dependancies ###
+# Dependancies #
+### WebInterface ###
 * Python 2.7.5
-* celery 3.1.17
 * Django 1.7.2
+
+### ScoringEngine ###
+* Python 2.7.5
+* Django 1.7.2
+* celery 3.1.17
 * django-celery 3.1.16
 
-### Usage ###
-#### Development ####
+# Running for Development #
+### Easy Run ###
+For convienence, the script 'start_cssef' will start the web interface as well as the backend scoring engine. It assumes you are in the root level directory of the cssef project.
 ```
+cd ~/cssef/
+./start_cssef
+```
+### Running Manually ###
+Starting everything manualy requires that the web interface and scoring engine be started seperately. Starting each component is similar to how you would start a normal django project that is still in development. As it stands, the port numbers are hardcoded into the settings files for each component, so if you change these, be sure the changes are reflected in the respective ```settings.py``` file.
+```
+cd ~/cssef/ScoringEngine/
 python manage.py syncdb
-python manage.py runserver 0.0.0.0:8081
+python manage.py runserver 0.0.0.0:8000
 ```
-#### Production ####
-Since the project hasn't reached a stable release, there are no instructions for running it in a production grade manner.
-
-## Web Interface ##
-The web interface aims to provide an out-of-the-box working tool with which to interact with the scoring engine. The web interface has various pages for site/service administrators, organization users (white team) and competitors (blue team). The web interface will grow to support additional functionality as it's added to the scoring engine.
-
-### Dependancies ###
-* Python 2.7.5
-* Django 1.7.2
-
-### Usage ###
-#### Development ####
+Then open a new shell and and start the web frontend:
 ```
+cd ~/cssef/WebInterface/
 python manage.py syncdb
 python manage.py runserver 0.0.0.0:8080
 ```
-#### Production ####
-Since the project hasn't reached a stable release, there are no instructions for running it in a production grade manner.
 
 # Additional Documentation #
 Further project documentation, including development documentation can be found on the projects wiki: https://github.com/bplower/cssef/wiki
