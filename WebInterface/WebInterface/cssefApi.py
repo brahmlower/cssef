@@ -50,6 +50,9 @@ def getTeams(competitionId):
 def getInjects(competitionId):
 	return get('competitions/%s/injects.json' % competitionId)
 
+def getPlugins():
+	return get('plugins.json')
+
 def getService(competitionId, serviceId):
 	if serviceId:
 		return get('competitions/%s/teams/%s.json' % (competitionId, serviceId))
@@ -62,5 +65,5 @@ def getInject(competitionId, injectId):
 	if injectId:
 		return get('competitions/%s/injects/%s.json' % (competitionId, injectId))
 
-def getPlugins():
-	return get('plugins.json')
+def getPlugin(pluginId):
+	return get('plugins/%s.json' % pluginId)

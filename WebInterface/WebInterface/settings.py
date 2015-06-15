@@ -89,4 +89,4 @@ STATICFILES_DIRS = (BASE_DIR + '/static/',)
 
 STATIC_URL = '/static/'
 
-SCORING_ENGINE_API_URL = "http://127.0.0.1:8081/"
+SCORING_ENGINE_API_URL = "http://127.0.0.1:8000/"

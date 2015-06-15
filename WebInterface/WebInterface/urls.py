@@ -50,7 +50,7 @@ urlpatterns = patterns('',
 	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/injects/create/$',								competitionWhite.createEditInject),
 	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/injects/edit/(?P<injectId>[1-9][1-9]*)/$',		competitionWhite.createEditInject),
 
-	# Administrator pages
+	# Site Administrator pages
 	url(r'^admin/$',											administrator.home),
 	url(r'^admin/home/$',										administrator.home),
 	url(r'^admin/login/$',										administrator.login),
@@ -64,8 +64,8 @@ urlpatterns = patterns('',
 	url(r'^admin/organizations/edit/(?P<organizationId>[\w\-\_]{0,50})/$',	administrator.createEditOrganization),
 	url(r'^admin/plugins/$',									administrator.listPlugins),
 	url(r'^admin/plugins/create/$',								administrator.createEditPlugin),
-	url(r'^admin/plugins/edit/(?P<pluginId>[1-9][1-9]*)/$',	administrator.createEditPlugin),
-	url(r'^admin/plugins/test/(?P<pluginId>[1-9][1-9]*)/$',	administrator.testPlugin),
+	url(r'^admin/plugins/edit/(?P<pluginId>[1-9][1-9]*)/$',		administrator.createEditPlugin),
+	url(r'^admin/plugins/test/(?P<pluginId>[1-9][1-9]*)/$',		administrator.testPlugin),
 
 	# # Uploaded file related urls
 	# url(r'^resources/injects/(?P<compid>[1-9][1-9]*)/(?P<ijctid>[1-9][1-9]*)/(?P<filename>[\w\-\_\.\s\#]{0,64})$',	Resources.inject),
