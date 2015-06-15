@@ -12,56 +12,25 @@ from WebInterface.forms import CreatePlugin
 from WebInterface.forms import DeleteObject
 from WebInterface.settings import SCORING_ENGINE_API_URL
 from WebInterface import cssefApi
-
+from WebInterface.utils import ContextFactory
 from django.core.files.uploadedfile import UploadedFile
 
-class ContextFactory():
-	ACTION_EDIT = 'create'
-	ACTION_CREATE = 'edit'
-	def __init__(self, request, objectId):
-		self.request = request
-		self.data = None
-		if not objectId:
-			self.objectId = objectId
-			self.action = ContextFactory.ACTION_EDIT
-		else:
-			self.objectId = str(objectId)
-			self.action = ContextFactory.ACTION_CREATE
-		self.context = {}
-		self.context.update(csrf(self.request))
-		self.context['action'] = self.action
-
-	def Organization(self):
-		if self.objectId:
-			self.context['organizationId'] = self.objectId
-			self.data = cssefApi.get('organizations/%s.json' % self.objectId)
-		self.context['form'] = CreateOrganization(initial = self.data)
-		return self.context
-
-	def User(self):
-		if self.objectId:
-			self.context['userId'] = self.objectId
-			self.data = cssefApi.get('users/%s.json' % self.objectId)
-		self.context['form'] = CreateUser(initial = self.data)
-		return self.context
-
 def home(request):
-	context = {}
-	return render_to_response('administrator/home.html', context)
+	context = ContextFactory(request)
+	return render_to_response('administrator/home.html', context.General())
 
 def login(request):
-	context = {}
-	context["form"] = LoginSiteAdmin()
-	context.update(csrf(request))
+	context = ContextFactory(request)
+	context.push({'form': LoginSiteAdmin()})
 	# Checks if the user is submitting the form, or requesting the form
 	if request.method != "POST":
-		return render_to_response('administrator/login.html', context)
+		return render_to_response('administrator/login.html', context.General())
 	username = request.POST.get('username')
 	password = request.POST.get('password')
 	# TODO: The following line can throw a MultiValueDictKeyError
 	admin = auth.authenticate(username = username, password = password)
 	if admin == None:
-		return render_to_response('administrator/login.html', context)
+		return render_to_response('administrator/login.html', context.General())
 	# Checks that the submitted form data is valid
 	auth.login(request, admin)
 	return HttpResponseRedirect("/admin/home")
@@ -71,19 +40,18 @@ def logout(request):
 	return HttpResponseRedirect("/")
 
 def siteConfig(request):
-	context = {}
-	return render_to_response('administrator/siteConfigs.html', context)
+	context = ContextFactory(request)
+	return render_to_response('administrator/siteConfigs.html', context.General())
 
 def listUsers(request):
 	if request.method == 'POST':
 		response = cssefApi.delete('users/%s.json' % request.POST['objectId'])
 		return HttpResponseRedirect('/admin/users/')
-	context = {}
-	context.update(csrf(request))
-	context['users'] = cssefApi.get('users.json')
+	context = ContextFactory(request)
+	context.push({'users': cssefApi.get('users.json')})
 	for i in context['users']:
 		i['deleteForm'] = DeleteObject(objectId = i['userId'])
-	return render_to_response('administrator/listUsers.html', context)
+	return render_to_response('administrator/listUsers.html', context.General())
 
 def createEditUser(request, userId = None):
 	context = ContextFactory(request, userId)
@@ -99,12 +67,11 @@ def listOrganizations(request):
 	if request.method == 'POST':
 		response = cssefApi.delete('organizations/%s.json' % request.POST['objectId'])
 		return HttpResponseRedirect('/admin/organizations/')
-	context = {}
-	context.update(csrf(request))
-	context['organizations'] = cssefApi.get('organizations.json')
+	context = ContextFactory(request)
+	context.push({'organizations': cssefApi.get('organizations.json')})
 	for i in context['organizations']:
 		i['deleteForm'] = DeleteObject(objectId = i['organizationId'])
-	return render_to_response('administrator/listOrganizations.html', context)
+	return render_to_response('administrator/listOrganizations.html', context.General())
 
 def createEditOrganization(request, organizationId = None):
 	context = ContextFactory(request, organizationId)
@@ -120,57 +87,29 @@ def listPlugins(request):
 	if request.method == 'POST':
 		response = cssefApi.delete('plugins/%s.json' % request.POST['objectId'])
 		return HttpResponseRedirect('/admin/plugins/')
-	context = {}
-	context.update(csrf(request))
-	context['plugins'] = cssefApi.get('plugins.json')
+	context = ContextFactory(request)
+	context.push({'plugins': cssefApi.get('plugins.json')})
 	for i in context['plugins']:
 		i['deleteForm'] = DeleteObject(objectId = i['pluginId'])
-	return render_to_response('administrator/listPlugins.html', context)
+	return render_to_response('administrator/listPlugins.html', context.General())
 
 def createEditPlugin(request, pluginId = None):
-	context = {}
-	context.update(csrf(request))
-	context["form"] = CreatePlugin()
-	context["action"] = "create"
+	context = ContextFactory(request, pluginId)
 	if request.method != "POST":
-		return render_to_response('administrator/createEditPlugin.html', context)
-	form_obj = CreatePlugin(request.POST, request.FILES)
-	if 'docfile' not in request.FILES and not form_obj.is_valid():
+		return render_to_response('administrator/createEditPlugin.html', context.Plugin())
+	formData = CreatePlugin(request.POST, request.FILES)
+	if 'docfile' not in request.FILES and not formData.is_valid():
 		# TODO: Not exactly giving the user an error message here
-		return render_to_response('administrator/createEditPlugin.html', context)
+		return render_to_response('administrator/createEditPlugin.html', context.Plugin())
 	uploadedFile = UploadedFile(request.FILES['pluginFile'])
 	fileDict = {uploadedFile.name: uploadedFile.read()}
-	del form_obj.cleaned_data['pluginFile']
-	response = cssefApi.post('plugins.json', form_obj.cleaned_data, files=fileDict)
+	del formData.cleaned_data['pluginFile']
+	response = cssefApi.post('plugins.json', formData.cleaned_data, files=fileDict)
 	if response.status_code/200 != 1:
 		return HttpResponse(response.text)
 	return HttpResponseRedirect('/admin/plugins/')
 
-# def editPlugin(request, servmdulid = None):
-# 	c.update(csrf(request))
-# 	c["action"] = "edit"
-# 	if request.method != "POST":
-# 		plugin = ServiceModule.objects.filter(servmdulid = servmdulid)
-# 		c["servmdulid"] = plugin[0].servmdulid
-# 		c["docfile"] = Document.objects.get(servicemodule = plugin[0])
-# 		c["form"] = CreatePlugin(initial = plugin.values()[0])
-# 		return render_to_response('administrator/createEditPlugin.html', c)
-# 	form_obj = CreatePlugin(request.POST, request.FILES)
-# 	if 'docfile' in request.FILES and form_obj.is_valid():
-# 		form_obj.cleaned_data.pop('docfile', None)
-# 		plugin = ServiceModule.objects.filter(servmdulid = servmdulid)
-# 		plugin.update(**form_obj.cleaned_data)
-# 		docfile = Document.objects.get(servicemodule = plugin[0].servmdulid)
-# 		docfile.delete()
-# 		save_document(request.FILES['docfile'], settings.CONTENT_PLUGGINS_PATH, plugin[0], ashash = False)
-# 		return HttpResponseRedirect('/admin/plugins/')
-# 	else:
-# 		# Not exactly giving the user an error message here (TODO)
-# 		print "there were errors"
-# 		c["form"] = CreatePlugin()
-# 		return render_to_response('administrator/createEditPlugin.html', c)
-
-def testPlugin(request, servmdulid = None):
+def testPlugin(request, pluginId = None):
 	c.update(csrf(request))
 	c['servmdul_obj'] = ServiceModule.objects.get(servmdulid = servmdulid)
 	serv_obj = Service(servicemodule = c['servmdul_obj'])
