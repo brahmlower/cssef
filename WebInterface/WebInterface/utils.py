@@ -46,6 +46,8 @@ class ContextFactory():
 
 	def Plugin(self):
 		self.populateForm(CreatePlugin, 'plugins/%s.json', 'pluginId')
+		if self.objectId:
+			self.push({'plugin': cssefApi.get('plugins/%s.json' % self.objectId)})
 		return self.context
 
 	def General(self):

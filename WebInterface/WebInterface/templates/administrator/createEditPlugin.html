@@ -18,9 +18,9 @@
 		<label for="{{ form.description.id_for_label }}" class="col-lg-2 control-label">{{ form.description.label }}</label>
 		<div class="col-lg-10">{{ form.description }}<br></div>
 
-		{% if docfile %}
+		{% if plugin.document %}
 		<label class = "col-lg-2 control-label">Current file</label>
-		<div class="col-lg-10"><p>{{docfile.filename}} (md5: {{docfile.filehash}})</p><br></div>
+		<div class="col-lg-10"><p><b>Name:</b> {{ plugin.document.filename }} <br><b>md5:</b> {{ plugin.document.fileHash }}</p><br></div>
 		{% endif %}
 
 		{{ form.pluginFile.errors }}
