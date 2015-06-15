@@ -40,7 +40,7 @@ def home(request, organizationUrl):
 def members(request, organizationUrl):
 	context = {}
 	context['organization'] = cssefApi.getOrganization(organizationUrl)
-	context['members'] = []
+	context['members'] = cssefApi.getOrganizationMembers(organizationUrl)
 	users = cssefApi.get('users.json')
 	members = []
 	for i in users:
