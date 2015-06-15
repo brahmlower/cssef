@@ -59,11 +59,11 @@ class CreateUser(Form):
 			organizationChoices = []
 			for i in apiQuery('organizations.json'):
 				organizationChoices.append((i['organizationId'], i['name']))
-			self.fields['organization'].choices = organizationChoices
+			self.fields['organizationId'].choices = organizationChoices
 	name = CharField(label = 'Name', widget = TextInput(attrs={'class':'form-control', 'required': True}))
 	username = CharField(label = 'Username', widget = TextInput(attrs={'class':'form-control', 'required': True}))
 	password = CharField(label = 'Password', widget = PasswordInput(attrs={'class':'form-control', 'required': True}))
-	organization = ChoiceField(label = 'Organization', choices = [], widget = Select(attrs={'class':'form-control', 'required': True}))
+	organizationId = ChoiceField(label = 'Organization', choices = [], widget = Select(attrs={'class':'form-control', 'required': True}))
 
 class CreateCompetition(Form):
 	name = CharField(label = 'Name', widget = TextInput(attrs={'class':'form-control', 'required': True}))
