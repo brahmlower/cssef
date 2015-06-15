@@ -9,7 +9,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
-from ScoringEngine import ScoringEngine
+#from ScoringEngine import ScoringEngine
 from ScoringEngine.serializers import CompetitionSerializer
 from ScoringEngine.serializers import TeamSerializer
 from ScoringEngine.serializers import PluginSerializer
@@ -19,7 +19,7 @@ from ScoringEngine.serializers import InjectSerializer
 from ScoringEngine.serializers import UserSerializer
 from ScoringEngine.serializers import InjectResponseSerializer
 from ScoringEngine.serializers import IncidentResponseSerializer
-from ScoringEngine.serializers import DocumentSerializer    # TODO: Not sure if necessary
+#from ScoringEngine.serializers import DocumentSerializer    # TODO: Not sure if necessary
 from ScoringEngine.serializers import OrganizationSerializer
 from ScoringEngine.models import Competition
 from ScoringEngine.models import Team
