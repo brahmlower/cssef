@@ -11,13 +11,12 @@ from WebInterface.forms import CreateTeam
 from WebInterface.forms import CreateService
 from WebInterface.forms import CompetitionSettings
 from WebInterface import cssefApi
-import json
+from WebInterface.utils import ContextFactory
 
 def summary(request, organizationUrl, competitionUrl):
-	context = {}
-	context['organization'] = cssefApi.getOrganization(organizationUrl)
-	context['competition'] = cssefApi.getCompetition(context['organization']['organizationId'], competitionUrl)
-	return render_to_response('competition/summary.html', context)
+	context = ContextFactory(request)
+	context.SetCompetition(organizationUrl, competitionUrl)
+	return render_to_response('competition/summary.html', context.General())
 
 def settings(request, organizationUrl, competitionUrl):
 	context = RequestContext(request)
@@ -38,11 +37,10 @@ def settings(request, organizationUrl, competitionUrl):
 	return HttpResponseRedirect('/organization/%s/competitions/%s/settings/' % (organization['url'], competition['url']))
 
 def listTeams(request, organizationUrl, competitionUrl):
-	context = RequestContext(request)
-	context.push({'organization': cssefApi.getOrganization(organizationUrl)})
-	context.push({'competition': cssefApi.getCompetition(context['organization']['organizationId'], competitionUrl)})
+	context = ContextFactory(request)
+	context.SetCompetition(organizationUrl, competitionUrl)
 	context.push({'teams': cssefApi.getTeams(context['competition']['competitionId'])})
-	return render_to_response('competition/listTeams.html', context)
+	return render_to_response('competition/listTeams.html', context.General())
 
 def createEditTeam(request, organizationUrl, competitionUrl, teamId = None):
 	context = RequestContext(request)
@@ -62,14 +60,11 @@ def createEditTeam(request, organizationUrl, competitionUrl, teamId = None):
 	return HttpResponseRedirect('/organization/%s/competitions/%s/teams/' % (organization['url'], competition['url']))
 
 def listServices(request, organizationUrl, competitionUrl):
-	context = RequestContext(request)
-	organization = cssefApi.getOrganization(organizationUrl)
-	competition = cssefApi.getCompetition(organization['organizationId'], competitionUrl)
-	context.push({'organization': organization})
-	context.push({'competition': competition})
+	context = ContextFactory(request)
+	context.SetCompetition(organizationUrl, competitionUrl)
 	context.push({'pluginsAvailable': len(cssefApi.get('plugins.json')) > 0})
-	context.push({'services': cssefApi.getServices(competition['competitionId'])})
-	return render_to_response('competition/listServices.html', context)
+	context.push({'services': cssefApi.getServices(context['competition']['competitionId'])})
+	return render_to_response('competition/listServices.html', context.General())
 
 def createEditService(request, organizationUrl, competitionUrl, serviceId = None):
 	context = RequestContext(request)
