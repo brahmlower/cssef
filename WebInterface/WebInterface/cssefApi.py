@@ -33,6 +33,18 @@ def getOrganization(organizationUrl):
 	for i in results:
 		if i['url'] == organizationUrl:
 			return i
+	return None
+
+def getOrganizationMembers(organizationUrl):
+	organization = getOrganization(organizationUrl)
+	if not organization:
+		return None
+	allUsers = getUsers()
+	organizationMembers = []
+	for i in allUsers:
+		if i['organizationId'] == organization['organizationId']:
+			organizationMembers.append(i)
+	return organizationMembers
 
 def getCompetition(organizationId, competitionUrl):
 	# TODO: This should eventually use GET queries instead of searching the whole list
@@ -52,6 +64,9 @@ def getInjects(competitionId):
 
 def getPlugins():
 	return get('plugins.json')
+
+def getUsers():
+	return get('users.json')
 
 def getService(competitionId, serviceId):
 	if serviceId:

@@ -48,7 +48,7 @@ def listUsers(request):
 		response = cssefApi.delete('users/%s.json' % request.POST['objectId'])
 		return HttpResponseRedirect('/admin/users/')
 	context = ContextFactory(request)
-	context.push({'users': cssefApi.get('users.json')})
+	context.push({'users': cssefApi.getUsers()})
 	for i in context['users']:
 		i['deleteForm'] = DeleteObject(objectId = i['userId'])
 	return render_to_response('administrator/listUsers.html', context.General())
