@@ -17,7 +17,7 @@
 		<div class="panel-heading">{{ i.name }}</div>
 		<div class="panel-body">
 			<strong>Username: </strong>{{ i.username }}<br>
-			<strong>Organization: </strong>{{ i.organization }}<br>
+			<strong>Organization: </strong>{{ i.organization.name }}<br>
 			<strong>Description: </strong><p>{{ i.description }}</p>
 			<div class="bt-component pull-right">
 				<form class="pull-right" action="/admin/users/" method="POST"> {% csrf_token %}

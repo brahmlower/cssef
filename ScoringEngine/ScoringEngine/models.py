@@ -69,7 +69,6 @@ class Plugin(Model):
 	pluginId = AutoField(primary_key = True)
 	name = CharField(max_length = 20)
 	description = TextField(max_length = 500)
-	#pluginFile = ForeignKey(Document, unique = True)
 
 class Service(Model):
 	serviceId = AutoField(primary_key = True)
@@ -126,7 +125,7 @@ class User(Model):
 	name = CharField(max_length = 20)
 	username = CharField(max_length = 20)
 	password = CharField(max_length = 64)
-	organization = PositiveIntegerField()
+	organizationId = PositiveIntegerField()
 
 	def is_authenticated(self):
 		return True

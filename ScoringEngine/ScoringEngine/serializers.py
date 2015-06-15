@@ -113,6 +113,7 @@ class InjectSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+	organization = serializers.SerializerMethodField()
 	class Meta:
 		model = User
 		fields = (
@@ -121,7 +122,13 @@ class UserSerializer(serializers.ModelSerializer):
 			'name',
 			'username',
 			'password',
+			'organizationId',
 			'organization')
+
+	def get_organization(self, obj):
+		organization = Organization.objects.get(organizationId = obj.organizationId)
+		serializer = OrganizationSerializer(organization)
+		return serializer.data
 
 class InjectResponseSerializer(serializers.ModelSerializer):
 	class Meta:
