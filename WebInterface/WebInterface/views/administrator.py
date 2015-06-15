@@ -60,7 +60,10 @@ def createEditUser(request, userId = None):
 	formData = CreateUser(request.POST)
 	if not formData.is_valid():
 		return render_to_response('administrator/createEditUser.html', context.User())
+	print formData.cleaned_data
 	response = cssefApi.post('users.json', formData.cleaned_data)
+	if response.status_code/200 != 1:
+		return HttpResponse(response.text)
 	return HttpResponseRedirect('/admin/users/')
 
 def listOrganizations(request):
@@ -97,14 +100,20 @@ def createEditPlugin(request, pluginId = None):
 	context = ContextFactory(request, pluginId)
 	if request.method != "POST":
 		return render_to_response('administrator/createEditPlugin.html', context.Plugin())
+	print 'not posting'
 	formData = CreatePlugin(request.POST, request.FILES)
-	if 'docfile' not in request.FILES and not formData.is_valid():
+	if not formData.is_valid():
 		# TODO: Not exactly giving the user an error message here
 		return render_to_response('administrator/createEditPlugin.html', context.Plugin())
-	uploadedFile = UploadedFile(request.FILES['pluginFile'])
-	fileDict = {uploadedFile.name: uploadedFile.read()}
-	del formData.cleaned_data['pluginFile']
-	response = cssefApi.post('plugins.json', formData.cleaned_data, files=fileDict)
+	if 'pluginFile' in request.FILES:
+		# A file was uploaded
+		uploadedFile = UploadedFile(request.FILES['pluginFile'])
+		fileDict = {uploadedFile.name: uploadedFile.read()}
+		del formData.cleaned_data['pluginFile']
+		response = cssefApi.post('plugins.json', formData.cleaned_data, files=fileDict)
+	else:
+		# No file was uploaded
+		response = cssefApi.post('plugins.json', formData.cleaned_data)
 	if response.status_code/200 != 1:
 		return HttpResponse(response.text)
 	return HttpResponseRedirect('/admin/plugins/')
