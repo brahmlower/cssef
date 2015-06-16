@@ -1,0 +1,37 @@
+# API Documentation #
+## Endpoints ##
+* /organizations.json
+* /organizations/<id>.json
+* /organizations/<id>/members.json
+* /organizations/<id>/members/<id>.json
+* /organizations/<id>/competitions.json
+* /organizations/<id>/competitions/<id>.json
+* /competitions.json
+* /competitions/<id>.json
+* /competitions/<id>/services.json
+* /competitions/<id>/services/<id>.json
+* /competitions/<id>/services/<id>/plugin.json
+* /competitions/<id>/teams.json
+* /competitions/<id>/teams/<id>.json
+* /competitions/<id>/injects.json
+* /competitions/<id>/injects/<id>.json
+* /competitions/<id>/injects/<id>/files.json
+* /competitions/<id>/injects/<id>/files/<id>.json
+* /competitions/<id>/injects/<id>/responses.json
+* /competitions/<id>/injects/<id>/responses/<id>.json
+* /competitions/<id>/injects/<id>/responses/<id>/files.json
+* /competitions/<id>/injects/<id>/responses/<id>/files/<id>.json
+* /competitions/<id>/incidents.json
+* /competitions/<id>/incidents/<id>.json
+* /competitions/<id>/incidents/<id>/responses.json
+* /competitions/<id>/incidents/<id>/responses/<id>.json
+* /competitions/<id>/incidents/<id>/responses/<id>/files.json
+* /competitions/<id>/incidents/<id>/responese/<id>/files/<id>.json
+* /competitions/<id>/scores.json
+* /competitions/<id>/scores/<id>.json
+* /plugins.json
+* /plugins/<id>.json
+* /plugins/<id>/files.json
+* /plugins/<id>/files/<id>.json
+* /files.json
+* /files/<id>.json
