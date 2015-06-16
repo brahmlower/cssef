@@ -1,14 +1,14 @@
 # API Documentation
 ## Organization
 Endpoints:
-* /organizations.json
-* /organizations/\<id\>.json
-* /organizations/\<id\>/members.json
-* /organizations/\<id\>/members/\<id\>.json
-* /organizations/\<id\>/competitions.json
-* /organizations/\<id\>/competitions/\<id\>.json
+* [/organizations.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list)
+* [/organizations/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details)
+* [/organizations/\<id\>/members.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-1)
+* [/organizations/\<id\>/members/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-1)
+* [/organizations/\<id\>/competitions.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-2)
+* [/organizations/\<id\>/competitions/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-2)
 
-### organizations
+### Organizations
 #### Resource List
 URL: /organizations.json
 <br> Description: Lists all organizations
@@ -71,7 +71,7 @@ URL: /organizations/1.json
 	]
 }</pre>
 
-### organizations - members
+### Organizations - Members
 #### Resource List
 URL: /organizations/1/members.json
 <br> Description: Lists the members of the organization with the id of 1
@@ -104,7 +104,7 @@ URL: /organizations/1/members/1.json
 	"password": "somehashhere"
 }</pre>
 
-### organizations - competitions
+### Organizations - Competitions
 #### Resource List
 URL: /organizations/1/competitions.json
 <br> Description: Lists the competitions of the organization with the id of 1
@@ -138,31 +138,31 @@ URL: /organizations/1/competitions/2.json
 
 ## Competitions
 Endpoints:
-* /competitions.json
-* /competitions/\<id\>.json
-* /competitions/\<id\>/services.json
-* /competitions/\<id\>/services/\<id\>.json
+* [/competitions.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-3)
+* [/competitions/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-3)
+* [/competitions/\<id\>/services.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-4)
+* [/competitions/\<id\>/services/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-4)
 * /competitions/\<id\>/services/\<id\>/plugin.json
-* /competitions/\<id\>/teams.json
-* /competitions/\<id\>/teams/\<id\>.json
-* /competitions/\<id\>/injects.json
-* /competitions/\<id\>/injects/\<id>.json
+* [/competitions/\<id\>/teams.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-5)
+* [/competitions/\<id\>/teams/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-5)
+* [/competitions/\<id\>/injects.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-6)
+* [/competitions/\<id\>/injects/\<id>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-6)
 * /competitions/\<id\>/injects/\<id\>/files.json
 * /competitions/\<id\>/injects/\<id\>/files/\<id\>.json
 * /competitions/\<id\>/injects/\<id\>/responses.json
 * /competitions/\<id\>/injects/\<id\>/responses/\<id\>.json
 * /competitions/\<id\>/injects/\<id\>/responses/\<id\>/files.json
 * /competitions/\<id\>/injects/\<id\>/responses/\<id\>/files/\<id\>.json
-* /competitions/\<id\>/incidents.json
-* /competitions/\<id\>/incidents/\<id\>.json
+* [/competitions/\<id\>/incidents.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-7)
+* [/competitions/\<id\>/incidents/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-7)
 * /competitions/\<id\>/incidents/\<id\>/responses.json
 * /competitions/\<id\>/incidents/\<id\>/responses/\<id\>.json
 * /competitions/\<id\>/incidents/\<id\>/responses/\<id\>/files.json
 * /competitions/\<id\>/incidents/\<id\>/responese/\<id\>/files/\<id\>.json
-* /competitions/\<id\>/scores.json
-* /competitions/\<id\>/scores/\<id\>.json
+* [/competitions/\<id\>/scores.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-8)
+* [/competitions/\<id\>/scores/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-8)
 
-### competitions
+### Competitions
 #### Resource List
 URL: /compeititons.json
 <br>Description: Lists all competitions
@@ -195,7 +195,7 @@ URL: /compeititons/2.json
 	"description": "This is another example description."
 }</pre>
 
-### competitions - services
+### Competitions - Services
 #### Resource List
 URL: /compeititons/2/services.json
 <br> Description: Lists the services within the competition with the id of 2
@@ -227,7 +227,7 @@ URL: /compeititons/2/services/1.json
 	"description": "This is another example service description."
 }</pre>
 
-### competitions - teams
+### Competitions - Teams
 #### Resource List
 URL: /compeititons/2/teams.json
 <br> Description: Lists the teams within the competition with the id of 2
@@ -265,35 +265,50 @@ URL: /compeititons/2/teams/2.json
 	"description": "This is another example service description."
 }</pre>
 
-### competitions - injects
+### Competitions - Injects
 #### Resource List
 #### Resource Details
-### competitions - incidents
+### Competitions - Injects - Files
 #### Resource List
 #### Resource Details
-### competitions - scores
+### Competitions - Injects - Responses
+#### Resource List
+#### Resource Details
+### Competitions - Injects - Responses - Files
+#### Resource List
+#### Resource Details
+### Competitions - Incidents
+#### Resource List
+#### Resource Details
+### Competitions - Incidents - Responses
+#### Resource List
+#### Resource Details
+### Competitions - Incidents - Responses - Files
+#### Resource List
+#### Resource Details
+### Competitions - Scores
 #### Resource List
 #### Resource Details
 
 ## Plugins
 Endpoints:
-* /plugins.json
-* /plugins/\<id\>.json
-* /plugins/\<id\>/files.json
-* /plugins/\<id\>/files/\<id\>.json
+* [/plugins.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-9)
+* [/plugins/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-9)
+* [/plugins/\<id\>/files.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-10)
+* [/plugins/\<id\>/files/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-10)
 
-### plugins
+### Plugins
 #### Resource List
 #### Resource Details
-### plugins - files
+### Plugins - Files
 #### Resource List
 #### Resource Details
 
 ## Files
 Endpoints:
-* /files.json
-* /files/\<id\>.json
+* [/files.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-11)
+* [/files/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-11)
 
-### files
+### Files
 #### Resource List
 #### Resource Details
