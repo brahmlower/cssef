@@ -40,7 +40,7 @@ URL: /organizations/1.json
 	"name": "Example Organization Name 1",
 	"url": "example_organization_name_1",
 	"maxMembers": 10,
-	"maxCompetitions": 10
+	"maxCompetitions": 10,
 	"members": [
 		{
 			"userId": 1,
@@ -223,18 +223,22 @@ URL: /compeititons/2/teams.json
 	{
 		"teamId": 1,
 		"competitionId": 2,
-		"name": "Example Team 1",
-		"username": "exampleteam1",
+		"last_login": "2015-06-17 00:13:14"
+		"teamname": "Example Team 1",
+		"loginname": "exampleteam1",
 		"password": "password-ex1",
-		"description": "This is an example service description."
+		"networkCidr": "192.168.1.0\24",
+		"scoreConfigurations": "{}"
 	},
 	{
 		"teamId": 2,
 		"competitionId": 2,
-		"name": "Example Team 2",
-		"username": "exampleteam2"
-		"password": "password-ex2"
-		"description": "This is another example service description."
+		"last_login": "2015-06-17 00:13:14"
+		"teamname": "Example Team 2",
+		"loginname": "exampleteam2",
+		"password": "password-ex2",
+		"networkCidr": "192.168.2.0\24",
+		"scoreConfigurations": "{}"
 	}
 ]</pre>
 #### Resource Details
@@ -245,10 +249,12 @@ URL: /compeititons/2/teams/2.json
 <pre>{
 	"teamId": 2,
 	"competitionId": 2,
-	"name": "Example Team 2",
-	"username": "exampleteam2"
-	"password": "password-ex2"
-	"description": "This is another example service description."
+	"last_login": "2015-06-17 00:13:14"
+	"teamname": "Example Team 2",
+	"loginname": "exampleteam2",
+	"password": "password-ex2",
+	"networkCidr": "192.168.2.0\24",
+	"scoreConfigurations": "{}"
 }</pre>
 ### Competitions - Injects
 #### Resource List
@@ -260,36 +266,56 @@ URL: /compeititons/2/injects.json
 	{
 		"injectId": 1,
 		"competitionId": 2,
-		"name": "Inject Number 1",
-		"description": "This is an example inject description."
+		"requireResponse": True,
+		"manualDelivery": False,
+		"datetimeDelivery": "2015-06-17 00:13:14",
+		"datetimeResponseDue": "2015-06-17 00:13:15",
+		"datetimeResponseClose": "2015-06-17 00:13:15",
+		"title": "Suspicious Network Traffic",
+		"content": "Attached is a pcap file of some suspicious activity. Find out what happened!",
 		"responses": [
 			{
 				"injectResponseId": 1,
-				"indexId": 1,
-				"body": "inject response text",
-				"files": [
+				"competitionId": 2,
+				"teamId": 1,
+				"injectId": 1,
+				"datetime": "2015-06-17 00:13:14",
+				"content": "There was a bruteforce attack on the root user account via telnet.",
+				"documents": [
 				]
 			},
 			{
 				"injectResponseId": 2,
-				"indexId": 2,
-				"body": "inject second response text",
-				"files": [
+				"competitionId": 2,
+				"teamId": 1,
+				"injectId": 1,
+				"datetime": "2015-06-17 00:13:14",
+				"content": "The attacker got in and ran 'dd if=/dev/urandom of=/dev/sda bs=1'",
+				"documents": [
 				]
 			}
 		],
-		"files": [
+		"documents": [
 			{
-				"name": "file_one.txt",
-				"size": "1024"
+				"documentId": 6,
+				"contentType": "text/plain",
+				"fileHash": "md5hashofthefile",
+				"filePath": "/opt/cssef/file_storage/dmz_network.pcap",
+				"filename": "dmz_network.pcap"
+				"urlEncodedFilename": "dmz_network.pcap"
 			}
 		]
 	},
 	{
 		"injectId": 2,
 		"competitionId": 2,
-		"name": "Inject Number 2",
-		"description": "This is another example inject description.",
+		"requireResponse": True,
+		"manualDelivery": True,
+		"datetimeDelivery": "",
+		"datetimeResponseDue": "2015-06-17 00:13:14",
+		"datetimeResponseClose": "2015-06-17 00:14:14",
+		"title": "Change all passwords",
+		"content": "Please change all of the passwords!",
 		"responses": [
 		],
 		"files": [
@@ -304,28 +330,43 @@ URL: /compeititons/2/injects/1.json
 <pre>{
 	"injectId": 1,
 	"competitionId": 2,
-	"name": "Inject Number 1",
-	"description": "This is an example inject description."
+	"requireResponse": True,
+	"manualDelivery": False,
+	"datetimeDelivery": "2015-06-17 00:13:14",
+	"datetimeResponseDue": "2015-06-17 00:13:15",
+	"datetimeResponseClose": "2015-06-17 00:13:15",
+	"title": "Suspicious Network Traffic",
+	"content": "Attached is a pcap file of some suspicious activity. Find out what happened!",
 	"responses": [
 		{
 			"injectResponseId": 1,
-			"indexId": 1,
-			"body": "inject response text",
-			"files": [
+			"competitionId": 2,
+			"teamId": 1,
+			"injectId": 1,
+			"datetime": "2015-06-17 00:13:14",
+			"content": "There was a bruteforce attack on the root user account via telnet.",
+			"documents": [
 			]
 		},
 		{
 			"injectResponseId": 2,
-			"indexId": 2,
-			"body": "inject second response text",
-			"files": [
+			"competitionId": 2,
+			"teamId": 1,
+			"injectId": 1,
+			"datetime": "2015-06-17 00:13:14",
+			"content": "The attacker got in and ran 'dd if=/dev/urandom of=/dev/sda bs=1'",
+			"documents": [
 			]
 		}
 	],
-	"files": [
+	"documents": [
 		{
-			"name": "file_one.txt",
-			"size": "1024"
+			"documentId": 6,
+			"contentType": "text/plain",
+			"fileHash": "md5hashofthefile",
+			"filePath": "/opt/cssef/file_storage/dmz_network.pcap",
+			"filename": "dmz_network.pcap"
+			"urlEncodedFilename": "dmz_network.pcap"
 		}
 	]
 }</pre>
@@ -338,16 +379,22 @@ URL: /compeititons/2/injects/1/responses.json
 <pre>[
 	{
 		"injectResponseId": 1,
-		"indexId": 1,
-		"body": "inject response text",
-		"files": [
+		"competitionId": 2,
+		"teamId": 1,
+		"injectId": 1,
+		"datetime": "2015-06-17 00:13:14",
+		"content": "inject response text",
+		"documents": [
 		]
 	},
 	{
 		"injectResponseId": 2,
-		"indexId": 1,
-		"body": "inject response text",
-		"files": [
+		"competitionId": 2,
+		"teamId": 1,
+		"injectId": 1,
+		"datetime": "2015-06-17 00:13:14",
+		"content": "another inject response text",
+		"documents": [
 		]
 	}
 ]</pre>
@@ -358,9 +405,12 @@ URL: /compeititons/2/injects/1/responses/1.json
 <br> Example Output:
 <pre>{
 	"injectResponseId": 1,
-	"indexId": 1,
-	"body": "inject response text",
-	"files": [
+	"competitionId": 2,
+	"teamId": 1,
+	"injectId": 2,
+	"datetime": "2015-06-17 00:13:14",
+	"content": "inject response text",
+	"documents": [
 	]
 }</pre>
 ### Competitions - Incidents
@@ -374,39 +424,47 @@ URL: /compeititons/2/incidents.json
 		"incidentId": 1,
 		"competitionId": 2,
 		"name": "Incident Response 1",
-		"body": "This is an example incident response."
+		"body": "This is an example incident response.",
 		"responses": [
 			{
 				"incidentResponseId": 1,
-				"incidentId": 1,
 				"competitionId": 2,
-				"body": "some follow up text to incident 1",
-				"files": [
+				"teamId": 1,
+				"incidentId": 1,
+				"datetime": "2015-06-17 00:13:14",
+				"content": "some follow up text to incident 1",
+				"documents": [
 				]
 			},
 			{
 				"incidentResponseId": 2,
-				"incidentId": 1,
 				"competitionId": 2,
-				"body": "another follow up text to incident 1",
-				"files": [
+				"teamId": 1,
+				"incidentId": 1,
+				"datetime": "2015-06-17 00:13:14",
+				"content": "some more follow up text to incident 1",
+				"documents": [
 				]
 			}
 		],
-		"files": [
+		"documents": [
 		]
 	},
 	{
 		"incidentId": 2,
 		"competitionId": 2,
 		"name": "Incident Response 2",
-		"body": "This is another example incident response."
+		"body": "This is another example incident response.",
 		"responses": [
 		],
-		"files": [
+		"documents": [
 			{
-				"name": "who_done_it.pdf",
-				"size": "1024"
+				"documentId": 5,
+				"contentType": "text/pdf",
+				"fileHash": "md5hashofthefile",
+				"filePath": "/opt/cssef/file_storage/who_done_it.pdf",
+				"filename": "who_done_it.pdf"
+				"urlEncodedFilename": "who_done_it.pdf"
 			}	
 		]
 	}
@@ -420,26 +478,30 @@ URL: /compeititons/2/incidents/1.json
 	"incidentId": 1,
 	"competitionId": 2,
 	"name": "Incident Response 1",
-	"body": "This is an example incident response."
+	"body": "This is an example incident response.",
 	"responses": [
 		{
 			"incidentResponseId": 1,
-			"incidentId": 1,
 			"competitionId": 2,
-			"body": "some follow up text to incident 1",
-			"files": [
+			"teamId": 1,
+			"incidentId": 1,
+			"datetime": "2015-06-17 00:13:14",
+			"content": "some follow up text to incident 1",
+			"documents": [
 			]
 		},
 		{
 			"incidentResponseId": 2,
-			"incidentId": 1,
 			"competitionId": 2,
-			"body": "another follow up text to incident 1",
-			"files": [
+			"teamId": 1,
+			"incidentId": 1,
+			"datetime": "2015-06-17 00:13:14",
+			"content": "some more follow up text to incident 1",
+			"documents": [
 			]
 		}
 	],
-	"files": [
+	"documents": [
 	]
 }</pre>
 ### Competitions - Incidents - Responses
@@ -451,18 +513,22 @@ URL: /compeititons/2/incidents/1/responses.json
 <pre>[
 	{
 		"incidentResponseId": 1,
-		"incidentId": 1,
 		"competitionId": 2,
-		"body": "some follow up text to incident 1",
-		"files": [
+		"teamId": 1,
+		"incidentId": 1,
+		"datetime": "2015-06-17 00:13:14",
+		"content": "some follow up text to incident 1",
+		"documents": [
 		]
 	},
 	{
 		"incidentResponseId": 2,
-		"incidentId": 1,
 		"competitionId": 2,
-		"body": "another follow up text to incident 1",
-		"files": [
+		"teamId": 1,
+		"incidentId": 1,
+		"datetime": "2015-06-17 00:13:14",
+		"content": "some more follow up text to incident 1",
+		"documents": [
 		]
 	}
 ]</pre>
@@ -473,10 +539,12 @@ URL: /compeititons/2/incidents/1/responses/1.json
 <br> Example Output:
 <pre>{
 	"incidentResponseId": 1,
-	"incidentId": 1,
 	"competitionId": 2,
-	"body": "some follow up text to incident 1",
-	"files": [
+	"teamId": 1,
+	"incidentId": 1,
+	"datetime": "2015-06-17 00:13:14",
+	"content": "some follow up text to incident 1",
+	"documents": [
 	]
 }</pre>
 ### Competitions - Scores
@@ -491,24 +559,22 @@ URL: /compeititons/2/scores.json
 		"competitionId": 2,
 		"serviceId": 1,
 		"teamId": 1,
-		"value": 100,
-		"messages": {
-			"info": "Service was accessible.",
-			"warning": "",
-			"error": ""
-		}
+		"datetime": "2015-06-17 00:13:14",
+		"value": 10,
+		"messagesInfo": "Service is up!",
+		"messagesWarning": "",
+		"messagesError": ""
 	},
 	{
 		"scoreId": 2,
 		"competitionId": 2,
 		"serviceId": 1,
 		"teamId": 2,
+		"datetime": "2015-06-17 00:13:14",
 		"value": 0,
-		"messages": {
-			"info": "",
-			"warning": "",
-			"error": "Service unavailable."
-		}
+		"messagesInfo": "",
+		"messagesWarning": "",
+		"messagesError": "Service appears down!"
 	}
 ]</pre>
 #### Resource Details
@@ -521,12 +587,11 @@ URL: /compeititons/2/scores/2.json
 	"competitionId": 2,
 	"serviceId": 1,
 	"teamId": 2,
+	"datetime", "2015-06-17 00:13:14",
 	"value": 0,
-	"messages": {
-		"info": "",
-		"warning": "",
-		"error": "Service unavailable."
-	}
+	"messagesInfo": "",
+	"messagesWarning": "",
+	"messagesError": "Service appears down!"
 }</pre>
 ## Plugins
 Endpoints:
@@ -542,20 +607,26 @@ URL: /plugins.json
 <pre>[
 	{
 		"name": "SSH Plugin",
-		"description": "Scores SSH services",
-		"file": {
-			"fileId": 5,
-			"name": "cssef_ssh_plugin.py",
-			"size": 1024
+		"description": "Plugin to scores SSH services",
+		"document": {
+			"documentId": 3,
+			"contentType": "text/plain",
+			"fileHash": "md5hashofthescript",
+			"filePath": "/opt/cssef/file_storage/cssef_ssh_plugin.py",
+			"filename": "cssef_ssh_plugin.py"
+			"urlEncodedFilename": "cssef_ssh_plugin.py"
 		}
 	},
 	{
 		"name": "FTP Plugin",
-		"description": "Scores FTP services",
-		"file": {
-			"fileId": 6,
-			"name": "cssef_ftp_plugin.py",
-			"size": 1024
+		"description": "Plugin to score FTP services",
+		"document": {
+			"documentId": 4,
+			"contentType": "text/plain",
+			"fileHash": "md5hashofthescript",
+			"filePath": "/opt/cssef/file_storage/cssef_ftp_plugin.py",
+			"filename": "cssef_ftp_plugin.py"
+			"urlEncodedFilename": "cssef_ftp_plugin.py"
 		}
 	}
 ]</pre>
@@ -566,46 +637,55 @@ URL: /plugins/1.json
 <br> Example Output:
 <pre>{
 	"name": "SSH Plugin",
-	"description": "Scores SSH services",
-	"file": {
-		"fileId": 5,
-		"name": "cssef_ssh_plugin.py",
-		"size": 1024
+	"description": "Plugin to scores SSH services",
+	"document": {
+		"documentId": 3,
+		"contentType": "text/plain",
+		"fileHash": "md5hashofthescript",
+		"filePath": "/opt/cssef/file_storage/cssef_ssh_plugin.py",
+		"filename": "cssef_ssh_plugin.py"
+		"urlEncodedFilename": "cssef_ssh_plugin.py"
 	}
 }</pre>
-## Files
+## Documents
 Endpoints:
-* [/files.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-11)
-* [/files/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-11)
+* [/documents.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-11)
+* [/documents/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-11)
 
-### Files
+### Documents
 #### Resource List
-URL: /files.json
+URL: /documents.json
 <br> Description: Lists all files
 <br> Methods: GET, POST
 <br> Example Output:
 <pre>[
 	{
-		"fileId": 5,
-		"name": "cssef_ssh_plugin.py",
-		"size": 1024,
-		"md5": "some md5 hash"
+		"documentId": 1,
+		"contentType": "text/plain",
+		"fileHash": "md5hashofthefile",
+		"filePath": "/opt/cssef/file_storage/example_file.txt",
+		"filename": "example_file.txt"
+		"urlEncodedFilename": "example_file.txt"
 	},
 	{
-		"fileId": 6,
-		"name": "cssef_ftp_plugin.py",
-		"size": 1024,
-		"md5": "some md5 hash"
+		"documentId": 2,
+		"contentType": "text/pdf",
+		"fileHash": "md5hashofthepdf",
+		"filePath": "/opt/cssef/file_storage/intrusion_report.pdf",
+		"filename": "intrusion_report.pdf"
+		"urlEncodedFilename": "intrusion_report.pdf"
 	}
 ]</pre>
 #### Resource Details
-URL: /files/6.json
+URL: /documents/6.json
 <br> Description: Provides details for file with id 6
 <br> Methods: GET, PUT, PATCH, DELETE
 <br> Example Output:
 <pre>{
-	"fileId": 6,
-	"name": "cssef_ftp_plugin.py",
-	"size": 1024,
-	"md5": "some md5 hash"
+	"documentId": 1,
+	"contentType": "text/plain",
+	"fileHash": "md5hashofthefile",
+	"filePath": "/opt/cssef/file_storage/example_file.txt",
+	"filename": "example_file.txt"
+	"urlEncodedFilename": "example_file.txt"
 }</pre>
