@@ -70,7 +70,6 @@ URL: /organizations/1.json
 		}
 	]
 }</pre>
-
 ### Organizations - Members
 #### Resource List
 URL: /organizations/1/members.json
@@ -91,7 +90,6 @@ URL: /organizations/1/members.json
 		"password": "somehashhere"
 	}
 ]</pre>
-
 #### Resource Details
 URL: /organizations/1/members/1.json
 <br>Description: This provides details for the member with id 1 within organization with id 1
@@ -103,7 +101,6 @@ URL: /organizations/1/members/1.json
 	"username": "janed",
 	"password": "somehashhere"
 }</pre>
-
 ### Organizations - Competitions
 #### Resource List
 URL: /organizations/1/competitions.json
@@ -135,30 +132,22 @@ URL: /organizations/1/competitions/2.json
 	"url": "example_competition_2",
 	"description": "This is another example description."
 }</pre>
-
 ## Competitions
 Endpoints:
 * [/competitions.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-3)
 * [/competitions/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-3)
 * [/competitions/\<id\>/services.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-4)
 * [/competitions/\<id\>/services/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-4)
-* /competitions/\<id\>/services/\<id\>/plugin.json
 * [/competitions/\<id\>/teams.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-5)
 * [/competitions/\<id\>/teams/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-5)
 * [/competitions/\<id\>/injects.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-6)
 * [/competitions/\<id\>/injects/\<id>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-6)
-* [/competitions/\<id\>/injects/\<id\>/files.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-7)
-* [/competitions/\<id\>/injects/\<id\>/files/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-7)
 * [/competitions/\<id\>/injects/\<id\>/responses.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-8)
 * [/competitions/\<id\>/injects/\<id\>/responses/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-8)
-* [/competitions/\<id\>/injects/\<id\>/responses/\<id\>/files.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-9)
-* [/competitions/\<id\>/injects/\<id\>/responses/\<id\>/files/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-9)
 * [/competitions/\<id\>/incidents.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-7)
 * [/competitions/\<id\>/incidents/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-7)
 * [/competitions/\<id\>/incidents/\<id\>/responses.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#competitions---incidents---responses)
 * [/competitions/\<id\>/incidents/\<id\>/responses/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-11)
-* [/competitions/\<id\>/incidents/\<id\>/responses/\<id\>/files.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-12)
-* [/competitions/\<id\>/incidents/\<id\>/responese/\<id\>/files/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-12)
 * [/competitions/\<id\>/scores.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-8)
 * [/competitions/\<id\>/scores/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-8)
 
@@ -182,7 +171,6 @@ URL: /compeititons.json
 		"description": "This is another example description."
 	}
 ]</pre>
-
 #### Resource Details
 URL: /compeititons/2.json
 <br> Description: Lists the competition with the id of 2
@@ -194,7 +182,6 @@ URL: /compeititons/2.json
 	"url": "example_competition_2",
 	"description": "This is another example description."
 }</pre>
-
 ### Competitions - Services
 #### Resource List
 URL: /compeititons/2/services.json
@@ -218,7 +205,7 @@ URL: /compeititons/2/services.json
 #### Resource Details
 URL: /compeititons/2/services/1.json
 <br> Description: Lists the services within the competition with the id of 2
-<br> Methods: GET, POST
+<br> Methods: GET, PUT, PATCH, DELETE
 <br> Example Output:
 <pre>{
 	"serviceId": 2,
@@ -226,7 +213,6 @@ URL: /compeititons/2/services/1.json
 	"name": "HTTP Service",
 	"description": "This is another example service description."
 }</pre>
-
 ### Competitions - Teams
 #### Resource List
 URL: /compeititons/2/teams.json
@@ -254,7 +240,7 @@ URL: /compeititons/2/teams.json
 #### Resource Details
 URL: /compeititons/2/teams/2.json
 <br> Description: Lists the services within the competition with the id of 2
-<br> Methods: GET, POST
+<br> Methods: GET, PUT, PATCH, DELETE
 <br> Example Output:
 <pre>{
 	"teamId": 2,
@@ -264,46 +250,329 @@ URL: /compeititons/2/teams/2.json
 	"password": "password-ex2"
 	"description": "This is another example service description."
 }</pre>
-
 ### Competitions - Injects
 #### Resource List
+URL: /compeititons/2/injects.json
+<br> Description: Lists the injects within the competition with the id of 2
+<br> Methods: GET, POST
+<br> Example Output:
+<pre>[
+	{
+		"injectId": 1,
+		"competitionId": 2,
+		"name": "Inject Number 1",
+		"description": "This is an example inject description."
+		"responses": [
+			{
+				"injectResponseId": 1,
+				"indexId": 1,
+				"body": "inject response text",
+				"files": [
+				]
+			},
+			{
+				"injectResponseId": 2,
+				"indexId": 2,
+				"body": "inject second response text",
+				"files": [
+				]
+			}
+		],
+		"files": [
+			{
+				"name": "file_one.txt",
+				"size": "1024"
+			}
+		]
+	},
+	{
+		"injectId": 2,
+		"competitionId": 2,
+		"name": "Inject Number 2",
+		"description": "This is another example inject description.",
+		"responses": [
+		],
+		"files": [
+		]
+	}
+]</pre>
 #### Resource Details
-### Competitions - Injects - Files
-#### Resource List
-#### Resource Details
+URL: /compeititons/2/injects/1.json
+<br> Description: Lists the injects within the competition with the id of 2
+<br> Methods: GET, PUT, PATCH, DELETE
+<br> Example Output:
+<pre>{
+	"injectId": 1,
+	"competitionId": 2,
+	"name": "Inject Number 1",
+	"description": "This is an example inject description."
+	"responses": [
+		{
+			"injectResponseId": 1,
+			"indexId": 1,
+			"body": "inject response text",
+			"files": [
+			]
+		},
+		{
+			"injectResponseId": 2,
+			"indexId": 2,
+			"body": "inject second response text",
+			"files": [
+			]
+		}
+	],
+	"files": [
+		{
+			"name": "file_one.txt",
+			"size": "1024"
+		}
+	]
+}</pre>
 ### Competitions - Injects - Responses
 #### Resource List
+URL: /compeititons/2/injects/1/responses.json
+<br> Description: Lists the responses to an inject within the competition with the id of 2
+<br> Methods: GET, POST
+<br> Example Output:
+<pre>[
+	{
+		"injectResponseId": 1,
+		"indexId": 1,
+		"body": "inject response text",
+		"files": [
+		]
+	},
+	{
+		"injectResponseId": 2,
+		"indexId": 1,
+		"body": "inject response text",
+		"files": [
+		]
+	}
+]</pre>
 #### Resource Details
-### Competitions - Injects - Responses - Files
-#### Resource List
-#### Resource Details
+URL: /compeititons/2/injects/1/responses/1.json
+<br> Description: Lists the injects within the competition with the id of 2
+<br> Methods: GET, PUT, PATCH, DELETE
+<br> Example Output:
+<pre>{
+	"injectResponseId": 1,
+	"indexId": 1,
+	"body": "inject response text",
+	"files": [
+	]
+}</pre>
 ### Competitions - Incidents
 #### Resource List
+URL: /compeititons/2/incidents.json
+<br> Description: Lists the incidents within the competition with the id of 2
+<br> Methods: GET, POST
+<br> Example Output:
+<pre>[
+	{
+		"incidentId": 1,
+		"competitionId": 2,
+		"name": "Incident Response 1",
+		"body": "This is an example incident response."
+		"responses": [
+			{
+				"incidentResponseId": 1,
+				"incidentId": 1,
+				"competitionId": 2,
+				"body": "some follow up text to incident 1",
+				"files": [
+				]
+			},
+			{
+				"incidentResponseId": 2,
+				"incidentId": 1,
+				"competitionId": 2,
+				"body": "another follow up text to incident 1",
+				"files": [
+				]
+			}
+		],
+		"files": [
+		]
+	},
+	{
+		"incidentId": 2,
+		"competitionId": 2,
+		"name": "Incident Response 2",
+		"body": "This is another example incident response."
+		"responses": [
+		],
+		"files": [
+			{
+				"name": "who_done_it.pdf",
+				"size": "1024"
+			}	
+		]
+	}
+]</pre>
 #### Resource Details
+URL: /compeititons/2/incidents/1.json
+<br> Description: Lists the incidents within the competition with the id of 2
+<br> Methods: GET, PUT, PATCH, DELETE
+<br> Example Output:
+<pre>{
+	"incidentId": 1,
+	"competitionId": 2,
+	"name": "Incident Response 1",
+	"body": "This is an example incident response."
+	"responses": [
+		{
+			"incidentResponseId": 1,
+			"incidentId": 1,
+			"competitionId": 2,
+			"body": "some follow up text to incident 1",
+			"files": [
+			]
+		},
+		{
+			"incidentResponseId": 2,
+			"incidentId": 1,
+			"competitionId": 2,
+			"body": "another follow up text to incident 1",
+			"files": [
+			]
+		}
+	],
+	"files": [
+	]
+}</pre>
 ### Competitions - Incidents - Responses
+URL: /compeititons/2/incidents/1/responses.json
+<br> Description: Lists the responses to an incident within the competition with the id of 2
+<br> Methods: GET, POST
+<br> Example Output:
 #### Resource List
+<pre>[
+	{
+		"incidentResponseId": 1,
+		"incidentId": 1,
+		"competitionId": 2,
+		"body": "some follow up text to incident 1",
+		"files": [
+		]
+	},
+	{
+		"incidentResponseId": 2,
+		"incidentId": 1,
+		"competitionId": 2,
+		"body": "another follow up text to incident 1",
+		"files": [
+		]
+	}
+]</pre>
 #### Resource Details
-### Competitions - Incidents - Responses - Files
-#### Resource List
-#### Resource Details
+URL: /compeititons/2/incidents/1/responses/1.json
+<br> Description: Lists a specific responses to an incident within the competition with the id of 2
+<br> Methods: GET, PUT, PATCH, DELETE
+<br> Example Output:
+<pre>{
+	"incidentResponseId": 1,
+	"incidentId": 1,
+	"competitionId": 2,
+	"body": "some follow up text to incident 1",
+	"files": [
+	]
+}</pre>
 ### Competitions - Scores
 #### Resource List
+URL: /compeititons/2/scores.json
+<br> Description: Lists the scores within the competition with the id of 2
+<br> Methods: GET, POST
+<br> Example Output:
+<pre>[
+	{
+		"scoreId": 1,
+		"competitionId": 2,
+		"serviceId": 1,
+		"teamId": 1,
+		"value": 100,
+		"messages": {
+			"info": "Service was accessible.",
+			"warning": "",
+			"error": ""
+		}
+	},
+	{
+		"scoreId": 2,
+		"competitionId": 2,
+		"serviceId": 1,
+		"teamId": 2,
+		"value": 0,
+		"messages": {
+			"info": "",
+			"warning": "",
+			"error": "Service unavailable."
+		}
+	}
+]</pre>
 #### Resource Details
-
+URL: /compeititons/2/scores/2.json
+<br> Description: Provides details for the score with id 2
+<br> Methods: GET, PUT, PATCH, DELETE
+<br> Example Output:
+<pre>{
+	"scoreId": 2,
+	"competitionId": 2,
+	"serviceId": 1,
+	"teamId": 2,
+	"value": 0,
+	"messages": {
+		"info": "",
+		"warning": "",
+		"error": "Service unavailable."
+	}
+}</pre>
 ## Plugins
 Endpoints:
 * [/plugins.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-9)
 * [/plugins/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-9)
-* [/plugins/\<id\>/files.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-10)
-* [/plugins/\<id\>/files/\<id\>.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-details-10)
 
 ### Plugins
 #### Resource List
+URL: /plugins.json
+<br> Description: Lists all plugins
+<br> Methods: GET, POST
+<br> Example Output:
+<pre>[
+	{
+		"name": "SSH Plugin",
+		"description": "Scores SSH services",
+		"file": {
+			"fileId": 5,
+			"name": "cssef_ssh_plugin.py",
+			"size": 1024
+		}
+	},
+	{
+		"name": "FTP Plugin",
+		"description": "Scores FTP services",
+		"file": {
+			"fileId": 6,
+			"name": "cssef_ftp_plugin.py",
+			"size": 1024
+		}
+	}
+]</pre>
 #### Resource Details
-### Plugins - Files
-#### Resource List
-#### Resource Details
-
+URL: /plugins/1.json
+<br> Description: Provides details for plugin with id of 2
+<br> Methods: GET, PUT, PATCH, DELETE
+<br> Example Output:
+<pre>{
+	"name": "SSH Plugin",
+	"description": "Scores SSH services",
+	"file": {
+		"fileId": 5,
+		"name": "cssef_ssh_plugin.py",
+		"size": 1024
+	}
+}</pre>
 ## Files
 Endpoints:
 * [/files.json](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md#resource-list-11)
@@ -311,4 +580,32 @@ Endpoints:
 
 ### Files
 #### Resource List
+URL: /files.json
+<br> Description: Lists all files
+<br> Methods: GET, POST
+<br> Example Output:
+<pre>[
+	{
+		"fileId": 5,
+		"name": "cssef_ssh_plugin.py",
+		"size": 1024,
+		"md5": "some md5 hash"
+	},
+	{
+		"fileId": 6,
+		"name": "cssef_ftp_plugin.py",
+		"size": 1024,
+		"md5": "some md5 hash"
+	}
+]</pre>
 #### Resource Details
+URL: /files/6.json
+<br> Description: Provides details for file with id 6
+<br> Methods: GET, PUT, PATCH, DELETE
+<br> Example Output:
+<pre>{
+	"fileId": 6,
+	"name": "cssef_ftp_plugin.py",
+	"size": 1024,
+	"md5": "some md5 hash"
+}</pre>
