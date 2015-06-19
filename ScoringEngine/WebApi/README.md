@@ -140,7 +140,7 @@ URL: /organizations/1/members/1.json
 <br>Description: This provides details for the member with id 1 within organization with id 1
 <br>Methods: GET, PUT, PATCH, DELETE
 <br>Example Output:
-<pre>	{
+<pre>{
 	"userId": 2,
 	"organizationId": 2,
 	"name": "Jane Doe",
