@@ -20,14 +20,55 @@ URL: /organizations.json
 		"name": "Example Organization Name 1",
 		"url": "example_organization_name_1",
 		"maxMembers": 10,
-		"maxCompetitions": 10
+		"maxCompetitions": 10,
+		"members": [
+			{
+				"userId": 1,
+				"organizationId": 1,
+				"name": "John Doe",
+				"username": "johnd",
+				"password": "somehashhere",
+			},
+			{
+				"userId": 2,
+				"organizationId": 2,
+				"name": "Jane Doe",
+				"username": "janed",
+				"password": "somehashhere"
+			}
+		],
+		"competitions": [
+			{
+				"competitionId": 1,
+				"name": "Example Competition 1",
+				"url": "example_competition_1",
+				"description": "This is an example description."
+			},
+			{
+				"competitionId": 2,
+				"name": "Example Competition 2",
+				"url": "example_competition_2",
+				"description": "This is another example description."
+			}
+		]
 	},
 	{
 		"organizationId": 2,
 		"name": "Example Organization Name 2",
 		"url": "example_organization_name_2",
-		"maxMembers": 10,
-		"maxCompetitions": 10
+		"maxMembers": 3,
+		"maxCompetitions": 5,
+		"members": [
+			{
+				"userId": 1,
+				"organizationId": 1,
+				"name": "Jim Doe",
+				"username": "jimd",
+				"password": "somehashhere",
+			}
+		],
+		"competitions": [
+		]
 	}
 ]</pre>
 #### Resource Details
@@ -44,12 +85,14 @@ URL: /organizations/1.json
 	"members": [
 		{
 			"userId": 1,
+			"organizationId": 1,
 			"name": "John Doe",
 			"username": "johnd",
-			"password": "somehashhere"
+			"password": "somehashhere",
 		},
 		{
 			"userId": 2,
+			"organizationId": 2,
 			"name": "Jane Doe",
 			"username": "janed",
 			"password": "somehashhere"
@@ -79,12 +122,14 @@ URL: /organizations/1/members.json
 <pre>[
 	{
 		"userId": 1,
+		"organizationId": 1,
 		"name": "John Doe",
 		"username": "johnd",
-		"password": "somehashhere"
+		"password": "somehashhere",
 	},
 	{
 		"userId": 2,
+		"organizationId": 2,
 		"name": "Jane Doe",
 		"username": "janed",
 		"password": "somehashhere"
@@ -95,8 +140,9 @@ URL: /organizations/1/members/1.json
 <br>Description: This provides details for the member with id 1 within organization with id 1
 <br>Methods: GET, PUT, PATCH, DELETE
 <br>Example Output:
-<pre>{
+<pre>	{
 	"userId": 2,
+	"organizationId": 2,
 	"name": "Jane Doe",
 	"username": "janed",
 	"password": "somehashhere"
@@ -162,13 +208,53 @@ URL: /compeititons.json
 		"competitionId": 1,
 		"name": "Example Competition 1",
 		"url": "example_competition_1",
-		"description": "This is an example description."
+		"description": "This is an example description.",
+		"datetimeDisplay": "2015-06-17 00:13:14",
+		"datetimeStart": "2015-06-17 00:13:14",
+		"datetimeFinish": "2015-06-17 00:13:15",
+		"autoStart": true,
+		"scoringEnabled": true,
+		"scoringInterval": 60,
+		"scoringIntervalUncertainty": 30,
+		"scoringMethod": "FQDN",
+		"scoringSlaEnabled": true,
+		"scoringSlaThreashold": 5,
+		"scoringSlaPenalty": 100,
+		"servicesEnabled": true,
+		"teamsViewRankingEnabled": true,
+		"teamsViewScoreboardEnabled": true,
+		"teamsViewServiceStatisticsEnabled": true,
+		"teamsViewServiceStatus": true,
+		"teamsViewInjectEnabled": true,
+		"teamsViewIncidentResponseEnabled": true,
+		"organization": {
+		}
 	},
 	{
 		"competitionId": 2,
 		"name": "Example Competition 2",
 		"url": "example_competition_2",
-		"description": "This is another example description."
+		"description": "This is another example description.",
+		"datetimeDisplay": "2015-06-17 00:13:14",
+		"datetimeStart": "2015-06-17 00:13:14",
+		"datetimeFinish": "2015-06-17 00:13:15",
+		"autoStart": false,
+		"scoringEnabled": true,
+		"scoringInterval": 60,
+		"scoringIntervalUncertainty": 30,
+		"scoringMethod": "CIDR",
+		"scoringSlaEnabled": false,
+		"scoringSlaThreashold": 0,
+		"scoringSlaPenalty": 0,
+		"servicesEnabled": true,
+		"teamsViewRankingEnabled": false,
+		"teamsViewScoreboardEnabled": false,
+		"teamsViewServiceStatisticsEnabled": false,
+		"teamsViewServiceStatus": false,
+		"teamsViewInjectEnabled": false,
+		"teamsViewIncidentResponseEnabled": false,
+		"organization": {
+		}
 	}
 ]</pre>
 #### Resource Details
@@ -176,11 +262,31 @@ URL: /compeititons/2.json
 <br> Description: Lists the competition with the id of 2
 <br> Methods: GET, PUT, PATCH, DELETE
 <br> Example Output:
-<pre>{
+<pre>	{
 	"competitionId": 2,
 	"name": "Example Competition 2",
 	"url": "example_competition_2",
-	"description": "This is another example description."
+	"description": "This is another example description.",
+	"datetimeDisplay": "2015-06-17 00:13:14",
+	"datetimeStart": "2015-06-17 00:13:14",
+	"datetimeFinish": "2015-06-17 00:13:15",
+	"autoStart": false,
+	"scoringEnabled": true,
+	"scoringInterval": 60,
+	"scoringIntervalUncertainty": 30,
+	"scoringMethod": "CIDR",
+	"scoringSlaEnabled": false,
+	"scoringSlaThreashold": 0,
+	"scoringSlaPenalty": 0,
+	"servicesEnabled": true,
+	"teamsViewRankingEnabled": false,
+	"teamsViewScoreboardEnabled": false,
+	"teamsViewServiceStatisticsEnabled": false,
+	"teamsViewServiceStatus": false,
+	"teamsViewInjectEnabled": false,
+	"teamsViewIncidentResponseEnabled": false,
+	"organization": {
+	}
 }</pre>
 ### Competitions - Services
 #### Resource List
@@ -193,13 +299,51 @@ URL: /compeititons/2/services.json
 		"serviceId": 1,
 		"competitionId": 2,
 		"name": "SSH Service",
-		"description": "This is an example service description."
+		"description": "This is an SSH scored service."
+		"manualStart": false,
+		"datetimeStart": "2015-06-17 00:13:14",
+		"datetimeFinish": "2015-06-17 00:13:15",
+		"points": 10,
+		"machineIp": "50",
+		"machineFqdn": "ssh.local",
+		"defaultPort": "22",
+		"plugin": {
+			"name": "SSH Plugin",
+			"description": "Plugin to scores SSH services",
+			"document": {
+				"documentId": 3,
+				"contentType": "text/plain",
+				"fileHash": "md5hashofthescript",
+				"filePath": "/opt/cssef/file_storage/cssef_ssh_plugin.py",
+				"filename": "cssef_ssh_plugin.py"
+				"urlEncodedFilename": "cssef_ssh_plugin.py"
+			}
+		}
 	},
 	{
 		"serviceId": 2,
 		"competitionId": 2,
 		"name": "HTTP Service",
-		"description": "This is another example service description."
+		"description": "This is an HTTP scored service."
+		"manualStart": true,
+		"datetimeStart": "",
+		"datetimeFinish": "2015-06-17 00:13:15",
+		"points": 10,
+		"machineIp": "51",
+		"machineFqdn": "www.local",
+		"defaultPort": "80",
+		"plugin": {
+			"name": "HTTP Plugin",
+			"description": "Plugin to scores HTTP services",
+			"document": {
+				"documentId": 7,
+				"contentType": "text/plain",
+				"fileHash": "md5hashofthescript",
+				"filePath": "/opt/cssef/file_storage/cssef_http_plugin.py",
+				"filename": "cssef_http_plugin.py"
+				"urlEncodedFilename": "cssef_http_plugin.py"
+			}
+		}
 	}
 ]</pre>
 #### Resource Details
@@ -211,7 +355,26 @@ URL: /compeititons/2/services/1.json
 	"serviceId": 2,
 	"competitionId": 2,
 	"name": "HTTP Service",
-	"description": "This is another example service description."
+	"description": "This is an HTTP scored service."
+	"manualStart": true,
+	"datetimeStart": "",
+	"datetimeFinish": "2015-06-17 00:13:15",
+	"points": 10,
+	"machineIp": "51",
+	"machineFqdn": "www.local",
+	"defaultPort": "80",
+	"plugin": {
+		"name": "HTTP Plugin",
+		"description": "Plugin to scores HTTP services",
+		"document": {
+			"documentId": 7,
+			"contentType": "text/plain",
+			"fileHash": "md5hashofthescript",
+			"filePath": "/opt/cssef/file_storage/cssef_http_plugin.py",
+			"filename": "cssef_http_plugin.py"
+			"urlEncodedFilename": "cssef_http_plugin.py"
+		}
+	}
 }</pre>
 ### Competitions - Teams
 #### Resource List
