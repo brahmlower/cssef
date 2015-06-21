@@ -1,14 +1,13 @@
-from rest_framework.test import APIRequestFactory
+#from rest_framework.test import APIRequestFactory
+from rest_framework.test import APITestCase
 from rest_framework import status
 from django.test import TestCase
-from rest_framework.test import APITestCase
 from django.test import Client
 import json
-
-URL_PREFIX = "/"
+import exampleData
 
 def prefixedUrl(url):
-	return URL_PREFIX + url
+	return "/" + url
 
 def submitPostData(url, data, instance = None):
 	client = Client()
@@ -26,99 +25,47 @@ def createCompetition(instance):
 	url = prefixedUrl('competitions.json')
 	return submitPostData(url, data, instance)
 
-def createTeam(instance, competitionId):
-	data = {
-		'competitionId': int(competitionId),
-		'teamname': 'Testing Team',
-		'username': 'testingteam',
-		'password': 'Pa$$w0rd',
-		'networkCidr': 'team1.tld'
-		}
-	url = prefixedUrl('competitions/%s/teams.json' % str(competitionId))
-	return submitPostData(url, data, instance)
+def get(instance, url, status_code = status.HTTP_200_OK, content = None):
+	response = instance.client.get(url)
+	instance.assertEqual(response.status_code, status_code)
+	if content:
+		instance.assertEqual(response.content, content)
+	return response
 
-def createService(instance, competitionId, pluginId):
-	data = { 
-		'competitionId': int(competitionId),
-		'plugin': int(pluginId),
-		'name': 'Test SSH',
-		'description': 'A test service.',
-		'points': 100,
-		'connectIp': True,
-		'connectDisplay': "What's this?",
-		'networkLocation': 'www',
-		'defaultPort': 22}
-	url = prefixedUrl('competitions/%s/services.json' % str(competitionId))
-	return submitPostData(url, data, instance)
+def put(instance, url, data, status_code = status.HTTP_200_OK, content = None):
+	response = instance.client.put(url, data)
+	instance.assertEqual(response.status_code, status_code)
+	if content:
+		print content
+		instance.assertEqual(response.content, content)
+	return response
 
-def createScore(instance, competitionId, teamId, serviceId):
-	data = {
-		'competitionId': int(competitionId),
-		'teamId': int(teamId),
-		'serviceId': int(serviceId),
-		'value': 100,
-		'message': 'Service is up.'}
-	url = prefixedUrl('competitions/%s/scores.json' % str(competitionId))
-	return submitPostData(url, data, instance)
+def post(instance, url, data, status_code = status.HTTP_201_CREATED, content = None):
+	response = instance.client.post(url, data, format='json')
+	instance.assertEqual(response.status_code, status_code)
+	if content:
+		instance.assertEqual(response.content, content)
+	return response
 
-def createInject(instance, competitionId):
-	data = {
-		'competitionId': int(competitionId),
-		'manualDelivery': True,
-		'requireResponse': True,
-		'title': 'Title of Inject',
-		'body': 'Body of new inject.'}
-	url = prefixedUrl('competitions/%s/injects.json' % str(competitionId))
-	return submitPostData(url, data, instance)
+def patch(instance, url, data, status_code = status.HTTP_200_OK, content = None):
+	response = instance.client.patch(url, data, format='json')
+	instance.assertEqual(response.status_code, status.HTTP_200_OK)
+	if content:
+		instance.assertEqual(responses.content, content)
+	return response
 
-def createInjectResponse(instance, competitionId, teamId, injectId):
-	data = {
-		'competitionId': int(competitionId),
-		'teamId': int(teamId),
-		'injectId': int(injectId),
-		'content': 'Testing inject response content'
-	}
-	url = prefixedUrl('competitions/%s/injectresponses.json' % str(competitionId))
-	return submitPostData(url, data, instance)
+def delete(instance, url, status_code = status.HTTP_204_NO_CONTENT):
+	response = instance.client.delete(url)
+	instance.assertEqual(response.status_code, status_code)
+	return response
 
-def createIncidentResponse(instance, competitionId, teamId):
-	data = {
-		'competitionId': int(competitionId),
-		'teamId': int(teamId),
-		'replyTo': -1,
-		'subject': 'Test Incident Response Subject',
-		'content': 'Testing incident response content'}
-	url = prefixedUrl('competitions/%s/incidentresponses.json' % str(competitionId))
-	return submitPostData(url, data, instance)
+def getInvalid(instance, url, status_code = status.HTTP_404_NOT_FOUND):
+	response = instance.client.get(url)
+	instance.assertEqual(response.content, '')
+	instance.assertEqual(response.status_code, status_code)
+	return response
 
-def createPlugin(instance):
-	data = {
-		'name': 'Test Plugin',
-		'description': 'This is a test plugin'}
-	url = prefixedUrl('plugins.json')
-	return submitPostData(url, data, instance)
-
-def createUser(instance):
-	data = {
-		'username': 'TestUser',
-		'password': 'testUserP@sSw0rd'}
-	url = prefixedUrl('users.json')
-	return submitPostData(url, data, instance)
-
-def createOrganization(instance):
-	data = {
-		'name': 'Test Organization'}
-	url = prefixedUrl('organizations.json')
-	return submitPostData(url, data, instance)
-
-class CompetitionsRoot(APITestCase):
-	'''
-	This set of tests covers the functionality of /competitions.json
-	Methods tested: GET, POST
-	Cases to check:
-		Must respond to disallowed request methods
-
-	'''
+class CompetitionsList(APITestCase):
 	def testHttp405Response(self):
 		url = '/competitions.json'
 		data = {}
@@ -127,74 +74,243 @@ class CompetitionsRoot(APITestCase):
 
 	def testGet(self):
 		url = '/competitions.json'
-		response = self.client.get(url)
-		self.assertEqual(response.status_code, status.HTTP_200_OK)
-		self.assertEqual(response.content, "[]")
+		get(self, url)
 
 	def testPost(self):
 		url = '/competitions.json'
-		data = {
-			'name': 'New Competition',
-			'url': 'new_competition',
-			'organization': 1
-		}
-		response = self.client.post(url, data, format='json')
-		self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+		post(self, url, exampleData.competitionMin)
 
-class CompetitionsDetails(APITestCase):
+class CompetitionDetails(APITestCase):
 	def setUp(self):
 		createCompetition(self)
 
 	def testHttp405Response(self):
 		url = '/competitions/1.json'
-		data = {}
-		response = self.client.post(url, data)
-		self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+		put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
 		url = '/competitions/1.json'
-		data = {
-			'name': 'New Competition',
-			'url': 'new_competition',
-			'organization': 1
-		}
-		response = self.client.get(url)
-		self.assertEqual(response.status_code, status.HTTP_200_OK)
-		self.assertEqual(response.content, data)
+		get(self, url, content = exampleData.competitionMax)
 
-	def testPut(self):
+	def testPatch(self):
 		url = '/competitions/1.json'
 		data = {"name": "This is a new name"}
-		response = self.client.patch(url, data, format='json')
-		self.assertEqual(response.status_code, status.HTTP_200_OK)
+		patch(self, url, data)
 
 	def testDelete(self):
 		url = '/competitions/1.json'
-		response = self.client.delete(url)
-		self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+		delete(self, url)
 
 	def testInvalid(self):
 		url = '/competitions/9000.json'
-		response = self.client.get(url)
-		self.assertEqual(response.content, '')
-		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+		getInvalid(self, url)
 
-class CompetitionsServices(TestCase):
+class ServicesList(APITestCase):
 	def setUp(self):
 		createCompetition(self)
 
-class CompetitionsTeams(TestCase):
+	def testHttp405Response(self):
+		url = '/competitions/1/services.json'
+		put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		url = '/competitions/1/services.json'
+		get(self, url)
+
+	def testPost(self):
+		url = '/competitions/1/services.json'
+		post(self, url, exampleData.service)
+
+class ServiceDetails(APITestCase):
+	def setUp(self):
+		createCompetition(self)
+		#TODO: Create a service here
+
+	def testHttp405Response(self):
+		url = '/competitions/1/services/1.json'
+		put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		url = '/competitions/1/services/1.json'
+		get(self, url, content = exampleData.competitionMax)
+
+	def testPatch(self):
+		url = '/competitions/1/services/1.json'
+		data = {"name": "This is a new name"}
+		patch(self, url, data)
+
+	def testDelete(self):
+		url = '/competitions/1/services/1.json'
+		delete(self, url)
+
+	def testInvalid(self):
+		url = '/competitions/1/services/9000.json'
+		getInvalid(self, url)
+
+class TeamsList(APITestCase):
 	def setUp(self):
 		createCompetition(self)
 
-class CompetitionsInjects(TestCase):
+	def testHttp405Response(self):
+		url = '/competitions/1/teams.json'
+		put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		url = '/competitions/1/teams.json'
+		get(self, url)
+
+	def testPost(self):
+		url = '/competitions/1/teams.json'
+		post(self, url, exampleData.team)
+
+class TeamDetails(APITestCase):
+	def setUp(self):
+		createCompetition(self)
+		#TODO: Create a team here
+
+	def testHttp405Response(self):
+		url = '/competitions/1/teams/1.json'
+		put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		url = '/competitions/1/teams/1.json'
+		get(self, url, content = exampleData.competitionMax)
+
+	def testPatch(self):
+		url = '/competitions/1/teams/1.json'
+		data = {"name": "This is a new name"}
+		patch(self, url, data)
+
+	def testDelete(self):
+		url = '/competitions/1/teams/1.json'
+		delete(self, url)
+
+	def testInvalid(self):
+		url = '/competitions/1/teams/9000.json'
+		getInvalid(self, url)
+
+class InjectsList(APITestCase):
 	def setUp(self):
 		createCompetition(self)
 
-class CompetitionsIncidents(TestCase):
+	def testHttp405Response(self):
+		url = '/competitions/1/injects.json'
+		put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		url = '/competitions/1/injects.json'
+		get(self, url)
+
+	def testPost(self):
+		url = '/competitions/1/injects.json'
+		post(self, url, exampleData.inject)
+
+class InjectDetails(APITestCase):
+	def setUp(self):
+		createCompetition(self)
+		#TODO: Create an inject here
+
+	def testHttp405Response(self):
+		url = '/competitions/1/injects/1.json'
+		put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		url = '/competitions/1/injects/1.json'
+		get(self, url, content = exampleData.competitionMax)
+
+	def testPatch(self):
+		url = '/competitions/1/injects/1.json'
+		data = {"name": "This is a new name"}
+		patch(self, url, data)
+
+	def testDelete(self):
+		url = '/competitions/1/injects/1.json'
+		delete(self, url)
+
+	def testInvalid(self):
+		url = '/competitions/1/injects/9000.json'
+		getInvalid(self, url)
+
+class IncidentResponsesList(APITestCase):
 	def setUp(self):
 		createCompetition(self)
 
-class CompetitionsScores(TestCase):
+	def testHttp405Response(self):
+		url = '/competitions/1/incidentresponses.json'
+		put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		url = '/competitions/1/incidentresponses.json'
+		get(self, url)
+
+	def testPost(self):
+		url = '/competitions/1/incidentresponses.json'
+		post(self, url, exampleData.incidentResponse)
+
+class IncidentResponseDetails(APITestCase):
 	def setUp(self):
 		createCompetition(self)
+		#TODO: Create an incident response here
+
+	def testHttp405Response(self):
+		url = '/competitions/1/incidentresponses/1.json'
+		put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		url = '/competitions/1/incidentresponses/1.json'
+		get(self, url, content = exampleData.competitionMax)
+
+	def testPatch(self):
+		url = '/competitions/1/incidentresponses/1.json'
+		data = {"name": "This is a new name"}
+		patch(self, url, data)
+
+	def testDelete(self):
+		url = '/competitions/1/incidentresponses/1.json'
+		delete(self, url)
+
+	def testInvalid(self):
+		url = '/competitions/1/incidentresponses/9000.json'
+		getInvalid(self, url)
+
+class ScoresList(APITestCase):
+	def setUp(self):
+		createCompetition(self)
+
+	def testHttp405Response(self):
+		url = '/competitions/1/scores.json'
+		put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		url = '/competitions/1/scores.json'
+		get(self, url)
+
+	def testPost(self):
+		url = '/competitions/1/scores.json'
+		post(self, url, exampleData.score)
+
+class ScoresDetails(APITestCase):
+	def setUp(self):
+		createCompetition(self)
+		#TODO: Create a score here
+
+	def testHttp405Response(self):
+		url = '/competitions/1/scores/1.json'
+		put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		url = '/competitions/1/scores/1.json'
+		get(self, url, content = exampleData.competitionMax)
+
+	def testPatch(self):
+		url = '/competitions/1/scores/1.json'
+		data = {"name": "This is a new name"}
+		patch(self, url, data)
+
+	def testDelete(self):
+		url = '/competitions/1/scores/1.json'
+		delete(self, url)
+
+	def testInvalid(self):
+		url = '/competitions/1/scores/9000.json'
+		getInvalid(self, url)
