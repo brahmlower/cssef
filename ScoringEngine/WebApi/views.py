@@ -134,15 +134,14 @@ def teams(request, competitionId):
     elif request.method == 'POST':
         return postObject(request, TeamSerializer)
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET', 'PATCH', 'DELETE'])
 def team(request, competitionId, teamId):
     if not objectExists(Team, competitionId = competitionId, teamId = teamId):
         return Response(status = status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
         return listObject(Team, TeamSerializer, teamId = teamId)
-    elif request.method == 'POST':
-        team = Team.objects.get(teamId = teamId)
-        return postObject(request, TeamSerializer, team)
+    elif request.method == 'PATCH':
+        return patchObject(request, Team, TeamSerializer, teamId = teamId)
     elif request.method == 'DELETE':
         return deleteObject(Team, teamId = teamId)
 
@@ -153,15 +152,14 @@ def services(request, competitionId):
     elif request.method == 'POST':
         return postObject(request, ServiceSerializer)
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET', 'PATCH', 'DELETE'])
 def service(request, competitionId, serviceId):
     if not objectExists(Service, competitionId = competitionId, serviceId = serviceId):
         return Response(status = status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
         return listObject(Service, ServiceSerializer, serviceId = serviceId)
-    elif request.method == 'POST':
-        service = Service.objects.get(serviceId = serviceId)
-        return postObject(request, ServiceSerializer, service)
+    elif request.method == 'PATCH':
+        return patchObject(request, Service, ServiceSerializer, serviceId = serviceId)
     elif request.method == 'DELETE':
         return deleteObject(Service, serviceId = serviceId)
 
@@ -172,15 +170,14 @@ def scores(request, competitionId):
     elif request.method == 'POST':
         return postObject(request, ScoreSerializer)
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET', 'PATCH', 'DELETE'])
 def score(request, competitionId, scoreId):
     if not objectExists(Score, competitionId = competitionId, scoreId = scoreId):
         return Response(status = status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
         return listObject(Score, ScoreSerializer, scoreId = scoreId)
-    elif request.method == 'POST':
-        score = Score.objects.get(scoreId = scoreId)
-        return postObject(request, ScoreSerializer, score)
+    elif request.method == 'PATCH':
+        return patchObject(request, Score, ScoreSerializer, scoreId = scoreId)
     elif request.method == 'DELETE':
         return deleteObject(Score, scoreId = scoreId)
 
@@ -191,15 +188,14 @@ def injects(request, competitionId=None, injectId=None):
     elif request.method == 'POST':
         return postObject(request, InjectSerializer)
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET', 'PATCH', 'DELETE'])
 def inject(request, competitionId, injectId):
     if not objectExists(Inject, competitionId = competitionId, injectId = injectId):
         return Response(status = status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
         return listObject(Inject, InjectSerializer, injectId = injectId)
-    elif request.method == 'POST':
-        inject = Inject.objects.get(injectId = injectId)
-        return postObject(request, InjectSerializer, inject)
+    elif request.method == 'PATCH':
+        return patchObject(request, Inject, InjectSerializer, injectId = injectId)
     elif request.method == 'DELETE':
         return deleteObject(request, Inject, injectId = injectId)
 
@@ -210,15 +206,14 @@ def injectresponses(request, competitionId):
     elif request.method == 'POST':
         return postObject(request, InjectResponseSerializer)
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET', 'PATCH', 'DELETE'])
 def injectresponse(request, competitionId, injectResponseId):
     if not objectExists(InjectResponse, competitionId = competitionId, injectResponseId = injectResponseId):
         return Response(status = status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
         return listObject(InjectResponse, InjectResponseSerializer, injectResponseId = injectResponseId)
-    elif request.method == 'POST':
-        injectresponse = InjectResponse.objects.get(injectResponseId = injectResponseId)
-        return postObject(request, InjectResponseSerializer, injectresponse)
+    elif request.method == 'PATCH':
+        return patchObject(request, InjectResponse, InjectResponseSerializer, injectResponseId = injectResponseId)
     elif request.method == 'DELETE':
         return deleteObject(InjectResponse, injectResponseId = injectResponseId)
 
@@ -229,15 +224,14 @@ def incidentresponses(request, competitionId):
     elif request.method == 'POST':
         return postObject(request, IncidentResponseSerializer)
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET', 'PATCH', 'DELETE'])
 def incidentresponse(request, competitionId, incidentResponseId):
     if not objectExists(IncidentResponse, competitionId = competitionId, incidentResponseId = incidentResponseId):
         return Response(status = status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
         return listObject(IncidentResponse, IncidentResponseSerializer, incidentResponseId = incidentResponseId)
-    elif request.method == 'POST':
-        incidentresponse = IncidentResponse.objects.get(incidentResponseId = incidentResponseId)
-        return postObject(request, IncidentResponseSerializer, incidentresponse)
+    elif request.method == 'PATCH':
+        return patchObject(request, IncidentResponse, IncidentResponseSerializer, incidentResponseId = incidentResponseId)
     elif request.method == 'DELETE':
         return deleteObject(IncidentResponse, incidentResponseId = incidentResponseId)
 
@@ -248,15 +242,14 @@ def plugins(request):
     elif request.method == 'POST':
         return postObject(request, PluginSerializer)
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET', 'PATCH', 'DELETE'])
 def plugin(request, pluginId):
     if not objectExists(Plugin, pluginId = pluginId):
         return Response(status = status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
         return listObject(Plugin, PluginSerializer, pluginId = pluginId)
-    elif request.method == 'POST':
-        plugin = Plugin.objects.get(pluginId = pluginId)
-        return postObject(request, PluginSerializer, plugin)
+    elif request.method == 'PATCH':
+        return patchObject(request, Plugin, PluginSerializer, pluginId = pluginId)
     elif request.method == 'DELETE':
         return deleteObject(Plugin, pluginId = pluginId)
 
@@ -267,15 +260,14 @@ def users(request):
     elif request.method == 'POST':
         return postObject(request, UserSerializer)
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET', 'PATCH', 'DELETE'])
 def user(request, userId):
     if not objectExists(User, userId = userId):
         return Response(status = status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
         return listObject(User, UserSerializer, userId = userId)
-    elif request.method == 'POST':
-        user = User.objects.get(userId = userId)
-        return postObject(request, UserSerializer, user)
+    elif request.method == 'PATCH':
+        return patchObject(request, User, UserSerializer, userId = userId)
     elif request.method == 'DELETE':
         return deleteObject(User, userId = userId)
 
@@ -286,14 +278,13 @@ def organizations(request):
     elif request.method == 'POST':
         return postObject(request, OrganizationSerializer)
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET', 'PATCH', 'DELETE'])
 def organization(request, organizationId):
     if not objectExists(Organization, organizationId = organizationId):
         return Response(status = status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
         return listObject(Organization, OrganizationSerializer, organizationId = organizationId)
-    elif request.method == 'POST':
-        organization = Organization.objects.get(organizationId = organizationId)
-        return postObject(request, OrganizationSerializer, organization)
+    elif request.method == 'PATCH':
+        return patchObject(request, Organization, OrganizationSerializer, organizationId = organizationId)
     elif request.method == 'DELETE':
         return deleteObject(Organization, organizationId = organizationId)
