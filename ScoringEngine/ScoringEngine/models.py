@@ -152,6 +152,9 @@ class Organization(Model):
 	deleteable = BooleanField(default = True)
 	name = CharField(max_length = 256, blank = False, null = False)
 	url = CharField(max_length = 256, blank = False, null = False)
+	description = TextField(max_length = 1000, default = '')
+	maxMembers = PositiveIntegerField(default = 0)
+	maxCompetitions = PositiveIntegerField(default = 0)
 
 class Document(Model):
 	documentId = AutoField(primary_key = True)

@@ -105,31 +105,6 @@ def createOrganization(instance):
 	url = prefixedUrl('organizations.json')
 	return submitPostData(url, data, instance)
 
-
-class Competitions(TestCase):
-	def setUp(self):
-		pass
-
-	def testListCompetitions(self):
-		client = Client()
-		response = client.get('%scompetitions.json' % URL_PREFIX)
-		self.assertEqual(response.content, "[]")
-
-	def testExistingCompetition(self):
-		client = Client()
-		competitionId = createCompetition(self)['competitionId']
-		response = client.get(prefixedUrl('competitions/%s.json' % competitionId))
-		content = json.loads(response.content)
-		self.assertEqual(content['competitionId'], competitionId)
-
-	def testAbsentCompetition(self):
-		client = Client()
-		response = client.get(prefixedUrl('competitions/2.json'))
-		self.assertEqual(response.content, '')
-
-	def testCreateCompetition(self):
-		createCompetition(self)
-
 class Teams(TestCase):
 	def setUp(self):
 		client = Client()
