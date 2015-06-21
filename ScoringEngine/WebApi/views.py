@@ -54,14 +54,11 @@ def listObject(objectType, objectTypeSerializer, **kwargs):
 
 def listObjects(objectType, objectTypeSerializer):
     objects = objectType.objects.all()
-    serializer = objectTypeSerializer(objects, many=True)
+    serializer = objectTypeSerializer(objects, many = True)
     return JSONResponse(serializer.data)
 
-def postObject(request, objectTypeSerializer, objectInstance=None):
-    if not objectInstance:
-        serializer = objectTypeSerializer(data = request.POST)
-    else:
-        serializer = objectTypeSerializer(objectInstance, data = request.POST)
+def postObject(request, objectTypeSerializer):
+    serializer = objectTypeSerializer(data = request.POST)
     if serializer.is_valid():
         serializerResult = serializer.save()
         if request.FILES:
@@ -114,6 +111,7 @@ def competitions(request):
     if request.method == 'GET':
         return listObjects(Competition, CompetitionSerializer)
     elif request.method == 'POST':
+        # print "\nServer side - competitions:\n"+str(request.POST)
         return postObject(request, CompetitionSerializer)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
@@ -132,6 +130,7 @@ def teams(request, competitionId):
     if request.method == 'GET':
         return listObjects(Team, TeamSerializer)
     elif request.method == 'POST':
+        # print "\nServer side - teams:\n"+str(request.POST)
         return postObject(request, TeamSerializer)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
