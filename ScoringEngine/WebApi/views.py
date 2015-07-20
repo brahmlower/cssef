@@ -66,6 +66,8 @@ def postObject(request, objectTypeSerializer):
             for i in request.FILES:
                 saveDocument(request.FILES[i], serializerResult)
         return JSONResponse(serializer.data, status = status.HTTP_201_CREATED)
+    print "Serializer object is not valid:"
+    print serializer.errors
     return JSONResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
 def patchObject(request, objectType, objectTypeSerializer, **kwargs):
@@ -196,7 +198,7 @@ def inject(request, competitionId, injectId):
     elif request.method == 'PATCH':
         return patchObject(request, Inject, InjectSerializer, injectId = injectId)
     elif request.method == 'DELETE':
-        return deleteObject(request, Inject, injectId = injectId)
+        return deleteObject(Inject, injectId = injectId)
 
 @api_view(['GET', 'POST'])
 def injectresponses(request, competitionId):
