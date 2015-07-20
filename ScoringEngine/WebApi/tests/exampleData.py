@@ -40,7 +40,7 @@ score = {
 	'competitionId': 1,
 	'teamId': 1,
 	'serviceId': 1,
-	'datetime': "",
+	'datetime': "2015-07-15 20:30:15",
 	'value': 10,
 	'message': "Test Subject"
 }
@@ -70,11 +70,28 @@ inject = {
 	'body': "Contents of inject description"
 }
 
-incidentResponse ={
+incidentResponse = {
 	'competitionId': 1,
 	'teamId': 1,
 	'replyTo': 0,
-	'datetime': "",
+	'datetime': "2015-07-15 20:30:15",
 	'subject': "Test Subject",
 	'content': "test content"
+}
+
+plugin = {
+	'name': "Test Plugin",
+	'description': "Test plugin description."
+}
+
+pluginDocument = {
+	'inject': None,
+	'injectResponse': None,
+	'incidentResponse': None,
+	'plugin': 1,
+	'contentType': "text/plain",
+	'fileHash': "87deb342e0ded1377271fc307601f0bc",
+	'filePath': "testfile.txt",
+	'filename': "testfile.txt",
+	'urlEncodedFilename': "testfile.txt"
 }
