@@ -74,7 +74,7 @@ URL: /organizations.json
 #### Resource Details
 URL: /organizations/1.json
 <br> Description: Lists extended details about the organization with the id of 1
-<br> Methods: GET, PUT, PATCH, DELETE
+<br> Methods: GET, PATCH, DELETE
 <br> Example Output:
 <pre>{
 	"organizationId": 1,
@@ -138,7 +138,7 @@ URL: /organizations/1/members.json
 #### Resource Details
 URL: /organizations/1/members/1.json
 <br>Description: This provides details for the member with id 1 within organization with id 1
-<br>Methods: GET, PUT, PATCH, DELETE
+<br>Methods: GET, PATCH, DELETE
 <br>Example Output:
 <pre>{
 	"userId": 2,
@@ -260,7 +260,7 @@ URL: /compeititons.json
 #### Resource Details
 URL: /compeititons/2.json
 <br> Description: Lists the competition with the id of 2
-<br> Methods: GET, PUT, PATCH, DELETE
+<br> Methods: GET, PATCH, DELETE
 <br> Example Output:
 <pre>	{
 	"competitionId": 2,
@@ -349,7 +349,7 @@ URL: /compeititons/2/services.json
 #### Resource Details
 URL: /compeititons/2/services/1.json
 <br> Description: Lists the services within the competition with the id of 2
-<br> Methods: GET, PUT, PATCH, DELETE
+<br> Methods: GET, PATCH, DELETE
 <br> Example Output:
 <pre>{
 	"serviceId": 2,
@@ -407,7 +407,7 @@ URL: /compeititons/2/teams.json
 #### Resource Details
 URL: /compeititons/2/teams/2.json
 <br> Description: Lists the services within the competition with the id of 2
-<br> Methods: GET, PUT, PATCH, DELETE
+<br> Methods: GET, PATCH, DELETE
 <br> Example Output:
 <pre>{
 	"teamId": 2,
@@ -488,7 +488,7 @@ URL: /compeititons/2/injects.json
 #### Resource Details
 URL: /compeititons/2/injects/1.json
 <br> Description: Lists the injects within the competition with the id of 2
-<br> Methods: GET, PUT, PATCH, DELETE
+<br> Methods: GET, PATCH, DELETE
 <br> Example Output:
 <pre>{
 	"injectId": 1,
@@ -564,7 +564,7 @@ URL: /compeititons/2/injects/1/responses.json
 #### Resource Details
 URL: /compeititons/2/injects/1/responses/1.json
 <br> Description: Lists the injects within the competition with the id of 2
-<br> Methods: GET, PUT, PATCH, DELETE
+<br> Methods: GET, PATCH, DELETE
 <br> Example Output:
 <pre>{
 	"injectResponseId": 1,
@@ -635,7 +635,7 @@ URL: /compeititons/2/incidents.json
 #### Resource Details
 URL: /compeititons/2/incidents/1.json
 <br> Description: Lists the incidents within the competition with the id of 2
-<br> Methods: GET, PUT, PATCH, DELETE
+<br> Methods: GET, PATCH, DELETE
 <br> Example Output:
 <pre>{
 	"incidentId": 1,
@@ -698,7 +698,7 @@ URL: /compeititons/2/incidents/1/responses.json
 #### Resource Details
 URL: /compeititons/2/incidents/1/responses/1.json
 <br> Description: Lists a specific responses to an incident within the competition with the id of 2
-<br> Methods: GET, PUT, PATCH, DELETE
+<br> Methods: GET, PATCH, DELETE
 <br> Example Output:
 <pre>{
 	"incidentResponseId": 1,
@@ -743,7 +743,7 @@ URL: /compeititons/2/scores.json
 #### Resource Details
 URL: /compeititons/2/scores/2.json
 <br> Description: Provides details for the score with id 2
-<br> Methods: GET, PUT, PATCH, DELETE
+<br> Methods: GET, PATCH, DELETE
 <br> Example Output:
 <pre>{
 	"scoreId": 2,
@@ -796,7 +796,7 @@ URL: /plugins.json
 #### Resource Details
 URL: /plugins/1.json
 <br> Description: Provides details for plugin with id of 2
-<br> Methods: GET, PUT, PATCH, DELETE
+<br> Methods: GET, PATCH, DELETE
 <br> Example Output:
 <pre>{
 	"name": "SSH Plugin",
@@ -842,7 +842,7 @@ URL: /documents.json
 #### Resource Details
 URL: /documents/6.json
 <br> Description: Provides details for file with id 6
-<br> Methods: GET, PUT, PATCH, DELETE
+<br> Methods: GET, PATCH, DELETE
 <br> Example Output:
 <pre>{
 	"documentId": 1,
