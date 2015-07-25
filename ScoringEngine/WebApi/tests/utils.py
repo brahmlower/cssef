@@ -26,32 +26,32 @@ def createInject(instance):
 	return json.loads(response.content)
 
 def createScore(instance):
-    url = '/competitions/1/scores.json'
-    response = post(instance, url, exampleData.score)
-    return json.loads(response.content)
+	url = '/competitions/1/scores.json'
+	response = post(instance, url, exampleData.score)
+	return json.loads(response.content)
 
 def createIncidentResponse(instance):
-    url = '/competitions/1/incidentresponses.json'
-    response = post(instance, url, exampleData.incidentResponse)
-    return json.loads(response.content)
+	url = '/competitions/1/incidentresponses.json'
+	response = post(instance, url, exampleData.incidentResponse)
+	return json.loads(response.content)
 
 def createTeam(instance):
-    url = '/competitions/1/teams.json'
-    response = post(instance, url, exampleData.team)
-    return json.loads(response.content)
+	url = '/competitions/1/teams.json'
+	response = post(instance, url, exampleData.team)
+	return json.loads(response.content)
 
 def createService(instance):
-    url = '/competitions/1/services.json'
-    response = post(instance, url, exampleData.service)
-    return json.loads(response.content)
+	url = '/competitions/1/services.json'
+	response = post(instance, url, exampleData.service)
+	return json.loads(response.content)
 
 def createPlugin(instance):
-    url = '/plugins.json'
-    temporary_file = open('testfile.txt','rw')
-    postData = exampleData.plugin
-    postData['testfile.txt'] = temporary_file
-    response = post(instance, url, exampleData.plugin, postFormat = 'multipart/form-data')
-    return json.loads(response.content)
+	url = '/plugins.json'
+	temporary_file = open('testfile.txt','rw')
+	postData = exampleData.plugin
+	postData['testfile.txt'] = temporary_file
+	response = post(instance, url, exampleData.plugin, postFormat = 'multipart/form-data')
+	return json.loads(response.content)
 
 def get(instance, url, status_code = status.HTTP_200_OK, content = None):
 	response = instance.client.get(url)
