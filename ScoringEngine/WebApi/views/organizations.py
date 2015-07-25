@@ -2,8 +2,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from ScoringEngine.serializers import OrganizationSerializer
+from ScoringEngine.serializers import CompetitionSerializer
 from ScoringEngine.serializers import UserSerializer
 from ScoringEngine.models import Organization
+from ScoringEngine.models import Competition 
 from ScoringEngine.models import User
 
 from WebApi.views.utils import objectExists
@@ -40,14 +42,14 @@ def members(request, organizationId):
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def member(request, organizationId, memberId):
-	if not objectExists(User, organizationId = organizationId, userId=memberId):
+	if not objectExists(User, organizationId = organizationId, userId = memberId):
 		return Response(status = status.HTTP_404_NOT_FOUND)
 	if request.method == 'GET':
-		return listObject(User, UserSerializer, organizationId = organizationId, userId=memberId)
+		return listObject(User, UserSerializer, userId = memberId)
 	elif request.method == 'PATCH':
-		return patchObject(request, User, UserSerializer, organizationId = organizationId, userId=memberId)
+		return patchObject(request, User, UserSerializer, userId = memberId)
 	elif request.method == 'DELETE':
-		return deleteObject(User, organizationId = organizationId, userId=memberId)
+		return deleteObject(User, userId = memberId)
 
 @api_view(['GET', 'POST'])
 def competitions(request, organizationId):
@@ -58,11 +60,11 @@ def competitions(request, organizationId):
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def competition(request, organizationId, competitionId):
-	if not objectExists(Competition, organizationId = organizationId, competitionId=competitionId):
+	if not objectExists(Competition, organization = organizationId, competitionId = competitionId):
 		return Response(status = status.HTTP_404_NOT_FOUND)
 	if request.method == 'GET':
-		return listObject(Competition, CompetitionSerializer, organizationId = organizationId, competitionId=competitionId)
+		return listObject(Competition, CompetitionSerializer, competitionId = competitionId)
 	elif request.method == 'PATCH':
-		return patchObject(request, Competition, CompetitionSerializer, organizationId = organizationId, competitionId=competitionId)
+		return patchObject(request, Competition, CompetitionSerializer, competitionId = competitionId)
 	elif request.method == 'DELETE':
-		return deleteObject(Competition, organizationId = organizationId, competitionId=competitionId)
+		return deleteObject(Competition, competitionId = competitionId)

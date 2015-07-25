@@ -37,7 +37,6 @@ def postObject(request, objectTypeSerializer):
 	if serializer.is_valid():
 		serializerResult = serializer.save()
 		if request.FILES:
-			print request.FILES
 			for i in request.FILES:
 				saveDocument(request.FILES[i], serializerResult)
 		return JSONResponse(serializer.data, status = status.HTTP_201_CREATED)
@@ -77,7 +76,7 @@ def saveDocument(postedFile, relatedObject):
 			return None
 	else:
 		setattr(document, relatedObject.__class__.__name__.lower(), relatedObject)
-	print document.filePath
+	#print document.filePath
 	wfile = open(document.filePath, "w")
 	wfile.write(fileContent)
 	wfile.close()
