@@ -88,6 +88,12 @@ organization = {
 	'maxCompetitions': 10,
 }
 
+user = {
+	'name': "Test User",
+	'password': "password",
+	'organizationId': 1
+}
+
 plugin = {
 	'name': "Test Plugin",
 	'description': "Test plugin description."

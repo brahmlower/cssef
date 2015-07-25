@@ -8,254 +8,225 @@ import exampleData
 import utils
 
 class CompetitionsList(APITestCase):
+	def setUp(self):
+		self.uri = '/competitions.json'
+
 	def testHttp405Response(self):
-		url = '/competitions.json'
-		data = {}
-		response = self.client.put(url, data)
+		response = self.client.put(self.uri, {})
 		self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/competitions.json'
-		utils.get(self, url)
+		utils.get(self, self.uri)
 
 	def testPost(self):
-		url = '/competitions.json'
-		utils.post(self, url, exampleData.competitionMin)
+		utils.post(self, self.uri, exampleData.competitionMin)
 
 class CompetitionDetails(APITestCase):
 	def setUp(self):
-		utils.createCompetition(self)
+		competition = utils.createCompetition(self)
+		self.uri = '/competitions/%s.json' % competition['competitionId']
 
 	def testHttp405Response(self):
-		url = '/competitions/1.json'
-		utils.put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/competitions/1.json'
-		utils.get(self, url)
+		utils.get(self, self.uri)
 
 	def testPatch(self):
-		url = '/competitions/1.json'
 		# Request returns 400 without the description. With the description provided,
 		# it will return the expected 202 status
 		data = {"name": "This is a new name", "description":"new description"}
-		utils.patch(self, url, data)
+		utils.patch(self, self.uri, data)
 
 	def testDelete(self):
-		url = '/competitions/1.json'
-		utils.delete(self, url)
+		utils.delete(self, self.uri)
 
 	def testInvalid(self):
-		url = '/competitions/9000.json'
-		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)
+		uri = '/competitions/9000.json'
+		utils.get(self, uri, status_code = status.HTTP_404_NOT_FOUND)
 
 class ServicesList(APITestCase):
 	def setUp(self):
-		utils.createCompetition(self)
+		competition = utils.createCompetition(self)
+		self.uri = '/competitions/%s/services.json' % competition['competitionId']
 
 	def testHttp405Response(self):
-		url = '/competitions/1/services.json'
-		utils.put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/competitions/1/services.json'
-		utils.get(self, url)
+		utils.get(self, self.uri)
 
 	def testPost(self):
-		url = '/competitions/1/services.json'
-		utils.post(self, url, exampleData.service)
+		utils.post(self, self.uri, exampleData.service)
 
 class ServiceDetails(APITestCase):
 	def setUp(self):
-		utils.createCompetition(self)
-		utils.createPlugin(self)
-		utils.createService(self)
+		self.competition = utils.createCompetition(self)
+		plugin = utils.createPlugin(self)
+		service = utils.createService(self)
+		self.uri = '/competitions/%s/services/%s.json' % (self.competition['competitionId'], service['serviceId'])
 
 	def testHttp405Response(self):
-		url = '/competitions/1/services/1.json'
-		utils.put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/competitions/1/services/1.json'
-		utils.get(self, url)
+		utils.get(self, self.uri)
 
 	def testPatch(self):
-		url = '/competitions/1/services/1.json'
 		data = {"name": "This is a new name"}
-		utils.patch(self, url, data)
+		utils.patch(self, self.uri, data)
 
 	def testDelete(self):
-		url = '/competitions/1/services/1.json'
-		utils.delete(self, url)
+		utils.delete(self, self.uri)
 
 	def testInvalid(self):
-		url = '/competitions/1/services/9000.json'
-		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)
+		uri = '/competitions/%s/services/9000.json' % self.competition['competitionId']
+		utils.get(self, uri, status_code = status.HTTP_404_NOT_FOUND)
 
 class TeamsList(APITestCase):
 	def setUp(self):
-		utils.createCompetition(self)
+		competition = utils.createCompetition(self)
+		self.uri = '/competitions/%s/teams.json' % competition['competitionId']
 
 	def testHttp405Response(self):
-		url = '/competitions/1/teams.json'
-		utils.put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/competitions/1/teams.json'
-		utils.get(self, url)
+		utils.get(self, self.uri)
 
 	def testPost(self):
-		url = '/competitions/1/teams.json'
-		utils.post(self, url, exampleData.team)
+		utils.post(self, self.uri, exampleData.team)
 
 class TeamDetails(APITestCase):
 	def setUp(self):
-		utils.createCompetition(self)
-		utils.createTeam(self)
+		self.competition = utils.createCompetition(self)
+		team = utils.createTeam(self)
+		self.uri = '/competitions/%s/teams/%s.json' % (self.competition['competitionId'], team['teamId'])
 
 	def testHttp405Response(self):
-		url = '/competitions/1/teams/1.json'
-		utils.put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/competitions/1/teams/1.json'
-		utils.get(self, url)
+		utils.get(self, self.uri)
 
 	def testPatch(self):
-		url = '/competitions/1/teams/1.json'
 		data = {"name": "This is a new name"}
-		utils.patch(self, url, data)
+		utils.patch(self, self.uri, data)
 
 	def testDelete(self):
-		url = '/competitions/1/teams/1.json'
-		utils.delete(self, url)
+		utils.delete(self, self.uri)
 
 	def testInvalid(self):
-		url = '/competitions/1/teams/9000.json'
-		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)
+		uri = '/competitions/%s/teams/9000.json' % self.competition['competitionId']
+		utils.get(self, uri, status_code = status.HTTP_404_NOT_FOUND)
 
 class InjectsList(APITestCase):
 	def setUp(self):
-		utils.createCompetition(self)
+		competition = utils.createCompetition(self)
+		self.uri = '/competitions/%s/injects.json' % competition['competitionId']
 
 	def testHttp405Response(self):
-		url = '/competitions/1/injects.json'
-		utils.put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/competitions/1/injects.json'
-		utils.get(self, url)
+		utils.get(self, self.uri)
 
 	def testPost(self):
-		url = '/competitions/1/injects.json'
-		utils.post(self, url, exampleData.inject)
+		utils.post(self, self.uri, exampleData.inject)
 
 class InjectDetails(APITestCase):
 	def setUp(self):
-		utils.createCompetition(self)
-		utils.createInject(self)
+		self.competition = utils.createCompetition(self)
+		inject = utils.createInject(self)
+		self.uri = '/competitions/%s/injects/%s.json' % (self.competition['competitionId'], inject['injectId'])
 
 	def testHttp405Response(self):
-		url = '/competitions/1/injects/1.json'
-		utils.put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/competitions/1/injects/1.json'
-		utils.get(self, url)
+		utils.get(self, self.uri)
 
 	def testPatch(self):
-		url = '/competitions/1/injects/1.json'
 		data = {"name": "This is a new name"}
-		utils.patch(self, url, data)
+		utils.patch(self, self.uri, data)
 
 	def testDelete(self):
-		url = '/competitions/1/injects/1.json'
-		utils.delete(self, url)
+		utils.delete(self, self.uri)
 
 	def testInvalid(self):
-		url = '/competitions/1/injects/9000.json'
-		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)
+		uri = '/competitions/%s/injects/9000.json' % self.competition['competitionId']
+		utils.get(self, uri, status_code = status.HTTP_404_NOT_FOUND)
 
 class IncidentResponsesList(APITestCase):
 	def setUp(self):
-		utils.createCompetition(self)
+		competition = utils.createCompetition(self)
+		self.uri = '/competitions/%s/incidentresponses.json' % competition['competitionId']
 
 	def testHttp405Response(self):
-		url = '/competitions/1/incidentresponses.json'
-		utils.put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/competitions/1/incidentresponses.json'
-		utils.get(self, url)
+		utils.get(self, self.uri)
 
 	def testPost(self):
-		url = '/competitions/1/incidentresponses.json'
-		utils.post(self, url, exampleData.incidentResponse)
+		utils.post(self, self.uri, exampleData.incidentResponse)
 
 class IncidentResponseDetails(APITestCase):
 	def setUp(self):
-		utils.createCompetition(self)
-		utils.createIncidentResponse(self)
+		self.competition = utils.createCompetition(self)
+		incidentResponse = utils.createIncidentResponse(self)
+		self.uri = '/competitions/%s/incidentresponses/%s.json' % (self.competition['competitionId'], incidentResponse['incidentResponseId'])
 
 	def testHttp405Response(self):
-		url = '/competitions/1/incidentresponses/1.json'
-		utils.put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/competitions/1/incidentresponses/1.json'
-		utils.get(self, url)
+		utils.get(self, self.uri)
 
 	def testPatch(self):
-		url = '/competitions/1/incidentresponses/1.json'
 		data = {"name": "This is a new name"}
-		utils.patch(self, url, data)
+		utils.patch(self, self.uri, data)
 
 	def testDelete(self):
-		url = '/competitions/1/incidentresponses/1.json'
-		utils.delete(self, url)
+		utils.delete(self, self.uri)
 
 	def testInvalid(self):
-		url = '/competitions/1/incidentresponses/9000.json'
-		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)
+		uri = '/competitions/%s/incidentresponses/9000.json' % self.competition['competitionId']
+		utils.get(self, uri, status_code = status.HTTP_404_NOT_FOUND)
 
 class ScoresList(APITestCase):
 	def setUp(self):
-		utils.createCompetition(self)
+		competition = utils.createCompetition(self)
+		self.uri = '/competitions/%s/scores.json' % competition['competitionId']
 
 	def testHttp405Response(self):
-		url = '/competitions/1/scores.json'
-		utils.put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/competitions/1/scores.json'
-		utils.get(self, url)
+		utils.get(self, self.uri)
 
 	def testPost(self):
-		url = '/competitions/1/scores.json'
-		utils.post(self, url, exampleData.score)
+		utils.post(self, self.uri, exampleData.score)
 
 class ScoresDetails(APITestCase):
 	def setUp(self):
-		utils.createCompetition(self)
-		utils.createScore(self)
+		self.competition = utils.createCompetition(self)
+		scores = utils.createScore(self)
+		self.uri = '/competitions/%s/scores/%s.json' % (self.competition['competitionId'], scores['scoreId'])
 
 	def testHttp405Response(self):
-		url = '/competitions/1/scores/1.json'
-		utils.put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/competitions/1/scores/1.json'
-		utils.get(self, url)
+		utils.get(self, self.uri)
 
 	def testPatch(self):
-		url = '/competitions/1/scores/1.json'
 		data = {"name": "This is a new name"}
-		utils.patch(self, url, data)
+		utils.patch(self, self.uri, data)
 
 	def testDelete(self):
-		url = '/competitions/1/scores/1.json'
-		utils.delete(self, url)
+		utils.delete(self, self.uri)
 
 	def testInvalid(self):
-		url = '/competitions/1/scores/9000.json'
-		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)
+		uri = '/competitions/%s/scores/9000.json' % self.competition['competitionId']
+		utils.get(self, uri, status_code = status.HTTP_404_NOT_FOUND)
