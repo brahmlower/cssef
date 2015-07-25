@@ -1,9 +1,7 @@
-#from rest_framework.test import APIRequestFactory
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.test import TestCase
 from django.test import Client
-import json
 import exampleData
 import utils
 
@@ -57,6 +55,7 @@ class ServicesList(APITestCase):
 		utils.get(self, self.uri)
 
 	def testPost(self):
+		plugin = utils.createPlugin(self)
 		utils.post(self, self.uri, exampleData.service)
 
 class ServiceDetails(APITestCase):

@@ -7,49 +7,51 @@ import exampleData
 
 def createUser(instance):
 	url = '/users.json'
-	return submitPostData(url, exampleData.user, instance)
+	response = post(instance, url, exampleData.user)
+	return json.loads(response.content)
 
 def createOrganization(instance):
 	url = '/organizations.json'
-	return submitPostData(url, exampleData.organization, instance)
+	response = post(instance, url, exampleData.organization)
+	return json.loads(response.content)
 
 def createCompetition(instance):
 	url = '/competitions.json'
-	return submitPostData(url, exampleData.competitionMin, instance)
+	response = post(instance, url, exampleData.competitionMin)
+	return json.loads(response.content)
 
 def createInject(instance):
 	url = '/competitions/1/injects.json'
-	return submitPostData(url, exampleData.inject, instance)
+	response = post(instance, url, exampleData.inject)
+	return json.loads(response.content)
 
 def createScore(instance):
     url = '/competitions/1/scores.json'
-    return submitPostData(url, exampleData.score, instance)
+    response = post(instance, url, exampleData.score)
+    return json.loads(response.content)
 
 def createIncidentResponse(instance):
     url = '/competitions/1/incidentresponses.json'
-    return submitPostData(url, exampleData.incidentResponse, instance)
+    response = post(instance, url, exampleData.incidentResponse)
+    return json.loads(response.content)
 
 def createTeam(instance):
     url = '/competitions/1/teams.json'
-    return submitPostData(url, exampleData.team, instance)
+    response = post(instance, url, exampleData.team)
+    return json.loads(response.content)
 
 def createService(instance):
     url = '/competitions/1/services.json'
-    return submitPostData(url, exampleData.service, instance)
+    response = post(instance, url, exampleData.service)
+    return json.loads(response.content)
 
 def createPlugin(instance):
     url = '/plugins.json'
-    temporary_file = open('testfile.txt','w')
-    fileDict = {'testfile.txt': temporary_file}
-    #return submitPostData(url, exampleData.plugin, instance)
-    return post(instance, url, exampleData.plugin, files = fileDict, postFormat = 'multipart')
-
-def submitPostData(url, data, instance = None, postFormat = None):
-	client = Client()
-	response = client.post(url, data)
-	if instance:
-		instance.assertEqual(response.status_code, status.HTTP_201_CREATED)
-	return json.loads(response.content)
+    temporary_file = open('testfile.txt','rw')
+    postData = exampleData.plugin
+    postData['testfile.txt'] = temporary_file
+    response = post(instance, url, exampleData.plugin, postFormat = 'multipart/form-data')
+    return json.loads(response.content)
 
 def get(instance, url, status_code = status.HTTP_200_OK, content = None):
 	response = instance.client.get(url)
@@ -66,15 +68,12 @@ def put(instance, url, data, status_code = status.HTTP_200_OK, content = None):
 		instance.assertEqual(response.content, content)
 	return response
 
-def post(instance, url, data, status_code = status.HTTP_201_CREATED, content = None, files = None, postFormat = None):
+def post(instance, url, data, status_code = status.HTTP_201_CREATED, content = None, postFormat = None):
 	client = Client()
-	if postFormat and files:
-		response = client.post(url, data, files = files, format = postFormat)
-	elif postFormat:
+	if postFormat:
 		response = client.post(url, data, format = postFormat)
 	else:
 		response = client.post(url, data)
-		#response = instance.client.post(url, data)#, format='json')
 	instance.assertEqual(response.status_code, status_code)
 	if content:
 		instance.assertEqual(response.content, content)
@@ -91,9 +90,3 @@ def delete(instance, url, status_code = status.HTTP_204_NO_CONTENT):
 	response = instance.client.delete(url)
 	instance.assertEqual(response.status_code, status_code)
 	return response
-
-# def getInvalid(instance, url, status_code = status.HTTP_404_NOT_FOUND):
-# 	response = instance.client.get(url)
-# 	instance.assertEqual(response.content, '')
-# 	instance.assertEqual(response.status_code, status_code)
-# 	return response
