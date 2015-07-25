@@ -5,6 +5,10 @@ from django.test import Client
 import json
 import exampleData
 
+def createOrganization(instance):
+	url = '/organizations.json'
+	return submitPostData(url, exampleData.organization, instance)
+
 def createCompetition(instance):
 	url = '/competitions.json'
 	return submitPostData(url, exampleData.competitionMin, instance)
@@ -84,8 +88,8 @@ def delete(instance, url, status_code = status.HTTP_204_NO_CONTENT):
 	instance.assertEqual(response.status_code, status_code)
 	return response
 
-def getInvalid(instance, url, status_code = status.HTTP_404_NOT_FOUND):
-	response = instance.client.get(url)
-	instance.assertEqual(response.content, '')
-	instance.assertEqual(response.status_code, status_code)
-	return response
+# def getInvalid(instance, url, status_code = status.HTTP_404_NOT_FOUND):
+# 	response = instance.client.get(url)
+# 	instance.assertEqual(response.content, '')
+# 	instance.assertEqual(response.status_code, status_code)
+# 	return response

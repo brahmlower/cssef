@@ -79,6 +79,15 @@ incidentResponse = {
 	'content': "test content"
 }
 
+organization = {
+	'name': "New Organization",
+	'deleteable': False,
+	'url': "new_organization",
+	'description': "This is a short description!",
+	'maxMembers': 5,
+	'maxCompetitions': 10,
+}
+
 plugin = {
 	'name': "Test Plugin",
 	'description': "Test plugin description."
