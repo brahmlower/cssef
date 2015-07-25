@@ -5,6 +5,10 @@ from django.test import Client
 import json
 import exampleData
 
+def createUser(instance):
+	url = '/users.json'
+	return submitPostData(url, exampleData.user, instance)
+
 def createOrganization(instance):
 	url = '/organizations.json'
 	return submitPostData(url, exampleData.organization, instance)

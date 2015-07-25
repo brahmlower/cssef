@@ -32,7 +32,7 @@ def organization(request, organizationId):
 		return deleteObject(Organization, organizationId = organizationId)
 
 @api_view(['GET', 'POST'])
-def members(request):
+def members(request, organizationId):
 	if request.method == 'GET':
 		return listObjects(User, UserSerializer)
 	elif request.method == 'POST':
@@ -40,17 +40,17 @@ def members(request):
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def member(request, organizationId, memberId):
-	if not objectExists(User, organizationId = organizationId, memberId=memberId):
+	if not objectExists(User, organizationId = organizationId, userId=memberId):
 		return Response(status = status.HTTP_404_NOT_FOUND)
 	if request.method == 'GET':
-		return listObject(User, UserSerializer, organizationId = organizationId, memberId=memberId)
+		return listObject(User, UserSerializer, organizationId = organizationId, userId=memberId)
 	elif request.method == 'PATCH':
-		return patchObject(request, User, UserSerializer, organizationId = organizationId, memberId=memberId)
+		return patchObject(request, User, UserSerializer, organizationId = organizationId, userId=memberId)
 	elif request.method == 'DELETE':
-		return deleteObject(User, organizationId = organizationId, memberId=memberId)
+		return deleteObject(User, organizationId = organizationId, userId=memberId)
 
 @api_view(['GET', 'POST'])
-def competitions(request):
+def competitions(request, organizationId):
 	if request.method == 'GET':
 		return listObjects(Competition, CompetitionSerializer)
 	elif request.method == 'POST':

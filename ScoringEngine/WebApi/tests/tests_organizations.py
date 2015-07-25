@@ -9,40 +9,73 @@ import utils
 class OrganizationsList(APITestCase):
 	def setUp(self):
 		utils.createOrganization(self)
+		self.url = '/organizations.json'
 
 	def testHttp405Response(self):
-		url = '/organizations.json'
-		utils.put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/organizations.json'
-		utils.get(self, url)
+		utils.get(self, self.url)
 
 	def testPost(self):
-		url = '/organizations.json'
-		utils.post(self, url, exampleData.team)
+		utils.post(self, self.url, exampleData.organization)
 
 class OrganizationDetails(APITestCase):
 	def setUp(self):
-		utils.createOrganization(self)
+		organization = utils.createOrganization(self)
+		self.url = '/organizations/%s.json' % organization['organizationId']
 
 	def testHttp405Response(self):
-		url = '/organizations/1.json'
-		utils.put(self, url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
-		url = '/organizations/1.json'
-		utils.get(self, url)
+		utils.get(self, self.url)
 
 	def testPatch(self):
-		url = '/organizations/1.json'
 		data = {"name": "This is a new name"}
-		utils.patch(self, url, data)
+		utils.patch(self, self.url, data)
 
 	def testDelete(self):
-		url = '/organizations/1.json'
-		utils.delete(self, url)
+		utils.delete(self, self.url)
 
 	def testInvalid(self):
 		url = '/organizations/9000.json'
+		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)
+
+class MembersList(APITestCase):
+	def setUp(self):
+		organization = utils.createOrganization(self)
+		utils.createUser(self)
+		self.url = '/organizations/%s/members.json' % organization['organizationId']
+
+	def testHttp405Response(self):
+		utils.put(self, self.url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		utils.get(self, self.url)
+
+	def testPost(self):
+		utils.post(self, self.url, exampleData.user)
+
+class MemberDetails(APITestCase):
+	def setUp(self):
+		self.organization = utils.createOrganization(self)
+		self.user = utils.createUser(self)
+		self.url = '/organizations/%s/members/%s.json' % (self.organization['organizationId'], self.user['userId'])
+
+	def testHttp405Response(self):
+		utils.put(self, self.url, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		utils.get(self, self.url)
+
+	def testPatch(self):
+		data = {"name": "This is a new name"}
+		utils.patch(self, self.url, data)
+
+	def testDelete(self):
+		utils.delete(self, self.url)
+
+	def testInvalid(self):
+		url = '/organizations/%s/members/9000.json' % self.organization['organizationId']
 		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)

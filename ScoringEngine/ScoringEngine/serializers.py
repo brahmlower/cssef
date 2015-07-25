@@ -110,7 +110,6 @@ class InjectSerializer(serializers.ModelSerializer):
 			'title',
 			'body')
 
-
 class UserSerializer(serializers.ModelSerializer):
 	organization = serializers.SerializerMethodField()
 	class Meta:
@@ -185,6 +184,7 @@ class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
 		fields = (
+			'userId',
 			'name',
 			'password',
 			'organizationId')
