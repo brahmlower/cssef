@@ -1,5 +1,5 @@
-# Disclaimer #
-This branch is for refactoring the project. Refactoring should hopefully make continued and future development easier.
+# Development Disclaimer #
+The project is being refactored in the branch. The state of this project may change at any time - please do not assume anything here is stable.
 
 # Description #
 The Cyber Security Scoring Engine Framework (CSSEF) is meant to provide an easy to use framework with which to score cyber security competitions. Cyber security competitions are increasing in popularity, however preparation for such competitions can be difficult. The UAF CSC decided to make practice competitions to give members a feeling of what regional or national CCDC competitions would feel like. We were missing a feedback mechanism though, which is where the CSSEF comes in.
@@ -15,12 +15,17 @@ The CSSEF is meant to provide an easy to use interface for the competition manag
 
 Future goals include the addition of interfaces for Red and Orange teams.
 
+# Aditional Documentation
+Web API documentation is located in the  [README.md](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md) file within the Web API folder.<br>
+Project Planning is located in the [TODO.MD](https://github.com/bplower/cssef/blob/refactor/TODO.md) file.<br>
+Older documentation can be found on the projects github [wiki](https://github.com/bplower/cssef/wiki). This documentation is older and may contain outdated and incomplete information.
+
 # Dependancies #
 ### WebInterface ###
 * Python 2.7.5
 * Django 1.7.2
 
-### ScoringEngine ###
+### ScoringEngine/WebAPI ###
 * Python 2.7.5
 * Django 1.7.2
 * celery 3.1.17
@@ -46,29 +51,3 @@ cd ~/cssef/WebInterface/
 python manage.py syncdb
 python manage.py runserver 0.0.0.0:8080
 ```
-
-# Additional Documentation #
-Further project documentation, including development documentation can be found on the projects wiki: https://github.com/bplower/cssef/wiki
-
-# TODO #
-#####Long Term#####
-* Add Orange Team support
-* Add Red Team support
-
-#####Medium Term#####
-* Seperate White Team and Site Admin pages and accounts
-* View and score inject responses as white team
-* Implement better error notification when user attempt to access blocked pages
-* Test scoring a service from a White Team interface
-* Add celery support
-* Refactor to be a proper django site (too much stuff in the django root directory)
-
-#####Short Term#####
-* Add interface to modify general site information/content
-* Add content to Service Statistics view for Blue Team
- * General statistics
-* Finish content for Summary pages (Blue and White Teams)
-* Finish content for Details pages (Blue and White Teams)
-* Change networkaddr field in Team model (and surrounding code) to be CIDR or domain name
-* Add unit tests
-* Add integration tests
