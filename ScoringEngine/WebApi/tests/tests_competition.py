@@ -62,7 +62,7 @@ class ServiceDetails(APITestCase):
 	def setUp(self):
 		self.competition = utils.createCompetition(self)
 		plugin = utils.createPlugin(self)
-		service = utils.createService(self)
+		service = utils.createService(self, competitionId = self.competition['competitionId'])
 		self.uri = '/competitions/%s/services/%s.json' % (self.competition['competitionId'], service['serviceId'])
 
 	def testHttp405Response(self):
@@ -99,7 +99,7 @@ class TeamsList(APITestCase):
 class TeamDetails(APITestCase):
 	def setUp(self):
 		self.competition = utils.createCompetition(self)
-		team = utils.createTeam(self)
+		team = utils.createTeam(self, competitionId = self.competition['competitionId'])
 		self.uri = '/competitions/%s/teams/%s.json' % (self.competition['competitionId'], team['teamId'])
 
 	def testHttp405Response(self):
@@ -136,7 +136,7 @@ class InjectsList(APITestCase):
 class InjectDetails(APITestCase):
 	def setUp(self):
 		self.competition = utils.createCompetition(self)
-		inject = utils.createInject(self)
+		inject = utils.createInject(self, competitionId = self.competition['competitionId'])
 		self.uri = '/competitions/%s/injects/%s.json' % (self.competition['competitionId'], inject['injectId'])
 
 	def testHttp405Response(self):
@@ -173,7 +173,7 @@ class IncidentResponsesList(APITestCase):
 class IncidentResponseDetails(APITestCase):
 	def setUp(self):
 		self.competition = utils.createCompetition(self)
-		incidentResponse = utils.createIncidentResponse(self)
+		incidentResponse = utils.createIncidentResponse(self, competitionId = self.competition['competitionId'])
 		self.uri = '/competitions/%s/incidentresponses/%s.json' % (self.competition['competitionId'], incidentResponse['incidentResponseId'])
 
 	def testHttp405Response(self):
@@ -210,7 +210,7 @@ class ScoresList(APITestCase):
 class ScoresDetails(APITestCase):
 	def setUp(self):
 		self.competition = utils.createCompetition(self)
-		scores = utils.createScore(self)
+		scores = utils.createScore(self, competitionId = self.competition['competitionId'])
 		self.uri = '/competitions/%s/scores/%s.json' % (self.competition['competitionId'], scores['scoreId'])
 
 	def testHttp405Response(self):

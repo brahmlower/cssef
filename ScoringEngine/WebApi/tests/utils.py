@@ -6,87 +6,87 @@ import json
 import exampleData
 
 def createUser(instance):
-	url = '/users.json'
-	response = post(instance, url, exampleData.user)
+	uri = '/users.json'
+	response = post(instance, uri, exampleData.user)
 	return json.loads(response.content)
 
 def createOrganization(instance):
-	url = '/organizations.json'
-	response = post(instance, url, exampleData.organization)
+	uri = '/organizations.json'
+	response = post(instance, uri, exampleData.organization)
 	return json.loads(response.content)
 
 def createCompetition(instance):
-	url = '/competitions.json'
-	response = post(instance, url, exampleData.competitionMin)
+	uri = '/competitions.json'
+	response = post(instance, uri, exampleData.competitionMin)
 	return json.loads(response.content)
 
-def createInject(instance):
-	url = '/competitions/1/injects.json'
-	response = post(instance, url, exampleData.inject)
+def createInject(instance, competitionId = 1):
+	uri = '/competitions/%s/injects.json' % str(competitionId)
+	response = post(instance, uri, exampleData.inject)
 	return json.loads(response.content)
 
-def createScore(instance):
-	url = '/competitions/1/scores.json'
-	response = post(instance, url, exampleData.score)
+def createScore(instance, competitionId = 1):
+	uri = '/competitions/%s/scores.json' % str(competitionId)
+	response = post(instance, uri, exampleData.score)
 	return json.loads(response.content)
 
-def createIncidentResponse(instance):
-	url = '/competitions/1/incidentresponses.json'
-	response = post(instance, url, exampleData.incidentResponse)
+def createIncidentResponse(instance, competitionId = 1):
+	uri = '/competitions/%s/incidentresponses.json' % str(competitionId)
+	response = post(instance, uri, exampleData.incidentResponse)
 	return json.loads(response.content)
 
-def createTeam(instance):
-	url = '/competitions/1/teams.json'
-	response = post(instance, url, exampleData.team)
+def createTeam(instance, competitionId = 1):
+	uri = '/competitions/%s/teams.json' % str(competitionId)
+	response = post(instance, uri, exampleData.team)
 	return json.loads(response.content)
 
-def createService(instance):
-	url = '/competitions/1/services.json'
-	response = post(instance, url, exampleData.service)
+def createService(instance, competitionId = 1):
+	uri = '/competitions/%s/services.json' % str(competitionId)
+	response = post(instance, uri, exampleData.service)
 	return json.loads(response.content)
 
 def createPlugin(instance):
-	url = '/plugins.json'
-	temporary_file = open('testfile.txt','rw')
+	uri = '/plugins.json'
+	temporary_file = open('testfile.txt', 'w+')
 	postData = exampleData.plugin
 	postData['testfile.txt'] = temporary_file
-	response = post(instance, url, exampleData.plugin, postFormat = 'multipart/form-data')
+	response = post(instance, uri, exampleData.plugin, postFormat = 'multipart/form-data')
 	return json.loads(response.content)
 
-def get(instance, url, status_code = status.HTTP_200_OK, content = None):
-	response = instance.client.get(url)
+def get(instance, uri, status_code = status.HTTP_200_OK, content = None):
+	response = instance.client.get(uri)
 	instance.assertEqual(response.status_code, status_code)
 	if content:
 		instance.assertEqual(response.content, content)
 	return response
 
-def put(instance, url, data, status_code = status.HTTP_200_OK, content = None):
-	response = instance.client.put(url, data)
+def put(instance, uri, data, status_code = status.HTTP_200_OK, content = None):
+	response = instance.client.put(uri, data)
 	instance.assertEqual(response.status_code, status_code)
 	if content:
 		print content
 		instance.assertEqual(response.content, content)
 	return response
 
-def post(instance, url, data, status_code = status.HTTP_201_CREATED, content = None, postFormat = None):
+def post(instance, uri, data, status_code = status.HTTP_201_CREATED, content = None, postFormat = None):
 	client = Client()
 	if postFormat:
-		response = client.post(url, data, format = postFormat)
+		response = client.post(uri, data, format = postFormat)
 	else:
-		response = client.post(url, data)
+		response = client.post(uri, data)
 	instance.assertEqual(response.status_code, status_code)
 	if content:
 		instance.assertEqual(response.content, content)
 	return response
 
-def patch(instance, url, data, status_code = status.HTTP_202_ACCEPTED, content = None):
-	response = instance.client.patch(url, data, format='json')
+def patch(instance, uri, data, status_code = status.HTTP_202_ACCEPTED, content = None):
+	response = instance.client.patch(uri, data, format='json')
 	instance.assertEqual(response.status_code, status_code)
 	if content:
 		instance.assertEqual(responses.content, content)
 	return response
 
-def delete(instance, url, status_code = status.HTTP_204_NO_CONTENT):
-	response = instance.client.delete(url)
+def delete(instance, uri, status_code = status.HTTP_204_NO_CONTENT):
+	response = instance.client.delete(uri)
 	instance.assertEqual(response.status_code, status_code)
 	return response
