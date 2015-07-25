@@ -173,7 +173,18 @@ class OrganizationSerializer(serializers.ModelSerializer):
 		fields = (
 			'organizationId',
 			'name',
-			'url')
+			'url',
+			'description',
+			'maxMembers',
+			'maxCompetitions')
 
-	def create(self, validatedData):
-		return Organization.objects.create(**validatedData)
+	# def create(self, validatedData):
+	# 	return Organization.objects.create(**validatedData)
+
+class UserSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = User
+		fields = (
+			'name',
+			'password',
+			'organizationId')

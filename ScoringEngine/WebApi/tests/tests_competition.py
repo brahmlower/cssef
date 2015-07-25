@@ -47,7 +47,7 @@ class CompetitionDetails(APITestCase):
 
 	def testInvalid(self):
 		url = '/competitions/9000.json'
-		utils.getInvalid(self, url)
+		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)
 
 class ServicesList(APITestCase):
 	def setUp(self):
@@ -90,7 +90,7 @@ class ServiceDetails(APITestCase):
 
 	def testInvalid(self):
 		url = '/competitions/1/services/9000.json'
-		utils.getInvalid(self, url)
+		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)
 
 class TeamsList(APITestCase):
 	def setUp(self):
@@ -132,7 +132,7 @@ class TeamDetails(APITestCase):
 
 	def testInvalid(self):
 		url = '/competitions/1/teams/9000.json'
-		utils.getInvalid(self, url)
+		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)
 
 class InjectsList(APITestCase):
 	def setUp(self):
@@ -174,7 +174,7 @@ class InjectDetails(APITestCase):
 
 	def testInvalid(self):
 		url = '/competitions/1/injects/9000.json'
-		utils.getInvalid(self, url)
+		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)
 
 class IncidentResponsesList(APITestCase):
 	def setUp(self):
@@ -216,7 +216,7 @@ class IncidentResponseDetails(APITestCase):
 
 	def testInvalid(self):
 		url = '/competitions/1/incidentresponses/9000.json'
-		utils.getInvalid(self, url)
+		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)
 
 class ScoresList(APITestCase):
 	def setUp(self):
@@ -258,4 +258,4 @@ class ScoresDetails(APITestCase):
 
 	def testInvalid(self):
 		url = '/competitions/1/scores/9000.json'
-		utils.getInvalid(self, url)
+		utils.get(self, url, status_code = status.HTTP_404_NOT_FOUND)
