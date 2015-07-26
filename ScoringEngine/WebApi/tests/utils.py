@@ -15,9 +15,9 @@ def createOrganization(instance):
 	response = post(instance, uri, exampleData.organization)
 	return json.loads(response.content)
 
-def createCompetition(instance):
+def createCompetition(instance, **kwargs):
 	uri = '/competitions.json'
-	response = post(instance, uri, exampleData.competitionMin)
+	response = post(instance, uri, exampleData.competitionMin, **kwargs)
 	return json.loads(response.content)
 
 def createInject(instance, competitionId = 1):

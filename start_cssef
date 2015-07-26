@@ -1,6 +1,7 @@
 #/usr/local/bin/bash
 
 startDjango() {
+	echo "no" | /usr/local/bin/python $1/manage.py syncdb
 	/usr/local/bin/python $1/manage.py runserver $2
 }
 

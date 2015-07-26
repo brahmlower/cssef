@@ -111,7 +111,7 @@ class InjectSerializer(serializers.ModelSerializer):
 			'body')
 
 class UserSerializer(serializers.ModelSerializer):
-	organization = serializers.SerializerMethodField()
+	#organization = serializers.SerializerMethodField()
 	class Meta:
 		model = User
 		fields = (
@@ -120,8 +120,7 @@ class UserSerializer(serializers.ModelSerializer):
 			'name',
 			'username',
 			'password',
-			'organizationId',
-			'organization')
+			'organizationId')
 
 	def get_organization(self, obj):
 		organization = Organization.objects.get(organizationId = obj.organizationId)
@@ -167,6 +166,8 @@ class DocumentSerializer(serializers.ModelSerializer):
 			'urlEncodedFilename')
 
 class OrganizationSerializer(serializers.ModelSerializer):
+	members = serializers.SerializerMethodField()
+	competitions = serializers.SerializerMethodField()
 	class Meta:
 		model = Organization
 		fields = (
@@ -175,7 +176,23 @@ class OrganizationSerializer(serializers.ModelSerializer):
 			'url',
 			'description',
 			'maxMembers',
-			'maxCompetitions')
+			'maxCompetitions',
+			'members',
+			'competitions')
+
+	def get_members(self, obj):
+		users = User.objects.filter(organizationId = obj.organizationId)
+		usersList = []
+		for i in users:
+			usersList.append(UserSerializer(i).data)
+		return usersList
+
+	def get_competitions(self, obj):
+		competitions = Competition.objects.filter(organization = obj.organizationId)
+		competitionsList = []
+		for i in competitions:
+			competitionsList.append(CompetitionSerializer(i).data)
+		return competitionsList
 
 	# def create(self, validatedData):
 	# 	return Organization.objects.create(**validatedData)
