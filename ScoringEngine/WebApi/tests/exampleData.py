@@ -85,7 +85,7 @@ organization = {
 	'url': "new_organization",
 	'description': "This is a short description!",
 	'maxMembers': 5,
-	'maxCompetitions': 10,
+	'maxCompetitions': 5,
 }
 
 user = {

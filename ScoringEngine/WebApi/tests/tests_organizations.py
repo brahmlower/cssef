@@ -118,3 +118,23 @@ class CompetitionsDetails(APITestCase):
 	def testInvalid(self):
 		uri = '/organizations/%s/competitions/9000.json' % self.organization['organizationId']
 		utils.get(self, uri, status_code = status.HTTP_404_NOT_FOUND)
+
+class CompetitionLimits(APITestCase):
+	def setUp(self):
+		self.organization = utils.createOrganization(self)
+
+	def testLessMax(self):
+		testLimit = exampleData.organization['maxCompetitions'] - 1
+		for i in range(testLimit):
+			utils.createCompetition(self)
+
+	def testEqualsMax(self):
+		testLimit = exampleData.organization['maxCompetitions'] - 1
+		for i in range(testLimit):
+			utils.createCompetition(self)
+
+	def testMoreMax(self):
+		testLimit = exampleData.organization['maxCompetitions']
+		for i in range(testLimit):
+			utils.createCompetition(self)
+		utils.createCompetition(self, status_code = status.HTTP_403_FORBIDDEN)
