@@ -14,6 +14,7 @@ from django.forms.widgets import PasswordInput
 from django.contrib.auth.models import User
 from django.utils import timezone
 import settings
+from ScoringEngine.models import *
 
 class Competition(Model):
 	competitionId = AutoField(primary_key = True)
@@ -55,48 +56,19 @@ class Team(Model):
 	teamId = AutoField(primary_key = True)
 	competitionId = PositiveIntegerField()
 	last_login = DateTimeField(default = timezone.now())
-	teamname = CharField(max_length = 30)
-	loginname = CharField(max_length = 30)
+	teamname = CharField(max_length = 30)    #name
+	loginname = CharField(max_length = 30)	#username
 	password = CharField(max_length = 64)
 	networkCidr = CharField(max_length = 30)
 	scoreConfigurations = TextField(max_length = 500, default = "{}")
+	# ^ With regard to score configuration
+	# holy shitballs! Use a serialziser for this!
+	# teh scoring engine will have an object to interpret this, and then when it needs to save the object
+	# or load it, it will be serialized and then saved to the database. Wehnt htis is read from the database,
+	# it is de-serialized!
 
 	def is_authenticated(self):
 		return True
-
-class Plugin(Model):
-	pluginId = AutoField(primary_key = True)
-	name = CharField(max_length = 20)
-	description = TextField(max_length = 500)
-
-class Service(Model):
-	serviceId = AutoField(primary_key = True)
-	competitionId = PositiveIntegerField()
-	plugin = ForeignKey(Plugin, unique = False)
-	name = CharField(max_length = 30)
-	description = CharField(max_length = 200)
-	manualStart = BooleanField(default = True)
-	datetimeStart = DateTimeField(null = True)
-	datetimeFinish = DateTimeField(null = True)
-	points = PositiveIntegerField()
-	machineIp = CharField(max_length = 15)
-	machineFqdn = CharField(max_length = 15)
-	defaultPort = PositiveIntegerField()
-
-	# Service object now has the ability to score itself
-	def score(self, team):
-		instance = self.loadPlugin()
-		scoreInstance = instance.score(team)
-		scoreInstance.datetime = timezone.now()
-		scoreInstance.teamId = team.teamId
-		scoreInstance.serviceId = self.serviceId
-		scoreInstance.competitionId = self.competitionId
-		return score_obj
-
-	def loadPlugin(self):
-		moduleName = Document.objects.get(servicemodule = self.servicemodule).filename.split(".")[0]
-		module = __import__(settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + moduleName, fromlist=[moduleName])
-		return getattr(module, moduleName)(self)
 
 class Score(Model):
 	scoreId = AutoField(primary_key = True)
@@ -106,17 +78,6 @@ class Score(Model):
 	datetime = DateTimeField(default = timezone.now())
 	value = PositiveIntegerField()
 	message = CharField(max_length = 100)
-
-class Inject(Model):
-	injectId = AutoField(primary_key = True)
-	competitionId = PositiveIntegerField()
-	requireResponse = BooleanField(default=False)
-	manualDelivery = BooleanField(default = False)
-	datetimeDelivery = DateTimeField(null = True, blank = True)
-	datetimeResponseDue = DateTimeField(null = True, blank = True)
-	datetimeResponseClose = DateTimeField(null = True, blank = True)
-	title = CharField(max_length = 50)
-	body = CharField(max_length = 1000)
 
 class User(Model):
 	last_login = DateTimeField(default = timezone.now())
@@ -129,12 +90,31 @@ class User(Model):
 	def is_authenticated(self):
 		return True
 
+class Inject(Model):
+	injectId = AutoField(primary_key = True)
+	competitionId = PositiveIntegerField()
+	requireResponse = BooleanField(default = True)
+	manualDelivery = BooleanField(default = False)
+	datetimeDelivery = DateTimeField(null = True, blank = True)
+	datetimeResponseDue = DateTimeField(null = True, blank = True)
+	datetimeResponseClose = DateTimeField(null = True, blank = True)
+	title = CharField(max_length = 50)
+	body = CharField(max_length = 1000)
+
 class InjectResponse(Model):
 	injectResponseId = AutoField(primary_key = True)
 	competitionId = PositiveIntegerField()
 	teamId = PositiveIntegerField()
 	injectId = PositiveIntegerField()
 	datetime = DateTimeField(default = timezone.now())
+	content = TextField(max_length = 1000)
+
+class Incident(Model):
+	incidentId = AutoField(primary_key = True)
+	competitionId = PositiveIntegerField()
+	teamId = PositiveIntegerField()
+	datetime = DateTimeField(default = timezone.now())
+	subject = CharField(max_length = 100, default = "")
 	content = TextField(max_length = 1000)
 
 class IncidentResponse(Model):

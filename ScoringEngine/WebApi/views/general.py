@@ -49,4 +49,3 @@ def user(request, userId):
 		return patchObject(request, User, UserSerializer, userId = userId)
 	elif request.method == 'DELETE':
 		return deleteObject(User, userId = userId)
-
