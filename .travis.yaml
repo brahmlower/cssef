@@ -1,0 +1,10 @@
+language: python
+python:
+  -  "2.7"
+env:
+  - DJANGO_VERSION=1.8.0
+# command to install dependencies
+install:
+  - pip install -q Django=$DJANGO_VERSION
+script:
+  - cd ScoringEngine; python manage.py test
