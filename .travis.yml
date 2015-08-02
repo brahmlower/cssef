@@ -5,6 +5,6 @@ env:
   - DJANGO_VERSION=1.8.0
 # command to install dependencies
 install:
-  - pip install -q Django=$DJANGO_VERSION
+  - pip install -q Django==$DJANGO_VERSION
 script:
   - cd ScoringEngine; python manage.py test
