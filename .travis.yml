@@ -3,8 +3,12 @@ python:
   -  "2.7"
 env:
   - DJANGO_VERSION=1.8.0
+  - DJANGO_REST_VERSION=3.1.1
+  - DJANGO_CELERY_VERSION=3.1.16
 # command to install dependencies
 install:
   - pip install -q Django==$DJANGO_VERSION
+  - pip install -q djangorestframework==$DJANGO_REST_VERSION
+  - pip install -q django-celery==$DJANGO_CELERY_VERSION
 script:
   - cd ScoringEngine; python manage.py test
