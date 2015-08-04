@@ -22,42 +22,68 @@ def objectExists(objectType, **kwargs):
 	except objectType.DoesNotExist:
 		return False
 
-def listObject(objectType, objectTypeSerializer, **kwargs):
-	objectInstance = objectType.objects.get(**kwargs)
-	serializer = objectTypeSerializer(objectInstance)
-	return JSONResponse(serializer.data)
+def listObject(competition, subclass, **kwargs):
+	serializedData = competition.subclass(serialized = True, **kwargs)
+	return JSONResponse(serializedData)
+# def listObject(objectType, objectTypeSerializer, **kwargs):
+# 	objectInstance = objectType.objects.get(**kwargs)
+# 	serializer = objectTypeSerializer(objectInstance)
+# 	return JSONResponse(serializer.data)
 
-def listObjects(objectType, objectTypeSerializer):
-	objects = objectType.objects.all()
-	serializer = objectTypeSerializer(objects, many = True)
-	return JSONResponse(serializer.data)
+def listObjects(competition, subclass):
+	serializedData = competition.subclass(serialized = True)
+	return JSONResponse(serializedData)
 
-def postObject(request, objectTypeSerializer):
-	serializer = objectTypeSerializer(data = request.POST)
-	if serializer.is_valid():
-		serializerResult = serializer.save()
+#def listObjects(objectType, objectTypeSerializer):
+	# objects = objectType.objects.all()
+	# serializer = objectTypeSerializer(objects, many = True)
+	# return JSONResponse(serializer.data)
+
+def postObject(competition, subclass, request):
+	data = request.POST
+	returnObject = competition.subclass(request.POST)
+	if returnObject:
 		if request.FILES:
 			for i in request.FILES:
-				saveDocument(request.FILES[i], serializerResult)
-		return JSONResponse(serializer.data, status = status.HTTP_201_CREATED)
-	print "Serializer object is not valid:"
-	print serializer.errors
-	return JSONResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+				# create/save the file here
+				pass
+		return JSONResponse(returnObject, status = status.HTTP_201_CREATED)
+	print "Failed to create object..."
+	return JSONResponse(returnObject, status = status.HTTP_400_BAD_REQUEST)
 
-def patchObject(request, objectType, objectTypeSerializer, **kwargs):
-	objectInstance = objectType.objects.get(**kwargs)
-	serializer = objectTypeSerializer(objectInstance)
-	data = serializer.data
-	data.update(json.loads(request.body))
-	serializer = objectTypeSerializer(objectInstance, data = data)
-	if serializer.is_valid():
-		serializer.save()
-		return JSONResponse(serializer.data, status = status.HTTP_202_ACCEPTED)
-	return JSONResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+# def postObject(request, objectTypeSerializer):
+# 	serializer = objectTypeSerializer(data = request.POST)
+# 	if serializer.is_valid():
+# 		serializerResult = serializer.save()
+# 		if request.FILES:
+# 			for i in request.FILES:
+# 				saveDocument(request.FILES[i], serializerResult)
+# 		return JSONResponse(serializer.data, status = status.HTTP_201_CREATED)
+# 	print "Serializer object is not valid:"
+# 	print serializer.errors
+# 	return JSONResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
-def deleteObject(objectType, **kwargs):
-	objectType.objects.get(**kwargs).delete()
+def patchObject(competition, subclass, request, **kwargs):
+	pass
+
+# def patchObject(request, objectType, objectTypeSerializer, **kwargs):
+# 	objectInstance = objectType.objects.get(**kwargs)
+# 	serializer = objectTypeSerializer(objectInstance)
+# 	data = serializer.data
+# 	data.update(json.loads(request.body))
+# 	serializer = objectTypeSerializer(objectInstance, data = data)
+# 	if serializer.is_valid():
+# 		serializer.save()
+# 		return JSONResponse(serializer.data, status = status.HTTP_202_ACCEPTED)
+# 	return JSONResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+
+def deleteObject(competition, subclass, obj):
+	competition.subclass(obj)
 	return Response(status = status.HTTP_204_NO_CONTENT)
+
+# def deleteObject(objectType, **kwargs):
+# 	objectType.objects.get(**kwargs).delete()
+# 	return Response(status = status.HTTP_204_NO_CONTENT)
 
 def saveDocument(postedFile, relatedObject):
 	uploadedFile = UploadedFile(postedFile)

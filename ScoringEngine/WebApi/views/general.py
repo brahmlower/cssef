@@ -2,10 +2,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from ScoringEngine.serializers import PluginSerializer
-from ScoringEngine.serializers import UserSerializer
-from ScoringEngine.models import User
-from ScoringEngine.models import Plugin
+# from ScoringEngine.serializers import PluginSerializer
+# from ScoringEngine.serializers import UserSerializer
+# from ScoringEngine.models import User
+# from ScoringEngine.models import Plugin
 
 from WebApi.views.utils import objectExists
 from WebApi.views.utils import listObjects
@@ -13,6 +13,8 @@ from WebApi.views.utils import listObject
 from WebApi.views.utils import postObject
 from WebApi.views.utils import patchObject
 from WebApi.views.utils import deleteObject
+
+from ScoringEngine import Competition
 
 @api_view(['GET', 'POST'])
 def plugins(request):
