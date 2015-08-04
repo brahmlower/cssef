@@ -63,10 +63,10 @@ class Team:
 	# Score methods
 	def addScore(self, value, message, **kwargs):
 		newScore = Score(
+			kwargs,
 			team = self.model,
 			value = value,
-			message = message,
-			kwargs)
+			message = message)
 
 	def getScores(self, **kwargs):
 		return Scores.search(team = self.model, **kwargs)
@@ -81,10 +81,10 @@ class Team:
 	# Incident Response modules
 	def addIncidentResponse(self, subject, content, **kwargs):
 		newIncidentResponse = IncidentResponse(
+			kwargs,
 			team = self.model,
 			subject = subject,
-			content = content,
-			kwargs)
+			content = content)
 
 	def getIncidentResponses(self):
 		return IncidentResponse.search(self.model, **kwargs)
@@ -92,10 +92,10 @@ class Team:
 	# Inject Response modules
 	def addInjectResponse(self, inject, content, **kwargs):
 		newInjectResponse = InjectResponse(
+			kwargs,
 			team = self.model,
 			inject = inject,
-			content = content,
-			kwargs)
+			content = content)
 
 	def getInjectResponses(self):
 		return InjectResponse.search(self.model, **kwargs)
@@ -174,11 +174,11 @@ class Inject:
 	def addDocument(self, fileObj, contentType, filePath, filename, **kwargs):
 		# What do I do with the file object....?
 		Document(
-			inject = self.model
+			kwargs,
+			inject = self.model,
 			contentType = contentType,
 			filePath = filePath,
-			filename = filename,
-			kwargs)
+			filename = filename)
 
 	def getDocuments(self):
 		return Document.search(inject = self.model)
@@ -191,7 +191,7 @@ class Inject:
 	def getResponses(self):
 		return InjectResponse.search(inject = self.model)
 
-class InjectResponse(self):
+class InjectResponse:
 	def __init__(self, injectResponseModelObj = None, **kwargs):
 		self.model = injectResponseModelObj
 		if not self.model:
@@ -326,17 +326,17 @@ class Score:
 # Teams modules
 def newTeam(self, name, username, password, networkCidr, **kwargs):
 	Team(
+		kwargs,
 		name = name,
 		username = username,
 		password = password,
-		networkCidr = networkCidr,
-		kwargs)
+		networkCidr = networkCidr)
 
-def getTeam(self):
-	pass
+def getTeam(self, serialized = False, **kwargs):
+	return self.searchOne(Team, serialized, **kwargs)
 
-def getTeams(self):
-	return Team.search(competition = self.model)
+def getTeams(self, serialized = False):
+	return self.searchMany(Team, serialized)
 
 def delTeam(self, teamObj):
 	# This was the cleanest I could get this. Not sure if it really works...
@@ -346,15 +346,15 @@ def delTeam(self, teamObj):
 # Inject modules
 def newInject(self, title, body, **kwargs):
 	Inject(
+		kwargs,
 		title = title,
-		body = body,
-		kwargs)
+		body = body)
 
-def getInject(self):
-	pass
+def getInject(self, serialized = False, **kwargs):
+	return self.searchOne(Inject, serialized, **kwargs)
 
-def getInjects(self):
-	return Inject.search(competition = self.model)
+def getInjects(self, serialized = False):
+	return self.searchMany(Inject, serialized)
 
 def delInject(self, injectObj):
 	injectObj.delete()
@@ -370,4 +370,20 @@ def wrappedSearch(objType, objModelType, queryDict, **kwargs):
 	for i in modelResults:
 		results.append(objType(i))
 	return results
+
+
+
+def searchOne(self, objType, serialized = False, **kwargs):
+	obj = objType.search(kwargs, competition = self.model)
+	if serialized:
+		return serializedModel(obj)
+	else:
+		return obj
+
+def searchMany(self, objType, serialized = False):
+	obj = objType.search(competition = self.model)
+	if serialized:
+		return serializedModel(obj)
+	else:
+		return obj
 
