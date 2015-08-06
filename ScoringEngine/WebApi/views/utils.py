@@ -22,8 +22,9 @@ def objectExists(objectType, **kwargs):
 	except objectType.DoesNotExist:
 		return False
 
-def listObject(competition, subclass, **kwargs):
-	serializedData = competition.subclass(serialized = True, **kwargs)
+def listObject(classPointer, methodName, **kwargs):
+	method = getattr(classPointer, methodName) 
+	serializedData = method(serialized = True, **kwargs)
 	return JSONResponse(serializedData)
 # def listObject(objectType, objectTypeSerializer, **kwargs):
 # 	objectInstance = objectType.objects.get(**kwargs)
@@ -31,7 +32,9 @@ def listObject(competition, subclass, **kwargs):
 # 	return JSONResponse(serializer.data)
 
 def listObjects(competition, subclass):
-	serializedData = competition.subclass(serialized = True)
+	method = getattr(competition, subclass) 
+	serializedData = method(serialized = True)
+	#serializedData = competition.subclass(serialized = True)
 	return JSONResponse(serializedData)
 
 #def listObjects(objectType, objectTypeSerializer):
@@ -39,9 +42,10 @@ def listObjects(competition, subclass):
 	# serializer = objectTypeSerializer(objects, many = True)
 	# return JSONResponse(serializer.data)
 
-def postObject(competition, subclass, request):
-	data = request.POST
-	returnObject = competition.subclass(request.POST)
+def postObject(classPointer, methodName, request):
+	method = getattr(classPointer, methodName) 
+	#data = request.POST
+	returnObject = method(serialized = True, **request.POST)
 	if returnObject:
 		if request.FILES:
 			for i in request.FILES:

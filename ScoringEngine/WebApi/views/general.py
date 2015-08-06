@@ -2,11 +2,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-# from ScoringEngine.serializers import PluginSerializer
-# from ScoringEngine.serializers import UserSerializer
-# from ScoringEngine.models import User
-# from ScoringEngine.models import Plugin
-
 from WebApi.views.utils import objectExists
 from WebApi.views.utils import listObjects
 from WebApi.views.utils import listObject
@@ -14,40 +9,38 @@ from WebApi.views.utils import postObject
 from WebApi.views.utils import patchObject
 from WebApi.views.utils import deleteObject
 
-from ScoringEngine import Competition
+from ScoringEngine.ScoringEngine import Plugin
+from ScoringEngine.endpoints import User
 
 @api_view(['GET', 'POST'])
 def plugins(request):
 	if request.method == 'GET':
-		return listObjects(Plugin, PluginSerializer)
+		return listObjects(Plugin, 'search')
 	elif request.method == 'POST':
-		return postObject(request, PluginSerializer)
+		return postObject(Plugin, Plugin.newPlugin, request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def plugin(request, pluginId):
-	if not objectExists(Plugin, pluginId = pluginId):
-		return Response(status = status.HTTP_404_NOT_FOUND)
 	if request.method == 'GET':
-		return listObject(Plugin, PluginSerializer, pluginId = pluginId)
+		return listObject(Plugin, Plugin.getPlugin, pluginId = pluginId)
 	elif request.method == 'PATCH':
-		return patchObject(request, Plugin, PluginSerializer, pluginId = pluginId)
+		return patchObject(Plugin, Plugin.editPlugin, pluginId = pluginId)
 	elif request.method == 'DELETE':
-		return deleteObject(Plugin, pluginId = pluginId)
+		obj = Plugin.getPlugin(pluginId = pluginId)
+		return deleteObject(Plugin, Plugin.deletePlugin, obj)
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def users(request):
 	if request.method == 'GET':
-		return listObjects(User, UserSerializer)
-	elif request.method == 'POST':
-		return postObject(request, UserSerializer)
+		return listObjects(User, 'search')
+	# User creation should only happen from within the Organization member list
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def user(request, userId):
-	if not objectExists(User, userId = userId):
-		return Response(status = status.HTTP_404_NOT_FOUND)
 	if request.method == 'GET':
-		return listObject(User, UserSerializer, userId = userId)
+		return listObject(User, User.getUser, userId = userId)
 	elif request.method == 'PATCH':
-		return patchObject(request, User, UserSerializer, userId = userId)
+		return patchObject(User, User.editUser, request, userId = userId)
 	elif request.method == 'DELETE':
-		return deleteObject(User, userId = userId)
+		obj = User.getUser(userId = userId)
+		return deleteObject(Plugin, Plugin.deleteUser, obj)

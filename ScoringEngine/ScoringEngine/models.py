@@ -11,7 +11,7 @@ from django.db.models import IntegerField
 from django.db.models import PositiveIntegerField
 from django.db.models import ForeignKey
 from django.forms.widgets import PasswordInput
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.utils import timezone
 import settings
 from ScoringEngine.models import *
@@ -40,12 +40,6 @@ class Competition(Model):
 	teamsViewServiceStatusEnabled = BooleanField(default = True)
 	teamsViewInjectsEnabled = BooleanField(default = True)
 	teamsViewIncidentResponseEnabled = BooleanField(default = True)
-
-	def getServices(self):
-		return Service.objects.filter(competitionId = self.competitionId)
-
-	def getTeams(self):
-		return Team.objects.filter(competitionId = competitionId)
 
 	def sleepScoreInterval(self):
 		min_seconds = score_delay - score_delay_uncert

@@ -5,9 +5,9 @@ from django.test import Client
 import json
 import exampleData
 
-def createUser(instance):
+def createUser(instance, **kwargs):
 	uri = '/users.json'
-	response = post(instance, uri, exampleData.user)
+	response = post(instance, uri, exampleData.user, **kwargs)
 	return json.loads(response.content)
 
 def createOrganization(instance):
@@ -68,7 +68,7 @@ def put(instance, uri, data, status_code = status.HTTP_200_OK, content = None):
 		instance.assertEqual(response.content, content)
 	return response
 
-def post(instance, uri, data, status_code = status.HTTP_201_CREATED, content = None, postFormat = None):
+def post(instance, uri, data, status_code = status.HTTP_201_CREATED, content = None, postFormat = None, **kwargs):
 	client = Client()
 	if postFormat:
 		response = client.post(uri, data, format = postFormat)
