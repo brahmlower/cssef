@@ -17,10 +17,11 @@ class UsersList(APITestCase):
 		utils.get(self, self.uri)
 
 	def testPost(self):
-		utils.createUser(self)
+		utils.createUser(self, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 class UserDetails(APITestCase):
 	def setUp(self):
+		# Have to create an organization, then create a user under that organization
 		user = utils.createUser(self)
 		self.uri = '/users/%s.json' % (user['userId'])
 
