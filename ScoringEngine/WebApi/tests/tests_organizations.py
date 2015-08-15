@@ -44,7 +44,7 @@ class OrganizationDetails(APITestCase):
 class MembersList(APITestCase):
 	def setUp(self):
 		organization = utils.createOrganization(self)
-		utils.createUser(self)
+		utils.createUser(self, organizationId = organization['organizationId'])
 		self.uri = '/organizations/%s/members.json' % organization['organizationId']
 
 	def testHttp405Response(self):
@@ -59,7 +59,7 @@ class MembersList(APITestCase):
 class MemberDetails(APITestCase):
 	def setUp(self):
 		self.organization = utils.createOrganization(self)
-		self.user = utils.createUser(self)
+		self.user = utils.createUser(self, organizationId = self.organization['organizationId'])
 		self.uri = '/organizations/%s/members/%s.json' % (self.organization['organizationId'], self.user['userId'])
 
 	def testHttp405Response(self):
@@ -82,7 +82,7 @@ class MemberDetails(APITestCase):
 class CompetitionsList(APITestCase):
 	def setUp(self):
 		organization = utils.createOrganization(self)
-		utils.createCompetition(self)
+		competition = utils.createCompetition(self, organization = organization['organizationId'])
 		self.uri = '/organizations/%s/competitions.json' % organization['organizationId']
 
 	def testHttp405Response(self):
@@ -97,8 +97,8 @@ class CompetitionsList(APITestCase):
 class CompetitionsDetails(APITestCase):
 	def setUp(self):
 		self.organization = utils.createOrganization(self)
-		competition = utils.createCompetition(self)
-		self.uri = '/organizations/%s/competitions/%s.json' % (self.organization['organizationId'], competition['competitionId'])
+		self.competition = utils.createCompetition(self, organization = self.organization['organizationId'])
+		self.uri = '/organizations/%s/competitions/%s.json' % (self.organization['organizationId'], self.competition['competitionId'])
 
 	def testHttp405Response(self):
 		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -126,15 +126,35 @@ class CompetitionLimits(APITestCase):
 	def testLessMax(self):
 		testLimit = exampleData.organization['maxCompetitions'] - 1
 		for i in range(testLimit):
-			utils.createCompetition(self)
+			utils.createCompetition(self, organization = self.organization['organizationId'])
 
 	def testEqualsMax(self):
 		testLimit = exampleData.organization['maxCompetitions'] - 1
 		for i in range(testLimit):
-			utils.createCompetition(self)
+			utils.createCompetition(self, organization = self.organization['organizationId'])
 
 	def testMoreMax(self):
 		testLimit = exampleData.organization['maxCompetitions']
 		for i in range(testLimit):
-			utils.createCompetition(self)
-		utils.createCompetition(self, status_code = status.HTTP_403_FORBIDDEN)
+			utils.createCompetition(self, organization = self.organization['organizationId'])
+		utils.createCompetition(self, status_code = status.HTTP_403_FORBIDDEN, organization = self.organization['organizationId'])
+
+class MemberLimits(APITestCase):
+	def setUp(self):
+		self.organization = utils.createOrganization(self)
+
+	def testLessMax(self):
+		testLimit = exampleData.organization['maxMembers'] - 1
+		for i in range(testLimit):
+			utils.createUser(self, organizationId = self.organization['organizationId'])
+
+	def testEqualsMax(self):
+		testLimit = exampleData.organization['maxCompetitions'] - 1
+		for i in range(testLimit):
+			utils.createUser(self, organizationId = self.organization['organizationId'])
+
+	def testMoreMax(self):
+		testLimit = exampleData.organization['maxCompetitions']
+		for i in range(testLimit):
+			utils.createUser(self, organizationId = self.organization['organizationId'])
+		utils.createUser(self, status_code = status.HTTP_403_FORBIDDEN, organizationId = self.organization['organizationId'])

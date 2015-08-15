@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from WebApi.views.utils import objectExists
+#from WebApi.views.utils import objectExists
 from WebApi.views.utils import listObjects
 from WebApi.views.utils import listObject
 from WebApi.views.utils import postObject
@@ -35,12 +35,11 @@ def users(request):
 		return listObjects(User, 'search')
 	# User creation should only happen from within the Organization member list
 
-@api_view(['GET', 'PATCH', 'DELETE'])
+@api_view(['GET', 'PATCH'])
 def user(request, userId):
 	if request.method == 'GET':
-		return listObject(User, User.getUser, userId = userId)
+		#return listObject(User, User.getUser, userId = userId)
+		return listObject(User, '__init__', userId = userId)
 	elif request.method == 'PATCH':
-		return patchObject(User, User.editUser, request, userId = userId)
-	elif request.method == 'DELETE':
-		obj = User.getUser(userId = userId)
-		return deleteObject(Plugin, Plugin.deleteUser, obj)
+		#return patchObject(User, User.editUser, request, userId = userId)
+		return patchObject(User, 'edit', request, userId = userId)

@@ -2,21 +2,22 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from WebApi.views.utils import objectExists
+#from WebApi.views.utils import objectExists
 from WebApi.views.utils import listObjects
 from WebApi.views.utils import listObject
 from WebApi.views.utils import postObject
 from WebApi.views.utils import patchObject
 from WebApi.views.utils import deleteObject
 
-from ScoringEngine import Competition
+from ScoringEngine.endpoints import Competition
 
 @api_view(['GET', 'POST'])
 def competitions(request):
 	if request.method == 'GET':
 		return listObjects(Competition, CompetitionSerializer)
 	elif request.method == 'POST':
-		return postObject(request, CompetitionSerializer)
+		#return postObject(request, CompetitionSerializer)
+		return postObject(Competition, 'create', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def competition(request, competitionId):

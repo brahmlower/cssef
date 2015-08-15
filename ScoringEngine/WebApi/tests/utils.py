@@ -6,7 +6,9 @@ import json
 import exampleData
 
 def createUser(instance, **kwargs):
-	uri = '/users.json'
+	uri = kwargs.pop('uri', None)
+	if not uri:
+		uri = '/organizations/%s/members.json' % kwargs.get('organizationId', '')
 	response = post(instance, uri, exampleData.user, **kwargs)
 	return json.loads(response.content)
 
@@ -16,7 +18,9 @@ def createOrganization(instance):
 	return json.loads(response.content)
 
 def createCompetition(instance, **kwargs):
-	uri = '/competitions.json'
+	uri = kwargs.pop('uri', None)
+	if not uri:
+		uri = '/organizations/%s/competitions.json' % kwargs.get('organization', '')
 	response = post(instance, uri, exampleData.competitionMin, **kwargs)
 	return json.loads(response.content)
 
@@ -74,6 +78,9 @@ def post(instance, uri, data, status_code = status.HTTP_201_CREATED, content = N
 		response = client.post(uri, data, format = postFormat)
 	else:
 		response = client.post(uri, data)
+	## The following two lines is for testing ##
+	if response.status_code != status_code:
+		print response.content
 	instance.assertEqual(response.status_code, status_code)
 	if content:
 		instance.assertEqual(response.content, content)
