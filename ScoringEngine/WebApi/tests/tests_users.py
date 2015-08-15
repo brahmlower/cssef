@@ -17,12 +17,13 @@ class UsersList(APITestCase):
 		utils.get(self, self.uri)
 
 	def testPost(self):
-		utils.createUser(self, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.createUser(self, uri = '/users.json', status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
 
 class UserDetails(APITestCase):
 	def setUp(self):
 		# Have to create an organization, then create a user under that organization
-		user = utils.createUser(self)
+		organization = utils.createOrganization(self)
+		user = utils.createUser(self, organizationId = organization['organizationId'])
 		self.uri = '/users/%s.json' % (user['userId'])
 
 	def testHttp405Response(self):
@@ -34,9 +35,6 @@ class UserDetails(APITestCase):
 	def testPatch(self):
 		data = {"name": "This is a new name"}
 		utils.patch(self, self.uri, data)
-
-	def testDelete(self):
-		utils.delete(self, self.uri)
 
 	def testInvalid(self):
 		uri = '/users/9000.json'

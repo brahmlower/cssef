@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from WebApi.views.utils import objectExists
+from WebApi.views.utils import callObject
 from WebApi.views.utils import listObjects
 from WebApi.views.utils import listObject
 from WebApi.views.utils import postObject
@@ -15,55 +15,51 @@ from ScoringEngine.endpoints import Organization
 def organizations(request):
 	if request.method == 'GET':
 		return listObjects(Organization, 'search')
-		#return listObjects(Organization, OrganizationSerializer)
 	elif request.method == 'POST':
-		#return postObject(request, OrganizationSerializer)
 		return postObject(Organization, 'create', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def organization(request, organizationId):
 	if request.method == 'GET':
-		#return listObject(Organization, OrganizationSerializer, organizationId = organizationId)
 		return listObject(Organization, '__init__', organizationId = organizationId)
 	elif request.method == 'PATCH':
-		return patchObject(request, Organization, OrganizationSerializer, organizationId = organizationId)
+		return patchObject(Organization, 'edit', request, organizationId = organizationId)
 	elif request.method == 'DELETE':
-		return deleteObject(Organization, organizationId = organizationId)
+		return deleteObject(Organization, 'delete', organizationId = organizationId)
 
 @api_view(['GET', 'POST'])
 def members(request, organizationId):
-	organization = Organization(organizationId)
+	organization = Organization(organizationId = organizationId)
 	if request.method == 'GET':
-		return listObjects(organization, Organization.getMembers)
+		return listObjects(organization, 'getMembers')
 	elif request.method == 'POST':
-		return postObject(organization, Organization.newMember, request)
+		return postObject(organization, 'createMember', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def member(request, organizationId, memberId):
-	organization = Organization(organizationId)
+	organization = Organization(organizationId = organizationId)
 	if request.method == 'GET':
-		return listObject(organization, Organization.getMember, userId = memberId)
+		return callObject(organization, 'getMember', content = True, userId = memberId)
 	elif request.method == 'PATCH':
-		return patchObject(organization, Organization.editMember, userId = memberId)
+		return patchObject(organization, 'edit', request, userId = memberId)
 	elif request.method == 'DELETE':
-		obj = organization.getMember(userId = memberId)
-		return deleteObject(organization, Organization.deleteMember, obj)
+		return callObject(organization, 'deleteMember', content = False, userId = memberId)
 
 @api_view(['GET', 'POST'])
 def competitions(request, organizationId):
-	organization = Organization(organizationId)
+	organization = Organization(organizationId = organizationId)
 	if request.method == 'GET':
-		return listObjects(organization, Organization.getCompetitions)
+		return listObjects(organization, 'getCompetitions')
 	elif request.method == 'POST':
-		return postObject(organization, Organization.newCompetition, request)
+		return postObject(organization, 'createCompetition', request)
+		#return callObject(organization, 'createCompetition', postData = request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def competition(request, organizationId, competitionId):
-	organization = Organization(organizationId)
+	organization = Organization(organizationId = organizationId)
 	if request.method == 'GET':
-		return listObject(organization, Organization.getCompetition, competitionId = competitionId)
+		return callObject(organization, 'getCompetition', content = True, competitionId = competitionId)
 	elif request.method == 'PATCH':
-		return patchObject(organization, Organization.editCompetition, competitionId = competitionId)
+		return patchObject(organization, 'edit', request, competitionId = competitionId)
 	elif request.method == 'DELETE':
-		obj = organization.getCompetition(competitionId = competitionId)
-		return deleteObject(organization, Organization.deleteCompetition, obj)
+		return callObject(organization, 'deleteCompetition', content = False, competitionId = competitionId)

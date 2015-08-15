@@ -128,6 +128,8 @@ class Organization(Model):
 	description = TextField(max_length = 1000, default = '')
 	maxMembers = PositiveIntegerField(default = 0)
 	maxCompetitions = PositiveIntegerField(default = 0)
+	numMembers = PositiveIntegerField(default = 0)
+	numCompetitions = PositiveIntegerField(default = 0)
 
 class Document(Model):
 	documentId = AutoField(primary_key = True)

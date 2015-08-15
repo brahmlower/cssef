@@ -9,43 +9,52 @@ from hashlib import md5
 from urllib import quote
 import json
 
+from ScoringEngine.endpoints import CssefObjectDoesNotExist
+from ScoringEngine.endpoints import MaxMembersReached
+from ScoringEngine.endpoints import MaxCompetitionsReached
+
 class JSONResponse(HttpResponse):
 	def __init__(self, data, **kwargs):
 		content = JSONRenderer().render(data)
 		kwargs['content_type'] = 'application/json'
 		super(JSONResponse, self).__init__(content, **kwargs)
 
-def objectExists(objectType, **kwargs):
+def callObject(classPointer, methodName, content, **kwargs):
+	kwargs['serialized'] = True
 	try:
-		objectType.objects.get(**kwargs)
-		return True
-	except objectType.DoesNotExist:
-		return False
+		method = getattr(classPointer, methodName) 
+		serializedData = method(**kwargs)
+	except CssefObjectDoesNotExist:
+		return Response(status = status.HTTP_404_NOT_FOUND)
+	if content:
+		return JSONResponse(serializedData)
+	else:
+		return Response(status = status.HTTP_204_NO_CONTENT)
 
 def listObject(classPointer, methodName, **kwargs):
+	try:
+		obj = classPointer(**kwargs)
+		serializedData = classPointer.serialize(obj) # DOESNOTEXIST error should be caught here! Not in the endpoints.py
+	#except classPointer.ObjectDoesNotExist:
+	except CssefObjectDoesNotExist:
+		return Response(status = status.HTTP_404_NOT_FOUND)
+	return JSONResponse(serializedData)
+
+def listObjects(classPointer, methodName):
 	method = getattr(classPointer, methodName) 
-	serializedData = method(serialized = True, **kwargs)
-	return JSONResponse(serializedData)
-# def listObject(objectType, objectTypeSerializer, **kwargs):
-# 	objectInstance = objectType.objects.get(**kwargs)
-# 	serializer = objectTypeSerializer(objectInstance)
-# 	return JSONResponse(serializer.data)
-
-def listObjects(competition, subclass):
-	method = getattr(competition, subclass) 
 	serializedData = method(serialized = True)
-	#serializedData = competition.subclass(serialized = True)
 	return JSONResponse(serializedData)
-
-#def listObjects(objectType, objectTypeSerializer):
-	# objects = objectType.objects.all()
-	# serializer = objectTypeSerializer(objects, many = True)
-	# return JSONResponse(serializer.data)
 
 def postObject(classPointer, methodName, request):
-	method = getattr(classPointer, methodName) 
-	#data = request.POST
-	returnObject = method(serialized = True, **request.POST)
+	method = getattr(classPointer, methodName)
+	try:
+		returnObject = method(request.POST, serialized = True)
+	except MaxMembersReached as error:
+		#return Response(status = status.HTTP_403_FORBIDDEN)
+		return JSONResponse({error.message}, status = status.HTTP_403_FORBIDDEN)
+	except MaxCompetitionsReached as error:
+		#return Response(status = status.HTTP_403_FORBIDDEN)
+		return JSONResponse({error.message}, status = status.HTTP_403_FORBIDDEN)
 	if returnObject:
 		if request.FILES:
 			for i in request.FILES:
@@ -53,22 +62,11 @@ def postObject(classPointer, methodName, request):
 				pass
 		return JSONResponse(returnObject, status = status.HTTP_201_CREATED)
 	print "Failed to create object..."
+	print returnObject
 	return JSONResponse(returnObject, status = status.HTTP_400_BAD_REQUEST)
 
-# def postObject(request, objectTypeSerializer):
-# 	serializer = objectTypeSerializer(data = request.POST)
-# 	if serializer.is_valid():
-# 		serializerResult = serializer.save()
-# 		if request.FILES:
-# 			for i in request.FILES:
-# 				saveDocument(request.FILES[i], serializerResult)
-# 		return JSONResponse(serializer.data, status = status.HTTP_201_CREATED)
-# 	print "Serializer object is not valid:"
-# 	print serializer.errors
-# 	return JSONResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
-
 def patchObject(competition, subclass, request, **kwargs):
-	pass
+	return Response(status = status.HTTP_501_NOT_IMPLEMENTED)
 
 # def patchObject(request, objectType, objectTypeSerializer, **kwargs):
 # 	objectInstance = objectType.objects.get(**kwargs)
@@ -81,13 +79,10 @@ def patchObject(competition, subclass, request, **kwargs):
 # 		return JSONResponse(serializer.data, status = status.HTTP_202_ACCEPTED)
 # 	return JSONResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
-def deleteObject(competition, subclass, obj):
-	competition.subclass(obj)
+def deleteObject(classPointer, methodName, **kwargs):
+	obj = classPointer(**kwargs)
+	getattr(obj, methodName)()
 	return Response(status = status.HTTP_204_NO_CONTENT)
-
-# def deleteObject(objectType, **kwargs):
-# 	objectType.objects.get(**kwargs).delete()
-# 	return Response(status = status.HTTP_204_NO_CONTENT)
 
 def saveDocument(postedFile, relatedObject):
 	uploadedFile = UploadedFile(postedFile)
