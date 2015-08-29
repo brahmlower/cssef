@@ -11,14 +11,12 @@ class CompetitionsList(APITestCase):
 		self.uri = '/competitions.json'
 
 	def testHttp405Response(self):
-		response = self.client.put(self.uri, {})
-		self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+		# response = self.client.put(self.uri, {})
+		# self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
 		utils.get(self, self.uri)
-
-	def testPost(self):
-		utils.post(self, self.uri, exampleData.competitionMin)
 
 class CompetitionDetails(APITestCase):
 	def setUp(self):
@@ -37,9 +35,6 @@ class CompetitionDetails(APITestCase):
 		# it will return the expected 202 status
 		data = {"name": "This is a new name", "description":"new description"}
 		utils.patch(self, self.uri, data)
-
-	def testDelete(self):
-		utils.delete(self, self.uri)
 
 	def testInvalid(self):
 		uri = '/competitions/9000.json'
@@ -204,7 +199,7 @@ class InjectResponseDetails(APITestCase):
 		uri = '/competitions/%s/injectresponses/9000.json' % self.competition['competitionId']
 		utils.get(self, uri, status_code = status.HTTP_404_NOT_FOUND)
 
-class IncidentList(APITestCase):
+class IncidentaList(APITestCase):
 	def setUp(self):
 		self.organization = utils.createOrganization(self)
 		competition = utils.createCompetition(self, organization = self.organization['organizationId'])

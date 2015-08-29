@@ -110,9 +110,9 @@ def injectresponse(request, competitionId, injectResponseId):
 	if request.method == 'GET':
 		return callObject(competition, 'getInjectResponse', content = True, injectResponseId = injectResponseId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, 'edit', injectResponseId = injectResponseId)
+		return patchObject(competition, 'edit', request, injectResponseId = injectResponseId)
 	elif request.method == 'DELETE':
-		return postObject(competition, 'deleteInjectResponse', content = False, injectResponseId = injectResponseId)
+		return callObject(competition, 'deleteInjectResponse', content = False, injectResponseId = injectResponseId)
 
 @api_view(['GET', 'POST'])
 def incidents(request, competitionId):
@@ -138,6 +138,8 @@ def incidentresponses(request, competitionId):
 	if request.method == 'GET':
 		return listObjects(competition, 'getIncidentResponses')
 	elif request.method == 'POST':
+		# print "competitions.incidentresponses"
+		# print request.POST
 		return postObject(competition, 'createIncidentResponse', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
@@ -148,4 +150,4 @@ def incidentresponse(request, competitionId, incidentResponseId):
 	elif request.method == 'PATCH':
 		return patchObject(competition, 'edit', request, incidentResponseId = incidentResponseId)
 	elif request.method == 'DELETE':
-		return deleteObject(competition, 'deleteIncidentResponse', content = False, incidentResponseId = incidentResponseId)
+		return callObject(competition, 'deleteIncidentResponse', content = False, incidentResponseId = incidentResponseId)

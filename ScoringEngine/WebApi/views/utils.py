@@ -34,8 +34,7 @@ def callObject(classPointer, methodName, content, **kwargs):
 def listObject(classPointer, methodName, **kwargs):
 	try:
 		obj = classPointer(**kwargs)
-		serializedData = classPointer.serialize(obj) # DOESNOTEXIST error should be caught here! Not in the endpoints.py
-	#except classPointer.ObjectDoesNotExist:
+		serializedData = classPointer.serialize(obj)
 	except CssefObjectDoesNotExist:
 		return Response(status = status.HTTP_404_NOT_FOUND)
 	return JSONResponse(serializedData)
@@ -61,6 +60,7 @@ def postObject(classPointer, methodName, request):
 		return JSONResponse(returnObject, status = status.HTTP_201_CREATED)
 	print "Failed to create object..."
 	print returnObject
+	print request.POST
 	return JSONResponse(returnObject, status = status.HTTP_400_BAD_REQUEST)
 
 def patchObject(competition, subclass, request, **kwargs):
