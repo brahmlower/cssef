@@ -20,6 +20,12 @@ from models import User as UserModel
 from serializers import UserSerializer
 from serializers import OrganizationSerializer
 from serializers import CompetitionSerializer
+from serializers import TeamSerializer
+from serializers import InjectSerializer
+from serializers import InjectResponseSerializer
+from serializers import IncidentSerializer
+from serializers import IncidentResponseSerializer
+from serializers import ScoreSerializer
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -32,18 +38,54 @@ class CssefObjectDoesNotExist(Exception):
 
 class Competition:
 	class Team:
-		def __init__(self, teamModelObj = None, **kwargs):
-			self.model = teamModelObj
+		class ObjectDoesNotExist(CssefObjectDoesNotExist):
+			def __init__(self, message):
+				self.message = message
+
+			def __str__(self):
+				return repr(self.message)
+
+		serializerObject = TeamSerializer
+		modelObject = TeamModel
+
+		def __init__(self, **kwargs):
+			self.model = kwargs.pop('modelInst', None)
 			if not self.model:
-				self.model = TeamModel(**kwargs)
-				self.model.save()
+				try:
+					self.model = Competition.Team.modelObject.objects.get(**kwargs)
+				except ObjectDoesNotExist:
+					raise self.ObjectDoesNotExist("custom 1 - Team matching query does not exist.")
+				except Competition.Team.modelObject.DoesNotExist:
+					raise self.ObjectDoesNotExist("custom 2 - Team matching query does not exist.")
 
 		def delete(self):
 			self.model.delete()
 
 		@staticmethod
 		def search(**kwargs):
-			return wrappedSearch(Team, TeamModel, **kwargs)
+			return wrappedSearch(Competition.Team, TeamModel, **kwargs)
+
+		@staticmethod
+		def create(postData, serialized = False):
+			serializedModel = Competition.Team.serializerObject(data = postData)
+			if serializedModel.is_valid():
+				obj = serializedModel.save()
+				if serialized:
+					return serializedModel.data
+				else:
+					return obj
+			else:
+				print "failed to be created!"
+				print serializedModel.errors
+				# failed to create object
+				return serializedModel.errors
+
+		@staticmethod
+		def serialize(items):
+			if items.__class__.__name__ == "QuerySet":
+				return Competition.Team.serializerObject(items, many = True).data
+			else:
+				return Competition.Team.serializerObject(items.model).data
 
 		# Username methods
 		def setUsername(self, username):
@@ -125,18 +167,56 @@ class Competition:
 			return InjectResponse.search(self.model, **kwargs)
 
 	class Inject:
-		def __init__(self, injectModelObj = None, **kwargs):
-			self.model = injectModelObj
+		class ObjectDoesNotExist(CssefObjectDoesNotExist):
+			def __init__(self, message):
+				self.message = message
+
+			def __str__(self):
+				return repr(self.message)
+
+		serializerObject = InjectSerializer
+		modelObject = InjectModel
+		def __init__(self, **kwargs):
+			self.model = kwargs.pop('modelInst', None)
 			if not self.model:
-				self.model = InjectModel(**kwargs)
-				self.model.save()
+				try:
+					self.model = Competition.Inject.modelObject.objects.get(**kwargs)
+				except ObjectDoesNotExist:
+					raise self.ObjectDoesNotExist("custom 1 - Inject matching query does not exist.")
+				except Competition.Inject.modelObject.DoesNotExist:
+					raise self.ObjectDoesNotExist("custom 2 - Inject matching query does not exist.")
 
 		def delete(self):
 			self.model.delete()
 
 		@staticmethod
 		def search(**kwargs):
-			return wrappedSearch(Inject, InjectModel, **kwargs)
+			return wrappedSearch(Competition.Inject, InjectModel, **kwargs)
+
+		@staticmethod
+		def create(postData, serialized = False):
+			serializedModel = Competition.Inject.serializerObject(data = postData)
+			if serializedModel.is_valid():
+				obj = serializedModel.save()
+				if serialized:
+					return serializedModel.data
+				else:
+					return obj
+			else:
+				print "====== Failed to be created ========"
+				print "Errors:"
+				print serializedModel.errors
+				print "Provided data:"
+				print postData
+				# failed to create object
+				return serializedModel.errors
+
+		@staticmethod
+		def serialize(items):
+			if items.__class__.__name__ == "QuerySet":
+				return Competition.Inject.serializerObject(items, many = True).data
+			else:
+				return Competition.Inject.serializerObject(items.model).data
 
 		# Require Response modules
 		def setRequireResponse(self, requireResponse):
@@ -216,6 +296,8 @@ class Competition:
 			return InjectResponse.search(inject = self.model)
 
 	class InjectResponse:
+		serializerObject = InjectResponseSerializer
+		modelObject = InjectResponseModel
 		def __init__(self, injectResponseModelObj = None, **kwargs):
 			self.model = injectResponseModelObj
 			if not self.model:
@@ -227,7 +309,29 @@ class Competition:
 
 		@staticmethod
 		def search(**kwargs):
-			return wrappedSearch(InjectResponse, InjectResponseModel, **kwargs)
+			return wrappedSearch(Competition.InjectResponse, InjectResponseModel, **kwargs)
+
+		@staticmethod
+		def create(postData, serialized = False):
+			serializedModel = Competition.InjectResponse.serializerObject(data = postData)
+			if serializedModel.is_valid():
+				obj = serializedModel.save()
+				if serialized:
+					return serializedModel.data
+				else:
+					return obj
+			else:
+				print "failed to be created!"
+				print serializedModel.errors
+				# failed to create object
+				return serializedModel.errors
+
+		@staticmethod
+		def serialize(items):
+			if items.__class__.__name__ == "QuerySet":
+				return Competition.InjectResponse.serializerObject(items, many = True).data
+			else:
+				return Competition.InjectResponse.serializerObject(items.model).data
 
 		def setDatetime(self, datetime):
 			self.model.datetime = datetime
@@ -244,6 +348,8 @@ class Competition:
 			return self.model.content
 
 	class Incident:
+		serializerObject = IncidentSerializer
+		modelObject = IncidentModel
 		def __init__(self, incidentModelObj = None, **kwargs):
 			self.model = incidentModelObj
 			if not self.model:
@@ -255,7 +361,29 @@ class Competition:
 
 		@staticmethod
 		def search(**kwargs):
-			return wrappedSearch(Incident, IncidentModel, **kwargs)
+			return wrappedSearch(Competition.Incident, IncidentModel, **kwargs)
+
+		@staticmethod
+		def create(postData, serialized = False):
+			serializedModel = Competition.Incident.serializerObject(data = postData)
+			if serializedModel.is_valid():
+				obj = serializedModel.save()
+				if serialized:
+					return serializedModel.data
+				else:
+					return obj
+			else:
+				print "failed to be created!"
+				print serializedModel.errors
+				# failed to create object
+				return serializedModel.errors
+
+		@staticmethod
+		def serialize(items):
+			if items.__class__.__name__ == "QuerySet":
+				return Competition.Incident.serializerObject(items, many = True).data
+			else:
+				return Competition.Incident.serializerObject(items.model).data
 
 		def getDatetime(self):
 			return self.model.datetime
@@ -279,6 +407,8 @@ class Competition:
 			self.model.save()
 
 	class IncidentResponse:
+		serializerObject = IncidentResponseSerializer
+		modelObject = IncidentResponseModel
 		def __init__(self, incidentResponseModelObj = None, **kwargs):
 			self.model = incidentResponseModelObj
 			if not self.model:
@@ -290,7 +420,31 @@ class Competition:
 
 		@staticmethod
 		def search(**kwargs):
-			return wrappedSearch(IncidentResponse, IncidentResponseModel, **kwargs)
+			return wrappedSearch(Competition.IncidentResponse, IncidentResponseModel, **kwargs)
+
+		@staticmethod
+		def create(postData, serialized = False):
+			print "Create Method:"
+			print postData
+			serializedModel = Competition.IncidentResponse.serializerObject(data = postData)
+			if serializedModel.is_valid():
+				obj = serializedModel.save()
+				if serialized:
+					return serializedModel.data
+				else:
+					return obj
+			else:
+				print "failed to be created!"
+				print serializedModel.errors
+				# failed to create object
+				return serializedModel.errors
+
+		@staticmethod
+		def serialize(items):
+			if items.__class__.__name__ == "QuerySet":
+				return Competition.IncidentResponse.serializerObject(items, many = True).data
+			else:
+				return Competition.IncidentResponse.serializerObject(items.model).data
 
 		def setReplyTo(self, replyTo):
 			self.model.replyTo = replyTo
@@ -321,6 +475,8 @@ class Competition:
 			return self.model.content
 
 	class Score:
+		serializerObject = ScoreSerializer
+		modelObject = ScoreModel
 		def __init__(self, scoreModelObj = None, **kwargs):
 			self.model = scoreModelObj
 			if not self.model:
@@ -332,7 +488,29 @@ class Competition:
 
 		@staticmethod
 		def search(**kwargs):
-			return wrappedSearch(Score, ScoreModel, **kwargs)
+			return wrappedSearch(Competition.Score, ScoreModel, **kwargs)
+
+		@staticmethod
+		def create(postData, serialized = False):
+			serializedModel = Competition.Score.serializerObject(data = postData)
+			if serializedModel.is_valid():
+				obj = serializedModel.save()
+				if serialized:
+					return serializedModel.data
+				else:
+					return obj
+			else:
+				print "failed to be created!"
+				print serializedModel.errors
+				# failed to create object
+				return serializedModel.errors
+
+		@staticmethod
+		def serialize(items):
+			if items.__class__.__name__ == "QuerySet":
+				return Competition.Score.serializerObject(items, many = True).data
+			else:
+				return Competition.Score.serializerObject(items.model).data
 
 		def isSlaViolation(competition):
 			# TODO: LEGACY CODE, NEEDS TO BE UPDATED
@@ -379,7 +557,6 @@ class Competition:
 	def __init__(self, **kwargs):
 		self.model = kwargs.pop('modelInst', None)
 		if not self.model:
-			#self.model = Competition.modelObject.objects.get(**kwargs)
 			try:
 				self.model = Competition.modelObject.objects.get(**kwargs)
 			except ObjectDoesNotExist:
@@ -425,41 +602,41 @@ class Competition:
 		return self.model.name
 
 	# Teams modules
-	def newTeam(self, name, username, password, networkCidr, **kwargs):
-		Team(
-			kwargs,
-			name = name,
-			username = username,
-			password = password,
-			networkCidr = networkCidr)
+	# def newTeam(self, name, username, password, networkCidr, **kwargs):
+	# 	Team(
+	# 		kwargs,
+	# 		name = name,
+	# 		username = username,
+	# 		password = password,
+	# 		networkCidr = networkCidr)
 
-	def getTeam(self, serialized = False, **kwargs):
-		return self.searchOne(Team, serialized, **kwargs)
+	# def getTeam(self, serialized = False, **kwargs):
+	# 	return self.searchOne(Team, serialized, **kwargs)
 
-	def getTeams(self, serialized = False):
-		return self.searchMany(Team, serialized)
+	# def getTeams(self, serialized = False):
+	# 	return self.searchMany(Team, serialized)
 
-	def delTeam(self, teamObj):
-		# This was the cleanest I could get this. Not sure if it really works...
-		teamObj.delete()
-		del teamObj
+	# def delTeam(self, teamObj):
+	# 	# This was the cleanest I could get this. Not sure if it really works...
+	# 	teamObj.delete()
+	# 	del teamObj
 
 	# Inject modules
-	def newInject(self, title, body, **kwargs):
-		Inject(
-			kwargs,
-			title = title,
-			body = body)
+	# def newInject(self, title, body, **kwargs):
+	# 	Inject(
+	# 		kwargs,
+	# 		title = title,
+	# 		body = body)
 
-	def getInject(self, serialized = False, **kwargs):
-		return self.searchOne(Inject, serialized, **kwargs)
+	# def getInject(self, serialized = False, **kwargs):
+	# 	return self.searchOne(Inject, serialized, **kwargs)
 
-	def getInjects(self, serialized = False):
-		return self.searchMany(Inject, serialized)
+	# def getInjects(self, serialized = False):
+	# 	return self.searchMany(Inject, serialized)
 
-	def delInject(self, injectObj):
-		injectObj.delete()
-		del injectObj
+	# def delInject(self, injectObj):
+	# 	injectObj.delete()
+	# 	del injectObj
 
 	def check(self):
 		# This conducts a consistency check on the compeititon settings.
@@ -478,6 +655,125 @@ class Competition:
 			return serializedModel(obj)
 		else:
 			return obj
+
+	def createTeam(self, postData, serialized = False):
+		postData['organizationId'] = self.model.organization
+		postData['competitionId'] = self.model.competitionId
+		return Competition.Team.create(postData, serialized)
+
+	def getTeam(self, **kwargs):
+		return getObject(Competition.Team, competitionId = self.model.competitionId, **kwargs)
+
+	def getTeams(self, **kwargs):
+		return getObjects(Competition.Team, competitionId = self.model.competitionId, **kwargs)
+
+	def deleteTeam(self, **kwargs):
+		kwargs.pop('serialized', None)
+		self.getTeam(**kwargs).delete()
+
+	def createService(self, postData, serialized = False):
+		postData['organizationId'] = self.model.organization
+		postData['competitionId'] = self.model.competitionId
+		return Competition.Service.create(postData, serialized)
+
+	def getService(self, **kwargs):
+		return getObject(Competition.Service, competitionId = self.model.competitionId, **kwargs)
+
+	def getServices(self, **kwargs):
+		return getObjects(Competition.Service, competitionId = self.model.competitionId, **kwargs)
+
+	def deleteService(self, **kwargs):
+		kwargs.pop('serialized', None)
+		self.getService(**kwargs).delete()
+
+	def createIncident(self, postData, serialized = False):
+		postData['organizationId'] = self.model.organization
+		postData['competitionId'] = self.model.competitionId
+		return Competition.Incident.create(postData, serialized)
+
+	def getIncident(self, **kwargs):
+		return getObject(Competition.Incident, competitionId = self.model.competitionId, **kwargs)
+
+	def getIncidents(self, **kwargs):
+		return getObjects(Competition.Incident, competitionId = self.model.competitionId, **kwargs)
+
+	def deleteIncident(self, **kwargs):
+		kwargs.pop('serialized', None)
+		print kwargs
+		self.getIncident(**kwargs).delete()
+
+	def createIncidentResponse(self, postData, serialized = False):
+		postData['organizationId'] = self.model.organization
+		postData['competitionId'] = self.model.competitionId
+		return Competition.IncidentResponse.create(postData, serialized)
+
+	def getIncidentResponse(self, **kwargs):
+		return getObject(Competition.IncidentResponse, competitionId = self.model.competitionId, **kwargs)
+
+	def getIncidentResponses(self, **kwargs):
+		return getObjects(Competition.IncidentResponse, competitionId = self.model.competitionId, **kwargs)
+
+	def deleteIncidentResponse(self, **kwargs):
+		kwargs.pop('serialized', None)
+		self.getIncidentResponse(**kwargs).delete()
+
+	def createInject(self, postData, serialized = False):
+		postData['organizationId'] = self.model.organization
+		postData['competitionId'] = self.model.competitionId
+		return Competition.Inject.create(postData, serialized)
+
+	def getInject(self, **kwargs):
+		return getObject(Competition.Inject, competitionId = self.model.competitionId, **kwargs)
+
+	def getInjects(self, **kwargs):
+		return getObjects(Competition.Inject, competitionId = self.model.competitionId, **kwargs)
+
+	def deleteInject(self, **kwargs):
+		kwargs.pop('serialized', None)
+		self.getInject(**kwargs).delete()
+
+	def createInjectResponse(self, postData, serialized = False):
+		postData['organizationId'] = self.model.organization
+		postData['competitionId'] = self.model.competitionId
+		return Competition.InjectResponse.create(postData, serialized)
+
+	def getInjectResponse(self, **kwargs):
+		return getObject(Competition.InjectResponse, competitionId = self.model.competitionId, **kwargs)
+
+	def getInjectResponses(self, **kwargs):
+		return getObjects(Competition.InjectResponse, competitionId = self.model.competitionId, **kwargs)
+
+	def deleteInjectResponse(self, **kwargs):
+		kwargs.pop('serialized', None)
+		self.getInjectResponse(**kwargs).delete()
+
+	def createScore(self, postData, serialized = False):
+		postData['organizationId'] = self.model.organization
+		postData['competitionId'] = self.model.competitionId
+		return Competition.Score.create(postData, serialized)
+
+	def getScore(self, **kwargs):
+		return getObject(Competition.Score, competitionId = self.model.competitionId, **kwargs)
+
+	def getScores(self, **kwargs):
+		return getObjects(Competition.Score, competitionId = self.model.competitionId, **kwargs)
+
+	def deleteScore(self, **kwargs):
+		kwargs.pop('serialized', None)
+		self.getScore(**kwargs).delete()
+
+
+def getObjects(classPointer, **kwargs):
+	if kwargs.pop('serialized', None):
+		return classPointer.serialize(classPointer.search(**kwargs))
+	else:
+		return classPointer.search(**kwargs)
+
+def getObject(classPointer, **kwargs):
+	if kwargs.pop('serialized', None):
+		return classPointer.serialize(classPointer(**kwargs))
+	else:
+		return classPointer(**kwargs)
 
 
 #TODO: This could make life a lot easier. Maybe finish this method, then test it on the Organization and User classes
@@ -558,7 +854,6 @@ class Organization:
 
 	@staticmethod
 	def create(postData, serialized = False):
-		#serialized = kwargs.pop('serialized', False)
 		serializedModel = Organization.serializerObject(data = postData)
 		if serializedModel.is_valid():
 			obj = serializedModel.save()
@@ -660,7 +955,7 @@ class Organization:
 	def createCompetition(self, postData, serialized = False):
 		if self.model.numCompetitions >= self.getMaxCompetitions():
 			raise MaxCompetitionsReached(self.getMaxCompetitions())
-		postData['serialized'] = serialized
+		#postData['serialized'] = serialized
 		postData['organization'] = self.model.organizationId
 		newCompetition = Competition.create(postData, serialized = True)
 		self.setNumCompetitions()
@@ -669,7 +964,7 @@ class Organization:
 	def createMember(self, postData, serialized = False):
 		if self.model.numMembers >= self.getMaxMembers():
 			raise MaxMembersReached(self.getMaxMembers())
-		postData['serialized'] = serialized
+		#postData['serialized'] = serialized
 		postData['organizationId'] = self.model.organizationId
 		newUser = User.create(postData, serialized = True)
 		self.setNumMembers()

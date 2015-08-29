@@ -5,9 +5,10 @@ from models import Team
 from models import Plugin
 from models import Service
 from models import Score
-from models import Inject
 from models import User
+from models import Inject
 from models import InjectResponse
+from models import Incident
 from models import IncidentResponse
 from models import Document
 from models import Organization
@@ -96,20 +97,6 @@ class ScoreSerializer(serializers.ModelSerializer):
 			'value',
 			'message')
 
-class InjectSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Inject
-		fields = (
-			'injectId',
-			'competitionId',
-			'requireResponse',
-			'manualDelivery',
-			'datetimeDelivery',
-			'datetimeResponseDue',
-			'datetimeResponseClose',
-			'title',
-			'body')
-
 class UserSerializer(serializers.ModelSerializer):
 	#organization = serializers.SerializerMethodField()
 	class Meta:
@@ -127,6 +114,20 @@ class UserSerializer(serializers.ModelSerializer):
 		serializer = OrganizationSerializer(organization)
 		return serializer.data
 
+class InjectSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Inject
+		fields = (
+			'injectId',
+			'competitionId',
+			'requireResponse',
+			'manualDelivery',
+			'datetimeDelivery',
+			'datetimeResponseDue',
+			'datetimeResponseClose',
+			'title',
+			'body')
+
 class InjectResponseSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = InjectResponse
@@ -136,6 +137,17 @@ class InjectResponseSerializer(serializers.ModelSerializer):
 			'teamId',
 			'injectId',
 			'datetime',
+			'content')
+
+class IncidentSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Incident
+		fields = (
+			'incidentId',
+			'competitionId',
+			'teamId',
+			'datetime',
+			'subject',
 			'content')
 
 class IncidentResponseSerializer(serializers.ModelSerializer):

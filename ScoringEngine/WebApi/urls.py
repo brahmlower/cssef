@@ -20,6 +20,8 @@ urlpatterns = patterns('',
 	url(r'^competitions/(?P<competitionId>[0-9]+)/injects/(?P<injectId>[0-9]+).json', competitions.inject),
 	url(r'^competitions/(?P<competitionId>[0-9]+)/injectresponses.json', competitions.injectresponses),
 	url(r'^competitions/(?P<competitionId>[0-9]+)/injectresponses/(?P<injectResponseId>[0-9]+).json', competitions.injectresponse),
+	url(r'^competitions/(?P<competitionId>[0-9]+)/incidents.json', competitions.incidents),
+	url(r'^competitions/(?P<competitionId>[0-9]+)/incidents/(?P<incidentId>[0-9]+).json', competitions.incident),
 	url(r'^competitions/(?P<competitionId>[0-9]+)/incidentresponses.json', competitions.incidentresponses),
 	url(r'^competitions/(?P<competitionId>[0-9]+)/incidentresponses/(?P<incidentResponseId>[0-9]+).json', competitions.incidentresponse),
 

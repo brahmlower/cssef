@@ -7,6 +7,7 @@ import utils
 
 class CompetitionsList(APITestCase):
 	def setUp(self):
+		self.organization = utils.createOrganization(self)
 		self.uri = '/competitions.json'
 
 	def testHttp405Response(self):
@@ -21,7 +22,8 @@ class CompetitionsList(APITestCase):
 
 class CompetitionDetails(APITestCase):
 	def setUp(self):
-		competition = utils.createCompetition(self)
+		self.organization = utils.createOrganization(self)
+		competition = utils.createCompetition(self, organization = self.organization['organizationId'])
 		self.uri = '/competitions/%s.json' % competition['competitionId']
 
 	def testHttp405Response(self):
@@ -45,7 +47,8 @@ class CompetitionDetails(APITestCase):
 
 class ServicesList(APITestCase):
 	def setUp(self):
-		competition = utils.createCompetition(self)
+		self.organization = utils.createOrganization(self)
+		competition = utils.createCompetition(self, organization = self.organization['organizationId'])
 		self.uri = '/competitions/%s/services.json' % competition['competitionId']
 
 	def testHttp405Response(self):
@@ -60,7 +63,8 @@ class ServicesList(APITestCase):
 
 class ServiceDetails(APITestCase):
 	def setUp(self):
-		self.competition = utils.createCompetition(self)
+		self.organization = utils.createOrganization(self)
+		self.competition = utils.createCompetition(self, organization = self.organization['organizationId'])
 		plugin = utils.createPlugin(self)
 		service = utils.createService(self, competitionId = self.competition['competitionId'])
 		self.uri = '/competitions/%s/services/%s.json' % (self.competition['competitionId'], service['serviceId'])
@@ -84,7 +88,8 @@ class ServiceDetails(APITestCase):
 
 class TeamsList(APITestCase):
 	def setUp(self):
-		competition = utils.createCompetition(self)
+		self.organization = utils.createOrganization(self)
+		competition = utils.createCompetition(self, organization = self.organization['organizationId'])
 		self.uri = '/competitions/%s/teams.json' % competition['competitionId']
 
 	def testHttp405Response(self):
@@ -98,7 +103,8 @@ class TeamsList(APITestCase):
 
 class TeamDetails(APITestCase):
 	def setUp(self):
-		self.competition = utils.createCompetition(self)
+		self.organization = utils.createOrganization(self)
+		self.competition = utils.createCompetition(self, organization = self.organization['organizationId'])
 		team = utils.createTeam(self, competitionId = self.competition['competitionId'])
 		self.uri = '/competitions/%s/teams/%s.json' % (self.competition['competitionId'], team['teamId'])
 
@@ -121,7 +127,8 @@ class TeamDetails(APITestCase):
 
 class InjectsList(APITestCase):
 	def setUp(self):
-		competition = utils.createCompetition(self)
+		self.organization = utils.createOrganization(self)
+		competition = utils.createCompetition(self, organization = self.organization['organizationId'])
 		self.uri = '/competitions/%s/injects.json' % competition['competitionId']
 
 	def testHttp405Response(self):
@@ -135,7 +142,8 @@ class InjectsList(APITestCase):
 
 class InjectDetails(APITestCase):
 	def setUp(self):
-		self.competition = utils.createCompetition(self)
+		self.organization = utils.createOrganization(self)
+		self.competition = utils.createCompetition(self, organization = self.organization['organizationId'])
 		inject = utils.createInject(self, competitionId = self.competition['competitionId'])
 		self.uri = '/competitions/%s/injects/%s.json' % (self.competition['competitionId'], inject['injectId'])
 
@@ -156,9 +164,89 @@ class InjectDetails(APITestCase):
 		uri = '/competitions/%s/injects/9000.json' % self.competition['competitionId']
 		utils.get(self, uri, status_code = status.HTTP_404_NOT_FOUND)
 
+class InjectResponsesList(APITestCase):
+	def setUp(self):
+		self.organization = utils.createOrganization(self)
+		competition = utils.createCompetition(self, organization = self.organization['organizationId'])
+		self.uri = '/competitions/%s/injectresponses.json' % competition['competitionId']
+
+	def testHttp405Response(self):
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		utils.get(self, self.uri)
+
+	def testPost(self):
+		utils.post(self, self.uri, exampleData.injectResponse)
+
+class InjectResponseDetails(APITestCase):
+	def setUp(self):
+		self.organization = utils.createOrganization(self)
+		self.competition = utils.createCompetition(self, organization = self.organization['organizationId'])
+		self.team = utils.createTeam(self, competitionId = self.competition['competitionId'])
+		injectResponse = utils.createInjectResponse(self, competitionId = self.competition['competitionId'], teamId = self.team['teamId'])
+		self.uri = '/competitions/%s/injectresponses/%s.json' % (self.competition['competitionId'], injectResponse['injectResponseId'])
+
+	def testHttp405Response(self):
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		utils.get(self, self.uri)
+
+	def testPatch(self):
+		data = {"name": "This is a new name"}
+		utils.patch(self, self.uri, data)
+
+	def testDelete(self):
+		utils.delete(self, self.uri)
+
+	def testInvalid(self):
+		uri = '/competitions/%s/injectresponses/9000.json' % self.competition['competitionId']
+		utils.get(self, uri, status_code = status.HTTP_404_NOT_FOUND)
+
+class IncidentList(APITestCase):
+	def setUp(self):
+		self.organization = utils.createOrganization(self)
+		competition = utils.createCompetition(self, organization = self.organization['organizationId'])
+		self.uri = '/competitions/%s/incidents.json' % competition['competitionId']
+
+	def testHttp405Response(self):
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		utils.get(self, self.uri)
+
+	def testPost(self):
+		utils.post(self, self.uri, exampleData.inject)
+
+class IncidentDetails(APITestCase):
+	def setUp(self):
+		self.organization = utils.createOrganization(self)
+		self.competition = utils.createCompetition(self, organization = self.organization['organizationId'])
+		incident = utils.createIncident(self, competitionId = self.competition['competitionId'])
+		self.uri = '/competitions/%s/incidents/%s.json' % (self.competition['competitionId'], incident['incidentId'])
+
+	def testHttp405Response(self):
+		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+
+	def testGet(self):
+		utils.get(self, self.uri)
+
+	def testPatch(self):
+		data = {"name": "This is a new name"}
+		utils.patch(self, self.uri, data)
+
+	def testDelete(self):
+		utils.delete(self, self.uri)
+
+	def testInvalid(self):
+		uri = '/competitions/%s/incidents/9000.json' % self.competition['competitionId']
+		utils.get(self, uri, status_code = status.HTTP_404_NOT_FOUND)
+
 class IncidentResponsesList(APITestCase):
 	def setUp(self):
-		competition = utils.createCompetition(self)
+		self.organization = utils.createOrganization(self)
+		competition = utils.createCompetition(self, organization = self.organization['organizationId'])
 		self.uri = '/competitions/%s/incidentresponses.json' % competition['competitionId']
 
 	def testHttp405Response(self):
@@ -172,8 +260,10 @@ class IncidentResponsesList(APITestCase):
 
 class IncidentResponseDetails(APITestCase):
 	def setUp(self):
-		self.competition = utils.createCompetition(self)
-		incidentResponse = utils.createIncidentResponse(self, competitionId = self.competition['competitionId'])
+		self.organization = utils.createOrganization(self)
+		self.competition = utils.createCompetition(self, organization = self.organization['organizationId'])
+		self.team = utils.createTeam(self, competitionId = self.competition['competitionId'])
+		incidentResponse = utils.createIncidentResponse(self, competitionId = self.competition['competitionId'], teamId = self.team['teamId'])
 		self.uri = '/competitions/%s/incidentresponses/%s.json' % (self.competition['competitionId'], incidentResponse['incidentResponseId'])
 
 	def testHttp405Response(self):
@@ -195,7 +285,8 @@ class IncidentResponseDetails(APITestCase):
 
 class ScoresList(APITestCase):
 	def setUp(self):
-		competition = utils.createCompetition(self)
+		self.organization = utils.createOrganization(self)
+		competition = utils.createCompetition(self, organization = self.organization['organizationId'])
 		self.uri = '/competitions/%s/scores.json' % competition['competitionId']
 
 	def testHttp405Response(self):
@@ -209,9 +300,11 @@ class ScoresList(APITestCase):
 
 class ScoresDetails(APITestCase):
 	def setUp(self):
-		self.competition = utils.createCompetition(self)
-		scores = utils.createScore(self, competitionId = self.competition['competitionId'])
-		self.uri = '/competitions/%s/scores/%s.json' % (self.competition['competitionId'], scores['scoreId'])
+		self.organization = utils.createOrganization(self)
+		self.competition = utils.createCompetition(self, organization = self.organization['organizationId'])
+		self.team = utils.createTeam(self, competitionId = self.competition['competitionId'])
+		score = utils.createScore(self, competitionId = self.competition['competitionId'], teamId = self.team['teamId'])
+		self.uri = '/competitions/%s/scores/%s.json' % (self.competition['competitionId'], score['scoreId'])
 
 	def testHttp405Response(self):
 		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
