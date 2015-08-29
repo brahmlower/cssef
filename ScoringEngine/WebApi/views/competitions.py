@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 #from WebApi.views.utils import objectExists
+from WebApi.views.utils import callObject
 from WebApi.views.utils import listObjects
 from WebApi.views.utils import listObject
 from WebApi.views.utils import postObject
@@ -11,152 +12,140 @@ from WebApi.views.utils import deleteObject
 
 from ScoringEngine.endpoints import Competition
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def competitions(request):
 	if request.method == 'GET':
-		return listObjects(Competition, CompetitionSerializer)
-	elif request.method == 'POST':
-		#return postObject(request, CompetitionSerializer)
-		return postObject(Competition, 'create', request)
+		return listObjects(Competition, 'search')
 
-@api_view(['GET', 'PATCH', 'DELETE'])
+@api_view(['GET'])
 def competition(request, competitionId):
 	if request.method == 'GET':
-		return listObject(Competition, CompetitionSerializer, competitionId = competitionId)
-	elif request.method == 'PATCH':
-		return patchObject(request, Competition, CompetitionSerializer, competitionId = competitionId)
-	elif request.method == 'DELETE':
-		return deleteObject(Competition, competitionId = competitionId)
+		return listObject(Competition, '__init__', competitionId = competitionId)
+	# elif request.method == 'PATCH':
+	# 	return patchObject(request, Competition, CompetitionSerializer, competitionId = competitionId)
 
 @api_view(['GET', 'POST'])
 def teams(request, competitionId):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObjects(competition, Competition.getTeams)
+		return listObjects(competition, 'getTeams')
 	elif request.method == 'POST':
-		return postObject(competition, Competition.newTeam, request)
+		return postObject(competition, 'createTeam', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def team(request, competitionId, teamId):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObject(competition, Competition.getTeam, teamId = teamId)
+		return callObject(competition, 'getTeam', content = True, teamId = teamId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, Competition.editTeam, request, teamId = teamId)
+		return patchObject(competition, 'edit', request, teamId = teamId)
 	elif request.method == 'DELETE':
-		obj = competition.getTeam(teamId = teamId)
-		return deleteObject(competition, Competition.deleteTeam, obj)
+		return callObject(competition, 'deleteTeam', content = False, teamId = teamId)
 
 @api_view(['GET', 'POST'])
 def services(request, competitionId):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObjects(competition, Competition.getServices)
+		return listObjects(competition, 'getServices')
 	elif request.method == 'POST':
-		return postObject(competition, Competition.newService, request)
+		return postObject(competition, 'createService', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def service(request, competitionId, serviceId):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObject(competition, Competition.getService, serviceId = serviceId)
+		return callObject(competition, 'getService', content = True, serviceId = serviceId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, Competition.editService, request, serviceId = serviceId)
+		return patchObject(competition, 'edit', request, serviceId = serviceId)
 	elif request.method == 'DELETE':
-		obj = competition.getService(serviceId = serviceId)
-		return deleteObject(competition, Competition.deleteService, obj)
+		return callObject(competition, 'deleteService', content = False, serviceId = serviceId)
 
 @api_view(['GET', 'POST'])
 def scores(request, competitionId):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObjects(competition, Competition.getScores)
+		return listObjects(competition, 'getScores')
 	elif request.method == 'POST':
-		return postObject(competition, Competition.newScore, request)
+		return postObject(competition, 'createScore', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def score(request, competitionId, scoreId):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObject(competition, Competition.getScore, scoreId = scoreId)
+		return callObject(competition, 'getScore', content = True, scoreId = scoreId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, Competition.editScore, request, scoreId = scoreId)
+		return patchObject(competition, 'edit', request, scoreId = scoreId)
 	elif request.method == 'DELETE':
-		obj = competition.getScore(scoreId = scoreId)
-		return deleteObject(competition, Competition.deleteScore, obj)
+		return callObject(competition, 'deleteScore', content = False, scoreId = scoreId)
 
 @api_view(['GET', 'POST'])
 def injects(request, competitionId=None, injectId=None):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObjects(competition, Competition.getInjects)
+		return listObjects(competition, 'getInjects')
 	elif request.method == 'POST':
-		return postObject(competition, Competition.newInject, request)
+		return postObject(competition, 'createInject', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def inject(request, competitionId, injectId):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObject(competition, Competition.getInject, injectId = injectId)
+		return callObject(competition, 'getInject', content = True, injectId = injectId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, Competition.editInject, request, injectId = injectId)
+		return patchObject(competition, 'edit', request, injectId = injectId)
 	elif request.method == 'DELETE':
-		obj = competition.getInject(injectId = injectId)
-		return deleteObject(competition, Competition.deleteInject, obj)
+		return callObject(competition, 'deleteInject', content = False, injectId = injectId)
 
 @api_view(['GET', 'POST'])
 def injectresponses(request, competitionId):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObjects(competition, Competition.getInjectResponses)
+		return listObjects(competition, 'getInjectResponses')
 	elif request.method == 'POST':
-		return postObject(competition, Competition.newInjectResponse, request)
+		return postObject(competition, 'createInjectResponse', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def injectresponse(request, competitionId, injectResponseId):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObject(competition, Competition.getInjectResponse, injectresponseId = injectresponseId)
+		return callObject(competition, 'getInjectResponse', content = True, injectResponseId = injectResponseId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, Competition.editInjectResponse, request, injectResponseId = injectResponseId)
+		return patchObject(competition, 'edit', injectResponseId = injectResponseId)
 	elif request.method == 'DELETE':
-		obj = competition.getInjectResponse(injectresponseId = injectresponseId)
-		return deleteObject(competition, Competition.deleteInjectResponse, obj)
+		return postObject(competition, 'deleteInjectResponse', content = False, injectResponseId = injectResponseId)
 
 @api_view(['GET', 'POST'])
 def incidents(request, competitionId):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObjects(competition, Competition.getIncidents)
+		return listObjects(competition, 'getIncidents')
 	elif request.method == 'POST':
-		return postObject(competition, Competition.newIncident, request)
+		return postObject(competition, 'createIncident', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def incident(request, competitionId, incidentId):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObject(competition, Competition.getIncident, incidentId = incidentId)
+		return callObject(competition, 'getIncident', content = True, incidentId = incidentId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, Competition.editIncident, request, incidentId = incidentId)
+		return patchObject(competition, 'edit', request, incidentId = incidentId)
 	elif request.method == 'DELETE':
-		obj = competition.getIncident(incidentId = incidentId)
-		return deleteObject(competition, Competition.deleteIncident, obj)
+		return callObject(competition, 'deleteIncident', content = False, incidentId = incidentId)
 
 @api_view(['GET', 'POST'])
 def incidentresponses(request, competitionId):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObjects(competition, Competition.getIncidentResponses)
+		return listObjects(competition, 'getIncidentResponses')
 	elif request.method == 'POST':
-		return postObject(competition, Competition.newIncidentResponse, request)
+		return postObject(competition, 'createIncidentResponse', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def incidentresponse(request, competitionId, incidentResponseId):
-	competition = Competition(competitionId)
+	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObject(competition, Competition.getIncidentResponse, incidentResponseId = incidentResponseId)
+		return callObject(competition, 'getIncidentResponse', content = True, incidentResponseId = incidentResponseId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, Competition.editIncidentResponse, request, incidentResponseId = incidentResponseId)
+		return patchObject(competition, 'edit', request, incidentResponseId = incidentResponseId)
 	elif request.method == 'DELETE':
-		obj = competition.getIncidentResponse(incidentResponseId = incidentResponseId)
-		return deleteObject(competition, Competition.deleteIncidentResponse, obj)
+		return deleteObject(competition, 'deleteIncidentResponse', content = False, incidentResponseId = incidentResponseId)

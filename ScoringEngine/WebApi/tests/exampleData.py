@@ -70,6 +70,22 @@ inject = {
 	'body': "Contents of inject description"
 }
 
+injectResponse = {
+	'competitionId': 1,
+	'teamId': 1,
+	'injectId': 1,
+	'datetime': "2015-07-15 20:30:15",
+	'content': "test content",
+}
+
+incident = {
+	'competitionId': 1,
+	'teamId': 1,
+	'datetime': "2015-07-15 20:30:15",
+	'subject': "Test Subject",
+	'content': "test content",	
+}
+
 incidentResponse = {
 	'competitionId': 1,
 	'teamId': 1,

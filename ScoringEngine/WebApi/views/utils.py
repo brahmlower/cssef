@@ -50,15 +50,13 @@ def postObject(classPointer, methodName, request):
 	try:
 		returnObject = method(request.POST, serialized = True)
 	except MaxMembersReached as error:
-		#return Response(status = status.HTTP_403_FORBIDDEN)
 		return JSONResponse({error.message}, status = status.HTTP_403_FORBIDDEN)
 	except MaxCompetitionsReached as error:
-		#return Response(status = status.HTTP_403_FORBIDDEN)
 		return JSONResponse({error.message}, status = status.HTTP_403_FORBIDDEN)
 	if returnObject:
 		if request.FILES:
 			for i in request.FILES:
-				# create/save the file here
+				# TODO: create/save the file here
 				pass
 		return JSONResponse(returnObject, status = status.HTTP_201_CREATED)
 	print "Failed to create object..."

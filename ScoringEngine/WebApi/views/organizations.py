@@ -52,7 +52,6 @@ def competitions(request, organizationId):
 		return listObjects(organization, 'getCompetitions')
 	elif request.method == 'POST':
 		return postObject(organization, 'createCompetition', request)
-		#return callObject(organization, 'createCompetition', postData = request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def competition(request, organizationId, competitionId):

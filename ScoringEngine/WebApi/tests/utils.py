@@ -24,19 +24,29 @@ def createCompetition(instance, **kwargs):
 	response = post(instance, uri, exampleData.competitionMin, **kwargs)
 	return json.loads(response.content)
 
-def createInject(instance, competitionId = 1):
-	uri = '/competitions/%s/injects.json' % str(competitionId)
+def createInject(instance, **kwargs):
+	uri = '/competitions/%s/injects.json' % kwargs.get('competitionId', '1')#str(competitionId)
 	response = post(instance, uri, exampleData.inject)
 	return json.loads(response.content)
 
-def createScore(instance, competitionId = 1):
-	uri = '/competitions/%s/scores.json' % str(competitionId)
-	response = post(instance, uri, exampleData.score)
+def createInjectResponse(instance, **kwargs):
+	uri = '/competitions/%s/injectresponses.json' % kwargs.get('competitionId', '1')#str(competitionId)
+	response = post(instance, uri, (exampleData.injectResponse).update(kwargs))
 	return json.loads(response.content)
 
-def createIncidentResponse(instance, competitionId = 1):
-	uri = '/competitions/%s/incidentresponses.json' % str(competitionId)
-	response = post(instance, uri, exampleData.incidentResponse)
+def createScore(instance, **kwargs):
+	uri = '/competitions/%s/scores.json' % kwargs.get('competitionId', '1')#str(competitionId)
+	response = post(instance, uri, exampleData.score, **kwargs)
+	return json.loads(response.content)
+
+def createIncident(instance, **kwargs):
+	uri = '/competitions/%s/incidents.json' % kwargs.get('competitionId', '1')#str(competitionId)
+	response = post(instance, uri, exampleData.incident)
+	return json.loads(response.content)
+
+def createIncidentResponse(instance, **kwargs):
+	uri = '/competitions/%s/incidentresponses.json' % kwargs.get('competitionId', '1')#str(competitionId)
+	response = post(instance, uri, (exampleData.incidentResponse).update(kwargs))
 	return json.loads(response.content)
 
 def createTeam(instance, competitionId = 1):
