@@ -29,8 +29,8 @@ competitionMax = {
 
 team = {
 	"competitionId": 1,
-	"teamname": "Team Name",
-	"loginname": "teamname",
+	"name": "Team Name",
+	"username": "teamname",
 	"password": "password",
 	"networkCidr": "192.168.1.0/24",
 	"scorConfigurations": "{}"
