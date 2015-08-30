@@ -99,6 +99,15 @@ class Competition:
 		serializerObject = TeamSerializer
 		modelObject = TeamModel
 
+		def edit(self, **kwargs):
+			self.serialized = kwargs.pop('serialized', None)
+			for i in kwargs:
+				if i == 'username':					self.setUsername(kwargs.get(i))
+				elif i == 'name':					self.setName(kwargs.get(i))
+				elif i == 'password':				self.setPassword(kwargs.get(i))
+				elif i == 'networkCidr':			self.setNetworkCidr(kwargs.get(i))
+				elif i == 'scoreConfigurations':	self.setScoreConfigurations(kwargs.get(i))
+
 		# Username methods
 		def setUsername(self, username):
 			self.model.username = username
@@ -110,7 +119,7 @@ class Competition:
 		# Name methods
 		def setName(self, name):
 			self.model.name = name
-			self.model.name.save()
+			self.model.save()
 
 		def getName(self):
 			return self.model.name
@@ -181,6 +190,17 @@ class Competition:
 	class Inject(ModelWrapper):
 		serializerObject = InjectSerializer
 		modelObject = InjectModel
+
+		def edit(self, **kwargs):
+			self.serialized = kwargs.pop('serialized', None)
+			for i in kwargs:
+				if i == 'requireResponse':			self.setRequireResponse(kwargs.get(i))
+				elif i == 'manualDelivery':			self.setManualDelivery(kwargs.get(i))
+				elif i == 'datetimeDelivery':		self.setDatetimeDelivery(kwargs.get(i))
+				elif i == 'datetimeResponseDue':	self.setDatetimeResponseDue(kwargs.get(i))
+				elif i == 'datetimeResponseClose':	self.setDatetimeResponseClose(kwargs.get(i))
+				elif i == 'title':					self.setTitle(kwargs.get(i))
+				elif i == 'body':					self.setBody(kwargs.get(i))
 
 		# Require Response modules
 		def setRequireResponse(self, requireResponse):
@@ -263,6 +283,12 @@ class Competition:
 		serializerObject = InjectResponseSerializer
 		modelObject = InjectResponseModel
 
+		def edit(self, **kwargs):
+			self.serialized = kwargs.pop('serialized', None)
+			for i in kwargs:
+				if i == 'datetime':		self.setDatetime(kwargs.get(i))
+				elif i == 'content':	self.setContent(kwargs.get(i))
+
 		def setDatetime(self, datetime):
 			self.model.datetime = datetime
 			self.model.save()
@@ -280,6 +306,13 @@ class Competition:
 	class Incident(ModelWrapper):
 		serializerObject = IncidentSerializer
 		modelObject = IncidentModel
+
+		def edit(self, **kwargs):
+			self.serialized = kwargs.pop('serialized', None)
+			for i in kwargs:
+				if i == 'datetime':		self.setDatetime(kwargs.get(i))
+				elif i == 'subject':	self.setSubject(kwargs.get(i))
+				elif i == 'content':	self.setContent(kwargs.get(i))
 
 		def getDatetime(self):
 			return self.model.datetime
@@ -305,6 +338,14 @@ class Competition:
 	class IncidentResponse(ModelWrapper):
 		serializerObject = IncidentResponseSerializer
 		modelObject = IncidentResponseModel
+
+		def edit(self, **kwargs):
+			self.serialized = kwargs.pop('serialized', None)
+			for i in kwargs:
+				if i == 'replyTo':		self.setReplyTo(kwargs.get(i))
+				elif i == 'datetime':	self.setDatetime(kwargs.get(i))
+				elif i == 'subject':	self.setSubject(kwargs.get(i))
+				elif i == 'content':	self.setContent(kwargs.get(i))
 
 		def setReplyTo(self, replyTo):
 			self.model.replyTo = replyTo
@@ -337,6 +378,13 @@ class Competition:
 	class Score(ModelWrapper):
 		serializerObject = ScoreSerializer
 		modelObject = ScoreModel
+
+		def edit(self, **kwargs):
+			self.serialized = kwargs.pop('serialized', None)
+			for i in kwargs:
+				if i == 'datetime':		self.setDatetime(kwargs.get(i))
+				elif i == 'value':		self.setValue(kwargs.get(i))
+				elif i == 'message':	self.setMessage(kwargs.get(i))
 
 		def isSlaViolation(competition):
 			# TODO: LEGACY CODE, NEEDS TO BE UPDATED
@@ -450,6 +498,10 @@ class Competition:
 		postData['competitionId'] = self.model.competitionId
 		return Competition.Team.create(Competition.Team, postData, serialized)
 
+	def editTeam(self, **kwargs):
+		team = self.getTeam(teamId = kwargs.pop('teamId', None))
+		return team.edit(**kwargs)
+
 	def getTeam(self, **kwargs):
 		return getObject(Competition.Team, competitionId = self.model.competitionId, **kwargs)
 
@@ -464,6 +516,14 @@ class Competition:
 		postData['organizationId'] = self.model.organization
 		postData['competitionId'] = self.model.competitionId
 		return Competition.Service.create(Competition.Service, postData, serialized)
+
+	def editService(self, **kwargs):
+		service = self.getService(serviceId = kwargs.pop('serviceId', None))
+		return service.edit(**kwargs)
+
+	def editService(self, **kwargs):
+		service = self.getService(serviceId = kwargs.pop('serviceId', None))
+		return service.edit(**kwargs)
 
 	def getService(self, **kwargs):
 		return getObject(Competition.Service, competitionId = self.model.competitionId, **kwargs)
@@ -480,6 +540,10 @@ class Competition:
 		postData['competitionId'] = self.model.competitionId
 		return Competition.Incident.create(Competition.Incident, postData, serialized)
 
+	def editIncident(self, **kwargs):
+		incident = self.getIncident(incidentId = kwargs.pop('incidentId', None))
+		return incident.edit(**kwargs)
+
 	def getIncident(self, **kwargs):
 		return getObject(Competition.Incident, competitionId = self.model.competitionId, **kwargs)
 
@@ -494,6 +558,10 @@ class Competition:
 		postData['organizationId'] = self.model.organization
 		postData['competitionId'] = self.model.competitionId
 		return Competition.IncidentResponse.create(Competition.IncidentResponse, postData, serialized)
+
+	def editIncidentResponse(self, **kwargs):
+		incidentResponse = self.getIncidentResponse(incidentResponseId = kwargs.pop('incidentResponseId', None))
+		return incidentResponse.edit(**kwargs)
 
 	def getIncidentResponse(self, **kwargs):
 		return getObject(Competition.IncidentResponse, competitionId = self.model.competitionId, **kwargs)
@@ -510,6 +578,10 @@ class Competition:
 		postData['competitionId'] = self.model.competitionId
 		return Competition.Inject.create(Competition.Inject, postData, serialized)
 
+	def editInject(self, **kwargs):
+		inject = self.getInject(injectId = kwargs.pop('injectId', None))
+		return inject.edit(**kwargs)
+
 	def getInject(self, **kwargs):
 		return getObject(Competition.Inject, competitionId = self.model.competitionId, **kwargs)
 
@@ -525,6 +597,10 @@ class Competition:
 		postData['competitionId'] = self.model.competitionId
 		return Competition.InjectResponse.create(Competition.InjectResponse, postData, serialized)
 
+	def editInjectResponse(self, **kwargs):
+		injectResponse = self.getInjectResponse(injectResponseId = kwargs.pop('injectResponseId', None))
+		return injectResponse.edit(**kwargs)
+
 	def getInjectResponse(self, **kwargs):
 		return getObject(Competition.InjectResponse, competitionId = self.model.competitionId, **kwargs)
 
@@ -539,6 +615,10 @@ class Competition:
 		postData['organizationId'] = self.model.organization
 		postData['competitionId'] = self.model.competitionId
 		return Competition.Score.create(Competition.Score, postData, serialized)
+
+	def editScore(self, **kwargs):
+		score = self.getScore(scoreId = kwargs.pop('scoreId', None))
+		return score.edit(**kwargs)
 
 	def getScore(self, **kwargs):
 		return getObject(Competition.Score, competitionId = self.model.competitionId, **kwargs)

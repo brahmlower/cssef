@@ -2,7 +2,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-#from WebApi.views.utils import objectExists
 from WebApi.views.utils import callObject
 from WebApi.views.utils import listObjects
 from WebApi.views.utils import listObject
@@ -21,8 +20,6 @@ def competitions(request):
 def competition(request, competitionId):
 	if request.method == 'GET':
 		return listObject(Competition, '__init__', competitionId = competitionId)
-	# elif request.method == 'PATCH':
-	# 	return patchObject(request, Competition, CompetitionSerializer, competitionId = competitionId)
 
 @api_view(['GET', 'POST'])
 def teams(request, competitionId):
@@ -38,7 +35,7 @@ def team(request, competitionId, teamId):
 	if request.method == 'GET':
 		return callObject(competition, 'getTeam', content = True, teamId = teamId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, 'edit', request, teamId = teamId)
+		return patchObject(competition, 'editTeam', request, teamId = teamId)
 	elif request.method == 'DELETE':
 		return callObject(competition, 'deleteTeam', content = False, teamId = teamId)
 
@@ -56,7 +53,7 @@ def service(request, competitionId, serviceId):
 	if request.method == 'GET':
 		return callObject(competition, 'getService', content = True, serviceId = serviceId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, 'edit', request, serviceId = serviceId)
+		return patchObject(competition, 'editService', request, serviceId = serviceId)
 	elif request.method == 'DELETE':
 		return callObject(competition, 'deleteService', content = False, serviceId = serviceId)
 
@@ -74,7 +71,7 @@ def score(request, competitionId, scoreId):
 	if request.method == 'GET':
 		return callObject(competition, 'getScore', content = True, scoreId = scoreId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, 'edit', request, scoreId = scoreId)
+		return patchObject(competition, 'editScore', request, scoreId = scoreId)
 	elif request.method == 'DELETE':
 		return callObject(competition, 'deleteScore', content = False, scoreId = scoreId)
 
@@ -92,7 +89,7 @@ def inject(request, competitionId, injectId):
 	if request.method == 'GET':
 		return callObject(competition, 'getInject', content = True, injectId = injectId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, 'edit', request, injectId = injectId)
+		return patchObject(competition, 'editInject', request, injectId = injectId)
 	elif request.method == 'DELETE':
 		return callObject(competition, 'deleteInject', content = False, injectId = injectId)
 
@@ -110,7 +107,7 @@ def injectresponse(request, competitionId, injectResponseId):
 	if request.method == 'GET':
 		return callObject(competition, 'getInjectResponse', content = True, injectResponseId = injectResponseId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, 'edit', request, injectResponseId = injectResponseId)
+		return patchObject(competition, 'editInjectResponse', request, injectResponseId = injectResponseId)
 	elif request.method == 'DELETE':
 		return callObject(competition, 'deleteInjectResponse', content = False, injectResponseId = injectResponseId)
 
@@ -128,7 +125,7 @@ def incident(request, competitionId, incidentId):
 	if request.method == 'GET':
 		return callObject(competition, 'getIncident', content = True, incidentId = incidentId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, 'edit', request, incidentId = incidentId)
+		return patchObject(competition, 'editIncident', request, incidentId = incidentId)
 	elif request.method == 'DELETE':
 		return callObject(competition, 'deleteIncident', content = False, incidentId = incidentId)
 
@@ -148,6 +145,6 @@ def incidentresponse(request, competitionId, incidentResponseId):
 	if request.method == 'GET':
 		return callObject(competition, 'getIncidentResponse', content = True, incidentResponseId = incidentResponseId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, 'edit', request, incidentResponseId = incidentResponseId)
+		return patchObject(competition, 'editIncidentResponse', request, incidentResponseId = incidentResponseId)
 	elif request.method == 'DELETE':
 		return callObject(competition, 'deleteIncidentResponse', content = False, incidentResponseId = incidentResponseId)

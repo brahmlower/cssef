@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.test import Client
 import exampleData
 import utils
+import json
 
 class CompetitionsList(APITestCase):
 	def setUp(self):
@@ -12,8 +13,6 @@ class CompetitionsList(APITestCase):
 
 	def testHttp405Response(self):
 		utils.put(self, self.uri, {}, status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
-		# response = self.client.put(self.uri, {})
-		# self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 	def testGet(self):
 		utils.get(self, self.uri)
@@ -30,11 +29,16 @@ class CompetitionDetails(APITestCase):
 	def testGet(self):
 		utils.get(self, self.uri)
 
-	def testPatch(self):
-		# Request returns 400 without the description. With the description provided,
-		# it will return the expected 202 status
-		data = {"name": "This is a new name", "description":"new description"}
-		utils.patch(self, self.uri, data)
+	# Doesn't accept PATCH option at /competition/%s.json
+
+	# def testPatch(self):
+	# 	# Request returns 400 without the description. With the description provided,
+	# 	# it will return the expected 202 status
+	# 	data = {"name": "This is a new name", "description":"new description"}
+	# 	utils.patch(self, self.uri, data)
+	# 	response = utils.get(self, self.uri)
+	# 	name = json.loads(response.content)['name']
+	# 	self.assertEqual(name, data['name'])
 
 	def testInvalid(self):
 		uri = '/competitions/9000.json'
@@ -73,6 +77,9 @@ class ServiceDetails(APITestCase):
 	def testPatch(self):
 		data = {"name": "This is a new name"}
 		utils.patch(self, self.uri, data)
+		response = utils.get(self, self.uri)
+		name = json.loads(response.content)['name']
+		self.assertEqual(name, data['name'])
 
 	def testDelete(self):
 		utils.delete(self, self.uri)
@@ -112,6 +119,9 @@ class TeamDetails(APITestCase):
 	def testPatch(self):
 		data = {"name": "This is a new name"}
 		utils.patch(self, self.uri, data)
+		response = utils.get(self, self.uri)
+		name = json.loads(response.content)['name']
+		self.assertEqual(name, data['name'])
 
 	def testDelete(self):
 		utils.delete(self, self.uri)
@@ -149,8 +159,11 @@ class InjectDetails(APITestCase):
 		utils.get(self, self.uri)
 
 	def testPatch(self):
-		data = {"name": "This is a new name"}
+		data = {"title": "This is a new title"}
 		utils.patch(self, self.uri, data)
+		response = utils.get(self, self.uri)
+		title = json.loads(response.content)['title']
+		self.assertEqual(title, data['title'])
 
 	def testDelete(self):
 		utils.delete(self, self.uri)
@@ -189,8 +202,11 @@ class InjectResponseDetails(APITestCase):
 		utils.get(self, self.uri)
 
 	def testPatch(self):
-		data = {"name": "This is a new name"}
+		data = {"content": "This is some new content"}
 		utils.patch(self, self.uri, data)
+		response = utils.get(self, self.uri)
+		content = json.loads(response.content)['content']
+		self.assertEqual(content, data['content'])
 
 	def testDelete(self):
 		utils.delete(self, self.uri)
@@ -228,8 +244,11 @@ class IncidentDetails(APITestCase):
 		utils.get(self, self.uri)
 
 	def testPatch(self):
-		data = {"name": "This is a new name"}
+		data = {"subject": "This is a new subject"}
 		utils.patch(self, self.uri, data)
+		response = utils.get(self, self.uri)
+		subject = json.loads(response.content)['subject']
+		self.assertEqual(subject, data['subject'])
 
 	def testDelete(self):
 		utils.delete(self, self.uri)
@@ -268,8 +287,11 @@ class IncidentResponseDetails(APITestCase):
 		utils.get(self, self.uri)
 
 	def testPatch(self):
-		data = {"name": "This is a new name"}
+		data = {"subject": "This is a new subject"}
 		utils.patch(self, self.uri, data)
+		response = utils.get(self, self.uri)
+		subject = json.loads(response.content)['subject']
+		self.assertEqual(subject, data['subject'])
 
 	def testDelete(self):
 		utils.delete(self, self.uri)
@@ -308,8 +330,11 @@ class ScoresDetails(APITestCase):
 		utils.get(self, self.uri)
 
 	def testPatch(self):
-		data = {"name": "This is a new name"}
+		data = {"message": "This is a new message"}
 		utils.patch(self, self.uri, data)
+		response = utils.get(self, self.uri)
+		message = json.loads(response.content)['message']
+		self.assertEqual(message, data['message'])
 
 	def testDelete(self):
 		utils.delete(self, self.uri)

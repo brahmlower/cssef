@@ -62,7 +62,7 @@ def createCompetition(instance, **kwargs):
 def createInject(instance, **kwargs):
 	uri = kwargs.pop('uri', None)
 	if not uri:
-		uri = '/competitions/%s/injects.json' % kwargs.get('competitionId', '1')#str(competitionId)
+		uri = '/competitions/%s/injects.json' % kwargs.get('competitionId', '1')
 	postData = exampleData.inject
 	postData.update(kwargs)
 	response = post(instance, uri, postData)
@@ -71,7 +71,7 @@ def createInject(instance, **kwargs):
 def createInjectResponse(instance, **kwargs):
 	uri = kwargs.pop('uri', None)
 	if not uri:
-		uri = '/competitions/%s/injectresponses.json' % kwargs.get('competitionId', '1')#str(competitionId)
+		uri = '/competitions/%s/injectresponses.json' % kwargs.get('competitionId', '1')
 	postData = exampleData.injectResponse
 	postData.update(kwargs)
 	response = post(instance, uri, postData)
@@ -80,7 +80,7 @@ def createInjectResponse(instance, **kwargs):
 def createScore(instance, **kwargs):
 	uri = kwargs.pop('uri', None)
 	if not uri:
-		uri = '/competitions/%s/scores.json' % kwargs.get('competitionId', '1')#str(competitionId)
+		uri = '/competitions/%s/scores.json' % kwargs.get('competitionId', '1')
 	postData = exampleData.score
 	postData.update(kwargs)
 	response = post(instance, uri, postData)
@@ -89,7 +89,7 @@ def createScore(instance, **kwargs):
 def createIncident(instance, **kwargs):
 	uri = kwargs.pop('uri', None)
 	if not uri:
-		uri = '/competitions/%s/incidents.json' % kwargs.get('competitionId', '1')#str(competitionId)
+		uri = '/competitions/%s/incidents.json' % kwargs.get('competitionId', '1')
 	postData = exampleData.incident
 	postData.update(kwargs)
 	response = post(instance, uri, postData)
@@ -98,7 +98,7 @@ def createIncident(instance, **kwargs):
 def createIncidentResponse(instance, **kwargs):
 	uri = kwargs.pop('uri', None)
 	if not uri:
-		uri = '/competitions/%s/incidentresponses.json' % kwargs.get('competitionId', '1')#str(competitionId)
+		uri = '/competitions/%s/incidentresponses.json' % kwargs.get('competitionId', '1')
 	postData = exampleData.incidentResponse
 	postData.update(kwargs)
 	response = post(instance, uri, postData)
@@ -107,7 +107,7 @@ def createIncidentResponse(instance, **kwargs):
 def createTeam(instance, **kwargs):
 	uri = kwargs.pop('uri', None)
 	if not uri:
-		uri = '/competitions/%s/teams.json' % kwargs.get('competitionId', '1')#str(competitionId)
+		uri = '/competitions/%s/teams.json' % kwargs.get('competitionId', '1')
 	postData = exampleData.team
 	postData.update(kwargs)
 	response = post(instance, uri, postData)
@@ -116,7 +116,7 @@ def createTeam(instance, **kwargs):
 def createService(instance, **kwargs):
 	uri = kwargs.pop('uri', None)
 	if not uri:
-		uri = '/competitions/%s/services.json' % kwargs.get('competitionId', '1')#str(competitionId)
+		uri = '/competitions/%s/services.json' % kwargs.get('competitionId', '1')
 	postData = exampleData.service
 	postData.update(kwargs)
 	response = post(instance, uri, postData)

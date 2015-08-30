@@ -50,8 +50,8 @@ class Team(Model):
 	teamId = AutoField(primary_key = True)
 	competitionId = PositiveIntegerField()
 	last_login = DateTimeField(default = timezone.now())
-	teamname = CharField(max_length = 30)    #name
-	loginname = CharField(max_length = 30)	#username
+	name = CharField(max_length = 30)
+	username = CharField(max_length = 30)
 	password = CharField(max_length = 64)
 	networkCidr = CharField(max_length = 30)
 	scoreConfigurations = TextField(max_length = 500, default = "{}")

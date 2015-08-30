@@ -63,8 +63,14 @@ def postObject(classPointer, methodName, request):
 	print request.POST
 	return JSONResponse(returnObject, status = status.HTTP_400_BAD_REQUEST)
 
-def patchObject(competition, subclass, request, **kwargs):
-	return Response(status = status.HTTP_501_NOT_IMPLEMENTED)
+def patchObject(classPointer, methodName, request, **kwargs):
+	#return Response(status = status.HTTP_501_NOT_IMPLEMENTED)
+	method = getattr(classPointer, methodName)
+	keywords.update(json.loads(request.body))
+	keywords = kwargs
+	keywords.update({'serialized': True})
+	returnObject = method(**keywords)
+	return JSONResponse(returnObject, status = status.HTTP_202_ACCEPTED)
 
 # def patchObject(request, objectType, objectTypeSerializer, **kwargs):
 # 	objectInstance = objectType.objects.get(**kwargs)

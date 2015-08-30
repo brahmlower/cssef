@@ -47,8 +47,8 @@ class TeamSerializer(serializers.ModelSerializer):
 			'teamId',
 			'competitionId',
 			'last_login',
-			'teamname',
-			'loginname',
+			'name',
+			'username',
 			'password',
 			'networkCidr',
 			'scoreConfigurations')
