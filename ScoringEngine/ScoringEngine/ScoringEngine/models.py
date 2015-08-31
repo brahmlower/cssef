@@ -14,8 +14,8 @@ class Plugin(Model):
 	name = CharField(max_length = 20)
 	description = TextField(max_length = 500)
 
-	def getModuleName(self):
-		return Document.objects.get(servicemodule = self.servicemodule).filename.split(".")[0]
+	# def getModuleName(self):
+	# 	return Document.objects.get(servicemodule = self.servicemodule).filename.split(".")[0]
 
 	def getImportPath(self, moduleName = None):
 		if moduleName:

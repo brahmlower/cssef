@@ -113,23 +113,6 @@ def createTeam(instance, **kwargs):
 	response = post(instance, uri, postData)
 	return json.loads(response.content)
 
-def createService(instance, **kwargs):
-	uri = kwargs.pop('uri', None)
-	if not uri:
-		uri = '/competitions/%s/services.json' % kwargs.get('competitionId', '1')
-	postData = exampleData.service
-	postData.update(kwargs)
-	response = post(instance, uri, postData)
-	return json.loads(response.content)
-
-def createPlugin(instance):
-	uri = '/plugins.json'
-	temporary_file = open('testfile.txt', 'w+')
-	postData = exampleData.plugin
-	postData['testfile.txt'] = temporary_file
-	response = post(instance, uri, exampleData.plugin, postFormat = 'multipart/form-data')
-	return json.loads(response.content)
-
 def get(instance, uri, status_code = status.HTTP_200_OK, content = None):
 	response = instance.client.get(uri)
 	instance.assertEqual(response.status_code, status_code)

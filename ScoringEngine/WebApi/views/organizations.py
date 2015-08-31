@@ -9,14 +9,16 @@ from WebApi.views.utils import postObject
 from WebApi.views.utils import patchObject
 from WebApi.views.utils import deleteObject
 
+from ScoringEngine import endpoints
 from ScoringEngine.endpoints import Organization
+from ScoringEngine.endpoints import User
 
 @api_view(['GET', 'POST'])
 def organizations(request):
 	if request.method == 'GET':
 		return listObjects(Organization, 'search')
 	elif request.method == 'POST':
-		return postObject(Organization, 'create', request)
+		return postObject(endpoints, 'createOrganization', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def organization(request, organizationId):
@@ -41,7 +43,7 @@ def member(request, organizationId, memberId):
 	if request.method == 'GET':
 		return callObject(organization, 'getMember', content = True, userId = memberId)
 	elif request.method == 'PATCH':
-		return patchObject(organization, 'edit', request, userId = memberId)
+		return patchObject(organization, 'editMember', request, userId = memberId)
 	elif request.method == 'DELETE':
 		return callObject(organization, 'deleteMember', content = False, userId = memberId)
 
@@ -62,3 +64,19 @@ def competition(request, organizationId, competitionId):
 		return patchObject(organization, 'edit', request, competitionId = competitionId)
 	elif request.method == 'DELETE':
 		return callObject(organization, 'deleteCompetition', content = False, competitionId = competitionId)
+
+@api_view(['GET'])
+def users(request):
+	if request.method == 'GET':
+		return listObjects(User, 'search')
+	# User creation should only happen from within the Organization member list
+
+@api_view(['GET', 'PATCH'])
+def user(request, userId):
+	if request.method == 'GET':
+		#return listObject(User, User.getUser, userId = userId)
+		return listObject(User, '__init__', userId = userId)
+	elif request.method == 'PATCH':
+		#return patchObject(User, User.editUser, request, userId = userId)
+		return patchObject(User, 'edit', request, userId = userId)
+

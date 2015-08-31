@@ -45,19 +45,19 @@ score = {
 	'message': "Test Subject"
 }
 
-service = {
-	"plugin": 1,
-	"competitionId": 1,
-	"name": "Test Service",
-	"description": "test service description",
-	"manualStart": False,
-	"datetimeStart": "",
-	"datetimeFinish": "",
-	"points": 10,
-	"machineIp": 210,
-	"machineFqdn": "test.local",
-	"defaultPort": 9000
-}
+# service = {
+# 	"plugin": 1,
+# 	"competitionId": 1,
+# 	"name": "Test Service",
+# 	"description": "test service description",
+# 	"manualStart": False,
+# 	"datetimeStart": "",
+# 	"datetimeFinish": "",
+# 	"points": 10,
+# 	"machineIp": 210,
+# 	"machineFqdn": "test.local",
+# 	"defaultPort": 9000
+# }
 
 inject = {
 	'competitionId': 1,
@@ -110,12 +110,12 @@ user = {
 	'organizationId': 1
 }
 
-plugin = {
-	'name': "Test Plugin",
-	'description': "Test plugin description."
-}
+# plugin = {
+# 	'name': "Test Plugin",
+# 	'description': "Test plugin description."
+# }
 
-pluginDocument = {
+document = {
 	'inject': None,
 	'injectResponse': None,
 	'incidentResponse': None,

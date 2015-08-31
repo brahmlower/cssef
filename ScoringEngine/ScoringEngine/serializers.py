@@ -53,38 +53,6 @@ class TeamSerializer(serializers.ModelSerializer):
 			'networkCidr',
 			'scoreConfigurations')
 
-class PluginSerializer(serializers.ModelSerializer):
-	document = serializers.SerializerMethodField()
-	class Meta:
-		model = Plugin
-		fields = (
-			'pluginId',
-			'name',
-			'description',
-			'document')
-
-	def get_document(self, obj):
-		document = Document.objects.get(plugin = obj)
-		serializer = DocumentSerializer(document)
-		return serializer.data
-
-class ServiceSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Service
-		fields = (
-			'serviceId',
-			'competitionId',
-			'plugin',
-			'name',
-			'description',
-			'manualStart',
-			'datetimeStart',
-			'datetimeFinish',
-			'points',
-			'machineIp',
-			'machineFqdn',
-			'defaultPort')
-
 class ScoreSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Score
