@@ -9,17 +9,18 @@ from WebApi.views.utils import postObject
 from WebApi.views.utils import patchObject
 from WebApi.views.utils import deleteObject
 
+from ScoringEngine import endpoints
 from ScoringEngine.endpoints import Competition
 
 @api_view(['GET'])
 def competitions(request):
 	if request.method == 'GET':
-		return listObjects(Competition, 'search')
+		return listObjects(endpoints, 'getCompetitions')
 
 @api_view(['GET'])
 def competition(request, competitionId):
 	if request.method == 'GET':
-		return listObject(Competition, '__init__', competitionId = competitionId)
+		return listObject(endpoints, 'getCompetition', competitionId = competitionId)
 
 @api_view(['GET', 'POST'])
 def teams(request, competitionId):
@@ -135,8 +136,6 @@ def incidentresponses(request, competitionId):
 	if request.method == 'GET':
 		return listObjects(competition, 'getIncidentResponses')
 	elif request.method == 'POST':
-		# print "competitions.incidentresponses"
-		# print request.POST
 		return postObject(competition, 'createIncidentResponse', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])

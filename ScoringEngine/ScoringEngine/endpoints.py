@@ -9,7 +9,6 @@ from models import IncidentResponse as IncidentResponseModel
 from models import Plugin as PluginModel
 from models import User as UserModel
 from models import Document as DocumentModel
-#from Document import Document
 
 from serializers import UserSerializer
 from serializers import OrganizationSerializer
@@ -64,7 +63,7 @@ class ModelWrapper:
 				self.model = self.modelObject.objects.get(**kwargs)
 			except ObjectDoesNotExist:
 				raise self.ObjectDoesNotExist("custom 1 - Database object matching query does not exist.")
-			except modelObject.DoesNotExist:
+			except self.modelObject.DoesNotExist:
 				raise self.ObjectDoesNotExist("custom 2 - Database object matching query does not exist.")
 
 	def delete(self):
@@ -102,7 +101,7 @@ class ModelWrapper:
 		else:
 			return objectType.serializerObject(items.model).data
 
-class Competition:
+class Competition(ModelWrapper):
 	class Team(ModelWrapper):
 		serializerObject = TeamSerializer
 		modelObject = TeamModel
@@ -427,58 +426,12 @@ class Competition:
 		def getMessage(self):
 			return self.model.message
 
-	class ObjectDoesNotExist(CssefObjectDoesNotExist):
-		def __init__(self, message):
-			self.message = message
-
-		def __str__(self):
-			return repr(self.message)
-
 	serializerObject = CompetitionSerializer
 	modelObject = CompetitionModel
-	def __init__(self, **kwargs):
-		self.model = kwargs.pop('modelInst', None)
-		if not self.model:
-			try:
-				self.model = Competition.modelObject.objects.get(**kwargs)
-			except ObjectDoesNotExist:
-				raise self.ObjectDoesNotExist("custom 1 - Competition matching query does not exist.")
-			except modelObject.DoesNotExist:
-				raise self.ObjectDoesNotExist("custom 2 - Competition matching query does not exist.")
-
-	def delete(self):
-		self.model.delete()
 
 	@staticmethod
 	def count(**kwargs):
 		return Competition.modelObject.objects.filter(**kwargs).count()
-
-	@staticmethod
-	def search(**kwargs):
-		return wrappedSearch(Competition, Competition.modelObject, **kwargs)
-
-	@staticmethod
-	def create(postData, serialized = False):
-		#serialized = kwargs.pop('serialized', False)
-		serializedModel = Competition.serializerObject(data = postData)
-		if serializedModel.is_valid():
-			obj = serializedModel.save()
-			if serialized:
-				return serializedModel.data
-			else:
-				return obj
-		else:
-			print "failed to be created!"
-			print serializedModel.errors
-			# failed to create object
-			return serializedModel.errors
-
-	@staticmethod
-	def serialize(items):
-		if items.__class__.__name__ == "QuerySet":
-			return Competition.serializerObject(items, many = True).data
-		else:
-			return Competition.serializerObject(items.model).data	
 
 	def getName(self):
 		return self.model.name
@@ -639,13 +592,6 @@ class Competition:
 		self.getScore(**kwargs).delete()
 
 class Organization(ModelWrapper):
-	# class ObjectDoesNotExist(CssefObjectDoesNotExist):
-	# 	def __init__(self, message):
-	# 		self.message = message
-
-	# 	def __str__(self):
-	# 		return repr(self.message)
-
 	serializerObject = OrganizationSerializer
 	modelObject = OrganizationModel
 
@@ -657,46 +603,6 @@ class Organization(ModelWrapper):
 			elif i == 'description':		self.setDescription(kwargs.get(i))
 			elif i == 'maxMembers':			self.setMaxMembers(kwargs.get(i))
 			elif i == 'maxCompetitions':	self.setMaxCompetitions(kwargs.get(i))
-	# def __init__(self, **kwargs):
-	# 	self.model = kwargs.pop('modelInst', None)
-	# 	if not self.model:
-	# 	# 	self.model = Organization.modelObject.objects.get(**kwargs)
-	# 		try:
-	# 			self.model = Organization.modelObject.objects.get(**kwargs)
-	# 		except ObjectDoesNotExist:
-	# 			raise self.ObjectDoesNotExist("custom 1 - Organization matching query does not exist.")
-	# 		except modelObject.DoesNotExist:
-	# 			raise self.ObjectDoesNotExist("custom 2 - Organization matching query does not exist.")
-
-	# def delete(self):
-	# 	if self.model.deleteable:
-	# 		self.model.delete()
-
-	# @staticmethod
-	# def search(**kwargs):
-	# 	return wrappedSearch(Organization, Organization.modelObject, **kwargs)
-
-	# @staticmethod
-	# def create(postData, serialized = False):
-	# 	serializedModel = Organization.serializerObject(data = postData)
-	# 	if serializedModel.is_valid():
-	# 		obj = serializedModel.save()
-	# 		if serialized:
-	# 			return serializedModel.data
-	# 		else:
-	# 			return obj
-	# 	else:
-	# 		print "failed to be created!"
-	# 		print serializedModel.errors
-	# 		# failed to create object
-	# 		return serializedModel.errors
-
-	# @staticmethod
-	# def serialize(items):
-	# 	if items.__class__.__name__ == "QuerySet":
-	# 		return Organization.serializerObject(items, many = True).data
-	# 	else:
-	# 		return Organization.serializerObject(items.model).data	
 
 	def getDeleteable(self):
 		return self.model.deleteable
@@ -754,25 +660,25 @@ class Organization(ModelWrapper):
 
 	def getCompetitions(self, **kwargs):
 		if kwargs.pop('serialized', None):
-			return Competition.serialize(Competition.search(organization = self.model.organizationId, **kwargs))
+			return Competition.serialize(Competition, Competition.search(Competition, organization = self.model.organizationId, **kwargs))
 		else:
-			return Competition.search(organization = self.model.organizationId, **kwargs)
+			return Competition.search(Competition, organization = self.model.organizationId, **kwargs)
 
 	def getMembers(self, **kwargs):
 		if kwargs.pop('serialized', None):
-			return User.serialize(User.search(organizationId = self.model.organizationId, **kwargs))
+			return User.serialize(User, User.search(User, organizationId = self.model.organizationId, **kwargs))
 		else:
-			return User.search(organizationId = self.model.organizationId, **kwargs)
+			return User.search(User, organizationId = self.model.organizationId, **kwargs)
 
 	def getCompetition(self, **kwargs):
 		if kwargs.pop('serialized', None):
-			return Competition.serialize(Competition(**kwargs))
+			return Competition.serialize(Competition, Competition(**kwargs))
 		else:
 			return Competition(**kwargs)
 
 	def getMember(self, **kwargs):
 		if kwargs.pop('serialized', None):
-			return User.serialize(User(**kwargs))
+			return User.serialize(User, User(**kwargs))
 		else:
 			return User(**kwargs)
 
@@ -781,7 +687,7 @@ class Organization(ModelWrapper):
 			raise MaxCompetitionsReached(self.getMaxCompetitions())
 		#postData['serialized'] = serialized
 		postData['organization'] = self.model.organizationId
-		newCompetition = Competition.create(postData, serialized = True)
+		newCompetition = Competition.create(Competition, postData, serialized = True)
 		self.setNumCompetitions()
 		return newCompetition
 
@@ -814,71 +720,9 @@ class Organization(ModelWrapper):
 		competition = self.getCompetition(competitionId = kwargs.pop('competitionId', None))
 		return competition.edit(**kwargs)
 
-# This has been moved over to the ScoringEngine module
-# class Plugin:
-# 	def __init__(self, pluginModelInst = None, **kwargs):
-# 		self.model = pluginModelInst
-# 		if not self.model:
-# 			self.model = PluginModel(**kwargs)
-# 			self.model.save()
-
-# 	def delete(self):
-# 		self.model.delete()
-
-# 	@staticmethod
-# 	def search(**kwargs):
-# 		return wrappedSearch(Plugin, PluginModel, **kwargs)
-
-# 	def getName(self):
-# 		return self.model.name
-
-# 	def setName(self, name):
-# 		self.model.name = name
-# 		self.model.save()
-
-# 	def getDescription(self):
-# 		return self.model.description
-
-# 	def setDescription(self, description):
-# 		self.model.description = description
-# 		self.model.save()
-
-# 	def getModuleName(self):
-# 		#return Document.objects.get(servicemodule = self.servicemodule).filename.split(".")[0]
-# 		pass
-
-# 	def getImportPath(self, moduleName = None):
-# 		if moduleName:
-# 			#return settings.CONTENT_PLUGGINS_PATH.replace('/','.')[1:] + moduleName
-# 			return ""
-# 		else:
-# 			return self.getImportPath(self.getModuleName())
-
-# 	def newPlugin(request):
-# 		pass
-
 class User(ModelWrapper):
-	# class ObjectDoesNotExist(CssefObjectDoesNotExist):
-	# 	def __init__(self, message):
-	# 		self.message = message
-
-	# 	def __str__(self):
-	# 		return repr(self.message)
-
 	serializerObject = UserSerializer
 	modelObject = UserModel
-	# def __init__(self, **kwargs):
-	# 	self.model = kwargs.pop('userModelInst', None)
-	# 	if not self.model:
-	# 		try:
-	# 			self.model = User.modelObject.objects.get(**kwargs)
-	# 		except ObjectDoesNotExist:
-	# 			raise self.ObjectDoesNotExist("custom 1 - User matching query does not exist.")
-	# 		except modelObject.DoesNotExist:
-	# 			raise self.ObjectDoesNotExist("custom 2 - User matching query does not exist.")
-
-	# def delete(self):
-	# 	self.model.delete()
 
 	@staticmethod
 	def count(**kwargs):
@@ -887,37 +731,11 @@ class User(ModelWrapper):
 	def edit(self, **kwargs):
 		self.serialized = kwargs.pop('serialized', None)
 		for i in kwargs:
-			if i == 'name':			self.setContentType(kwargs.get(i))
-			elif i == 'username': self.setUsername(kwargs.get(i))
-			elif i == 'password': self.setPassword(kwargs.get(i))
-			elif i == 'description': self.setDescription(kwargs.get(i))
-			elif i == 'organization': self.setOrganizationId(kwargs.get(i))
-
-	# @staticmethod
-	# def search(**kwargs):
-	# 	return wrappedSearch(User, UserModel, **kwargs)
-
-	# @staticmethod
-	# def create(postData, serialized = False):
-	# 	serializedModel = User.serializerObject(data = postData)
-	# 	if serializedModel.is_valid():
-	# 		obj = serializedModel.save()
-	# 		if serialized:
-	# 			return serializedModel.data
-	# 		else:
-	# 			return obj
-	# 	else:
-	# 		print "failed to be created!"
-	# 		print serializedModel.errors
-	# 		# failed to create object
-	# 		return serializedModel.errors
-
-	# @staticmethod
-	# def serialize(items):
-	# 	if items.__class__.__name__ == "QuerySet":
-	# 		return User.serializerObject(items, many = True).data
-	# 	else:
-	# 		return User.serializerObject(items.model).data		
+			if i == 'name':				self.setName(kwargs.get(i))
+			elif i == 'username':		self.setUsername(kwargs.get(i))
+			elif i == 'password':		self.setPassword(kwargs.get(i))
+			elif i == 'description':	self.setDescription(kwargs.get(i))
+			elif i == 'organization':	self.setOrganizationId(kwargs.get(i))	
 
 	def getName(self):
 		return self.model.name
@@ -966,17 +784,6 @@ class Document(ModelWrapper):
 			elif i == 'filePath':			self.setFilePath(kwargs.get(i))
 			elif i == 'filename':			self.setFilename(kwargs.get(i))
 			elif i == 'urlEncodedFilename': self.setUrlEncodedFilename(kwargs.get(i))
-	# def __init__(self, document = None, **kwargs):
-	# 	self.model = document
-	# 	if not self.model:
-	# 		self.model = DocumentModel(**kwargs)
-
-	# def delete(self):
-	# 	self.model.delete()
-
-	# @staticmethod
-	# def search(**kwargs):
-		# return wrappedSearch(Document, DocumentModel, **kwargs)
 
 	def setContentType(self, contentType):
 		self.model.contentType = contentType
@@ -1033,7 +840,34 @@ def wrappedSearch(objType, objTypeModel, **kwargs):
 	else:
 		return modelResults
 
+def getCompetition(**kwargs):
+	return getObject(Competition, **kwargs)
+
+def getCompetitions(**kwargs):
+	return getObjects(Competition, **kwargs)
+
+def getOrganization(**kwargs):
+	return getObject(Organization, **kwargs)
+
+def getOrganizations(**kwargs):
+	return getObjects(Organization, **kwargs)
+
 def createOrganization(postData, serialized = False):
 	return Organization.create(Organization, postData, serialized)
+
+def editOrganization(**kwargs):
+	organization = getOrganization(organizationId = kwargs.pop('organizationId', None))
+	return organization.edit(**kwargs)
+
+def getUsers(**kwargs):
+	return getObjects(User, **kwargs)
+
+def getUser(**kwargs):
+	return getObject(User, **kwargs)
+
+def editUser(**kwargs):
+	user = getUser(userId = kwargs.pop('userId', None))
+	return user.edit(**kwargs)
+
 
 

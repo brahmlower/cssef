@@ -14,33 +14,31 @@ import endpoints
 
 @api_view(['GET', 'POST'])
 def services(request, competitionId):
-	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return listObjects(competition, 'getServices')
+		return listObjects(endpoints, 'getServices')
 	elif request.method == 'POST':
-		return postObject(competition, 'createService', request)
+		return postObject(endpoints, 'createService', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def service(request, competitionId, serviceId):
-	competition = Competition(competitionId = competitionId)
 	if request.method == 'GET':
-		return callObject(competition, 'getService', content = True, serviceId = serviceId)
+		return callObject(endpoints, 'getService', content = True, serviceId = serviceId, competitionId = competitionId)
 	elif request.method == 'PATCH':
-		return patchObject(competition, 'editService', request, serviceId = serviceId)
+		return patchObject(endpoints, 'editService', request, serviceId = serviceId, competitionId = competitionId)
 	elif request.method == 'DELETE':
-		return callObject(competition, 'deleteService', content = False, serviceId = serviceId)
+		return callObject(endpoints, 'deleteService', content = False, serviceId = serviceId, competitionId = competitionId)
 
 @api_view(['GET', 'POST'])
 def plugins(request):
 	if request.method == 'GET':
-		return listObjects(endpoints, 'getPlugins')
+		return callObject(endpoints, 'getServices', content = True)
 	elif request.method == 'POST':
 		return postObject(endpoints, 'createPlugin', request)
 
 @api_view(['GET', 'PATCH', 'DELETE'])
 def plugin(request, pluginId):
 	if request.method == 'GET':
-		return listObject(endpoints, 'getPlugin', content = True, pluginId = pluginId)
+		return callObject(endpoints, 'getService', content = True, pluginId = pluginId)
 	elif request.method == 'PATCH':
 		return patchObject(endpoints, 'editPlugin', request, pluginId = pluginId)
 	elif request.method == 'DELETE':

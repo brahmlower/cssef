@@ -34,7 +34,7 @@ def callObject(classPointer, methodName, content, **kwargs):
 def listObject(classPointer, methodName, **kwargs):
 	try:
 		obj = classPointer(**kwargs)
-		serializedData = classPointer.serialize(obj)
+		serializedData = classPointer.serialize(classPointer, obj)
 	except CssefObjectDoesNotExist:
 		return Response(status = status.HTTP_404_NOT_FOUND)
 	return JSONResponse(serializedData)
