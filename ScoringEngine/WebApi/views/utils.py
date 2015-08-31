@@ -64,24 +64,12 @@ def postObject(classPointer, methodName, request):
 	return JSONResponse(returnObject, status = status.HTTP_400_BAD_REQUEST)
 
 def patchObject(classPointer, methodName, request, **kwargs):
-	#return Response(status = status.HTTP_501_NOT_IMPLEMENTED)
 	method = getattr(classPointer, methodName)
-	keywords.update(json.loads(request.body))
-	keywords = kwargs
+	keywords = json.loads(request.body)
+	keywords.update(kwargs)
 	keywords.update({'serialized': True})
 	returnObject = method(**keywords)
 	return JSONResponse(returnObject, status = status.HTTP_202_ACCEPTED)
-
-# def patchObject(request, objectType, objectTypeSerializer, **kwargs):
-# 	objectInstance = objectType.objects.get(**kwargs)
-# 	serializer = objectTypeSerializer(objectInstance)
-# 	data = serializer.data
-# 	data.update(json.loads(request.body))
-# 	serializer = objectTypeSerializer(objectInstance, data = data)
-# 	if serializer.is_valid():
-# 		serializer.save()
-# 		return JSONResponse(serializer.data, status = status.HTTP_202_ACCEPTED)
-# 	return JSONResponse(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
 def deleteObject(classPointer, methodName, **kwargs):
 	obj = classPointer(**kwargs)

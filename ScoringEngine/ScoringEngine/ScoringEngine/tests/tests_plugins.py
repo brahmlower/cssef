@@ -2,8 +2,9 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from django.test import TestCase
 from django.test import Client
-import exampleData
+from WebApi.tests import utils as webapiUtils
 import utils
+import exampleData
 
 class PluginsList(APITestCase):
 	def setUp(self):

@@ -4,16 +4,20 @@ from django.conf.urls import url
 
 from views import competitions
 from views import organizations
-from views import general 
+from ScoringEngine.ScoringEngine import urlsPlugins
+from ScoringEngine.ScoringEngine import urlsServices
+#from views import general 
 
 
 urlpatterns = patterns('',
+	url(r'^competitions/(?P<competitionId>[0-9]+)/', include(urlsServices)),
+
 	url(r'^competitions.json', competitions.competitions),
 	url(r'^competitions/(?P<competitionId>[0-9]+).json', competitions.competition),
 	url(r'^competitions/(?P<competitionId>[0-9]+)/teams.json', competitions.teams),
 	url(r'^competitions/(?P<competitionId>[0-9]+)/teams/(?P<teamId>[0-9]+).json', competitions.team),
-	url(r'^competitions/(?P<competitionId>[0-9]+)/services.json', competitions.services),
-	url(r'^competitions/(?P<competitionId>[0-9]+)/services/(?P<serviceId>[0-9]+).json', competitions.service),
+	# url(r'^competitions/(?P<competitionId>[0-9]+)/services.json', competitions.services),
+	# url(r'^competitions/(?P<competitionId>[0-9]+)/services/(?P<serviceId>[0-9]+).json', competitions.service),
 	url(r'^competitions/(?P<competitionId>[0-9]+)/scores.json', competitions.scores),
 	url(r'^competitions/(?P<competitionId>[0-9]+)/scores/(?P<scoreId>[0-9]+).json', competitions.score),
 	url(r'^competitions/(?P<competitionId>[0-9]+)/injects.json', competitions.injects),
@@ -32,8 +36,9 @@ urlpatterns = patterns('',
 	url(r'^organizations/(?P<organizationId>[0-9]+)/competitions.json', organizations.competitions),
 	url(r'^organizations/(?P<organizationId>[0-9]+)/competitions/(?P<competitionId>[0-9]+).json', organizations.competition),
 
-	url(r'^plugins.json', general.plugins),
-	url(r'^plugins/(?P<pluginId>[0-9]+).json', general.plugin),
-	url(r'^users.json', general.users),
-	url(r'^users/(?P<userId>[0-9]+).json', general.user)
+	url(r'^', include(urlsPlugins)),
+#	url(r'^plugins.json', general.plugins),
+#	url(r'^plugins/(?P<pluginId>[0-9]+).json', general.plugin),
+	url(r'^users.json', organizations.users),
+	url(r'^users/(?P<userId>[0-9]+).json', organizations.user)
 )
