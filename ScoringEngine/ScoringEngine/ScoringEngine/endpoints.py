@@ -54,8 +54,8 @@ class Service(ModelWrapper):
 			elif i == 'manualStart':	self.setManualStart(kwargs.get(i))
 			elif i == 'datetimeStart':	self.setDatetimeStart(kwargs.get(i))
 			elif i == 'datetimeFinish':	self.setDatetimeFinish(kwargs.get(i))
-			elif i == 'points':	self.setPoints(kwargs.get(i))
-			elif i == 'machineIp':	self.setMachineIp(kwargs.get(i))
+			elif i == 'points':			self.setPoints(kwargs.get(i))
+			elif i == 'machineIp':		self.setMachineIp(kwargs.get(i))
 			elif i == 'machineFqdn':	self.setMachineFqdn(kwargs.get(i))
 			elif i == 'defaultPort':	self.setDefaultPort(kwargs.get(i))
 
@@ -151,7 +151,7 @@ def getServices(**kwargs):
 	return getObjects(Service, **kwargs)
 
 def editService(**kwargs):
-	service = self.getService(serviceId = kwargs.pop('serviceId', None))
+	service = getService(serviceId = kwargs.pop('serviceId', None))
 	return service.edit(**kwargs)
 
 def deleteService(**kwargs):
@@ -159,8 +159,6 @@ def deleteService(**kwargs):
 	getService(**kwargs).delete()
 
 def createService(postData, serialized = False):
-	postData['organizationId'] = self.model.organization
-	postData['competitionId'] = self.model.competitionId
 	return Service.create(Service, postData, serialized)
 
 def run():

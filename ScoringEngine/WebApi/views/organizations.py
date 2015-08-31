@@ -16,7 +16,7 @@ from ScoringEngine.endpoints import User
 @api_view(['GET', 'POST'])
 def organizations(request):
 	if request.method == 'GET':
-		return listObjects(Organization, 'search')
+		return listObjects(endpoints, 'getOrganizations')
 	elif request.method == 'POST':
 		return postObject(endpoints, 'createOrganization', request)
 
@@ -25,7 +25,7 @@ def organization(request, organizationId):
 	if request.method == 'GET':
 		return listObject(Organization, '__init__', organizationId = organizationId)
 	elif request.method == 'PATCH':
-		return patchObject(Organization, 'edit', request, organizationId = organizationId)
+		return patchObject(endpoints, 'editOrganization', request, organizationId = organizationId)
 	elif request.method == 'DELETE':
 		return deleteObject(Organization, 'delete', organizationId = organizationId)
 
@@ -68,15 +68,13 @@ def competition(request, organizationId, competitionId):
 @api_view(['GET'])
 def users(request):
 	if request.method == 'GET':
-		return listObjects(User, 'search')
+		return listObjects(endpoints, 'getUsers')
 	# User creation should only happen from within the Organization member list
 
 @api_view(['GET', 'PATCH'])
 def user(request, userId):
 	if request.method == 'GET':
-		#return listObject(User, User.getUser, userId = userId)
 		return listObject(User, '__init__', userId = userId)
 	elif request.method == 'PATCH':
-		#return patchObject(User, User.editUser, request, userId = userId)
-		return patchObject(User, 'edit', request, userId = userId)
+		return patchObject(endpoints, 'editUser', request, userId = userId)
 

@@ -66,7 +66,6 @@ class ScoreSerializer(serializers.ModelSerializer):
 			'message')
 
 class UserSerializer(serializers.ModelSerializer):
-	#organization = serializers.SerializerMethodField()
 	class Meta:
 		model = User
 		fields = (
@@ -173,9 +172,6 @@ class OrganizationSerializer(serializers.ModelSerializer):
 		for i in competitions:
 			competitionsList.append(CompetitionSerializer(i).data)
 		return competitionsList
-
-	# def create(self, validatedData):
-	# 	return Organization.objects.create(**validatedData)
 
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
