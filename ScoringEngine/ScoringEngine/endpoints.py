@@ -482,10 +482,6 @@ class Competition(ModelWrapper):
 		service = self.getService(serviceId = kwargs.pop('serviceId', None))
 		return service.edit(**kwargs)
 
-	def editService(self, **kwargs):
-		service = self.getService(serviceId = kwargs.pop('serviceId', None))
-		return service.edit(**kwargs)
-
 	def getService(self, **kwargs):
 		return getObject(Competition.Service, competitionId = self.model.competitionId, **kwargs)
 
