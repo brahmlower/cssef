@@ -55,7 +55,9 @@ Competition.**getTeams**([**kwargs])
 ##### Output
 
 ##### Example
-
+```
+```
+* * *
 #### deleteTeam()
 Competition.**deleteTeam**()
 ##### Input
@@ -73,11 +75,43 @@ Returns None
 competition = getCompetition(competitionId = 1)
 competition.deleteTeam(teamId = 5)
 ```
+* * *
 
-ScoringEngine.endpoints.Competition.**createIncident**()
-ScoringEngine.endpoints.Competition.**editIncident**()
-ScoringEngine.endpoints.Competition.**getIncident**()
-ScoringEngine.endpoints.Competition.**getIncidents**()
+#### createIncident()
+Competition.**createIncident**()
+##### Input
+##### Output
+##### Example
+```
+```
+* * *
+
+#### editIncident
+Competition.**editIncident**()
+##### Input
+##### Output
+##### Example
+```
+```
+* * *
+
+#### getIncident()
+Competition.**getIncident**()
+##### Input
+##### Output
+##### Example
+```
+```
+* * *
+
+#### getIncidents()
+Competition.**getIncidents**()
+##### Input
+##### Output
+##### Example
+```
+```
+* * *
 
 #### deleteIncident()
 Competition.**deleteIncident**()
@@ -96,6 +130,7 @@ Returns None
 competition = getCompetition(competitionId = 1)
 competition.deleteIncident(incidentId = 5)
 ```
+* * *
 ScoringEngine.endpoints.Competition.**createIncidentResponse**()
 ScoringEngine.endpoints.Competition.**editIncidentResponse**()
 ScoringEngine.endpoints.Competition.**getIncidentResponse**()
