@@ -1,76 +1,274 @@
 # API Documentation
 
-### getObjects
-### getObject
-### wrappedSearch
+#### getObjects()
+endpoints.**getObjects**(classPointer, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
 
-### getCompetition
-### getCompetitions
-### getOrganization
-### getOrganizations
-### createOrganization
-### editOrganization
-### getUsers
-### getUser
-### editUser
+#### getObject()
+endpoints.**getObject**(classPointer, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+#### wrappedSearch()
+endpoints.**wrappedSearch**(objType, objTypeModel, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### getCompetition()
+endpoints.**getCompetition**(\*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### getCompetitions()
+endpoints.**getCompetitions**(\*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### getOrganization()
+endpoints.**getOrganization**(\*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### getOrganizations()
+endpoints.**getOrganizations**(\*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### createOrganization()
+endpoints.**createOrganization**(postData, serialized = False)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### editOrganization()
+endpoints.**editOrganization**(\*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### getUsers()
+endpoints.**getUsers**(\*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### getUser()
+endpoints.**getUser**(\*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### editUser()
+endpoints.**editUser**(\*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
 
 ## Competition
-ScoringEngine.endpoints.Competition.**count**()<br>
-ScoringEngine.endpoints.Competition.**getName**()<br>
-This will return the name of the competition as a string.
+#### count()
+endpoints.Competition.**count**(\*\*kwarg)
+<br>This returns the number of Competition objects that match the provided filter.
+<br>**Input**
+<br>**Output**
+<br>&nbsp;&nbsp;&nbsp;&nbsp;Returns value of type integer
+<br>**Example**
+```
+>>> from ScoringEngine.endpoints import *
+>>> orgData = {'name': 'New Org', 'url':'new_org'}
+>>> org = createOrganization(orgData)
+>>> org.createCompetition({'name':'First Comp})
+>>> org.createCompetition({'name': 'Second Comp})
+>>> organizationId = org.getId()
+>>> numCompetitions = Competition.count(organization = organizationId)
+>>> print numCompetitions
+2
+>>>
+```
+* * *
 
-ScoringEngine.endpoints.Competition.**check**()<br>
-This should one day perform a consistency check to make sure the competition doesn't have any conflicting values set. THis may or may not be necessary depending on how much I implement error checking.
+#### getName()
+endpoints.Competition.**getName**(self)
+<br>This will return the name of the competition as a string.
+<br>**Input**
+<br>&nbsp;&nbsp;&nbsp;&nbsp;None
+<br>**Output**
+<br>&nbsp;&nbsp;&nbsp;&nbsp;Returns value of type str
+<br>**Example**
+```
+>>> from ScoringEngine.endpoints import *
+>>> orgData = {'name': 'New Org', 'url':'new_org'}
+>>> org = createOrganization(orgData)
+>>> competition = org.createCompetition({'name':'First Comp})
+>>> name = competition.getName()
+>>> print name
+New Org
+>>>
+```
+* * *
+
+
+#### check()
+endpoints.Competition.**check**(self)<br>
+This should one day perform a consistency check to make sure the competition doesn't have any conflicting values set. This may or may not be necessary depending on how much I implement error checking.
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
 
 #### searchOne()
-Competition.searchOne(self, objType, [\*\*kwargs])<br>
+endpoints.Competition.searchOne(self, objType, serialized = False, \*\*kwargs)<br>
 I'm not sure if this is still in use. It was used to search for and return a single database object.
-##### Input
+<br>**Input**
 * objType (required):
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This is the class type of the object to search for
 * \*\*kwargs (optional):
   * serialized:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This defines the type to return. If not provided, this defaults to False.
 
-##### Output
+**Output**
+<br>**Example**
+```
+```
+* * *
 
-##### Example
-
-ScoringEngine.endpoints.Competition.**searchMany**()<br>
+#### searchMany()
+endpoints.Competition.**searchMany**()<br>
 I'm not sure if this is still in use. It was used to search for and return many database objects.
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
 
-ScoringEngine.endpoints.Competition.**createTeam**()<br>
-ScoringEngine.endpoints.Competition.**editTeam**()<br>
-ScoringEngine.endpoints.Competition.**getTeam**()<br>
+#### createTeam()
+endpoints.Competition.**createTeam**(self, objType, serialized = False)
+<br>This will create and return a new team in within the competition.
+<br>**Input**
+* postData (required)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;Dictionary containing required keywords for a new Team.
+* serialized (optional)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;Return as object (False) or as a dictionary (True). If not provided, this value will default to False.
+
+**Output**
+<br>**Example**
+```
+>>> from ScoringEngine.endpoints import *
+>>> orgData = {'name': 'New Org', 'url':'new_org'}
+>>> org = createOrganization(orgData)
+>>> competition = org.createCompetition({'name':'First Comp})
+>>> teamData = {'name':'New Team', 'username':'new_team', 'password':'$3(Ur#!'}
+>>> team = competition.createTeam(teamData)
+>>>
+```
+* * *
+
+#### editTeam(self, **kwargs)
+endpoints.Competition.**editTeam**(\*\*kwargs)
+<br>Take a dictionary of values for the Team object and applies their values to the team object. This effectively calls getTeam() with the provided teamId, then calls edit() on that team. This would be used in cases where you only wish to apply changes to team, but you don't have the team object.
+<br>**Input**
+* teamId (required)
+
+**Output**
+<br>&nbsp;&nbsp;&nbsp;&nbsp;None
+<br>**Example**
+```
+>>> from ScoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url':'new_org'})
+>>> competition = org.createCompetition({'name':'First Comp})
+>>> teamData = {'name':'New Team', 'username':'new_team', 'password':'$3(Ur#!'}
+>>> team = competition.createTeam(teamData)
+>>> print team.getName()
+New Team
+>>> competition.editTeam({'name':'Super Team'}, teamId = team.getId())
+>>> print team.getName()
+Super Team
+>>>
+```
+* * *
+
+#### getTeam()
+endpoints.Competition.**getTeam**(self, \*\*kwargs)
+<br>**Input**
+
+**Output**
+<br>**Example**
+```
+```
+* * *
 
 #### getTeams()
-Competition.**getTeams**([**kwargs])
-##### Input
+endpoints.Competition.**getTeams**(self, \*\*kwargs)
+<br>**Input**
 * objType (required):
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This is the class type of the object to search for
 * \*\*kwargs (optional):
   * serialized:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This defines the type to return. If not provided, this defaults to False.
 
-##### Output
-
-##### Example
+**Output**
+<br>**Example**
 ```
 ```
 * * *
 #### deleteTeam()
-Competition.**deleteTeam**()
-##### Input
+endpoints.Competition.**deleteTeam**(self, \*\*kwargs)
+<br>**Input**
 * \*\*kwargs (optional):
   * serialized:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This defines the type to return. If not provided, this defaults to False.
   * teamId:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;The ID for the Team object you'd like to delete.
 
-##### Output
-Returns None
-
-##### Example
+**Output**
+<br>&nbsp;&nbsp;&nbsp;&nbsp;None
+<br>**Example**
 ```
 competition = getCompetition(competitionId = 1)
 competition.deleteTeam(teamId = 5)
@@ -78,143 +276,265 @@ competition.deleteTeam(teamId = 5)
 * * *
 
 #### createIncident()
-Competition.**createIncident**()
-##### Input
-##### Output
-##### Example
+endpoints.Competition.**createIncident**()
+<br>**Input**
+<br>**Output**
+<br>**Example**
 ```
 ```
 * * *
 
 #### editIncident
-Competition.**editIncident**()
-##### Input
-##### Output
-##### Example
+endpoints.Competition.**editIncident**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
 ```
 ```
 * * *
 
 #### getIncident()
-Competition.**getIncident**()
-##### Input
-##### Output
-##### Example
+endpoints.Competition.**getIncident**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
 ```
 ```
 * * *
 
 #### getIncidents()
-Competition.**getIncidents**()
-##### Input
-##### Output
-##### Example
+endpoints.Competition.**getIncidents**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
 ```
 ```
 * * *
 
 #### deleteIncident()
-Competition.**deleteIncident**()
-##### Input
+endpoints.Competition.**deleteIncident**(self, \*\*kwargs)
+<br>**Input**
 * \*\*kwargs (optional):
   * serialized:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This defines the type to return. If not provided, this defaults to False.
   * teamId:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;The ID for the Incident object you'd like to delete.
 
-##### Output
-Returns None
-
-##### Example
+**Output**
+<br>&nbsp;&nbsp;&nbsp;&nbsp;None
+<br>**Example**
 ```
 competition = getCompetition(competitionId = 1)
 competition.deleteIncident(incidentId = 5)
 ```
 * * *
-ScoringEngine.endpoints.Competition.**createIncidentResponse**()
-ScoringEngine.endpoints.Competition.**editIncidentResponse**()
-ScoringEngine.endpoints.Competition.**getIncidentResponse**()
-ScoringEngine.endpoints.Competition.**getIncidentResponses**()
+
+#### createIncidentResponse()
+endpoints.Competition.**createIncidentResponse**()
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### editIncidentResponse()
+endpoints.Competition.**editIncidentResponse**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### getIncidentResponse()
+endpoints.Competition.**getIncidentResponse**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+#### getIncidentResponses
+endpoints.Competition.**getIncidentResponses**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
 
 #### deleteIncidentResponse()
-Competition.**deleteIncidentResponse**()
-##### Input
+endpoints.Competition.**deleteIncidentResponse**(self, \*\*kwargs)
+<br>**Input**
 * \*\*kwargs (optional):
   * serialized:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This defines the type to return. If not provided, this defaults to False.
   * teamId:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;The ID for the IncidentResponse object you'd like to delete.
 
-##### Output
-Returns None
-
-##### Example
+**Output**
+<br>&nbsp;&nbsp;&nbsp;&nbsp;None
+<br>**Example**
 ```
 competition = getCompetition(competitionId = 1)
 competition.deleteIncidentResponse(incidentResponseId = 5)
 ```
-ScoringEngine.endpoints.Competition.**createInject**()
-ScoringEngine.endpoints.Competition.**editInject**()
-ScoringEngine.endpoints.Competition.**getInject**()
-ScoringEngine.endpoints.Competition.**getInjects**()
+
+#### createInject()
+endpoints.Competition.**createInject**()
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### editInject()
+endpoints.Competition.**editInject**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### getInject()
+endpoints.Competition.**getInject**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### getInjects()
+endpoints.Competition.**getInjects**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
 
 #### deleteInject()
-Competition.**deleteInject**()
-##### Input
+endpoints.Competition.**deleteInject**(self, \*\*kwargs)
+<br>**Input**
 * \*\*kwargs (optional):
   * serialized:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This defines the type to return. If not provided, this defaults to False.
   * teamId:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;The ID for the Inject object you'd like to delete.
 
-##### Output
-Returns None
-
-##### Example
+**Output**
+<br>&nbsp;&nbsp;&nbsp;&nbsp;None
+<br>**Example**
 ```
 competition = getCompetition(competitionId = 1)
 competition.deleteInject(injectId = 5)
 ```
-ScoringEngine.endpoints.Competition.**createInjectResponse**()
-ScoringEngine.endpoints.Competition.**editInjectResponse**()
-ScoringEngine.endpoints.Competition.**getInjectResponse**()
-ScoringEngine.endpoints.Competition.**getInjectResponses**()
+
+#### createInjectResponse
+endpoints.Competition.**createInjectResponse**()
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### editInjectResponse()
+endpoints.Competition.**editInjectResponse**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### getInjectResponse()
+endpoints.Competition.**getInjectResponse**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### getInjectResponses()
+endpoints.Competition.**getInjectResponses**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
 
 #### deleteResponse()
-Competition.**deleteInjectResponses**()
-##### Input
+endpoints.Competition.**deleteInjectResponses**(self, \*\*kwargs)
+<br>**Input**
 * \*\*kwargs (optional):
   * serialized:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This defines the type to return. If not provided, this defaults to False.
   * teamId:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;The ID for the InjectResponse object you'd like to delete.
 
-##### Output
-Returns None
-
-##### Example
+**Output**
+<br>&nbsp;&nbsp;&nbsp;&nbsp;None
+<br>**Example**
 ```
 competition = getCompetition(competitionId = 1)
 competition.deleteInjectResponse(injectResponseId = 5)
 ```
-ScoringEngine.endpoints.Competition.**createScore**()
-ScoringEngine.endpoints.Competition.**editScore**()
-ScoringEngine.endpoints.Competition.**getScore**()
-ScoringEngine.endpoints.Competition.**getScores**()
+
+#### createScore()
+endpoints.Competition.**createScore**()
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### editScore()
+endpoints.Competition.**editScore**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### getScore()
+endpoints.Competition.**getScore**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
+
+#### getScores()
+endpoints.Competition.**getScores**(self, \*\*kwargs)
+<br>**Input**
+<br>**Output**
+<br>**Example**
+```
+```
+* * *
 
 #### deleteScore()
-Competition.**deleteScore**()
-##### Input
+endpoints.Competition.**deleteScore**(self, \*\*kwargs)
+<br>**Input**
 * \*\*kwargs (optional):
   * serialized:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This defines the type to return. If not provided, this defaults to False.
   * teamId:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;The ID for the Score object you'd like to delete.
 
-##### Output
-Returns None
-
-##### Example
+**Output**
+<br>&nbsp;&nbsp;&nbsp;&nbsp;None
+<br>**Example**
 ```
 competition = getCompetition(competitionId = 1)
 competition.deleteScore(scoreId = 5)
