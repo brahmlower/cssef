@@ -160,33 +160,6 @@ This should one day perform a consistency check to make sure the competition doe
 ```
 * * *
 
-
-#### searchOne()
-endpoints.Competition.searchOne(self, objType, serialized = False, \*\*kwargs)<br>
-I'm not sure if this is still in use. It was used to search for and return a single database object.
-<br>**Input**
-* objType (required):
-<br>&nbsp;&nbsp;&nbsp;&nbsp;This is the class type of the object to search for
-* \*\*kwargs (optional):
-  * serialized:
-<br>&nbsp;&nbsp;&nbsp;&nbsp;This defines the type to return. If not provided, this defaults to False.
-
-**Output**
-<br>**Example**
-```
-```
-* * *
-
-#### searchMany()
-endpoints.Competition.**searchMany**()<br>
-I'm not sure if this is still in use. It was used to search for and return many database objects.
-<br>**Input**
-<br>**Output**
-<br>**Example**
-```
-```
-* * *
-
 #### createTeam()
 endpoints.Competition.**createTeam**(self, objType, serialized = False)
 <br>This will create and return a new team in within the competition.
@@ -209,11 +182,25 @@ endpoints.Competition.**createTeam**(self, objType, serialized = False)
 ```
 * * *
 
-#### editTeam(self, **kwargs)
+#### editTeam()
 endpoints.Competition.**editTeam**(\*\*kwargs)
 <br>Take a dictionary of values for the Team object and applies their values to the team object. This effectively calls getTeam() with the provided teamId, then calls edit() on that team. This would be used in cases where you only wish to apply changes to team, but you don't have the team object.
 <br>**Input**
-* teamId (required)
+* \*\*kwargs
+  * teamId - *Integer* (required)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;Specifies the team to edit. Cannot be changed.
+  * serialized - *Boolean* (optional)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;This defines the type to return. If not provided, this defaults to False.
+  * name - *String* (optional)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;The team name
+  * username - *String* (optional)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;The username used to sign in
+  * password - *String* (optional)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;The password used to sign in
+  * networkCidr - *String* (optional)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;The CIDR representation of the network associated with the team
+  * scoreConfiguration - *String* (optional)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;The dictionary for storing scoring configurations
 
 **Output**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;None
@@ -226,7 +213,7 @@ endpoints.Competition.**editTeam**(\*\*kwargs)
 >>> team = competition.createTeam(teamData)
 >>> print team.getName()
 New Team
->>> competition.editTeam({'name':'Super Team'}, teamId = team.getId())
+>>> competition.editTeam(teamId = team.getId(), name = 'Super Team')
 >>> print team.getName()
 Super Team
 >>>
@@ -235,16 +222,24 @@ Super Team
 
 #### getTeam()
 endpoints.Competition.**getTeam**(self, \*\*kwargs)
+<br> Retrieves an existing team object.
 <br>**Input**
 
 **Output**
 <br>**Example**
 ```
+>>> from SoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url':'new_org'})
+>>> competition = org.createCompetition({'name':'First Comp})
+>>> team = competition.createTeam({'name':'New Team', 'username':'new_team', 'password':'$3(Ur#!'})
+>>> competition.getTeam(teamId = team.getId())
+>>>
 ```
 * * *
 
 #### getTeams()
 endpoints.Competition.**getTeams**(self, \*\*kwargs)
+<br> Retrieves an existing team object.
 <br>**Input**
 * objType (required):
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This is the class type of the object to search for
@@ -254,11 +249,22 @@ endpoints.Competition.**getTeams**(self, \*\*kwargs)
 
 **Output**
 <br>**Example**
+This is a bad example, using a function that doesn't exist. I'll get back to this eventually.
 ```
+>>> from SoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url':'new_org'})
+>>> competition = org.createCompetition({'name':'First Comp})
+>>> team = competition.createTeam({'name':'New Team', 'username':'new_team', 'password':'$3(Ur#!'})
+>>> team.setScore(100)
+>>> teamList = competition.getTeams(score = 100)
+>>> len(teamList)
+1
+>>> 
 ```
 * * *
 #### deleteTeam()
 endpoints.Competition.**deleteTeam**(self, \*\*kwargs)
+<br> Deletes the specified team object.
 <br>**Input**
 * \*\*kwargs (optional):
   * serialized:
@@ -276,7 +282,8 @@ competition.deleteTeam(teamId = 5)
 * * *
 
 #### createIncident()
-endpoints.Competition.**createIncident**()
+endpoints.Competition.**createIncident**(self, postData, serialized = False)
+<br> Creates a new incident object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -284,8 +291,9 @@ endpoints.Competition.**createIncident**()
 ```
 * * *
 
-#### editIncident
+#### editIncident()
 endpoints.Competition.**editIncident**(self, \*\*kwargs)
+<br> Edits an existing incident object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -295,6 +303,7 @@ endpoints.Competition.**editIncident**(self, \*\*kwargs)
 
 #### getIncident()
 endpoints.Competition.**getIncident**(self, \*\*kwargs)
+<br> Retrieves an existing incident object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -304,6 +313,7 @@ endpoints.Competition.**getIncident**(self, \*\*kwargs)
 
 #### getIncidents()
 endpoints.Competition.**getIncidents**(self, \*\*kwargs)
+<br> Retrieves multiple existing incident objects.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -313,6 +323,7 @@ endpoints.Competition.**getIncidents**(self, \*\*kwargs)
 
 #### deleteIncident()
 endpoints.Competition.**deleteIncident**(self, \*\*kwargs)
+<br> Deletes a single incident object.
 <br>**Input**
 * \*\*kwargs (optional):
   * serialized:
@@ -331,6 +342,7 @@ competition.deleteIncident(incidentId = 5)
 
 #### createIncidentResponse()
 endpoints.Competition.**createIncidentResponse**()
+<br> Creates a new incident response object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -340,6 +352,7 @@ endpoints.Competition.**createIncidentResponse**()
 
 #### editIncidentResponse()
 endpoints.Competition.**editIncidentResponse**(self, \*\*kwargs)
+<br> Edits an existing incident response object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -349,6 +362,7 @@ endpoints.Competition.**editIncidentResponse**(self, \*\*kwargs)
 
 #### getIncidentResponse()
 endpoints.Competition.**getIncidentResponse**(self, \*\*kwargs)
+<br> Retrieves an existing incident response object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -357,6 +371,7 @@ endpoints.Competition.**getIncidentResponse**(self, \*\*kwargs)
 * * *
 #### getIncidentResponses
 endpoints.Competition.**getIncidentResponses**(self, \*\*kwargs)
+<br> Retrieves multiple existing incident response objects.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -366,6 +381,7 @@ endpoints.Competition.**getIncidentResponses**(self, \*\*kwargs)
 
 #### deleteIncidentResponse()
 endpoints.Competition.**deleteIncidentResponse**(self, \*\*kwargs)
+<br> Deletes a single specified incident response object.
 <br>**Input**
 * \*\*kwargs (optional):
   * serialized:
@@ -383,6 +399,7 @@ competition.deleteIncidentResponse(incidentResponseId = 5)
 
 #### createInject()
 endpoints.Competition.**createInject**()
+<br> Creates a new inject object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -392,6 +409,7 @@ endpoints.Competition.**createInject**()
 
 #### editInject()
 endpoints.Competition.**editInject**(self, \*\*kwargs)
+<br> Edits an existing inject object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -401,6 +419,7 @@ endpoints.Competition.**editInject**(self, \*\*kwargs)
 
 #### getInject()
 endpoints.Competition.**getInject**(self, \*\*kwargs)
+<br> Retrieves an existing inject object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -410,6 +429,7 @@ endpoints.Competition.**getInject**(self, \*\*kwargs)
 
 #### getInjects()
 endpoints.Competition.**getInjects**(self, \*\*kwargs)
+<br> Retrieves existing inject objects.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -419,6 +439,7 @@ endpoints.Competition.**getInjects**(self, \*\*kwargs)
 
 #### deleteInject()
 endpoints.Competition.**deleteInject**(self, \*\*kwargs)
+<br> Deletes a single specified inject response.
 <br>**Input**
 * \*\*kwargs (optional):
   * serialized:
@@ -436,6 +457,7 @@ competition.deleteInject(injectId = 5)
 
 #### createInjectResponse
 endpoints.Competition.**createInjectResponse**()
+<br> Creates a new inject response object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -445,6 +467,7 @@ endpoints.Competition.**createInjectResponse**()
 
 #### editInjectResponse()
 endpoints.Competition.**editInjectResponse**(self, \*\*kwargs)
+<br> Edits an existing inject response object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -454,6 +477,7 @@ endpoints.Competition.**editInjectResponse**(self, \*\*kwargs)
 
 #### getInjectResponse()
 endpoints.Competition.**getInjectResponse**(self, \*\*kwargs)
+<br> Retrieves an existing inject response object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -463,6 +487,7 @@ endpoints.Competition.**getInjectResponse**(self, \*\*kwargs)
 
 #### getInjectResponses()
 endpoints.Competition.**getInjectResponses**(self, \*\*kwargs)
+<br> Retrieves specified existing inject response objects.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -470,8 +495,9 @@ endpoints.Competition.**getInjectResponses**(self, \*\*kwargs)
 ```
 * * *
 
-#### deleteResponse()
+#### deleteInjectResponse()
 endpoints.Competition.**deleteInjectResponses**(self, \*\*kwargs)
+<br> Delete the specified inject response object.
 <br>**Input**
 * \*\*kwargs (optional):
   * serialized:
@@ -489,6 +515,7 @@ competition.deleteInjectResponse(injectResponseId = 5)
 
 #### createScore()
 endpoints.Competition.**createScore**()
+<br> Create a new score object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -498,6 +525,7 @@ endpoints.Competition.**createScore**()
 
 #### editScore()
 endpoints.Competition.**editScore**(self, \*\*kwargs)
+<br> Edit an existing score object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -507,6 +535,7 @@ endpoints.Competition.**editScore**(self, \*\*kwargs)
 
 #### getScore()
 endpoints.Competition.**getScore**(self, \*\*kwargs)
+<br> Retrieves an existing score.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -516,6 +545,7 @@ endpoints.Competition.**getScore**(self, \*\*kwargs)
 
 #### getScores()
 endpoints.Competition.**getScores**(self, \*\*kwargs)
+<br> Retrieves the specified existing score objects.
 <br>**Input**
 <br>**Output**
 <br>**Example**
@@ -525,6 +555,7 @@ endpoints.Competition.**getScores**(self, \*\*kwargs)
 
 #### deleteScore()
 endpoints.Competition.**deleteScore**(self, \*\*kwargs)
+<br> Deletes the specified score object.
 <br>**Input**
 * \*\*kwargs (optional):
   * serialized:
