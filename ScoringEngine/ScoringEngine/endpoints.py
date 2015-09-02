@@ -480,24 +480,24 @@ class Competition(ModelWrapper):
 		kwargs.pop('serialized', None)
 		self.getTeam(**kwargs).delete()
 
-	def createService(self, postData, serialized = False):
-		postData['organizationId'] = self.model.organization
-		postData['competitionId'] = self.model.competitionId
-		return Competition.Service.create(Competition.Service, postData, serialized)
+	# def createService(self, postData, serialized = False):
+	# 	postData['organizationId'] = self.model.organization
+	# 	postData['competitionId'] = self.model.competitionId
+	# 	return Competition.Service.create(Competition.Service, postData, serialized)
 
-	def editService(self, **kwargs):
-		service = self.getService(serviceId = kwargs.pop('serviceId', None))
-		return service.edit(**kwargs)
+	# def editService(self, **kwargs):
+	# 	service = self.getService(serviceId = kwargs.pop('serviceId', None))
+	# 	return service.edit(**kwargs)
 
-	def getService(self, **kwargs):
-		return getObject(Competition.Service, competitionId = self.model.competitionId, **kwargs)
+	# def getService(self, **kwargs):
+	# 	return getObject(Competition.Service, competitionId = self.model.competitionId, **kwargs)
 
-	def getServices(self, **kwargs):
-		return getObjects(Competition.Service, competitionId = self.model.competitionId, **kwargs)
+	# def getServices(self, **kwargs):
+	# 	return getObjects(Competition.Service, competitionId = self.model.competitionId, **kwargs)
 
-	def deleteService(self, **kwargs):
-		kwargs.pop('serialized', None)
-		self.getService(**kwargs).delete()
+	# def deleteService(self, **kwargs):
+	# 	kwargs.pop('serialized', None)
+	# 	self.getService(**kwargs).delete()
 
 	def createIncident(self, postData, serialized = False):
 		postData['organizationId'] = self.model.organization
@@ -661,8 +661,6 @@ class Organization(ModelWrapper):
 	def setNumCompetitions(self):
 		self.model.numCompetitions = Competition.count(organization = self.model.organizationId)
 		self.model.save()
-
-#	----------------------------------------------
 
 	def getCompetitions(self, **kwargs):
 		if kwargs.pop('serialized', None):
