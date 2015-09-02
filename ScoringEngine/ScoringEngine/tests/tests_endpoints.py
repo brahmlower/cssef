@@ -295,7 +295,226 @@ class UserEndpoints(TestCase):
 		self.assertEquals(user.getOrganizationId(), org2.getId())
 
 class CompetitionEndpoints(TestCase):
-	pass
+	def testCount(self):
+		pass
+
+	def testGetName(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		self.assertEquals(comp.getName(), 'Super Comp')
+
+	def testCheck(self):
+		pass
+		
+	def testCreateTeam(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		team = comp.createTeam(teamData)
+		self.assertEquals(team.__class__.__name__, 'Team')
+
+	def testEditTeam(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		team = comp.createTeam(teamData)
+		comp.editTeam(team.getId(), password = 'Its so cold up here...')
+		self.assertEquals(team.getPassword(), 'Its so cold up here...')
+
+	def testGetTeam(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		comp.createTeam(teamData)
+		team = comp.getTeam(name = 'UAF Team')
+		self.assertEquals(team.__class__.__name__, 'Team')
+
+	def testGetTeams(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData1 = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		teamData2 = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		comp.createTeam(teamData1)
+		comp.createTeam(teamData2)
+		teams = comp.getTeams()
+		self.assertEquals(len(teams), 2)
+		for i in teams:
+			self.assertEquals(i.__class__.__name__, 'Team')
+
+	def testDeleteTeam(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		comp.createTeam(teamData)
+		team = comp.getTeam(name = 'UAF Team')
+		comp.deleteTeam(team.getId())
+
+	def testCreateIncident(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		team = comp.createTeam(teamData)
+		incidentData = {'teamId': team.getId(), 'subject':'We super hacked them', 'content':'Their passwords suck! *mic drop*'}
+		incident = comp.createIncident(incidentData)
+		self.assertEquals(incident.__class__.__name__, 'Incident')
+
+	def testEditIncident(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		team = comp.createTeam(teamData)
+		incidentData = {'teamId': team.getId(), 'subject':'We super hacked them', 'content':'Their passwords suck! *mic drop*'}
+		incident = comp.createIncident(incidentData)
+		comp.editIncident(incidentId = incident.getId(), content = 'Actually it was their firewall #rekt')
+		self.assertEquals(incident.getContent, 'Actually it was their firewall #rekt')
+
+	def testGetIncident(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		team = comp.createTeam(teamData)
+		incidentData = {'teamId': team.getId(), 'subject':'We super hacked them', 'content':'Their passwords suck! *mic drop*'}
+		comp.createIncident(incidentData)
+		incident = comp.getIncident(subject = 'We super hacked them')
+		self.assertEquals(incident.__class__.__name__, 'Incident')
+
+	def testGetIncidents(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		team = comp.createTeam(teamData)
+		incidentData1 = {'teamId': team.getId(), 'subject':'We super hacked them', 'content':'Their passwords suck! *mic drop*'}
+		incidentData2 = {'teamId': team.getId(), 'subject':'Rooted as hell', 'content':'Very back door. Such exploit. Wow.'}
+		comp.createIncident(incidentData1)
+		comp.createIncident(incidentData2)
+		incidents = comp.getIncidents(teamId = team.getId())
+		for i in incidents:
+			self.assertEquals(i.__class__.__name__, 'Incident')
+
+	def testDeleteIncident(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		team = comp.createTeam(teamData)
+		incidentData = {'teamId': team.getId(), 'subject':'We super hacked them', 'content':'Their passwords suck! *mic drop*'}
+		incident = comp.createIncident(incidentData)
+		comp.deleteIncident(incidentId = incident.getId())
+
+	def testCreateIncidentResponse(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		team = comp.createTeam(teamData)
+		incidentData = {'teamId': team.getId(), 'subject':'We super hacked them', 'content':'Their passwords suck! *mic drop*'}
+		incident = comp.createIncident(incidentData)
+		incidentResponseData = {'teamId': team.getId(), 'incidentId': incident.getId(), 'content':"That wasn't our password! It was a default.."}
+		incidentResponse = comp.createIncidentResponse(incidentResponseData)
+		self.assertEquals(incidentResponse.__class__.__name__, 'IncidentResponse')
+
+	def testEditIncidentResponse(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		team = comp.createTeam(teamData)
+		incidentData = {'teamId': team.getId(), 'subject':'We super hacked them', 'content':'Their passwords suck! *mic drop*'}
+		incident = comp.createIncident(incidentData)
+		incidentResponseData = {'teamId': team.getId(), 'incidentId': incident.getId(), 'content':"That wasn't our password! It was a default.."}
+		incidentResponse = comp.createIncidentResponse(incidentResponseData)
+		comp.editIncidentResponse(incidentResponseId = incidentResponse.getId(), content = 'Changed content!')
+		self.assertEquals(incidentResponse.getContent(), 'Changed content!')
+
+	def testGetIncidentResponse(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		team = comp.createTeam(teamData)
+		incidentData = {'teamId': team.getId(), 'subject':'We super hacked them', 'content':'Their passwords suck! *mic drop*'}
+		incident = comp.createIncident(incidentData)
+		incidentResponseData = {'teamId': team.getId(), 'incidentId': incident.getId(), 'content': "That wasn't our password! It was a default.."}
+		comp.createIncidentResponse(incidentResponseData)
+		incidentResponse = comp.getIncidentResponse(content = "That wasn't our password! It was a default..")
+		self.assertEquals(incidentResponse.__class__.__name__, 'IncidentResponse')
+
+	def testGetIncidentResponses(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+		teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24'}
+		team = comp.createTeam(teamData)
+		incidentData = {'teamId': team.getId(), 'subject':'We super hacked them', 'content':'Their passwords suck! *mic drop*'}
+		incident = comp.createIncident(incidentData)
+		incidentResponseData1 = {'teamId': team.getId(), 'incidentId': incident.getId(), 'content': "That wasn't our password! It was a default.."}
+		incidentResponseData2 = {'teamId': team.getId(), 'incidentId': incident.getId(), 'content': 'This is another response.'}
+		comp.createIncidentResponse(incidentResponseData1)
+		comp.createIncidentResponse(incidentResponseData2)
+		incidentResponses = comp.getIncidentResponses(teamId = team.getId(), incidentId = incident.getId())
+		self.assertEquals(len(incidentResponses), 2)
+		for i in incidents:
+			self.assertEquals(i.__class__.__name__, 'IncidentResponse')
+
+	def testDeleteIncidentResponse(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testCreateInject(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testEditInject(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testGetInject(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testGetInjects(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testDeleteInject(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testCreateInjectResponse(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testEditInjectResponse(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testGetInjectResponse(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testGetInjectResponses(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testDelteInjectResponse(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testCreateScore(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testEditScore(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testGetScore(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testGetScores(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
+	def testDeleteScore(self):
+		org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+		comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+
 
 class TeamEndpoints(TestCase):
 	pass
