@@ -74,6 +74,7 @@ class UserSerializer(serializers.ModelSerializer):
 			'name',
 			'username',
 			'password',
+			'description',
 			'organizationId')
 
 	def get_organization(self, obj):

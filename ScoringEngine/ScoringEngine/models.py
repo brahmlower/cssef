@@ -79,6 +79,7 @@ class User(Model):
 	name = CharField(max_length = 20)
 	username = CharField(max_length = 20)
 	password = CharField(max_length = 64)
+	description = CharField(max_length = 256)
 	organizationId = PositiveIntegerField()
 
 	def is_authenticated(self):

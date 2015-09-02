@@ -81,7 +81,7 @@ class ModelWrapper:
 			if serialized:
 				return serializedModel.data
 			else:
-				return obj
+				return objectType(modelInst = obj)
 		else:
 			print "\n====================================="
 			print "Failed to create %s object!" % objectType.__name__
@@ -114,6 +114,9 @@ class Competition(ModelWrapper):
 				elif i == 'password':				self.setPassword(kwargs.get(i))
 				elif i == 'networkCidr':			self.setNetworkCidr(kwargs.get(i))
 				elif i == 'scoreConfigurations':	self.setScoreConfigurations(kwargs.get(i))
+
+		def getId(self):
+			return self.model.teamId
 
 		# Username methods
 		def setUsername(self, username):
@@ -209,6 +212,9 @@ class Competition(ModelWrapper):
 				elif i == 'title':					self.setTitle(kwargs.get(i))
 				elif i == 'body':					self.setBody(kwargs.get(i))
 
+		def getId(self):
+			return self.model.injectId
+
 		# Require Response modules
 		def setRequireResponse(self, requireResponse):
 			self.model.requireResponse = requireResponse
@@ -296,6 +302,9 @@ class Competition(ModelWrapper):
 				if i == 'datetime':		self.setDatetime(kwargs.get(i))
 				elif i == 'content':	self.setContent(kwargs.get(i))
 
+		def getId(self):
+			return self.model.injectResponseId
+
 		def setDatetime(self, datetime):
 			self.model.datetime = datetime
 			self.model.save()
@@ -320,6 +329,9 @@ class Competition(ModelWrapper):
 				if i == 'datetime':		self.setDatetime(kwargs.get(i))
 				elif i == 'subject':	self.setSubject(kwargs.get(i))
 				elif i == 'content':	self.setContent(kwargs.get(i))
+
+		def getId(self):
+			return self.model.incidentId
 
 		def getDatetime(self):
 			return self.model.datetime
@@ -353,6 +365,9 @@ class Competition(ModelWrapper):
 				elif i == 'datetime':	self.setDatetime(kwargs.get(i))
 				elif i == 'subject':	self.setSubject(kwargs.get(i))
 				elif i == 'content':	self.setContent(kwargs.get(i))
+
+		def getId(self):
+			return self.model.incidentResponseId
 
 		def setReplyTo(self, replyTo):
 			self.model.replyTo = replyTo
@@ -392,6 +407,9 @@ class Competition(ModelWrapper):
 				if i == 'datetime':		self.setDatetime(kwargs.get(i))
 				elif i == 'value':		self.setValue(kwargs.get(i))
 				elif i == 'message':	self.setMessage(kwargs.get(i))
+
+		def getId(self):
+			return self.model.scoreId
 
 		def isSlaViolation(competition):
 			# TODO: LEGACY CODE, NEEDS TO BE UPDATED
@@ -433,26 +451,15 @@ class Competition(ModelWrapper):
 	def count(**kwargs):
 		return Competition.modelObject.objects.filter(**kwargs).count()
 
+	def getId(self):
+		return self.model.competitionId
+
 	def getName(self):
 		return self.model.name
 
 	def check(self):
 		# This conducts a consistency check on the competiton settings.
 		print "A consistency check was conducted here..."
-
-	def searchOne(self, objType, serialized = False, **kwargs):
-		obj = objType.search(kwargs, competition = self.model)
-		if serialized:
-			return serializedModel(obj)
-		else:
-			return obj
-
-	def searchMany(self, objType, serialized = False):
-		obj = objType.search(competition = self.model)
-		if serialized:
-			return serializedModel(obj)
-		else:
-			return obj
 
 	def createTeam(self, postData, serialized = False):
 		postData['organizationId'] = self.model.organization
@@ -600,6 +607,9 @@ class Organization(ModelWrapper):
 			elif i == 'maxMembers':			self.setMaxMembers(kwargs.get(i))
 			elif i == 'maxCompetitions':	self.setMaxCompetitions(kwargs.get(i))
 
+	def getId(self):
+		return self.model.organizationId
+
 	def getDeleteable(self):
 		return self.model.deleteable
 
@@ -681,18 +691,16 @@ class Organization(ModelWrapper):
 	def createCompetition(self, postData, serialized = False):
 		if self.model.numCompetitions >= self.getMaxCompetitions():
 			raise MaxCompetitionsReached(self.getMaxCompetitions())
-		#postData['serialized'] = serialized
 		postData['organization'] = self.model.organizationId
-		newCompetition = Competition.create(Competition, postData, serialized = True)
+		newCompetition = Competition.create(Competition, postData, serialized)
 		self.setNumCompetitions()
 		return newCompetition
 
 	def createMember(self, postData, serialized = False):
 		if self.model.numMembers >= self.getMaxMembers():
 			raise MaxMembersReached(self.getMaxMembers())
-		#postData['serialized'] = serialized
 		postData['organizationId'] = self.model.organizationId
-		newUser = User.create(User, postData, serialized = True)
+		newUser = User.create(User, postData, serialized)
 		self.setNumMembers()
 		return newUser
 
@@ -727,11 +735,15 @@ class User(ModelWrapper):
 	def edit(self, **kwargs):
 		self.serialized = kwargs.pop('serialized', None)
 		for i in kwargs:
+			print i
 			if i == 'name':				self.setName(kwargs.get(i))
 			elif i == 'username':		self.setUsername(kwargs.get(i))
 			elif i == 'password':		self.setPassword(kwargs.get(i))
 			elif i == 'description':	self.setDescription(kwargs.get(i))
 			elif i == 'organization':	self.setOrganizationId(kwargs.get(i))	
+
+	def getId(self):
+		return self.model.userId
 
 	def getName(self):
 		return self.model.name
@@ -739,15 +751,18 @@ class User(ModelWrapper):
 	def setName(self, name):
 		self.model.name = name
 		self.model.save()
+		print self.model.name
 
 	def getUsername(self):
 		return self.model.username
 
-	def setUsername(self, name):
+	def setUsername(self, username):
 		self.model.username = username
 		self.model.save()
 
 	def getPassword(self):
+		# really though, this probably should available...
+		# not that calling self.model.password isn't an option
 		return self.model.password
 
 	def setPassword(self, password):
@@ -780,6 +795,9 @@ class Document(ModelWrapper):
 			elif i == 'filePath':			self.setFilePath(kwargs.get(i))
 			elif i == 'filename':			self.setFilename(kwargs.get(i))
 			elif i == 'urlEncodedFilename': self.setUrlEncodedFilename(kwargs.get(i))
+
+	def getId(self):
+		return self.model.documentId
 
 	def setContentType(self, contentType):
 		self.model.contentType = contentType
@@ -820,7 +838,7 @@ def getObjects(classPointer, **kwargs):
 	if kwargs.pop('serialized', None):
 		return classPointer.serialize(classPointer, classPointer.search(classPointer, **kwargs))
 	else:
-		return classPointer.search(**kwargs)
+		return classPointer.search(classPointer, **kwargs)
 
 def getObject(classPointer, **kwargs):
 	if kwargs.pop('serialized', None):
@@ -855,11 +873,11 @@ def editOrganization(**kwargs):
 	organization = getOrganization(organizationId = kwargs.pop('organizationId', None))
 	return organization.edit(**kwargs)
 
-def getUsers(**kwargs):
-	return getObjects(User, **kwargs)
-
 def getUser(**kwargs):
 	return getObject(User, **kwargs)
+
+def getUsers(**kwargs):
+	return getObjects(User, **kwargs)
 
 def editUser(**kwargs):
 	user = getUser(userId = kwargs.pop('userId', None))
