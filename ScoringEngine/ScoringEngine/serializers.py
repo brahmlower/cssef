@@ -60,7 +60,7 @@ class ScoreSerializer(serializers.ModelSerializer):
 			'scoreId',
 			'competitionId',
 			'teamId',
-			'serviceId',
+			#'serviceId',
 			'datetime',
 			'value',
 			'message')
@@ -124,6 +124,7 @@ class IncidentResponseSerializer(serializers.ModelSerializer):
 		fields = (
 			'incidentResponseId',
 			'competitionId',
+			'incidentId',
 			'teamId',
 			'replyTo',
 			'datetime',
@@ -157,6 +158,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
 			'description',
 			'maxMembers',
 			'maxCompetitions',
+			'numMembers',
+			'numCompetitions',
 			'members',
 			'competitions')
 
