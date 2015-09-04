@@ -2,108 +2,120 @@
 
 #### getObjects()
 endpoints.**getObjects**(classPointer, \*\*kwargs)
+<br>This is more of a utility method used by the other endpoints. It will simply apply the filter defined by the keywork arguments to the database object classPointer. The keyword serialized is poped from kwargs to define how to return the object.
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
 #### getObject()
 endpoints.**getObject**(classPointer, \*\*kwargs)
+<br>This is more of a utility method used by the other endpoints. It will simply apply the filter defined by the keywork arguments to the database object classPointer. The keyword serialized is poped from kwargs to define how to return the objects.
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 #### wrappedSearch()
 endpoints.**wrappedSearch**(objType, objTypeModel, \*\*kwargs)
+<br>This is more of a utility method used by the other endpoints.
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
 #### getCompetition()
 endpoints.**getCompetition**(\*\*kwargs)
+<br>This will return a single competition matching the filter defined by the provided keywords. The keyword serialized can be provided to specify how the object should be returned.
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
 #### getCompetitions()
 endpoints.**getCompetitions**(\*\*kwargs)
+<br>This will return all competition objects matching the filter defined by the provided keywords. The keyword serialzied can be provided to specify how the object should be returned.
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
 #### getOrganization()
 endpoints.**getOrganization**(\*\*kwargs)
+<br>This will return a single organization matching the filter defined by the provided keywords. The keyword serialized can be provided to specify how the object should be returned.
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
 #### getOrganizations()
 endpoints.**getOrganizations**(\*\*kwargs)
+<br>This will return all organizations objects matching the filter defined by the provided keywords. The keyword serialzied can be provided to specify how the object should be returned.
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
 #### createOrganization()
 endpoints.**createOrganization**(postData, serialized = False)
+<br>This will create a and return a new organization.
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
 #### editOrganization()
 endpoints.**editOrganization**(\*\*kwargs)
+<br>This will edit an existing organiztion defined by kwargs.
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
 #### getUsers()
 endpoints.**getUsers**(\*\*kwargs)
+<br>This will return all users objects matching the filter defined by the provided keywords. The keyword serialzied can be provided to specify how the object should be returned.
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
 #### getUser()
 endpoints.**getUser**(\*\*kwargs)
+<br>This will return a single user matching the filter defined by the provided keywords. The keyword serialized can be provided to specify how the object should be returned.
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
 #### editUser()
 endpoints.**editUser**(\*\*kwargs)
+<br>This is used to edit user specific settings like personal preferences. This as not been implemented yet though.
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -115,7 +127,7 @@ endpoints.Competition.**count**(\*\*kwarg)
 <br>**Output**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;Returns value of type integer
 <br>**Example**
-```
+```python
 >>> from ScoringEngine.endpoints import *
 >>> orgData = {'name': 'New Org', 'url':'new_org'}
 >>> org = createOrganization(orgData)
@@ -137,7 +149,7 @@ endpoints.Competition.**getName**(self)
 <br>**Output**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;Returns value of type str
 <br>**Example**
-```
+```python
 >>> from ScoringEngine.endpoints import *
 >>> orgData = {'name': 'New Org', 'url':'new_org'}
 >>> org = createOrganization(orgData)
@@ -156,7 +168,7 @@ This should one day perform a consistency check to make sure the competition doe
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -171,7 +183,7 @@ endpoints.Competition.**createTeam**(self, objType, serialized = False)
 
 **Output**
 <br>**Example**
-```
+```python
 >>> from ScoringEngine.endpoints import *
 >>> orgData = {'name': 'New Org', 'url':'new_org'}
 >>> org = createOrganization(orgData)
@@ -205,7 +217,7 @@ endpoints.Competition.**editTeam**(\*\*kwargs)
 **Output**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;None
 <br>**Example**
-```
+```python
 >>> from ScoringEngine.endpoints import *
 >>> org = createOrganization({'name': 'New Org', 'url':'new_org'})
 >>> competition = org.createCompetition({'name':'First Comp})
@@ -227,7 +239,7 @@ endpoints.Competition.**getTeam**(self, \*\*kwargs)
 
 **Output**
 <br>**Example**
-```
+```python
 >>> from SoringEngine.endpoints import *
 >>> org = createOrganization({'name': 'New Org', 'url':'new_org'})
 >>> competition = org.createCompetition({'name':'First Comp})
@@ -250,7 +262,7 @@ endpoints.Competition.**getTeams**(self, \*\*kwargs)
 **Output**
 <br>**Example**
 This is a bad example, using a function that doesn't exist. I'll get back to this eventually.
-```
+```python
 >>> from SoringEngine.endpoints import *
 >>> org = createOrganization({'name': 'New Org', 'url':'new_org'})
 >>> competition = org.createCompetition({'name':'First Comp})
@@ -275,7 +287,7 @@ endpoints.Competition.**deleteTeam**(self, \*\*kwargs)
 **Output**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;None
 <br>**Example**
-```
+```python
 competition = getCompetition(competitionId = 1)
 competition.deleteTeam(teamId = 5)
 ```
@@ -287,7 +299,7 @@ endpoints.Competition.**createIncident**(self, postData, serialized = False)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -297,7 +309,7 @@ endpoints.Competition.**editIncident**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -307,7 +319,7 @@ endpoints.Competition.**getIncident**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -317,7 +329,7 @@ endpoints.Competition.**getIncidents**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -334,7 +346,7 @@ endpoints.Competition.**deleteIncident**(self, \*\*kwargs)
 **Output**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;None
 <br>**Example**
-```
+```python
 competition = getCompetition(competitionId = 1)
 competition.deleteIncident(incidentId = 5)
 ```
@@ -346,7 +358,7 @@ endpoints.Competition.**createIncidentResponse**()
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -356,7 +368,7 @@ endpoints.Competition.**editIncidentResponse**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -366,16 +378,16 @@ endpoints.Competition.**getIncidentResponse**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
-#### getIncidentResponses
+#### getIncidentResponses()
 endpoints.Competition.**getIncidentResponses**(self, \*\*kwargs)
 <br> Retrieves multiple existing incident response objects.
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -392,10 +404,11 @@ endpoints.Competition.**deleteIncidentResponse**(self, \*\*kwargs)
 **Output**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;None
 <br>**Example**
-```
+```python
 competition = getCompetition(competitionId = 1)
 competition.deleteIncidentResponse(incidentResponseId = 5)
 ```
+* * *
 
 #### createInject()
 endpoints.Competition.**createInject**()
@@ -403,7 +416,7 @@ endpoints.Competition.**createInject**()
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -413,7 +426,7 @@ endpoints.Competition.**editInject**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -423,7 +436,7 @@ endpoints.Competition.**getInject**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -433,7 +446,7 @@ endpoints.Competition.**getInjects**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -450,10 +463,11 @@ endpoints.Competition.**deleteInject**(self, \*\*kwargs)
 **Output**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;None
 <br>**Example**
-```
+```python
 competition = getCompetition(competitionId = 1)
 competition.deleteInject(injectId = 5)
 ```
+* * *
 
 #### createInjectResponse
 endpoints.Competition.**createInjectResponse**()
@@ -461,7 +475,7 @@ endpoints.Competition.**createInjectResponse**()
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -471,7 +485,7 @@ endpoints.Competition.**editInjectResponse**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -481,7 +495,7 @@ endpoints.Competition.**getInjectResponse**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -491,7 +505,7 @@ endpoints.Competition.**getInjectResponses**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -508,10 +522,11 @@ endpoints.Competition.**deleteInjectResponses**(self, \*\*kwargs)
 **Output**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;None
 <br>**Example**
-```
+```python
 competition = getCompetition(competitionId = 1)
 competition.deleteInjectResponse(injectResponseId = 5)
 ```
+* * *
 
 #### createScore()
 endpoints.Competition.**createScore**()
@@ -519,7 +534,7 @@ endpoints.Competition.**createScore**()
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -529,7 +544,7 @@ endpoints.Competition.**editScore**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -539,7 +554,7 @@ endpoints.Competition.**getScore**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -549,7 +564,7 @@ endpoints.Competition.**getScores**(self, \*\*kwargs)
 <br>**Input**
 <br>**Output**
 <br>**Example**
-```
+```python
 ```
 * * *
 
@@ -566,17 +581,276 @@ endpoints.Competition.**deleteScore**(self, \*\*kwargs)
 **Output**
 <br>&nbsp;&nbsp;&nbsp;&nbsp;None
 <br>**Example**
-```
+```python
 competition = getCompetition(competitionId = 1)
 competition.deleteScore(scoreId = 5)
 ```
+* * *
 
-### Team
-### Inject
-### InjectResponse
-### Incident
-### IncidentResponse
-### Score
+## Team
+#### edit()
+endpoints.Competition.Team.**edit**(self, \*\*kwargs)
+<br> Applies many changes to the team object. This simply iterates over the provided keyword arguments and calls the corresponding 'set' methods. This does will modify the object directly and will bypass any additional checking or limitations implemented in endpoints.Competition.editTeam().
+<br>**Input**
+* name - *String* (optional)
+* username - *String* (optional)
+* password - *String* (optional)
+* networkCidr - *String* (optional)
+* scoreConfigs - *String* (optional)
+
+**Output**
+* endponts.Competition.Team
+
+**Example**
+```python
+```
+* * *
+#### getId()
+endpoints.Competition.Team.**getId**(self)
+<br> Returns the Id of the object as an integer.
+<br>**Input**
+* None
+
+**Output**
+* Integer
+
+**Example**
+```python
+>>> from ScoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+>>> comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+>>> teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24', 'scoreConfigurations': "{'httpService':{'port':80}}"
+>>> team = comp.createTeam(teamData)
+>>> print team.getId()
+1
+>>>
+```
+* * *
+#### getUsername()
+endpoints.Competition.Team.**getUsername**(self)
+<br> Returns the username of the object as a string.
+<br>**Input**
+* None
+
+**Output**
+* String
+
+**Example**
+```python
+>>> from ScoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+>>> comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+>>> teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24', 'scoreConfigurations': "{'httpService':{'port':80}}"
+>>> team = comp.createTeam(teamData)
+>>> team.getUsername()
+uafteam
+>>>
+```
+* * *
+#### setUsername()
+endpoints.Competition.Team.**setUsername**(self, username)
+<br> Sets the username of the object.
+<br>**Input**
+* username - *String* (required)
+
+**Output**
+* Boolean?
+
+**Example**
+```python
+>>> from ScoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+>>> comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+>>> teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24', 'scoreConfigurations': "{'httpService':{'port':80}}"
+>>> team = comp.createTeam(teamData)
+>>> team.setUsername('newusername')
+>>> print team.getUsername()
+newusername
+>>>
+```
+* * *
+#### getName()
+endpoints.Competition.Team.**getName**(self)
+<br> Returns the name of the object.
+<br>**Input**
+* None
+
+**Output**
+* String
+
+**Example**
+```python
+>>> from ScoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+>>> comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+>>> teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24', 'scoreConfigurations': "{'httpService':{'port':80}}"
+>>> team = comp.createTeam(teamData)
+>>> print team.getName()
+UAF Team
+>>>
+```
+* * *
+#### setName()
+endpoints.Competition.Team.**setName**(self, name)
+<br> Sets the name of the object.
+<br>**Input**
+* name - *String* (required)
+
+**Output**
+* Boolean?
+
+**Example**
+```pythonpython
+>>> from ScoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+>>> comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+>>> teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24', 'scoreConfigurations': "{'httpService':{'port':80}}"
+>>> team = comp.createTeam(teamData)
+>>> team.setName('New UAF Team')
+>>> print team.getName()
+New UAF Team
+>>>
+```
+* * *
+#### getPassword()
+endpoints.Competition.Team.**getPassword**(self)
+<br> Gets the password of the object. I really don't think this should be an available option, butI'm leaving it in for now, since I'm not making design decisions ATM (Sep 2, 2015).
+<br>**Input**
+* None
+
+**Output**
+* String
+
+**Example**
+Idealy the password won't be stored in plaintext, so this would actually return a hash of some sort. But even though, I don't like the idea of getting anything related to the password without having to get direct access to the database.
+```python
+>>> from ScoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+>>> comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+>>> teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24', 'scoreConfigurations': "{'httpService':{'port':80}}"
+>>> team = comp.createTeam(teamData)
+>>> team.getPassword()
+U@fR0(k5
+>>>
+```
+* * *
+#### setPassword()
+endpoints.Competition.Team.**setPassword**(self, password)
+<br> Sets the password of the object.
+<br>**Input**
+* password - *String* (required)
+
+**Output**
+* Boolean?
+
+**Example**
+```python
+>>> from ScoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+>>> comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+>>> teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24', 'scoreConfigurations': "{'httpService':{'port':80}}"
+>>> team = comp.createTeam(teamData)
+>>> team.setPassword('Password123')
+>>> print team.getPassword()
+Password123
+>>>
+```
+* * *
+#### getNetworkCidr()
+endpoints.Competition.Team.**getNetworkCidr**(self)
+<br> Returns the networkCidr of the object as a string.
+<br>**Input**
+* None
+
+**Output**
+* String
+
+**Example**
+```python
+>>> from ScoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+>>> comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+>>> teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24', 'scoreConfigurations': "{'httpService':{'port':80}}"
+>>> team = comp.createTeam(teamData)
+>>> print team.getNetworkCidr()
+192.168.1.0/24
+>>>
+```
+* * *
+#### setNetworkCidr()
+endpoints.Competition.Team.**setNetworkCidr**(self, networkCidr)
+<br> Sets the networkCidr of the object.
+<br>**Input**
+* networkCidr - *String* (required)
+
+**Output**
+* Boolean?
+
+**Example**
+```python
+>>> from ScoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+>>> comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+>>> teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24', 'scoreConfigurations': "{'httpService':{'port':80}}"
+>>> team = comp.createTeam(teamData)
+>>> team.setNetworkCidr('10.0.0.1/24')
+>>> print team.getNetworkCidr()
+10.0.0.1./24
+>>>
+```
+* * *
+#### getScoreConfigurations()
+endpoints.Competition.Team.**getScoreConfiguration**(self)
+<br> Gets the scoreConfiguration of the object.
+<br>**Input**
+* None
+
+**Output**
+* String
+
+**Example**
+```python
+>>> from ScoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+>>> comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+>>> teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24', 'scoreConfigurations': "{'someService':{'port':666}}"}
+>>> team = comp.createTeam(teamData)
+>>> scoreConfigsString = team.getScoreConfigurations()
+>>> scoreConfigs = json.loads(scoreConfigsString)
+>>> print scoreConfigs['someService']
+{'port': 666}
+>>> 
+```
+* * *
+#### setScoreConfigurations()
+endpoints.Competition.Team.**setScoreConfiguration**(self, scoreConfiguration)
+<br> Sets the scoreConfiguration of the object. This gets a little funky, since the string is actualy supposed to be a pickled dictionary. 
+<br>**Input**
+* scoreConfiguration - *String* (required)
+
+**Output**
+* Boolean?
+
+**Example**
+```python
+>>> from ScoringEngine.endpoints import *
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+>>> comp = org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+>>> teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24', 'scoreConfigurations': "{'someService':{'port':666}}"}
+>>> team = comp.createTeam(teamData)
+>>> team.setScoreConfigurations("{'someService':{'port': 420}}")
+>>> scoreConfigsString = team.getScoreConfigurations()
+>>> scoreConfigs = json.loads(scoreConfigsString)
+>>> print scoreConfigs['someService']
+{'port': 420}
+>>>
+```
+* * *
+## Inject
+## InjectResponse
+## Incident
+## IncidentResponse
+## Score
 
 
 ## Organization
