@@ -140,18 +140,18 @@ class Competition(ModelWrapper):
 			# plaintext I know, I'll cross this bridge when i get here
 
 		# Network CIDR methods
-		def setNetworkCidr(self):
+		def getNetworkCidr(self):
 			return self.model.networkCidr
 
-		def getNetworkCidr(self):
+		def setNetworkCidr(self, networkCidr):
 			self.model.networkCidr = networkCidr
 			self.model.save()
 
 		# Score Configuration methds
-		def setScoreConfigurations(self):
+		def getScoreConfigurations(self):
 			return self.model.scoreConfigurations
 
-		def getScoreConfigurations(self):
+		def setScoreConfigurations(self, scoreConfigurations):
 			# This function will also need to change as I improve the way
 			# score configurations are interacted with....
 			self.model.scoreConfigurations = scoreConfigurations
@@ -347,10 +347,10 @@ class Competition(ModelWrapper):
 			self.model.subject = subject
 			self.model.save()
 
-		def setContent(self):
+		def getContent(self):
 			return self.model.content
 
-		def getContent(self, content):
+		def setContent(self, content):
 			self.model.content = content
 			self.model.save()
 
