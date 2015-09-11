@@ -2,15 +2,16 @@
 
 This is reference documentation on the python api for the core framework. The following are links to the various sections documentation.
 
-* [Competition](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
-* [Team](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
-* [Inject](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
-* [InjectResponse](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
-* [Incident](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
-* [IncidentResponse](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
-* [Organization](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
-* [User](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
-* [Document](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
+* [Competition](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/ScoringEngine/README.md#competition)
+* [Team](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/ScoringEngine/README.md#team)
+* [Inject](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/ScoringEngine/README.md#inject)
+* [InjectResponse](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/ScoringEngine/README.md#injectresponse)
+* [Incident](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md#incident)
+* [IncidentResponse](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md#incidentresponse)
+* [Score](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/ScoringEngine/README.md#score)
+* [Organization](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/ScoringEngine/README.md#organization)
+* [User](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/ScoringEngine/README.md#user)
+* [Document](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/ScoringEngine/README.md#document)
 
 There is a lot of documentation here. If you see any errors or unfinished sections, feel free to submit edits via a pull request.
 
