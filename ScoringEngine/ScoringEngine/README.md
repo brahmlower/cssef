@@ -1,5 +1,19 @@
 # API Documentation
 
+This is reference documentation on the python api for the core framework. The following are links to the various sections documentation.
+
+* [Competition](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
+* [Team](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
+* [Inject](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
+* [InjectResponse](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
+* [Incident](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
+* [IncidentResponse](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
+* [Organization](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
+* [User](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
+* [Document](https://github.com/bplower/cssef/edit/refactor/ScoringEngine/ScoringEngine/README.md)
+
+There is a lot of documentation here. If you see any errors or unfinished sections, feel free to submit edits via a pull request.
+
 #### getObjects()
 endpoints.**getObjects**(classPointer, \*\*kwargs)
 <br>This is more of a utility method used by the other endpoints. It will simply apply the filter defined by the keywork arguments to the database object classPointer. The keyword serialized is poped from kwargs to define how to return the object.
@@ -751,8 +765,6 @@ endpoints.Competition.Team.**setPassword**(self, password)
 >>> teamData = {'name': 'UAF Team', 'username': 'uafteam', 'password': 'U@fR0(k5', 'networkCidr': '192.168.1.0/24', 'scoreConfigurations': "{'httpService':{'port':80}}"
 >>> team = comp.createTeam(teamData)
 >>> team.setPassword('Password123')
->>> print team.getPassword()
-Password123
 >>>
 ```
 * * *
@@ -847,64 +859,1301 @@ endpoints.Competition.Team.**setScoreConfiguration**(self, scoreConfiguration)
 ```
 * * *
 ## Inject
-## InjectResponse
-## Incident
-## IncidentResponse
-## Score
+#### edit()
+endpoints.Competition.Inject.**edit**(self, \*\*kwargs)
+<br>**Input**
+* \*\*kwargs
 
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getId()
+endpoints.Competition.Inject.**getId**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setRequireResponse()
+endpoints.Competition.Inject.**setRequireResponse**(self, requireResponse)
+<br>**Input**
+* requireResponse - *Boolean* (required)
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getRequireResponse()
+endpoints.Competition.Inject.**getRequireResponse**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setManualDelivery()
+endpoints.Competition.Inject.**setManualDelivery**(self, manualDelivery)
+<br>**Input**
+* manualDelivery - *Boolean* (required)
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getManualDelivery()
+endpoints.Competition.Inject.**getManualDelivery**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setDatetimeDelivery()
+endpoints.Competition.Inject.**setDatetimeDelivery**(self, datetimeDelivery)
+<br>**Input**
+* datetimeDelivery - *Datetime* (required)
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getDatetimeDelivery()
+endpoints.Competition.Inject.**getDatetimeDelivery**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setDatetimeResponseDue()
+endpoints.Competition.Inject.**setDatetimeResponseDue**(self, datetimeResponseDue)
+<br>**Input**
+* datetimeResponseDue - *Datetime* (required)
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getDatetimeResponseDue()
+endpoints.Competition.Inject.**getDatetimeResponseDue**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setDatetimeResponseClose()
+endpoints.Competition.Inject.**setDatetimeResponseClose**(self, datetimeResponseClose)
+<br>**Input**
+* datetimeResponseClose - *Datetime* (required)
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getDatetimeResponseClose()
+endpoints.Competition.Inject.**getDatetimeResponseClose**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setTitle()
+endpoints.Competition.Inject.**setTitle**(self, title)
+<br>**Input**
+* title - *String* (required)
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getTitle()
+endpoints.Competition.Inject.**getTitle**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setBody()
+endpoints.Competition.Inject.**setBody**(self, body)
+<br>**Input**
+* body - *String* (required)
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getBody()
+endpoints.Competition.Inject.**getBody**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getDocuments()
+endpoints.Competition.Inject.**getDocuments**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getResponses()
+endpoints.Competition.Inject.**getResponses**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+## InjectResponse
+#### edit()
+endpoints.Competition.InjectResponse.**edit**(self, \*\*kwargs)
+<br>**Input**
+* \*\*kwargs
+
+**Output**
+* Boolean?
+
+**Example**
+```python
+```
+* * *
+
+#### getId()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setDatetime()
+endpoints.Competition.InjectResponse.**setDatetime**(self, datetime)
+<br>**Input**
+* datetime - *Datetime* (required)
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getDatetime()
+endpoints.Competition.InjectResponse.**getDatetime**(self)
+<br>**Input**
+* None
+
+**Output**
+* Datetime
+
+**Example**
+```python
+```
+* * *
+
+#### setContent()
+endpoints.Competition.InjectResponse.**setContent**(self, content)
+<br>**Input**
+* content - *String* (required)
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getContent()
+endpoints.Competition.InjectResponse.**getContent**(self)
+<br>**Input**
+* None
+
+**Output**
+* String
+
+**Example**
+```python
+```
+* * *
+
+## Incident
+#### edit()
+endpoints.Competition.Incident.**edit**(self, \*\*kwargs)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getId()
+endpoints.Competition.Incident.**getId**(self)
+<br>**Input**
+* None
+
+**Output**
+* Integer
+
+**Example**
+```python
+```
+* * *
+
+#### setDatetime()
+endpoints.Competition.Incident.**setDatetime**(self, datetime)
+<br>**Input**
+* datetime - *Datetime* (required)
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getDatetime()
+endpoints.Competition.Incident.**getDatetime**(self)
+<br>**Input**
+* None
+
+**Output**
+* Datetime
+
+**Example**
+```python
+```
+* * *
+
+#### setSubject()
+endpoints.Competition.Incident.**setSubject**(self, subject)
+<br>**Input**
+* subject - *String* (required)
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getSubject()
+endpoints.Competition.Incident.**getSubject**(self)
+<br>**Input**
+* None
+
+**Output**
+* String
+
+**Example**
+```python
+```
+* * *
+
+#### setContent()
+endpoints.Competition.Incident.**setContent**(self, content)
+<br>**Input**
+* content - *String* (required)
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getContent()
+endpoints.Competition.Incident.**getContent**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+## IncidentResponse
+#### edit()
+endpoints.Competition.IncidentResponse.**edit**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getId()
+endpoints.Competition.IncidentResponse.**getId**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setReplyTo()
+endpoints.Competition.IncidentResponse.**setReplyTo**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getReplyTo()
+endpoints.Competition.IncidentResponse.**getReplyTo**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setDatetime()
+endpoints.Competition.IncidentResponse.**setDatetime**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getDatetime()
+endpoints.Competition.IncidentResponse.**getDatetime**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setSubject()
+endpoints.Competition.IncidentResponse.**setSubject**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getSubject()
+endpoints.Competition.IncidentResponse.**getSubject**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setContent()
+endpoints.Competition.IncidentResponse.**setContent**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getContent()
+endpoints.Competition.IncidentResponse.**getContent**(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+
+## Score
+#### edit()
+endpoints.Competition.Score.****(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getId()
+endpoints.Competition.Score.****(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setDatetime()
+endpoints.Competition.Score.****(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getDatetime()
+endpoints.Competition.Score.****(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setValue()
+endpoints.Competition.Score.****(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getValue()
+endpoints.Competition.Score.****(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setMessage()
+endpoints.Competition.Score.****(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getMessage()
+endpoints.Competition.Score.****(self)
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
 
 ## Organization
-### edit
-### getDeleteable
-### getName
-### setName
-### getUrl
-### setUrl
-### getDescription
-### setDescription
-### getMaxMembers
-### setMaxMembers
-### getMaxCompetitions
-### setMaxCompetitions
-### getNumMembers
-### setNumMembers
-### getNumCompetitions
-### setNumCompetitions
-### getCompetitions
-### getCompetition
-### createCompetition
-### deleteCompetition
-### editCompetition
-### getMembers
-### getMember
-### createMember
-### deleteMember
-### editMember
+#### edit()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getDeleteable()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getName()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setName()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getUrl()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setUrl()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getDescription()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setDescription()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getMaxMembers()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setMaxMembers()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getMaxCompetitions()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setMaxCompetitions()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getNumMembers()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setNumMembers()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getNumCompetitions()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setNumCompetitions()()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getCompetitions()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getCompetition()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### createCompetition()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### deleteCompetition()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### editCompetition()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getMembers()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getMember()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### createMember()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### deleteMember()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### editMember()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
 
 
 ## User
-### count
-### edit
-### getName
-### setName
-### getUsername
-### setUsername
-### getPassword
-### setPassword
-### getDescription
-### setDescription
-### getOrganizationId
-### setOrganizationId
+#### count()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### edit()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getName()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setName()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getUsername()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setUsername()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getPassword()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setPassword()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getDescription()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setDescription()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getOrganizationId()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setOrganizationId()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
 
 ## Document
-### edit
-### setContentType
-### getContentType
-### setFileHash
-### getFileHash
-### setFilePath
-### getfilePath
-### setFilename
-### getFilename
-### setUrlEncodedFilename
-### getUrlEncodedFilename
+#### edit()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setContentType()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getContentType()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setFileHash()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getFileHash()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setFilePath()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getfilePath()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setFilename()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getFilename()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### setUrlEncodedFilename()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
+#### getUrlEncodedFilename()
+function header
+<br>**Input**
+* None
+
+**Output**
+* Something
+
+**Example**
+```python
+```
+* * *
+
