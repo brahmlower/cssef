@@ -48,9 +48,20 @@ endpoints.**wrappedSearch**(objType, objTypeModel, \*\*kwargs)
 endpoints.**getCompetition**(\*\*kwargs)
 <br>This will return a single competition matching the filter defined by the provided keywords. The keyword serialized can be provided to specify how the object should be returned.
 <br>**Input**
-<br>**Output**
-<br>**Example**
+* \*\*kwargs
+  * 
+
+**Output**
+* Competition object
+
+**Example**
 ```python
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+>>> org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+>>> comp = getCompetition(name = 'Super Comp')
+>>> print comp.getName()
+Super Comp
+>>>
 ```
 * * *
 
@@ -58,9 +69,20 @@ endpoints.**getCompetition**(\*\*kwargs)
 endpoints.**getCompetitions**(\*\*kwargs)
 <br>This will return all competition objects matching the filter defined by the provided keywords. The keyword serialzied can be provided to specify how the object should be returned.
 <br>**Input**
-<br>**Output**
-<br>**Example**
+* \*\*kwargs
+
+**Output**
+* List
+
+**Example**
 ```python
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxCompetitions': 5})
+>>> org.createCompetition({'name': 'Super Comp', 'url': 'super_comp'})
+>>> org.createCompetition({'name': 'Second Comp', 'url': 'super_comp'})
+>>> comps = getCompetitions(organization = org.getId())
+>>> print comps
+[<Competition: Competition object>, <Competition: Competition object>]
+>>>
 ```
 * * *
 
@@ -68,19 +90,38 @@ endpoints.**getCompetitions**(\*\*kwargs)
 endpoints.**getOrganization**(\*\*kwargs)
 <br>This will return a single organization matching the filter defined by the provided keywords. The keyword serialized can be provided to specify how the object should be returned.
 <br>**Input**
-<br>**Output**
+* \*\*kwargs
+
+**Output**
+* Organization
+
 <br>**Example**
 ```python
+>>> createOrganization({'name': 'New Org', 'url': 'new_org'})
+>>> org = getOrganization(name = 'New Org')
+>>> print org.getName()
+New Org
+>>>
 ```
 * * *
 
 #### getOrganizations()
 endpoints.**getOrganizations**(\*\*kwargs)
 <br>This will return all organizations objects matching the filter defined by the provided keywords. The keyword serialzied can be provided to specify how the object should be returned.
-<br>**Input**
+**Input**
+* \*\*kwargs
+
 <br>**Output**
-<br>**Example**
+* List
+
+**Example**
 ```python
+>>> createOrganization({'name': 'First Org', 'url': 'first_org'})
+>>> createOrganization({'name': 'Second Org', 'url': 'second_org'})
+>>> orgs = getOrganizations()
+>>> print orgs
+[<Organization: Organization object>, <Organization: Organization object>]
+>>>
 ```
 * * *
 
@@ -88,9 +129,18 @@ endpoints.**getOrganizations**(\*\*kwargs)
 endpoints.**createOrganization**(postData, serialized = False)
 <br>This will create a and return a new organization.
 <br>**Input**
-<br>**Output**
-<br>**Example**
+* postData - *Dict* (required)
+* serialized - *Boolean* (optional)
+
+**Output**
+* Organization
+
+**Example**
 ```python
+>>> newOrg = createOrganization({'name': 'Best Org', 'url': 'best_org'})
+>>> print newOrg
+<Organization: Organization object>
+>>>
 ```
 * * *
 
@@ -98,9 +148,20 @@ endpoints.**createOrganization**(postData, serialized = False)
 endpoints.**editOrganization**(\*\*kwargs)
 <br>This will edit an existing organiztion defined by kwargs.
 <br>**Input**
-<br>**Output**
-<br>**Example**
+* organizationId - *Integer* (required)
+
+**Output**
+* None
+
+**Example**
 ```python
+>>> newOrg = createOrganization({'name': 'Best Org', 'url': 'best_org'})
+>>> newOrg.getMaxMembers()
+0
+>>> editOrganization(organizationId = newOrg.getId(), maxMembers = 5)
+>>> newOrg.getMaxMembers()
+5
+>>>
 ```
 * * *
 
@@ -108,9 +169,19 @@ endpoints.**editOrganization**(\*\*kwargs)
 endpoints.**getUsers**(\*\*kwargs)
 <br>This will return all users objects matching the filter defined by the provided keywords. The keyword serialzied can be provided to specify how the object should be returned.
 <br>**Input**
-<br>**Output**
-<br>**Example**
+* \*\*kwargs
+
+**Output**
+* List
+
+**Example**
 ```python
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxMembers': 5})
+>>> org.createMember({'name': 'Bob', 'password': 'Bobs!password'})
+>>> org.createMember({'name': 'Jill', 'password': 'Jills!password'})
+>>> user = getUser(organizationId = org.getId())
+[<User: User object>, <User: User object>]
+>>>
 ```
 * * *
 
@@ -118,19 +189,38 @@ endpoints.**getUsers**(\*\*kwargs)
 endpoints.**getUser**(\*\*kwargs)
 <br>This will return a single user matching the filter defined by the provided keywords. The keyword serialized can be provided to specify how the object should be returned.
 <br>**Input**
-<br>**Output**
-<br>**Example**
+* \*\*kwargs
+
+**Output**
+* User
+
+**Example**
 ```python
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxMembers': 5})
+>>> member = org.createMember({'name': 'Bob', 'password': 'Bobs!password'})
+>>> user = getUser(name = 'Bob')
+<ScoringEngine.endpoints.User instance at 0x105169fc8>
+>>>
 ```
 * * *
 
 #### editUser()
 endpoints.**editUser**(\*\*kwargs)
-<br>This is used to edit user specific settings like personal preferences. This as not been implemented yet though.
+<br>This is used to edit user specific settings like personal preferences. This hasn't been implemeted though.
 <br>**Input**
-<br>**Output**
-<br>**Example**
+* \*\*kwargs
+
+**Output**
+* None
+
+**Example**
 ```python
+>>> org = createOrganization({'name': 'New Org', 'url': 'new_org', 'maxMembers': 5})
+>>> member = org.createMember({'name': 'Bob', 'password': 'Bobs!password'})
+>>> user = getUser(name = 'Bob')
+>>> editUser(userId = user.getId(), name = 'Jill')
+>>> user.getName()
+>>>
 ```
 * * *
 
@@ -139,9 +229,12 @@ endpoints.**editUser**(\*\*kwargs)
 endpoints.Competition.**count**(\*\*kwarg)
 <br>This returns the number of Competition objects that match the provided filter.
 <br>**Input**
-<br>**Output**
-<br>&nbsp;&nbsp;&nbsp;&nbsp;Returns value of type integer
-<br>**Example**
+* \*\*kwargs
+
+**Output**
+* Integer
+
+**Example**
 ```python
 >>> from ScoringEngine.endpoints import *
 >>> orgData = {'name': 'New Org', 'url':'new_org'}
@@ -160,10 +253,12 @@ endpoints.Competition.**count**(\*\*kwarg)
 endpoints.Competition.**getName**(self)
 <br>This will return the name of the competition as a string.
 <br>**Input**
-<br>&nbsp;&nbsp;&nbsp;&nbsp;None
-<br>**Output**
-<br>&nbsp;&nbsp;&nbsp;&nbsp;Returns value of type str
-<br>**Example**
+* None
+
+**Output**
+* String
+
+**Example**
 ```python
 >>> from ScoringEngine.endpoints import *
 >>> orgData = {'name': 'New Org', 'url':'new_org'}
@@ -175,7 +270,6 @@ New Org
 >>>
 ```
 * * *
-
 
 #### check()
 endpoints.Competition.**check**(self)<br>
@@ -191,13 +285,15 @@ This should one day perform a consistency check to make sure the competition doe
 endpoints.Competition.**createTeam**(self, objType, serialized = False)
 <br>This will create and return a new team in within the competition.
 <br>**Input**
-* postData (required)
+* postData - *Dict* (required)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;Dictionary containing required keywords for a new Team.
 * serialized (optional)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;Return as object (False) or as a dictionary (True). If not provided, this value will default to False.
 
 **Output**
-<br>**Example**
+* Team
+
+**Example**
 ```python
 >>> from ScoringEngine.endpoints import *
 >>> orgData = {'name': 'New Org', 'url':'new_org'}
@@ -230,8 +326,9 @@ endpoints.Competition.**editTeam**(\*\*kwargs)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;The dictionary for storing scoring configurations
 
 **Output**
-<br>&nbsp;&nbsp;&nbsp;&nbsp;None
-<br>**Example**
+* None
+
+**Example**
 ```python
 >>> from ScoringEngine.endpoints import *
 >>> org = createOrganization({'name': 'New Org', 'url':'new_org'})
@@ -253,7 +350,9 @@ endpoints.Competition.**getTeam**(self, \*\*kwargs)
 <br>**Input**
 
 **Output**
-<br>**Example**
+* Team
+
+**Example**
 ```python
 >>> from SoringEngine.endpoints import *
 >>> org = createOrganization({'name': 'New Org', 'url':'new_org'})
@@ -268,14 +367,16 @@ endpoints.Competition.**getTeam**(self, \*\*kwargs)
 endpoints.Competition.**getTeams**(self, \*\*kwargs)
 <br> Retrieves an existing team object.
 <br>**Input**
-* objType (required):
+* objType - *Something...* (required):
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This is the class type of the object to search for
 * \*\*kwargs (optional):
   * serialized:
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This defines the type to return. If not provided, this defaults to False.
 
 **Output**
-<br>**Example**
+* List
+
+**Example**
 This is a bad example, using a function that doesn't exist. I'll get back to this eventually.
 ```python
 >>> from SoringEngine.endpoints import *
@@ -289,6 +390,7 @@ This is a bad example, using a function that doesn't exist. I'll get back to thi
 >>> 
 ```
 * * *
+
 #### deleteTeam()
 endpoints.Competition.**deleteTeam**(self, \*\*kwargs)
 <br> Deletes the specified team object.
@@ -300,8 +402,9 @@ endpoints.Competition.**deleteTeam**(self, \*\*kwargs)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;The ID for the Team object you'd like to delete.
 
 **Output**
-<br>&nbsp;&nbsp;&nbsp;&nbsp;None
-<br>**Example**
+* None
+
+**Example**
 ```python
 competition = getCompetition(competitionId = 1)
 competition.deleteTeam(teamId = 5)
@@ -410,15 +513,16 @@ endpoints.Competition.**getIncidentResponses**(self, \*\*kwargs)
 endpoints.Competition.**deleteIncidentResponse**(self, \*\*kwargs)
 <br> Deletes a single specified incident response object.
 <br>**Input**
-* \*\*kwargs (optional):
-  * serialized:
+* \*\*kwargs:
+  * serialized - *Boolean* (optional)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;This defines the type to return. If not provided, this defaults to False.
-  * teamId:
+  * incidentResponseId - *Integer* (required)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;The ID for the IncidentResponse object you'd like to delete.
 
 **Output**
-<br>&nbsp;&nbsp;&nbsp;&nbsp;None
-<br>**Example**
+* None
+
+**Example**
 ```python
 competition = getCompetition(competitionId = 1)
 competition.deleteIncidentResponse(incidentResponseId = 5)
@@ -476,8 +580,9 @@ endpoints.Competition.**deleteInject**(self, \*\*kwargs)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;The ID for the Inject object you'd like to delete.
 
 **Output**
-<br>&nbsp;&nbsp;&nbsp;&nbsp;None
-<br>**Example**
+* None
+
+**Example**
 ```python
 competition = getCompetition(competitionId = 1)
 competition.deleteInject(injectId = 5)
@@ -535,8 +640,9 @@ endpoints.Competition.**deleteInjectResponses**(self, \*\*kwargs)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;The ID for the InjectResponse object you'd like to delete.
 
 **Output**
-<br>&nbsp;&nbsp;&nbsp;&nbsp;None
-<br>**Example**
+* None
+
+**Example**
 ```python
 competition = getCompetition(competitionId = 1)
 competition.deleteInjectResponse(injectResponseId = 5)
@@ -594,8 +700,9 @@ endpoints.Competition.**deleteScore**(self, \*\*kwargs)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;The ID for the Score object you'd like to delete.
 
 **Output**
-<br>&nbsp;&nbsp;&nbsp;&nbsp;None
-<br>**Example**
+* None
+
+**Example**
 ```python
 competition = getCompetition(competitionId = 1)
 competition.deleteScore(scoreId = 5)
