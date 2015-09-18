@@ -122,6 +122,13 @@ class IncidentResponse(Model):
 	subject = CharField(max_length = 100, default = "")
 	content = TextField(max_length = 1000)
 
+class ScoringEngine(Model):
+	scoringEngineId = AutoField(primary_key = True)
+	name = CharField(max_length = 256, blank = False, null = False)
+	packageName = CharField(max_length = 256, blank = False, null = False)
+	ownership = PositiveIntegerField(default = 0)
+	disabled = BooleanField(default = False)
+
 class Organization(Model):
 	organizationId = AutoField(primary_key = True)
 	deleteable = BooleanField(default = True)
@@ -138,7 +145,6 @@ class Document(Model):
 	inject = ForeignKey(Inject, null = True, blank = True, unique = False)
 	injectResponse = ForeignKey(InjectResponse, null = True, blank = True, unique = False)
 	incidentResponse = ForeignKey(IncidentResponse, null = True, blank = True, unique = False)
-	plugin = ForeignKey(Plugin, null = True, blank = True, unique = True)
 	contentType = CharField(max_length = 64, null = True)
 	fileHash = CharField(max_length = 32)
 	filePath = CharField(max_length = 256)
