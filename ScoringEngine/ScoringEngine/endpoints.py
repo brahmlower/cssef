@@ -6,9 +6,9 @@ from models import Inject as InjectModel
 from models import InjectResponse as InjectResponseModel
 from models import Incident as IncidentModel
 from models import IncidentResponse as IncidentResponseModel
-from models import Plugin as PluginModel
 from models import User as UserModel
 from models import Document as DocumentModel
+from models import ScoringEngine as ScoringEngineModel
 
 from serializers import UserSerializer
 from serializers import OrganizationSerializer
@@ -20,6 +20,7 @@ from serializers import IncidentSerializer
 from serializers import IncidentResponseSerializer
 from serializers import ScoreSerializer
 from serializers import DocumentSerializer
+from serializers import ScoringEngineSerializer
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -480,25 +481,6 @@ class Competition(ModelWrapper):
 		kwargs.pop('serialized', None)
 		self.getTeam(**kwargs).delete()
 
-	# def createService(self, postData, serialized = False):
-	# 	postData['organizationId'] = self.model.organization
-	# 	postData['competitionId'] = self.model.competitionId
-	# 	return Competition.Service.create(Competition.Service, postData, serialized)
-
-	# def editService(self, **kwargs):
-	# 	service = self.getService(serviceId = kwargs.pop('serviceId', None))
-	# 	return service.edit(**kwargs)
-
-	# def getService(self, **kwargs):
-	# 	return getObject(Competition.Service, competitionId = self.model.competitionId, **kwargs)
-
-	# def getServices(self, **kwargs):
-	# 	return getObjects(Competition.Service, competitionId = self.model.competitionId, **kwargs)
-
-	# def deleteService(self, **kwargs):
-	# 	kwargs.pop('serialized', None)
-	# 	self.getService(**kwargs).delete()
-
 	def createIncident(self, postData, serialized = False):
 		postData['organizationId'] = self.model.organization
 		postData['competitionId'] = self.model.competitionId
@@ -781,6 +763,41 @@ class User(ModelWrapper):
 		self.model.organizationId = organizationId
 		self.model.save()
 
+class ScoringEngine(ModelWrapper):
+	serializerObject = ScoringEngineSerializer
+	modelObject = ScoringEngineModel
+
+	def delete(self):
+		print '[WARNING] Cannot delete ScoringEngine. Redirecting to disable.'
+		return self.disable()
+
+	def disable(self):
+		self.setDisabled(True)
+
+	def enable(self):
+		self.setDisabled(False)
+
+	def getName(self):
+		return self.model.name
+
+	def setName(self, name):
+		self.model.name = name
+		self.model.save()
+
+	def getDisabled(self):
+		return self.model.disabled
+
+	def setDisabled(self, state):
+		self.model.disabled = state
+		self.model.save()
+
+	def getPackageName(self):
+		return self.model.packageName
+
+	def setPackageName(self, packageName):
+		self.model.packageName = packageName
+		self.model.save()
+
 class Document(ModelWrapper):
 	serializerObject = DocumentSerializer
 	modelObject = DocumentModel
@@ -871,6 +888,9 @@ def editOrganization(**kwargs):
 	organization = getOrganization(organizationId = kwargs.pop('organizationId', None))
 	return organization.edit(**kwargs)
 
+def deleteOrganization():
+	pass
+
 def getUser(**kwargs):
 	return getObject(User, **kwargs)
 
@@ -880,6 +900,26 @@ def getUsers(**kwargs):
 def editUser(**kwargs):
 	user = getUser(userId = kwargs.pop('userId', None))
 	return user.edit(**kwargs)
+
+def getScoringEngine(**kwargs):
+	return getObject(ScoringEngine, **kwargs)
+
+def getScoringEngines(**kwargs):
+	return getObjects(ScoringEngine, **kwargs)
+
+def createScoringEngine(postData, serialized = False):
+	return ScoringEngine.create(ScoringEngine, postData, serialized)
+
+def editScoringEngines(**kwargs):
+	scoringEngine = getScoringEngine(scoringEngineId = kwargs.pop('scoringEngineId', None))
+	return scoringEngine.edit(**kwargs)
+
+def disableScoringEngine(scoringEngineId):
+	# disable rather than delete, because we'd be deleting actual files on
+	# the host, which we wan't to be very careful about
+	scoringEngine = self.getScoringEngine(scoringEngineId = scoringEngineId)
+	scoringEngine.disable()
+
 
 
 

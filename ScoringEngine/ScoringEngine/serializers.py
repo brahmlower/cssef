@@ -2,8 +2,6 @@ from django.forms import widgets
 from rest_framework import serializers
 from models import Competition
 from models import Team
-from models import Plugin
-from models import Service
 from models import Score
 from models import User
 from models import Inject
@@ -12,6 +10,7 @@ from models import Incident
 from models import IncidentResponse
 from models import Document
 from models import Organization
+from models import ScoringEngine
 
 class CompetitionSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -145,6 +144,15 @@ class DocumentSerializer(serializers.ModelSerializer):
 			'filePath',
 			'filename',
 			'urlEncodedFilename')
+
+class ScoringEngineSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = ScoringEngine
+		fields = (
+			'name',
+			'packageName',
+			'disabled',
+			'ownership')
 
 class OrganizationSerializer(serializers.ModelSerializer):
 	members = serializers.SerializerMethodField()

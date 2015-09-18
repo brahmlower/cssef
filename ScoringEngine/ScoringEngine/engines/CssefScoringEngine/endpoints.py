@@ -162,9 +162,9 @@ def createService(postData, serialized = False):
 	return Service.create(Service, postData, serialized)
 
 def run():
+	print 'CssefScoringEngine run method'
 	# This is the function that starts the whole Scoring Engine
 	# if competition.isActive():
-	pass
 
 def scoringLoop(competition):
 	while timezone.now() < competition.datetimeFinish:
