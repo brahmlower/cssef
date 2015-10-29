@@ -16,7 +16,7 @@ class CompetitionSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Competition
 		fields = (
-			'competitionId',
+			'pkid',
 			'name',
 			'url',
 			'organization',
@@ -24,14 +24,15 @@ class CompetitionSerializer(serializers.ModelSerializer):
 			'datetimeDisplay',
 			'datetimeStart',
 			'datetimeFinish',
-			'scoringEnabled',
-			'scoringInterval',
-			'scoringIntervalUncertainty',
-			'scoringMethod',
-			'scoringSlaEnabled',
-			'scoringSlaThreashold',
-			'scoringSlaPenalty',
-			'servicesEnabled',
+			'scoringEngine',
+			# 'scoringEnabled',
+			# 'scoringInterval',
+			# 'scoringIntervalUncertainty',
+			# 'scoringMethod',
+			# 'scoringSlaEnabled',
+			# 'scoringSlaThreashold',
+			# 'scoringSlaPenalty',
+			#'servicesEnabled',
 			'teamsViewRankingEnabled',
 			'teamsViewScoreboardEnabled',
 			'teamsViewServiceStatisticsEnabled',
@@ -43,8 +44,8 @@ class TeamSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Team
 		fields = (
-			'teamId',
-			'competitionId',
+			'pkid',
+			'competition',
 			'last_login',
 			'name',
 			'username',
@@ -56,37 +57,36 @@ class ScoreSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Score
 		fields = (
-			'scoreId',
-			'competitionId',
+			'pkid',
+			'competition',
 			'teamId',
-			#'serviceId',
 			'datetime',
 			'value',
 			'message')
 
-class UserSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = User
-		fields = (
-			'last_login',
-			'userId',
-			'name',
-			'username',
-			'password',
-			'description',
-			'organizationId')
+# class UserSerializer(serializers.ModelSerializer):
+# 	class Meta:
+# 		model = User
+# 		fields = (
+# 			'last_login',
+# 			'userId',
+# 			'name',
+# 			'username',
+# 			'password',
+# 			'description',
+# 			'organizationId')
 
-	def get_organization(self, obj):
-		organization = Organization.objects.get(organizationId = obj.organizationId)
-		serializer = OrganizationSerializer(organization)
-		return serializer.data
+# 	def get_organization(self, obj):
+# 		organization = Organization.objects.get(organizationId = obj.organizationId)
+# 		serializer = OrganizationSerializer(organization)
+# 		return serializer.data
 
 class InjectSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Inject
 		fields = (
-			'injectId',
-			'competitionId',
+			'pkid',
+			'competition',
 			'requireResponse',
 			'manualDelivery',
 			'datetimeDelivery',
@@ -99,8 +99,8 @@ class InjectResponseSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = InjectResponse
 		fields = (
-			'injectResponseId',
-			'competitionId',
+			'pkid',
+			'competition',
 			'teamId',
 			'injectId',
 			'datetime',
@@ -110,8 +110,8 @@ class IncidentSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Incident
 		fields = (
-			'incidentId',
-			'competitionId',
+			'pkid',
+			'competition',
 			'teamId',
 			'datetime',
 			'subject',
@@ -121,8 +121,8 @@ class IncidentResponseSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = IncidentResponse
 		fields = (
-			'incidentResponseId',
-			'competitionId',
+			'pkid',
+			'competition',
 			'incidentId',
 			'teamId',
 			'replyTo',
@@ -134,7 +134,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Document
 		fields = (
-			'documentId',
+			'pkid',
 			'inject',
 			'injectResponse',
 			'incidentResponse',
@@ -149,6 +149,7 @@ class ScoringEngineSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = ScoringEngine
 		fields = (
+			'pkid',
 			'name',
 			'packageName',
 			'disabled',
@@ -160,7 +161,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Organization
 		fields = (
-			'organizationId',
+			'pkid',
 			'name',
 			'url',
 			'description',
@@ -172,14 +173,14 @@ class OrganizationSerializer(serializers.ModelSerializer):
 			'competitions')
 
 	def get_members(self, obj):
-		users = User.objects.filter(organizationId = obj.organizationId)
+		users = User.objects.filter(organizationId = obj.pkid)
 		usersList = []
 		for i in users:
 			usersList.append(UserSerializer(i).data)
 		return usersList
 
 	def get_competitions(self, obj):
-		competitions = Competition.objects.filter(organization = obj.organizationId)
+		competitions = Competition.objects.filter(organization = obj.pkid)
 		competitionsList = []
 		for i in competitions:
 			competitionsList.append(CompetitionSerializer(i).data)
@@ -189,7 +190,7 @@ class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
 		fields = (
-			'userId',
+			'pkid',
 			'name',
 			'password',
-			'organizationId')
+			'organization')

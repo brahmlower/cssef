@@ -9,9 +9,9 @@ from WebApi.views.utils import postObject
 from WebApi.views.utils import patchObject
 from WebApi.views.utils import deleteObject
 
-from ScoringEngine import endpoints
-from ScoringEngine.endpoints import Organization
-from ScoringEngine.endpoints import User
+from ScoringEngine.framework import core as endpoints
+from ScoringEngine.framework.core import Organization
+from ScoringEngine.framework.core import User
 
 @api_view(['GET', 'POST'])
 def organizations(request):

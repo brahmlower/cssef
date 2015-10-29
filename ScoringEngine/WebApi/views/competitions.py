@@ -9,8 +9,8 @@ from WebApi.views.utils import postObject
 from WebApi.views.utils import patchObject
 from WebApi.views.utils import deleteObject
 
-from ScoringEngine import endpoints
-from ScoringEngine.endpoints import Competition
+from ScoringEngine.framework import competition as endpoints
+from ScoringEngine.framework.competition import Competition
 
 @api_view(['GET'])
 def competitions(request):

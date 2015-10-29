@@ -4,11 +4,11 @@ from django.conf.urls import url
 
 from views import competitions
 from views import organizations
-from ScoringEngine.ScoringEngine import urlsPlugins
-from ScoringEngine.ScoringEngine import urlsServices
+#from ScoringEngine.ScoringEngine import urlsPlugins
+#from ScoringEngine.ScoringEngine import urlsServices
 
 urlpatterns = patterns('',
-	url(r'^competitions/(?P<competitionId>[0-9]+)/', include(urlsServices)),
+	#url(r'^competitions/(?P<competitionId>[0-9]+)/', include(urlsServices)),
 
 	url(r'^competitions.json', competitions.competitions),
 	url(r'^competitions/(?P<competitionId>[0-9]+).json', competitions.competition),
@@ -32,7 +32,7 @@ urlpatterns = patterns('',
 	url(r'^organizations/(?P<organizationId>[0-9]+)/competitions.json', organizations.competitions),
 	url(r'^organizations/(?P<organizationId>[0-9]+)/competitions/(?P<competitionId>[0-9]+).json', organizations.competition),
 
-	url(r'^', include(urlsPlugins)),
+	#url(r'^', include(urlsPlugins)),
 	url(r'^users.json', organizations.users),
 	url(r'^users/(?P<userId>[0-9]+).json', organizations.user)
 )

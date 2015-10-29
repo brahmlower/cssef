@@ -1,7 +1,7 @@
 from threading import Thread
-from ScoringEngine.endpoints import ModelWrapper
-from ScoringEngine.endpoints import getObject
-from ScoringEngine.endpoints import getObjects
+from ScoringEngine.framework.core import ModelWrapper
+from ScoringEngine.framework.core import getObject
+from ScoringEngine.framework.core import getObjects
 from models import Service as ServiceModel
 from models import Plugin as PluginModel
 from serializers import ServiceSerializer
