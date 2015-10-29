@@ -2,9 +2,9 @@ from django.apps import AppConfig
 from django.db.utils import OperationalError
 import pkgutil
 from ScoringEngine import engines
-from ScoringEngine.endpoints import getScoringEngine
-from ScoringEngine.endpoints import createScoringEngine
-from ScoringEngine.endpoints import ScoringEngine as ScoringEngineWrapper
+from ScoringEngine.framework.core import getScoringEngine
+from ScoringEngine.framework.core import createScoringEngine
+from ScoringEngine.framework.core import ScoringEngine as ScoringEngineWrapper
 import sys
 
 class BackendConfig(AppConfig):
@@ -25,7 +25,7 @@ class BackendConfig(AppConfig):
 def importScoringEngine(name):
 	enginesModule = 'ScoringEngine.engines.%s'#.endpoints'
 	scoringEngine = getScoringEngine(name = name)
-	package = enginesModule % scoringEngine.getPackageName()
+	package = enginesModule % scoringEngine.packageName
 	module = __import__(package)
 	for i in package.split('.')[1:]:
 		module = getattr(module, i)

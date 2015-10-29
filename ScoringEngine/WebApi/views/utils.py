@@ -9,9 +9,9 @@ from hashlib import md5
 from urllib import quote
 import json
 
-from ScoringEngine.endpoints import CssefObjectDoesNotExist
-from ScoringEngine.endpoints import MaxMembersReached
-from ScoringEngine.endpoints import MaxCompetitionsReached
+from ScoringEngine.framework.utils import CssefObjectDoesNotExist
+from ScoringEngine.framework.core import MaxMembersReached
+from ScoringEngine.framework.core import MaxCompetitionsReached
 
 class JSONResponse(HttpResponse):
 	def __init__(self, data, **kwargs):
