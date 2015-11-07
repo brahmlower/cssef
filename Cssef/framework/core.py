@@ -1,15 +1,10 @@
-from ScoringEngine.models import ScoringEngine as ScoringEngineModel
-from ScoringEngine.models import Organization as OrganizationModel
-from ScoringEngine.models import Document as DocumentModel
-from ScoringEngine.models import User as UserModel
+from models import ScoringEngine as ScoringEngineModel
+from models import Organization as OrganizationModel
+from models import Document as DocumentModel
+from models import User as UserModel
 
-from ScoringEngine.serializers import ScoringEngineSerializer
-from ScoringEngine.serializers import OrganizationSerializer
-from ScoringEngine.serializers import DocumentSerializer
-from ScoringEngine.serializers import UserSerializer
-
-from ScoringEngine.framework.utils import ModelWrapper
-from ScoringEngine.framework.competition import Competition
+from framework.utils import ModelWrapper
+from framework.competition import Competition
 
 class MaxCompetitionsReached(Exception):
 	def __init__(self, maxCompetitions):
@@ -27,11 +22,9 @@ class MaxMembersReached(Exception):
 		return repr(self.message)
 
 class Organization(ModelWrapper):
-	serializerObject = OrganizationSerializer
 	modelObject = OrganizationModel
 
 	def edit(self, **kwargs):
-		self.serialized = kwargs.pop('serialized', None)
 		for i in kwargs:
 			if i == 'name':					self.name = kwargs.get(i)
 			elif i == 'url':				self.url = kwargs.get(i)
@@ -102,53 +95,39 @@ class Organization(ModelWrapper):
 		self.model.save()
 
 	def getCompetitions(self, **kwargs):
-		if kwargs.pop('serialized', None):
-			return Competition.serialize(Competition, Competition.search(Competition, organization = self.getId(), **kwargs))
-		else:
-			return Competition.search(Competition, organization = self.getId(), **kwargs)
+		return Competition.search(Competition, organization = self.getId(), **kwargs)
 
 	def getMembers(self, **kwargs):
-		if kwargs.pop('serialized', None):
-			return User.serialize(User, User.search(User, organization = self.getId(), **kwargs))
-		else:
-			return User.search(User, organization = self.getId(), **kwargs)
+		return User.search(User, organization = self.getId(), **kwargs)
 
 	def getCompetition(self, **kwargs):
-		if kwargs.pop('serialized', None):
-			return Competition.serialize(Competition, Competition(**kwargs))
-		else:
-			return Competition(**kwargs)
+		return Competition(**kwargs)
 
 	def getMember(self, **kwargs):
-		if kwargs.pop('serialized', None):
-			return User.serialize(User, User(**kwargs))
-		else:
-			return User(**kwargs)
+		return User(**kwargs)
 
-	def createCompetition(self, postData, serialized = False):
+	def createCompetition(self, kwDict):
 		if self.model.numCompetitions >= self.maxCompetitions:
 			raise MaxCompetitionsReached(self.maxCompetitions)
-		postData['organization'] = self.getId()
-		newCompetition = Competition.create(Competition, postData, serialized)
+		kwDict['organization'] = self.getId()
+		newCompetition = Competition.create(kwDict)
 		self.setNumCompetitions()
 		return newCompetition
 
-	def createMember(self, postData, serialized = False):
+	def createMember(self, kwDict):
 		if self.model.numMembers >= self.maxMembers:
 			raise MaxMembersReached(self.maxMembers)
-		postData['organization'] = self.getId()
-		newUser = User.create(User, postData, serialized)
+		kwDict['organization'] = self.getId()
+		newUser = User.create(kwDict)
 		self.setNumMembers()
 		return newUser
 
 	def deleteCompetition(self, **kwargs):
-		kwargs.pop('serialized', None)
 		competition = self.getCompetition(**kwargs)
 		competition.delete()
 		self.setNumCompetitions()
 
 	def deleteMember(self, **kwargs):
-		kwargs.pop('serialized', None)
 		member = self.getMember(**kwargs)
 		member.delete()
 		self.setNumMembers()
@@ -162,7 +141,6 @@ class Organization(ModelWrapper):
 		return competition.edit(**kwargs)
 
 class User(ModelWrapper):
-	serializerObject = UserSerializer
 	modelObject = UserModel
 
 	@staticmethod
@@ -170,7 +148,6 @@ class User(ModelWrapper):
 		return User.modelObject.objects.filter(**kwargs).count()
 
 	def edit(self, **kwargs):
-		self.serialized = kwargs.pop('serialized', None)
 		for i in kwargs:
 			if i == 'name':				self.name = kwargs.get(i)
 			elif i == 'username':		self.username = kwargs.get(i)
@@ -224,7 +201,6 @@ class User(ModelWrapper):
 		self.model.save()
 
 class ScoringEngine(ModelWrapper):
-	serializerObject = ScoringEngineSerializer
 	modelObject = ScoringEngineModel
 
 	def delete(self):
@@ -265,11 +241,9 @@ class ScoringEngine(ModelWrapper):
 		self.model.save()
 
 class Document(ModelWrapper):
-	serializerObject = DocumentSerializer
 	modelObject = DocumentModel
 
 	def edit(self, **kwargs):
-		self.serialized = kwargs.pop('serialized', None)
 		for i in kwargs:
 			if i == 'contentType':			self.contentType = kwargs.get(i)
 			elif i == 'fileHash':			self.fileHash = kwargs.get(i)
@@ -323,16 +297,10 @@ class Document(ModelWrapper):
 		self.model.save()
 
 def getObjects(classPointer, **kwargs):
-	if kwargs.pop('serialized', None):
-		return classPointer.serialize(classPointer, classPointer.search(classPointer, **kwargs))
-	else:
-		return classPointer.search(classPointer, **kwargs)
+	return classPointer.search(classPointer, **kwargs)
 
 def getObject(classPointer, **kwargs):
-	if kwargs.pop('serialized', None):
-		return classPointer.serialize(classPointer, classPointer(**kwargs))
-	else:
-		return classPointer(**kwargs)
+	return classPointer(**kwargs)
 
 def getCompetition(**kwargs):
 	return getObject(Competition, **kwargs)
@@ -346,12 +314,8 @@ def getOrganization(**kwargs):
 def getOrganizations(**kwargs):
 	return getObjects(Organization, **kwargs)
 
-def createOrganization(postData, serialized = False):
-	return Organization.create(Organization, postData, serialized)
-
-# def editOrganization(**kwargs):
-# 	organization = getOrganization(pkid = kwargs.pop('pkid', None))
-# 	return organization.edit(**kwargs)
+def createOrganization(postData):
+	return Organization.create(postData)
 
 def deleteOrganization():
 	pass
@@ -362,25 +326,11 @@ def getUser(**kwargs):
 def getUsers(**kwargs):
 	return getObjects(User, **kwargs)
 
-# def editUser(**kwargs):
-# 	user = getUser(userId = kwargs.pop('userId', None))
-# 	return user.edit(**kwargs)
-
 def getScoringEngine(**kwargs):
 	return getObject(ScoringEngine, **kwargs)
 
 def getScoringEngines(**kwargs):
 	return getObjects(ScoringEngine, **kwargs)
 
-def createScoringEngine(postData, serialized = False):
-	return ScoringEngine.create(ScoringEngine, postData, serialized)
-
-# def editScoringEngines(**kwargs):
-# 	scoringEngine = getScoringEngine(pkid = kwargs.pop('pkid', None))
-# 	return scoringEngine.edit(**kwargs)
-
-def disableScoringEngine(scoringEngineId):
-	# disable rather than delete, because we'd be deleting actual files on
-	# the host, which we wan't to be very careful about
-	scoringEngine = self.getScoringEngine(pkid = scoringEngineId)
-	scoringEngine.disable()
+def createScoringEngine(postData):
+	return ScoringEngine.create(postData)

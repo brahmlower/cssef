@@ -1,29 +1,17 @@
-from ScoringEngine.models import Competition as CompetitionModel
-from ScoringEngine.models import Team as TeamModel
-from ScoringEngine.models import Score as ScoreModel
-from ScoringEngine.models import Inject as InjectModel
-from ScoringEngine.models import InjectResponse as InjectResponseModel
-from ScoringEngine.models import Incident as IncidentModel
-from ScoringEngine.models import IncidentResponse as IncidentResponseModel
+from models import Competition as CompetitionModel
+from models import Team as TeamModel
+from models import Score as ScoreModel
+from models import Inject as InjectModel
+from models import InjectResponse as InjectResponseModel
+from models import Incident as IncidentModel
+from models import IncidentResponse as IncidentResponseModel
 
-from ScoringEngine.serializers import CompetitionSerializer
-from ScoringEngine.serializers import TeamSerializer
-from ScoringEngine.serializers import ScoreSerializer
-from ScoringEngine.serializers import InjectSerializer
-from ScoringEngine.serializers import InjectResponseSerializer
-from ScoringEngine.serializers import IncidentSerializer
-from ScoringEngine.serializers import IncidentResponseSerializer
-
-from ScoringEngine.framework.utils import ModelWrapper
-
-from django.core.exceptions import ObjectDoesNotExist
+from framework.utils import ModelWrapper
 
 class Competition(ModelWrapper):
-	serializerObject = CompetitionSerializer
 	modelObject = CompetitionModel
 
 	def edit(self, **kwargs):
-		self.serialized = kwargs.pop('serialized', None)
 		for i in kwargs:
 			if i == 'organization':							self.organization = kwargs.get(i)
 			elif i == 'name':								self.name = kwargs.get(i)
@@ -34,12 +22,12 @@ class Competition(ModelWrapper):
 			elif i == 'datetimeFinish':						self.datetimeFinish = kwargs.get(i)
 			elif i == 'autoStart':							self.autoStart = kwargs.get(i)
 			elif i == 'scoringEngine':						self.scoringEngine = kwargs.get(i)
-			elif i == 'teamsViewRankingEnabled':			self.teamsViewRankingEnabled = kwargs.get(i)
-			elif i == 'teamsViewScoreboardEnabled':			self.teamsViewScoreboardEnabled = kwargs.get(i)
-			elif i == 'teamsViewServiceStatisticsEnabled':	self.teamsViewServiceStatisticsEnabled = kwargs.get(i)
-			elif i == 'teamsViewServiceStatusEnabled':		self.teamsViewServiceStatusEnabled = kwargs.get(i)
-			elif i == 'teamsViewInjectsEnabled':			self.teamsViewInjectsEnabled = kwargs.get(i)
-			elif i == 'teamsViewIncidentResponseEnabled':	self.teamsViewIncidentResponseEnabled = kwargs.get(i)
+			# elif i == 'teamsViewRankingEnabled':			self.teamsViewRankingEnabled = kwargs.get(i)
+			# elif i == 'teamsViewScoreboardEnabled':			self.teamsViewScoreboardEnabled = kwargs.get(i)
+			# elif i == 'teamsViewServiceStatisticsEnabled':	self.teamsViewServiceStatisticsEnabled = kwargs.get(i)
+			# elif i == 'teamsViewServiceStatusEnabled':		self.teamsViewServiceStatusEnabled = kwargs.get(i)
+			# elif i == 'teamsViewInjectsEnabled':			self.teamsViewInjectsEnabled = kwargs.get(i)
+			# elif i == 'teamsViewIncidentResponseEnabled':	self.teamsViewIncidentResponseEnabled = kwargs.get(i)
 
 	@property
 	def organization(self):
@@ -113,15 +101,6 @@ class Competition(ModelWrapper):
 		self.model.autoStart = value
 		self.model.save()
 
-	# @property
-	# def scoringEnabled(self):
-	# 	return self.model.scoringEnabled
-
-	# @scoringEnabled.setter
-	# def scoringEnabled(self, value):
-	# 	self.model.scoringEnabled = value
-	# 	self.model.save()
-
 	@property
 	def scoringEngine(self):
 		return self.model.scoringEngine
@@ -132,67 +111,58 @@ class Competition(ModelWrapper):
 		self.model.save()
 
 	# @property
-	# def servicesEnabled(self):
-	# 	return self.model.servicesEnabled
+	# def teamsViewRankingEnabled(self):
+	# 	return self.model.teamsViewRankingEnabled
 
-	# @servicesEnabled.setter
-	# def servicesEnabled(self, value):
-	# 	self.model.servicesEnabled = value
+	# @teamsViewRankingEnabled.setter
+	# def teamsViewRankingEnabled(self, value):
+	# 	self.model.teamsViewRankingEnabled = value
 	# 	self.model.save()
 
-	@property
-	def teamsViewRankingEnabled(self):
-		return self.model.teamsViewRankingEnabled
+	# @property
+	# def teamsViewScoreboardEnabled(self):
+	# 	return self.model.teamsViewScoreboardEnabled
 
-	@teamsViewRankingEnabled.setter
-	def teamsViewRankingEnabled(self, value):
-		self.model.teamsViewRankingEnabled = value
-		self.model.save()
+	# @teamsViewScoreboardEnabled.setter
+	# def teamsViewScoreboardEnabled(self, value):
+	# 	self.model.teamsViewScoreboardEnabled = value
+	# 	self.model.save()
 
-	@property
-	def teamsViewScoreboardEnabled(self):
-		return self.model.teamsViewScoreboardEnabled
+	# @property
+	# def teamsViewServicesStatisticsEnabled(self):
+	# 	return self.model.teamsViewServicesStatisticsEnabled
 
-	@teamsViewScoreboardEnabled.setter
-	def teamsViewScoreboardEnabled(self, value):
-		self.model.teamsViewScoreboardEnabled = value
-		self.model.save()
+	# @teamsViewServicesStatisticsEnabled.setter
+	# def teamsViewServicesStatisticsEnabled(self, value):
+	# 	self.model.teamsViewServicesStatisticsEnabled = value
+	# 	self.model.save()
 
-	@property
-	def teamsViewServicesStatisticsEnabled(self):
-		return self.model.teamsViewServicesStatisticsEnabled
+	# @property
+	# def teamsViewServicesStatusEnabled(self):
+	# 	return self.model.teamsViewServicesStatusEnabled
 
-	@teamsViewServicesStatisticsEnabled.setter
-	def teamsViewServicesStatisticsEnabled(self, value):
-		self.model.teamsViewServicesStatisticsEnabled = value
-		self.model.save()
+	# @teamsViewServicesStatusEnabled.setter
+	# def teamsViewServicesStatusEnabled(self, value):
+	# 	self.model.teamsViewServicesStatusEnabled = value
+	# 	self.model.save()
 
-	@property
-	def teamsViewServicesStatusEnabled(self):
-		return self.model.teamsViewServicesStatusEnabled
+	# @property
+	# def teamsViewInjectsEnabled(self):
+	# 	return self.model.teamsViewInjectsEnabled
 
-	@teamsViewServicesStatusEnabled.setter
-	def teamsViewServicesStatusEnabled(self, value):
-		self.model.teamsViewServicesStatusEnabled = value
-		self.model.save()
+	# @teamsViewInjectsEnabled.setter
+	# def teamsViewInjectsEnabled(self, value):
+	# 	self.model.teamsViewInjectsEnabled = value
+	# 	self.model.save()
 
-	@property
-	def teamsViewInjectsEnabled(self):
-		return self.model.teamsViewInjectsEnabled
+	# @property
+	# def teamsViewIncidentResponseEnabled(self):
+	# 	return self.model.teamsViewIncidentResponseEnabled
 
-	@teamsViewInjectsEnabled.setter
-	def teamsViewInjectsEnabled(self, value):
-		self.model.teamsViewInjectsEnabled = value
-		self.model.save()
-
-	@property
-	def teamsViewIncidentResponseEnabled(self):
-		return self.model.teamsViewIncidentResponseEnabled
-
-	@teamsViewIncidentResponseEnabled.setter
-	def teamsViewIncidentResponseEnabled(self, value):
-		self.model.teamsViewIncidentResponseEnabled = value
-		self.model.save()
+	# @teamsViewIncidentResponseEnabled.setter
+	# def teamsViewIncidentResponseEnabled(self, value):
+	# 	self.model.teamsViewIncidentResponseEnabled = value
+	# 	self.model.save()
 
 	@staticmethod
 	def count(**kwargs):
@@ -202,43 +172,34 @@ class Competition(ModelWrapper):
 		# This conducts a consistency check on the competiton settings.
 		print "A consistency check was conducted here..."
 
-	def createTeam(self, postData, serialized = False):
-		postData['organizationId'] = self.model.organization
-		postData['competition'] = self.getId()
-		return Team.create(Team, postData, serialized)
+	def createTeam(self, kwDict):
+		kwDict['competition'] = self.getId()
+		return Team.create(kwDict)
 
-	def createIncident(self, postData, serialized = False):
-		postData['organizationId'] = self.model.organization
-		postData['competition'] = self.getId()
-		return Incident.create(Incident, postData, serialized)
+	def createIncident(self, kwDict):
+		kwDict['competition'] = self.getId()
+		return Incident.create(kwDict)
 
-	def createIncidentResponse(self, postData, serialized = False):
-		postData['organizationId'] = self.model.organization
-		postData['competition'] = self.getId()
-		return IncidentResponse.create(IncidentResponse, postData, serialized)
+	def createIncidentResponse(self, kwDict):
+		kwDict['competition'] = self.getId()
+		return IncidentResponse.create(kwDict)
 
-	def createInject(self, postData, serialized = False):
-		postData['organizationId'] = self.model.organization
-		postData['competition'] = self.getId()
-		return Inject.create(Inject, postData, serialized)
+	def createInject(self, kwDict):
+		kwDict['competition'] = self.getId()
+		return Inject.create(kwDict)
 
-	def createInjectResponse(self, postData, serialized = False):
-		postData['organizationId'] = self.model.organization
-		postData['competition'] = self.getId()
-		return InjectResponse.create(InjectResponse, postData, serialized)
+	def createInjectResponse(self, kwDict):
+		kwDict['competition'] = self.getId()
+		return InjectResponse.create(kwDict)
 
-	def createScore(self, postData, serialized = False):
-		postData['organizationId'] = self.model.organization
-		postData['competition'] = self.getId()
-		return Score.create(Score, postData, serialized)
+	def createScore(self, kwDict):
+		kwDict['competition'] = self.getId()
+		return Score.create(kwDict)
 
 class Team(ModelWrapper):
-	serializerObject = TeamSerializer
 	modelObject = TeamModel
 
-	def edit(self, competition, **kwargs):
-		self.competition = competition
-		self.serialized = kwargs.pop('serialized', None)
+	def edit(self, **kwargs):
 		for i in kwargs:
 			if i == 'username':					self.username = kwargs.get(i)
 			elif i == 'name':					self.name = kwargs.get(i)
@@ -304,12 +265,9 @@ class Team(ModelWrapper):
 		return InjectResponse.search(self.model, **kwargs)
 
 class Inject(ModelWrapper):
-	serializerObject = InjectSerializer
 	modelObject = InjectModel
 
-	def edit(self, competition, **kwargs):
-		self.competition = competition
-		self.serialized = kwargs.pop('serialized', None)
+	def edit(self, **kwargs):
 		for i in kwargs:
 			if i == 'requireResponse':			self.requireResponse = kwargs.get(i)
 			elif i == 'manualDelivery':			self.manualDelivery = kwargs.get(i)
@@ -410,12 +368,9 @@ class Inject(ModelWrapper):
 		return InjectResponse.search(inject = self.model)
 
 class InjectResponse(ModelWrapper):
-	serializerObject = InjectResponseSerializer
 	modelObject = InjectResponseModel
 
-	def edit(self, competition, **kwargs):
-		self.competition = competition
-		self.serialized = kwargs.pop('serialized', None)
+	def edit(self, **kwargs):
 		for i in kwargs:
 			if i == 'datetime':		self.datetime = kwargs.get(i)
 			elif i == 'content':	self.content = kwargs.get(i)
@@ -439,12 +394,9 @@ class InjectResponse(ModelWrapper):
 		self.model.save()
 
 class Incident(ModelWrapper):
-	serializerObject = IncidentSerializer
 	modelObject = IncidentModel
 
-	def edit(self, competition, **kwargs):
-		self.competition = competition
-		self.serialized = kwargs.pop('serialized', None)
+	def edit(self, **kwargs):
 		for i in kwargs:
 			if i == 'datetime':		self.datetime = kwargs.get(i)
 			elif i == 'subject':	self.subject = kwargs.get(i)
@@ -478,12 +430,9 @@ class Incident(ModelWrapper):
 		self.model.save()
 
 class IncidentResponse(ModelWrapper):
-	serializerObject = IncidentResponseSerializer
 	modelObject = IncidentResponseModel
 
-	def edit(self, competition, **kwargs):
-		self.competition = competition
-		self.serialized = kwargs.pop('serialized', None)
+	def edit(self, **kwargs):
 		for i in kwargs:
 			if i == 'replyTo':		self.replyTo = kwargs.get(i)
 			elif i == 'datetime':	self.datetime = kwargs.get(i)
@@ -527,28 +476,25 @@ class IncidentResponse(ModelWrapper):
 		self.modle.save()
 
 class Score(ModelWrapper):
-	serializerObject = ScoreSerializer
 	modelObject = ScoreModel
 
-	def edit(self, competition, **kwargs):
-		self.competition = competition
-		self.serialized = kwargs.pop('serialized', None)
+	def edit(self, **kwargs):
 		for i in kwargs:
 			if i == 'datetime':		self.datetime = kwargs.get(i)
 			elif i == 'value':		self.value = kwargs.get(i)
 			elif i == 'message':	self.message = kwargs.get(i)
 
-	def isSlaViolation(competition):
-		# TODO: LEGACY CODE, NEEDS TO BE UPDATED
-		slaThreashold = competition.scoringSlaThreashold
-		lastScores = Score.objects.filter(competitionId = competition.competitionId,
-			serviceId = serviceId, teamId = teamId).order_by('-scoreId')[:slaThreashold]
-		if len(lastScores) < slaThreashold:
-			return False
-		for score in lastScores:
-			if score.value > 0:
-				return False
-		return True
+	# def isSlaViolation(competition):
+	# 	# TODO: LEGACY CODE, NEEDS TO BE UPDATED
+	# 	slaThreashold = competition.scoringSlaThreashold
+	# 	lastScores = Score.objects.filter(competitionId = competition.competitionId,
+	# 		serviceId = serviceId, teamId = teamId).order_by('-scoreId')[:slaThreashold]
+	# 	if len(lastScores) < slaThreashold:
+	# 		return False
+	# 	for score in lastScores:
+	# 		if score.value > 0:
+	# 			return False
+	# 	return True
 
 	@property
 	def datetime(self):
