@@ -33,12 +33,13 @@ class CompetitionSerializer(serializers.ModelSerializer):
 			# 'scoringSlaThreashold',
 			# 'scoringSlaPenalty',
 			#'servicesEnabled',
-			'teamsViewRankingEnabled',
-			'teamsViewScoreboardEnabled',
-			'teamsViewServiceStatisticsEnabled',
-			'teamsViewServiceStatusEnabled',
-			'teamsViewInjectsEnabled',
-			'teamsViewIncidentResponseEnabled')
+			# 'teamsViewRankingEnabled',
+			# 'teamsViewScoreboardEnabled',
+			# 'teamsViewServiceStatisticsEnabled',
+			# 'teamsViewServiceStatusEnabled',
+			# 'teamsViewInjectsEnabled',
+			# 'teamsViewIncidentResponseEnabled'
+			)
 
 class TeamSerializer(serializers.ModelSerializer):
 	class Meta:
