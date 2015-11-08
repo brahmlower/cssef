@@ -3,17 +3,26 @@ from framework.core import Organization
 
 @celeryApp.task
 def competitionAdd(organization = None, name = None, **kwargs):
+	if not competition:
+		pass
+		# Raise some error
 	organizationObj = Organization(pkid = organization)
 	competitionObj = org.createCompetition(name = name, **kwargs)
 	return competition
 
 @celeryApp.task
 def competitionDel(competition = None):
+	if not competition:
+		pass
+		# Raise some error
 	competitionObj = getCompetition(competition = competition)
 	competitionObj.delete()
 
 @celeryApp.task
 def competitionSet(competition = None, **kwargs):
+	if not competition:
+		pass
+		# Raise some error
 	competitionObj = getCompetition(competition = competition)
 	competitionObj.edit(**kwargs)
 
@@ -23,13 +32,19 @@ def competitionGet():
 
 @celeryApp.task
 def competitionTeamAdd(competition = None, **kwargs):
+	if not competition:
+		pass
+		# Raise some error
 	competitionObj = getCompetition(competition = competition)
-	team = competitionObj.createTeam(**kwargs)
-	return team
+	teamObj = competitionObj.createTeam(**kwargs)
+	return teamObj
 
 @celeryApp.task
-def competitionTeamDel():
-	pass
+def competitionTeamDel(competition = None, Team = None):
+	if not competition:
+		pass
+	teamObj = Team(competition = competition, team = team)
+	teamObj.delete()
 
 @celeryApp.task
 def competitionTeamSet():
@@ -41,9 +56,12 @@ def competitionTeamGet():
 
 @celeryApp.task
 def competitionInjectAdd(competition = None, **kwargs):
+	if not competition:
+		pass
+		# Raise some error
 	competitionObj = getCompetition(competition = competition)
-	inject = competitionObj.createInject(**kwargs)
-	return inject
+	injectObj = competitionObj.createInject(**kwargs)
+	return injectObj
 
 @celeryApp.task
 def competitionInjectDel():
@@ -59,6 +77,9 @@ def competitionInjectGet():
 
 @celeryApp.task
 def competitionInjectResponseAdd(competition = None, **kwargs):
+	if not competition:
+		pass
+		# Raise some error
 	competitionObj = getCompetition(competition = competition)
 	injectResponse = competitionObj.createInjectResponse(**kwargs)
 	return injectResponse
