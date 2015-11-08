@@ -156,7 +156,7 @@ class CssefClient:
 		args = (
 			Argument('Competition', keyword = True),
 			Argument('Require Response', keyword = True),
-			Argument('Manuel Delivery', keyword = True),
+			Argument('Manual Delivery', keyword = True),
 			Argument('Datetime Delivery', keyword = True),
 			Argument('Datetime Response Due', keyword = True),
 			Argument('Datetime Response Close', keyword = True),
@@ -184,72 +184,207 @@ class CssefClient:
 	)
 	competition_InjectGet = Endpoint(
 		'api.competitionInjectGet',
-		args = ())
+		args = (
+			Argument('Require Response', optional = True),
+			Argument('Manual Delivery', optional = True),
+			Argument('Datetime Delivery', optional = True),
+			Argument('Datetime Response Due', optional = True),
+			Argument('Datetime Response Close', optional = True),
+			Argument('Title', optional = True),
+			Argument('Body', optional = True)
+		)
+	)
 
 	competition_InjectResponseAdd = Endpoint(
 		'api.competitionInjectResponseAdd',
-		args = ())
+		args = (
+			Argument('Competition', keyword = True),
+			Argument('Team', keyword = True),
+			Argument('Inject', keyword = True),
+			Argument('Datetime', keyword = True),
+			Argument('Content', keyword = True)
+		)
+	)
 	competition_InjectResponseDel = Endpoint(
 		'api.competitionInjectResponseDel',
-		args = ())
+		args = (
+			Argument('Inject Response', keyword = True)
+		)
+	)
 	competition_InjectResponseSet = Endpoint(
 		'api.competitionInjectResponseSet',
-		args = ())
+		args = (
+			Argument('Competition', keyword = True, optional = True),
+			Argument('Team', keyword = True, optional = True),
+			Argument('Inject', keyword = True, optional = True),
+			Argument('Datetime', keyword = True, optional = True),
+			Argument('Content', keyword = True, optional = True)
+		)
+	)
 	competition_InjectResponseGet = Endpoint(
 		'api.competitionInjectResponseGet',
-		args = ())
+		args = (
+			Argument('Competition', optional = True),
+			Argument('Team', optional = True),
+			Argument('Inject', optional = True),
+			Argument('Datetime', optional = True),
+			Argument('Content', optional = True)
+		)
+	)
 
 	competition_IncidentAdd = Endpoint(
 		'api.competitionIncidentAdd',
-		args = ())
+		args = (
+			Argument('Competition', keyword = True),
+			Argument('Team', keyword = True),
+			Argument('Datetime', keyword = True),
+			Argument('Subject', keyword = True),
+			Argument('Content', keyword = True),
+		)
+	)
 	competition_IncidentDel = Endpoint(
 		'api.competitionIncidentDel',
-		args = ())
+		args = (
+			Argument('Incident', keyword = True)
+		)
+	)
 	competition_IncidentSet = Endpoint(
 		'api.competitionIncidentSet',
-		args = ())
+		args = (
+			Argument('Competition', keyword = True, optional = True),
+			Argument('Team', keyword = True, optional = True),
+			Argument('Datetime', keyword = True, optional = True),
+			Argument('Subject', keyword = True, optional = True),
+			Argument('Content', keyword = True, optional = True),
+		)
+	)
 	competition_IncidentGet = Endpoint(
 		'api.competitionIncidentSet',
-		args = ())
+		args = (
+			Argument('Competition', optional = True),
+			Argument('Team', optional = True),
+			Argument('Datetime', optional = True),
+			Argument('Subject', optional = True),
+			Argument('Content', optional = True)
+		)
+	)
 
 	competition_IncidentResponseAdd = Endpoint(
 		'api.competitionIncidentResponseAdd',
-		args = ())
+		args = (
+			Argument('Competition', keyword = True),
+			Argument('Team', keyword = True),
+			Argument('Incident', keyword = True),
+			Argument('Reply To', keyword = True),
+			Argument('Datetime', keyword = True),
+			Argument('Subject', keyword = True),
+			Argument('Content', keyword = True)
+		)
+	)
 	competition_IncidentResponseDel = Endpoint(
 		'api.competitionIncidentResponseDel',
-		args = ())
+		args = (
+			Argument('Incident Response', keyword = True)
+		)
+	)
 	competition_IncidentResponseSet = Endpoint(
 		'api.competitionIncidentResponseSet',
-		args = ())
+		args = (
+			Argument('Competition', keyword = True, optional = True),
+			Argument('Team', keyword = True, optional = True),
+			Argument('Incident', keyword = True, optional = True),
+			Argument('Reply To', keyword = True, optional = True),
+			Argument('Datetime', keyword = True, optional = True),
+			Argument('Subject', keyword = True, optional = True),
+			Argument('Content', keyword = True, optional = True)
+		)
+	)
 	competition_IncidentResponseGet = Endpoint(
 		'api.competitionIncidentResponseGet',
-		args = ())
+		args = (
+			Argument('Competition', optional = True),
+			Argument('Team', optional = True),
+			Argument('Incident', optional = True),
+			Argument('Reply To', optional = True),
+			Argument('Datetime', optional = True),
+			Argument('Subject', optional = True),
+			Argument('Content', optional = True)
+		)
+	)
 
 	organization_Add = Endpoint(
 		'api.organizationAdd',
-		args = ())
+		args = (
+			Argument('Name', keyword = True),
+			Argument('URL', keyword = True),
+			Argument('Description', keyword = True),
+			Argument('Max Members', keyword = True, optional = True),
+			Argument('Max Competitions', keyword = True, optional = True)
+		)
+	)
 	organization_Del = Endpoint(
 		'api.organizationDel',
-		args = ())
+		args = (
+			Argument('Organization', keyword = True)
+		)
+	)
 	organization_Set = Endpoint(
 		'api.organizationSet',
-		args = ())
+		args = (
+			Argument('Name', keyword = True, optional = True),
+			Argument('URL', keyword = True, optional = True),
+			Argument('Description', keyword = True, optional = True),
+			Argument('Max Members', keyword = True, optional = True),
+			Argument('Max Competitions', keyword = True, optional = True)
+		)
+	)
 	organization_Get = Endpoint(
 		'api.organizationGet',
-		args = ())
+		args = (
+			Argument('Name', optional = True),
+			Argument('URL', optional = True),
+			Argument('Description', optional = True),
+			Argument('Max Members', optional = True),
+			Argument('Max Competitions', optional = True)
+		)
+	)
 
 	user_Add = Endpoint(
 		'api.userAdd',
-		args = ())
+		args = (
+			Argument('Organization', keyword = True),
+			Argument('Name', keyword = True),
+			Argument('Username', keyword = True),
+			Argument('Password', keyword = True),
+			Argument('Description', keyword = True, optional = True)
+		)
+	)
 	user_Del = Endpoint(
 		'api.userDel',
-		args = ())
+		args = (
+			Argument('User', keyword = True),
+		)
+	)
 	user_Set = Endpoint(
 		'api.userSet',
-		args = ())
+		args = (
+			Argument('Organization', keyword = True, optional = True),
+			Argument('Name', keyword = True, optional = True),
+			Argument('Username', keyword = True, optional = True),
+			Argument('Password', keyword = True, optional = True),
+			Argument('Description', keyword = True, optional = True)
+		)
+	)
 	user_get = Endpoint(
 		'api.userGet',
-		args = ())
+		args = (
+			Argument('Organization', optional = True),
+			Argument('Name', optional = True),
+			Argument('Username', optional = True),
+			Argument('Password', optional = True),
+			Argument('Description', optional = True)
+		)
+	)
 
 	document_Add = Endpoint(
 		'api.documentAdd',
@@ -266,16 +401,33 @@ class CssefClient:
 
 	scoringEngine_Add = Endpoint(
 		'api.scoringEngineAdd',
-		args = ())
+		args = (
+			Argument("Name", keyword = True, optional = False),
+			Argument("Package Name", keyword = True, optional = False),
+		)
+	)
 	scoringEngine_Del = Endpoint(
 		'api.scoringEngineDel',
-		args = ())
+		args = (
+			Argument("Scoring Engine", keyword = True, optional = False)
+		)
+	)
 	scoringEngine_Set = Endpoint(
 		'api.scoringEngineSet',
-		args = ())
+		args = (
+			Argument('Name', keyword = True, optional = True),
+			Argument('Package Name', keyword = True, optional = True),
+			Argument('Disabled', keyword = True, optional = True)
+		)
+	)
 	scoringEngine_Get = Endpoint(
 		'api.scoringEngineGet',
-		args = ())
+		args = (
+			Argument('Name', optional = True),
+			Argument('Package Name', optional = True),
+			Argument('Disabled', optional = True)
+		)
+	)
 
 def help():
 	for i in CssefClient.__dict__.keys():
