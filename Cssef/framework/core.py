@@ -24,6 +24,10 @@ class MaxMembersReached(Exception):
 class Organization(ModelWrapper):
 	modelObject = OrganizationModel
 
+	class __metaclass__(type):
+		def __str__(self):
+			return "Organization '%s' (id: %d)" % (self.name, self.getId())
+
 	def edit(self, **kwargs):
 		for i in kwargs:
 			if i == 'name':					self.name = kwargs.get(i)
@@ -296,8 +300,8 @@ class Document(ModelWrapper):
 		self.model.urlEncodedFileName = value
 		self.model.save()
 
-def getObjects(classPointer, **kwargs):
-	return classPointer.search(classPointer, **kwargs)
+def getObjects(db, classPointer, **kwargs):
+	return classPointer.search(db, classPointer, **kwargs)
 
 def getObject(classPointer, **kwargs):
 	return classPointer(**kwargs)
@@ -314,8 +318,8 @@ def getOrganization(**kwargs):
 def getOrganizations(**kwargs):
 	return getObjects(Organization, **kwargs)
 
-def createOrganization(postData):
-	return Organization.create(postData)
+def createOrganization(kwDict):
+	return Organization.create(kwDict)
 
 def deleteOrganization():
 	pass
@@ -332,5 +336,5 @@ def getScoringEngine(**kwargs):
 def getScoringEngines(**kwargs):
 	return getObjects(ScoringEngine, **kwargs)
 
-def createScoringEngine(postData):
-	return ScoringEngine.create(postData)
+def createScoringEngine(kwDict):
+	return ScoringEngine.create(kwDict)

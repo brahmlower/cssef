@@ -9,7 +9,12 @@ from models import IncidentResponse as IncidentResponseModel
 from framework.utils import ModelWrapper
 
 class Competition(ModelWrapper):
+	'Competition object for controling competition settings and operation'
 	modelObject = CompetitionModel
+
+	class __metaclass__(type):
+		def __str__(self):
+			return "Competition '%s' (id: %d)" % (self.name, self.getId())
 
 	def edit(self, **kwargs):
 		for i in kwargs:
@@ -22,12 +27,6 @@ class Competition(ModelWrapper):
 			elif i == 'datetimeFinish':						self.datetimeFinish = kwargs.get(i)
 			elif i == 'autoStart':							self.autoStart = kwargs.get(i)
 			elif i == 'scoringEngine':						self.scoringEngine = kwargs.get(i)
-			# elif i == 'teamsViewRankingEnabled':			self.teamsViewRankingEnabled = kwargs.get(i)
-			# elif i == 'teamsViewScoreboardEnabled':			self.teamsViewScoreboardEnabled = kwargs.get(i)
-			# elif i == 'teamsViewServiceStatisticsEnabled':	self.teamsViewServiceStatisticsEnabled = kwargs.get(i)
-			# elif i == 'teamsViewServiceStatusEnabled':		self.teamsViewServiceStatusEnabled = kwargs.get(i)
-			# elif i == 'teamsViewInjectsEnabled':			self.teamsViewInjectsEnabled = kwargs.get(i)
-			# elif i == 'teamsViewIncidentResponseEnabled':	self.teamsViewIncidentResponseEnabled = kwargs.get(i)
 
 	@property
 	def organization(self):
@@ -110,60 +109,6 @@ class Competition(ModelWrapper):
 		self.model.scoringEngine = value
 		self.model.save()
 
-	# @property
-	# def teamsViewRankingEnabled(self):
-	# 	return self.model.teamsViewRankingEnabled
-
-	# @teamsViewRankingEnabled.setter
-	# def teamsViewRankingEnabled(self, value):
-	# 	self.model.teamsViewRankingEnabled = value
-	# 	self.model.save()
-
-	# @property
-	# def teamsViewScoreboardEnabled(self):
-	# 	return self.model.teamsViewScoreboardEnabled
-
-	# @teamsViewScoreboardEnabled.setter
-	# def teamsViewScoreboardEnabled(self, value):
-	# 	self.model.teamsViewScoreboardEnabled = value
-	# 	self.model.save()
-
-	# @property
-	# def teamsViewServicesStatisticsEnabled(self):
-	# 	return self.model.teamsViewServicesStatisticsEnabled
-
-	# @teamsViewServicesStatisticsEnabled.setter
-	# def teamsViewServicesStatisticsEnabled(self, value):
-	# 	self.model.teamsViewServicesStatisticsEnabled = value
-	# 	self.model.save()
-
-	# @property
-	# def teamsViewServicesStatusEnabled(self):
-	# 	return self.model.teamsViewServicesStatusEnabled
-
-	# @teamsViewServicesStatusEnabled.setter
-	# def teamsViewServicesStatusEnabled(self, value):
-	# 	self.model.teamsViewServicesStatusEnabled = value
-	# 	self.model.save()
-
-	# @property
-	# def teamsViewInjectsEnabled(self):
-	# 	return self.model.teamsViewInjectsEnabled
-
-	# @teamsViewInjectsEnabled.setter
-	# def teamsViewInjectsEnabled(self, value):
-	# 	self.model.teamsViewInjectsEnabled = value
-	# 	self.model.save()
-
-	# @property
-	# def teamsViewIncidentResponseEnabled(self):
-	# 	return self.model.teamsViewIncidentResponseEnabled
-
-	# @teamsViewIncidentResponseEnabled.setter
-	# def teamsViewIncidentResponseEnabled(self, value):
-	# 	self.model.teamsViewIncidentResponseEnabled = value
-	# 	self.model.save()
-
 	@staticmethod
 	def count(**kwargs):
 		return Competition.modelObject.objects.filter(**kwargs).count()
@@ -197,6 +142,7 @@ class Competition(ModelWrapper):
 		return Score.create(kwDict)
 
 class Team(ModelWrapper):
+	'Team object for controling team settings'
 	modelObject = TeamModel
 
 	def edit(self, **kwargs):
@@ -264,7 +210,45 @@ class Team(ModelWrapper):
 	def getInjectResponses(self):
 		return InjectResponse.search(self.model, **kwargs)
 
+class Score(ModelWrapper):
+	'Score object for controlling score settings'
+	modelObject = ScoreModel
+
+	def edit(self, **kwargs):
+		for i in kwargs:
+			if i == 'datetime':		self.datetime = kwargs.get(i)
+			elif i == 'value':		self.value = kwargs.get(i)
+			elif i == 'message':	self.message = kwargs.get(i)
+
+	@property
+	def datetime(self):
+		return self.model.datetime
+	
+	@datetime.setter
+	def datetime(self, value):
+		self.model.datetime = datetime
+		self.model.save()
+
+	@property
+	def value(self):
+		return self.model.value
+
+	@value.setter
+	def value(self, value):
+		self.model.value = value
+		self.model.save()
+
+	@property
+	def message(self):
+		return self.model.message
+
+	@message.setter
+	def message(self, value):
+		self.model.message
+		self.model.save()
+
 class Inject(ModelWrapper):
+	'Inject object for controling inject settings'
 	modelObject = InjectModel
 
 	def edit(self, **kwargs):
@@ -368,6 +352,7 @@ class Inject(ModelWrapper):
 		return InjectResponse.search(inject = self.model)
 
 class InjectResponse(ModelWrapper):
+	'Inject Response object for controling inject response settings'
 	modelObject = InjectResponseModel
 
 	def edit(self, **kwargs):
@@ -394,6 +379,7 @@ class InjectResponse(ModelWrapper):
 		self.model.save()
 
 class Incident(ModelWrapper):
+	'Incident object for controlling incident settings'
 	modelObject = IncidentModel
 
 	def edit(self, **kwargs):
@@ -430,6 +416,7 @@ class Incident(ModelWrapper):
 		self.model.save()
 
 class IncidentResponse(ModelWrapper):
+	'Incident Response object for controlling incident response settings'
 	modelObject = IncidentResponseModel
 
 	def edit(self, **kwargs):
@@ -474,51 +461,3 @@ class IncidentResponse(ModelWrapper):
 	def content(self, value):
 		self.model.content = value
 		self.modle.save()
-
-class Score(ModelWrapper):
-	modelObject = ScoreModel
-
-	def edit(self, **kwargs):
-		for i in kwargs:
-			if i == 'datetime':		self.datetime = kwargs.get(i)
-			elif i == 'value':		self.value = kwargs.get(i)
-			elif i == 'message':	self.message = kwargs.get(i)
-
-	# def isSlaViolation(competition):
-	# 	# TODO: LEGACY CODE, NEEDS TO BE UPDATED
-	# 	slaThreashold = competition.scoringSlaThreashold
-	# 	lastScores = Score.objects.filter(competitionId = competition.competitionId,
-	# 		serviceId = serviceId, teamId = teamId).order_by('-scoreId')[:slaThreashold]
-	# 	if len(lastScores) < slaThreashold:
-	# 		return False
-	# 	for score in lastScores:
-	# 		if score.value > 0:
-	# 			return False
-	# 	return True
-
-	@property
-	def datetime(self):
-		return self.model.datetime
-	
-	@datetime.setter
-	def datetime(self, value):
-		self.model.datetime = datetime
-		self.model.save()
-
-	@property
-	def value(self):
-		return self.model.value
-
-	@value.setter
-	def value(self, value):
-		self.model.value = value
-		self.model.save()
-
-	@property
-	def message(self):
-		return self.model.message
-
-	@message.setter
-	def message(self, value):
-		self.model.message
-		self.model.save()

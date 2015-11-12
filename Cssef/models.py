@@ -16,7 +16,7 @@ class Competition(Base):
 	__tablename__ = tablePrefix + 'competition'
 	pkid				= Column(Integer, primary_key = True)
 	organization		= Column(Integer, ForeignKey(tablePrefix + 'organization.pkid'))
-	scoringEngine		= relationship('ScoringEngine')
+	#scoringEngine		= relationship('ScoringEngine')
 	teams				= relationship('Team')
 	scores				= relationship('Score')
 	injects				= relationship('Inject')
@@ -155,9 +155,3 @@ class Document(Base):
 	filePath			= Column(String(64))
 	fileName			= Column(String(64))
 	urlEncodedFilename	= Column(String(128))
-
-	# def get_cleaned_content_type(self):
-	# 	if not self.content_type:
-	# 		return'application/force-download'
-	# 	else:
-	# 		return self.content_type

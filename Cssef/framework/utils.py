@@ -1,14 +1,17 @@
-#from django.core.exceptions import ObjectDoesNotExist
-#from django.db.models.signals import post_save
+from models import Base
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 class CssefObjectDoesNotExist(Exception):
+	'An exception for when the requested object does not exist - not needed I think'
 	def __init__(self, message):
 		self.message = message
 
 	def __str__(self):
 		return repr(self.message)
 
-class ModelWrapper:
+class ModelWrapper(object):
+	'The base class for wrapping model objects'
 	class ObjectDoesNotExist(CssefObjectDoesNotExist):
 		def __init__(self, message):
 			self.message = message
@@ -18,16 +21,8 @@ class ModelWrapper:
 
 	modelObject = None
 
-	def __init__(self, **kwargs):
-		self.model = kwargs.pop('modelInst', None)
-		if not self.model:
-			try:
-				self.model = self.modelObject.objects.get(**kwargs)
-			#except ObjectDoesNotExist:
-			#	raise self.ObjectDoesNotExist("custom 1 - Database object matching query does not exist.")
-			except self.modelObject.DoesNotExist:
-				raise self.ObjectDoesNotExist("custom 2 - Database object matching query does not exist.")
-		#post_save.connect(self.reload, sender=self.modelObject)
+	def __init__(self, model):
+		self.model = model
 
 	def getId(self):
 		return self.model.pkid
@@ -38,30 +33,30 @@ class ModelWrapper:
 	def reload(self,):
 		self.model.refresh_from_db()
 
-	@staticmethod
-	def search(objectType, **kwargs):
-		return wrappedSearch(objectType, objectType.modelObject, **kwargs)
+	@classmethod
+	def search(cls, db, **kwargs):
+		modelObjectList = db.query(cls.modelObject).filter_by(**kwargs)
+		clsList = []
+		for i in modelObjectList:
+			clsList.append(cls(i))
+		print clsList
+		return clsList
 
-	@staticmethod
-	def create(db, kwDict):
-		newObject = modelObject(kwDict)
-		db.add(newObject)
+	@classmethod
+	def fromDatabase(cls, db, pkid):
+		return cls.search(pkid = pkid)[0]
+
+	@classmethod
+	def fromDict(cls, db, kwDict):
+		modelObjectInst = cls.modelObject(**kwDict)
+		db.add(modelObjectInst)
 		db.commit()
-		# serializedModel = objectType.serializerObject(data = postData)
-		# if serializedModel.is_valid():
-		# 	obj = serializedModel.save()
-		# 	return objectType(modelInst = obj)
-		# else:
-		# 	print "\n====================================="
-		# 	print "Failed to create %s object!" % objectType.__name__
-		# 	print "-------------------------------------"
-		# 	print "Serializer errors:"
-		# 	print serializedModel.errors
-		# 	print "Provided values:"
-		# 	print postData
-		# 	print "=====================================\n"
-		# 	# failed to create object
-		# 	return serializedModel.errors
+		return cls(modelObjectInst)
 
-def wrappedSearch(objType, objTypeModel, **kwargs):
-	return objTypeModel.objects.filter(**kwargs)
+def databaseConnection(sqliteFilepath):
+	'Returns a database session for the specified database'
+	dbEngine = create_engine('sqlite:///' + sqliteFilepath)
+	Base.metadata.create_all(dbEngine)
+	Base.metadata.bind = dbEngine
+	DBSession = sessionmaker(bind = dbEngine)
+	return DBSession()
