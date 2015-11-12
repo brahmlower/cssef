@@ -1,10 +1,11 @@
-#!/usr/local/bin/python
+#!/usr/bin/python
 # ./client.py competition-add organization=1 name="Competition One" url="comp_one" autostart=True
 #
 from celery import Celery
 import sys
+from time import sleep
 
-class Argument:
+class Argument(object):
 	def __init__(self, displayName, name = None, keyword = False, optional = False):
 		self.displayName = displayName
 		if not name:
@@ -14,7 +15,7 @@ class Argument:
 		self.keyword = keyword
 		self.optional = optional
 
-class Endpoint:
+class Endpoint(object):
 	def __init__(self, path, args):
 		self.conn = None
 		self.path = path
@@ -31,14 +32,14 @@ class Endpoint:
 		for i in self.args:
 			print i.name, i.keyword, i.optional
 
-class CssefClient:
+class CssefClient(object):
 	versionMajor = '0'
 	versionMinor = '0'
 	versionRelease = '1'
 	version = ".".join([versionMajor, versionMinor, versionRelease])
 
-	competition_add = Endpoint(
-		'api.competitionAdd',
+	competitionAdd = Endpoint(
+		'competitionAdd',
 		args = (
 			Argument('Organization', keyword = True),
 			Argument('Name', keyword = True),
@@ -51,13 +52,13 @@ class CssefClient:
 		)
 	)
 	competition_del = Endpoint(
-		'api.competitionDel',
+		'competitionDel',
 		args = (
 			Argument('Competition', keyword = True),
 		)
 	)
 	competition_set = Endpoint(
-		'api.competitionSet',
+		'competitionSet',
 		args = (
 			Argument('Competition', keyword = True),
 			Argument('Name', keyword = True, optional = True),
@@ -70,7 +71,7 @@ class CssefClient:
 		)
 	)
 	competition_get = Endpoint(
-		'api.competitionGet',
+		'competitionGet',
 		args = (
 			Argument('Competition', keyword = True),
 			Argument('Name', optional = True),
@@ -84,7 +85,7 @@ class CssefClient:
 	)
 
 	competition_TeamAdd = Endpoint(
-		'api.competitionTeamAdd',
+		'competitionTeamAdd',
 		args = (
 			Argument('Competition', keyword = True),
 			Argument('Name', keyword = True),
@@ -94,13 +95,13 @@ class CssefClient:
 		)
 	)
 	competition_TeamDel = Endpoint(
-		'api.competitionTeamDel',
+		'competitionTeamDel',
 		args = (
 			Argument('Team', keyword = True),
 		)
 	)
 	competition_TeamSet = Endpoint(
-		'api.competitionTeamSet',
+		'competitionTeamSet',
 		args = (
 			Argument('Name', keyword = True, optional = True),
 			Argument('Username', keyword = True, optional = True),
@@ -109,7 +110,7 @@ class CssefClient:
 		)
 	)
 	competition_TeamGet = Endpoint(
-		'api.competitionTeamGet',
+		'competitionTeamGet',
 		args = (
 			Argument('Name', optional = True),
 			Argument('Username', optional = True),
@@ -119,7 +120,7 @@ class CssefClient:
 	)
 
 	competition_ScoreAdd = Endpoint(
-		'api.competitionScoreAdd',
+		'competitionScoreAdd',
 		args = (
 			Argument('Competition', keyword = True),
 			Argument('Team', keyword = True),
@@ -129,13 +130,13 @@ class CssefClient:
 		)
 	)
 	competition_ScoreDel = Endpoint(
-		'api.competitionScoreDel',
+		'competitionScoreDel',
 		args = (
 			Argument('Score', keyword = True)
 		)
 	)
 	competition_ScoreSet = Endpoint(
-		'api.competitionScoreSet',
+		'competitionScoreSet',
 		args = (
 			Argument('Datetime', keyword = True, optional = True),
 			Argument('Value', keyword = True, optional = True),
@@ -143,7 +144,7 @@ class CssefClient:
 		)
 	)
 	competition_ScoreGet = Endpoint(
-		'api.competitionScoreGet',
+		'competitionScoreGet',
 		args = (
 			Argument('Datetime', optional = True),
 			Argument('Value', optional = True),
@@ -152,7 +153,7 @@ class CssefClient:
 	)
 
 	competition_InjectAdd = Endpoint(
-		'api.competitionInjectAdd',
+		'competitionInjectAdd',
 		args = (
 			Argument('Competition', keyword = True),
 			Argument('Require Response', keyword = True),
@@ -165,13 +166,13 @@ class CssefClient:
 		)
 	)
 	competition_InjectDel = Endpoint(
-		'api.competitionInjectDel',
+		'competitionInjectDel',
 		args = (
 			Argument('Inject', keyword = True)
 		)
 	)
 	competition_InjectSet = Endpoint(
-		'api.competitionInjectSet',
+		'competitionInjectSet',
 		args = (
 			Argument('Require Response', keyword = True, optional = True),
 			Argument('Manual Delivery', keyword = True, optional = True),
@@ -183,7 +184,7 @@ class CssefClient:
 		)
 	)
 	competition_InjectGet = Endpoint(
-		'api.competitionInjectGet',
+		'competitionInjectGet',
 		args = (
 			Argument('Require Response', optional = True),
 			Argument('Manual Delivery', optional = True),
@@ -196,7 +197,7 @@ class CssefClient:
 	)
 
 	competition_InjectResponseAdd = Endpoint(
-		'api.competitionInjectResponseAdd',
+		'competitionInjectResponseAdd',
 		args = (
 			Argument('Competition', keyword = True),
 			Argument('Team', keyword = True),
@@ -206,13 +207,13 @@ class CssefClient:
 		)
 	)
 	competition_InjectResponseDel = Endpoint(
-		'api.competitionInjectResponseDel',
+		'competitionInjectResponseDel',
 		args = (
 			Argument('Inject Response', keyword = True)
 		)
 	)
 	competition_InjectResponseSet = Endpoint(
-		'api.competitionInjectResponseSet',
+		'competitionInjectResponseSet',
 		args = (
 			Argument('Competition', keyword = True, optional = True),
 			Argument('Team', keyword = True, optional = True),
@@ -222,7 +223,7 @@ class CssefClient:
 		)
 	)
 	competition_InjectResponseGet = Endpoint(
-		'api.competitionInjectResponseGet',
+		'competitionInjectResponseGet',
 		args = (
 			Argument('Competition', optional = True),
 			Argument('Team', optional = True),
@@ -233,7 +234,7 @@ class CssefClient:
 	)
 
 	competition_IncidentAdd = Endpoint(
-		'api.competitionIncidentAdd',
+		'competitionIncidentAdd',
 		args = (
 			Argument('Competition', keyword = True),
 			Argument('Team', keyword = True),
@@ -243,13 +244,13 @@ class CssefClient:
 		)
 	)
 	competition_IncidentDel = Endpoint(
-		'api.competitionIncidentDel',
+		'competitionIncidentDel',
 		args = (
 			Argument('Incident', keyword = True)
 		)
 	)
 	competition_IncidentSet = Endpoint(
-		'api.competitionIncidentSet',
+		'competitionIncidentSet',
 		args = (
 			Argument('Competition', keyword = True, optional = True),
 			Argument('Team', keyword = True, optional = True),
@@ -259,7 +260,7 @@ class CssefClient:
 		)
 	)
 	competition_IncidentGet = Endpoint(
-		'api.competitionIncidentSet',
+		'competitionIncidentSet',
 		args = (
 			Argument('Competition', optional = True),
 			Argument('Team', optional = True),
@@ -270,7 +271,7 @@ class CssefClient:
 	)
 
 	competition_IncidentResponseAdd = Endpoint(
-		'api.competitionIncidentResponseAdd',
+		'competitionIncidentResponseAdd',
 		args = (
 			Argument('Competition', keyword = True),
 			Argument('Team', keyword = True),
@@ -282,13 +283,13 @@ class CssefClient:
 		)
 	)
 	competition_IncidentResponseDel = Endpoint(
-		'api.competitionIncidentResponseDel',
+		'competitionIncidentResponseDel',
 		args = (
 			Argument('Incident Response', keyword = True)
 		)
 	)
 	competition_IncidentResponseSet = Endpoint(
-		'api.competitionIncidentResponseSet',
+		'competitionIncidentResponseSet',
 		args = (
 			Argument('Competition', keyword = True, optional = True),
 			Argument('Team', keyword = True, optional = True),
@@ -300,7 +301,7 @@ class CssefClient:
 		)
 	)
 	competition_IncidentResponseGet = Endpoint(
-		'api.competitionIncidentResponseGet',
+		'competitionIncidentResponseGet',
 		args = (
 			Argument('Competition', optional = True),
 			Argument('Team', optional = True),
@@ -313,7 +314,7 @@ class CssefClient:
 	)
 
 	organization_Add = Endpoint(
-		'api.organizationAdd',
+		'organizationAdd',
 		args = (
 			Argument('Name', keyword = True),
 			Argument('URL', keyword = True),
@@ -323,13 +324,13 @@ class CssefClient:
 		)
 	)
 	organization_Del = Endpoint(
-		'api.organizationDel',
+		'organizationDel',
 		args = (
 			Argument('Organization', keyword = True)
 		)
 	)
 	organization_Set = Endpoint(
-		'api.organizationSet',
+		'organizationSet',
 		args = (
 			Argument('Name', keyword = True, optional = True),
 			Argument('URL', keyword = True, optional = True),
@@ -339,7 +340,7 @@ class CssefClient:
 		)
 	)
 	organization_Get = Endpoint(
-		'api.organizationGet',
+		'organizationGet',
 		args = (
 			Argument('Name', optional = True),
 			Argument('URL', optional = True),
@@ -350,7 +351,7 @@ class CssefClient:
 	)
 
 	user_Add = Endpoint(
-		'api.userAdd',
+		'userAdd',
 		args = (
 			Argument('Organization', keyword = True),
 			Argument('Name', keyword = True),
@@ -360,13 +361,13 @@ class CssefClient:
 		)
 	)
 	user_Del = Endpoint(
-		'api.userDel',
+		'userDel',
 		args = (
 			Argument('User', keyword = True),
 		)
 	)
 	user_Set = Endpoint(
-		'api.userSet',
+		'userSet',
 		args = (
 			Argument('Organization', keyword = True, optional = True),
 			Argument('Name', keyword = True, optional = True),
@@ -375,8 +376,8 @@ class CssefClient:
 			Argument('Description', keyword = True, optional = True)
 		)
 	)
-	user_get = Endpoint(
-		'api.userGet',
+	user_Get = Endpoint(
+		'userGet',
 		args = (
 			Argument('Organization', optional = True),
 			Argument('Name', optional = True),
@@ -387,33 +388,33 @@ class CssefClient:
 	)
 
 	document_Add = Endpoint(
-		'api.documentAdd',
+		'documentAdd',
 		args = ())
 	document_Del = Endpoint(
-		'api.documentDel',
+		'documentDel',
 		args = ())
 	document_Set = Endpoint(
-		'api.documentSet',
+		'documentSet',
 		args = ())
 	document_Get = Endpoint(
-		'api.documentGet',
+		'documentGet',
 		args = ())
 
 	scoringEngine_Add = Endpoint(
-		'api.scoringEngineAdd',
+		'scoringEngineAdd',
 		args = (
 			Argument("Name", keyword = True, optional = False),
 			Argument("Package Name", keyword = True, optional = False),
 		)
 	)
 	scoringEngine_Del = Endpoint(
-		'api.scoringEngineDel',
+		'scoringEngineDel',
 		args = (
 			Argument("Scoring Engine", keyword = True, optional = False)
 		)
 	)
 	scoringEngine_Set = Endpoint(
-		'api.scoringEngineSet',
+		'scoringEngineSet',
 		args = (
 			Argument('Name', keyword = True, optional = True),
 			Argument('Package Name', keyword = True, optional = True),
@@ -421,7 +422,7 @@ class CssefClient:
 		)
 	)
 	scoringEngine_Get = Endpoint(
-		'api.scoringEngineGet',
+		'scoringEngineGet',
 		args = (
 			Argument('Name', optional = True),
 			Argument('Package Name', optional = True),
@@ -442,25 +443,77 @@ def help():
 	sys.exit()
 
 def getConn():
-	rpcUsername = "guest"
-	rpcPassword = "guest"
+	rpcUsername = "butts"
+	rpcPassword = "butts"
 	rpcHost = "localhost"
-	amqpUsername = "guest"
-	amqpPassword = "guest"
+	amqpUsername = "butts"
+	amqpPassword = "butts"
 	amqpHost = "localhost"
-	conn = Celery( \
-		'tasks', \
-		backend = "rpc://%s:%s@%s//" % (rpcUsername, rpcPassword, rpcHost), \
-		broker = "amqp://%s:%s@%s//" % (amqpUsername, amqpPassword, amqpHost))
+	conn = Celery(
+		'api',
+		backend = "rpc://%s:%s@%s//" % (rpcUsername, rpcPassword, rpcHost),
+		broker = "amqp://%s:%s@%s//" % (amqpUsername, amqpPassword, amqpHost)
+	)
 	return conn
 
 if __name__ == "__main__":
+	commands = {
+		"competition-team-add": CssefClient.competition_TeamAdd,
+		"competition-team-del": CssefClient.competition_TeamDel,
+		"competition-team-set": CssefClient.competition_TeamSet,
+		"competition-team-get": CssefClient.competition_TeamGet,
+		"competition-score-add": CssefClient.competition_ScoreAdd,
+		"competition-score-del": CssefClient.competition_ScoreDel,
+		"competition-score-set": CssefClient.competition_ScoreSet,
+		"competition-score-get": CssefClient.competition_ScoreGet,
+		"competition-inject-add": CssefClient.competition_InjectAdd,
+		"competition-inject-del": CssefClient.competition_InjectDel,
+		"competition-inject-set": CssefClient.competition_InjectSet,
+		"competition-inject-get": CssefClient.competition_InjectGet,
+		"competition-injectresponse-add": CssefClient.competition_InjectResponseAdd,
+		"competition-injectresponse-del": CssefClient.competition_InjectResponseDel,
+		"competition-injectresponse-set": CssefClient.competition_InjectResponseSet,
+		"competition-injectresponse-get": CssefClient.competition_InjectResponseGet,
+		"competition-incident-add": CssefClient.competition_IncidentAdd,
+		"competition-incident-del": CssefClient.competition_IncidentDel,
+		"competition-incident-set": CssefClient.competition_IncidentSet,
+		"competition-incident-get": CssefClient.competition_IncidentGet,
+		"competition-incidentresponse-add": CssefClient.competition_IncidentResponseAdd,
+		"competition-incidentresponse-del": CssefClient.competition_IncidentResponseDel,
+		"competition-incidentresponse-set": CssefClient.competition_IncidentResponseSet,
+		"competition-incidentresponse-get": CssefClient.competition_IncidentResponseGet,
+		"organization-add": CssefClient.organization_Add,
+		"organization-del": CssefClient.organization_Del,
+		"organization-set": CssefClient.organization_Set,
+		"organization-get": CssefClient.organization_Get,
+		"user-add": CssefClient.user_Add,
+		"user-del": CssefClient.user_Del,
+		"user-set": CssefClient.user_Set,
+		"user-get": CssefClient.user_Get,
+		"document-add": CssefClient.document_Add,
+		"document-del": CssefClient.document_Del,
+		"document-set": CssefClient.document_Set,
+		"document-get": CssefClient.document_Get,
+		"scoringengine-add": CssefClient.scoringEngine_Add,
+		"scoringengine-del": CssefClient.scoringEngine_Del,
+		"scoringengine-set": CssefClient.scoringEngine_Set,
+		"scoringengine-get": CssefClient.scoringEngine_Get,
+	}
+
 	if len(sys.argv) == 1:
 		help()
 	commandStr = sys.argv[1]
 	try:
-		command = getattr(CssefClient, commandStr.replace('-','_'))
+		command = commands[commandStr]
 	except AttributeError:
 		sys.exit("No such option: %s" % commandStr)
+	kwDict = {}
+	for i in sys.argv[2:]:
+		key = i[:i.index('=')]
+		value = i[i.index('=')+1:]
+		kwDict[key] = value
 	command.conn = getConn()
-	output = command(sys.argv[2:])
+	output = command(**kwDict)
+	print output
+	for i in output:
+		print i['name']

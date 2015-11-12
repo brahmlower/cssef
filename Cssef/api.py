@@ -1,5 +1,32 @@
-from cssefd import celeryApp
-from framework.core import Organization
+from __future__ import absolute_import
+from framework.core import *
+from framework.utils import databaseConnection
+
+from celery import Celery
+celeryApp = Celery('api', backend='rpc://butts:butts@localhost//', broker='amqp://butts:butts@localhost//')
+
+'''
+Return value structure:
+{
+	'value': 0,
+	'message': "Okay",
+	'content': []
+}
+
+Example success:
+{
+	'value': 0,
+	'message': "Okay",
+	'content':[{'id':5,'name':'Best Competition','url':'best_comp}]
+}
+
+Example failure:
+{
+	'value': 500,
+	'message': "Caught Error: Programming Error",
+	'content': None
+}
+'''
 
 @celeryApp.task
 def competitionAdd(organization = None, name = None, **kwargs):
@@ -128,9 +155,11 @@ def competitionIncidentResponseSet():
 def compeititonIncidentResponseGet():
 	pass
 
-@celeryApp.task
-def organizationAdd():
-	pass
+@celeryApp.task(name = 'organizationAdd')
+def organizationAdd(**kwargs):
+	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+	obj = Organization.fromDict(db, kwargs)
+	return {'name': obj.name, 'id':  obj.getId()}
 
 @celeryApp.task
 def organizationDel():
@@ -140,9 +169,14 @@ def organizationDel():
 def organizationSet():
 	pass
 
-@celeryApp.task
-def organizationGet():
-	pass
+@celeryApp.task(name = 'organizationGet')
+def organizationGet(*args, **kwargs):
+	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+	objs = Organization.search(db, **kwargs)
+	l = []
+	for i in objs:
+		l.append({'name': i.name, 'id': i.getId()})
+	return l
 
 @celeryApp.task
 def userAdd():

@@ -1,19 +1,25 @@
 #!/usr/bin/python
 # To kick off the script, run the following from the python directory:
 #   PYTHONPATH=`pwd` python cssefDaemon.py start
-
+from __future__ import absolute_import
 import logging
 import time
+import atexit
+import os.path
 import pkgutil
+import ConfigParser
 from daemon import runner
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from time import sleep
+#from celery import Celery
+from celery.bin import worker
 
 import engines
-from models import Base
+
 from framework.core import getScoringEngine
 from framework.core import createScoringEngine
 from framework.core import ScoringEngine as ScoringEngineWrapper
+from api import celeryApp
+from framework.utils import databaseConnection
 
 def createEngineModules(self):
 	package = engines
@@ -30,7 +36,7 @@ def createEngineModules(self):
 			mod.run()
 
 def importScoringEngine(name):
-	enginesModule = 'engines.%s'#.endpoints'
+	enginesModule = 'engines.%s'
 	scoringEngine = getScoringEngine(name = name)
 	package = enginesModule % scoringEngine.packageName
 	module = __import__(package)
@@ -38,46 +44,85 @@ def importScoringEngine(name):
 		module = getattr(module, i)
 	return module
 
-def databaseConnection(sqliteFilepath):
-	engine = create_engine('sqlite:///' + sqliteFilepath)
-	Base.metadata.create_all(engine)
-	Base.metadata.bind = engine
-	DBSession = sessionmaker(bind = engine)
-	return DBSession()
-
-class App():
+class CssefDaemon(object):
 	def __init__(self):
-		self.db = databaseConnection('db.sqlite3')
+		# Prepare logging information
+		# Required by python-daemon
 		self.stdin_path = '/dev/null'
-		self.stdout_path = '/var/log/testdaemon/testdaemon.log'
-		self.stderr_path = '/var/log/testdaemon/testdaemon.log'
-		self.pidfile_path =  '/var/run/testdaemon.pid'
+		self.stdout_path = config.rawConfig.get('logging', 'cssef_stdout')
+		self.stderr_path = config.rawConfig.get('logging', 'cssef_stderr')
+		#self.pidfile_path = '/var/run/cssefd.pid'
+		self.pidfile_path = '/home/sk4ly/Documents/cssef/Cssef/cssefd.pid'
 		self.pidfile_timeout = 5
-			
+		self.celeryWorker = None
+
 	def run(self):
-		while True:
-			pass
+		celeryOptions = {
+			'broker': config.amqpUrl,
+			'backend': config.rpcUrl,
+			'loglevel': 'DEBUG',
+			'logfile': config.rawConfig.get('logging', 'celery_stdout'),
+			'traceback': True
+		}
+		atexit.register(self.stop)
+		self.celeryWorker = worker.worker(app = celeryApp)
+		self.celeryWorker.run(**celeryOptions)
 
-rpcUsername = "guest"
-rpcPassword = "guest"
-rpcHost = "localhost"
-amqpUsername = "guest"
-amqpPassword = "guest"
-amqpHost = "localhost"
-celeryApp = Celery('tasks', backend='rpc://%s:%s@%s//', broker='amqp://%s:%s@%s//')
-app = App()
+	def stop(self):
+		del(self.celeryWorker)
+		engines = reload(engines)
+		getScoringEngine = reload(getScoringEngine)
+		createScoringEngine = reload(createScoringEngine)
+		ScoringEngineWrapper = reload(ScoringEngineWrapper)
+		celeryApp = reload(celeryApp)
+		databaseConnection = reload(databaseConnection)
 
-# This daemon should start the celery workers itself. This following link might help with that...
-# http://stackoverflow.com/questions/23389104/how-to-start-a-celery-worker-from-a-script-module-main
+class Configuration(object):
+	def __init__(self, configFilePath):
+		self.rawConfig = ConfigParser.ConfigParser()
+		self.rawConfig.read(configFilePath)
 
-logger = logging.getLogger("DaemonLog")
-logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler = logging.FileHandler("/var/log/testdaemon/testdaemon.log")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+	@property
+	def amqpUrl(self):
+		username = self.rawConfig.get('celery', 'amqp_username')
+		password = self.rawConfig.get('celery', 'amqp_password')
+		host = self.rawConfig.get('celery', 'amqp_host')
+		return 'amqp://%s:%s@%s//' % (username, password, host)
 
-daemon_runner = runner.DaemonRunner(app)
-#This ensures that the logger file handle does not get closed during daemonization
-daemon_runner.daemon_context.files_preserve=[handler.stream]
-daemon_runner.do_action()
+	@property
+	def rpcUrl(self):
+		username = self.rawConfig.get('celery', 'rpc_username')
+		password = self.rawConfig.get('celery', 'rpc_password')
+		host = self.rawConfig.get('celery', 'rpc_host')
+		return 'rpc://%s:%s@%s//' % (username, password, host)
+
+def configureLoggingFiles():
+	files = [
+		config.rawConfig.get('logging', 'cssef_stderr'),
+		config.rawConfig.get('logging', 'cssef_stdout'),
+		config.rawConfig.get('logging', 'celery_stderr'),
+		config.rawConfig.get('logging', 'celery_stdout')]
+	for i in files:
+		if not os.path.isfile(i):
+			open(i, 'a').close()
+
+def configureLogger():
+	# Get the logger started ASAP
+	logger = logging.getLogger("CssefDaemonLog")
+	logger.setLevel(logging.DEBUG)
+	formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+	handler = logging.FileHandler(config.rawConfig.get('logging', 'cssef_stdout'))
+	handler.setFormatter(formatter)
+	logger.addHandler(handler)
+	return logger, handler
+
+if __name__ == "__main__":
+	config = Configuration('cssef.conf')
+	configureLoggingFiles()
+	logger, handler = configureLogger()
+	#db = databaseConnection('db.sqlite3')
+
+	daemonRunner = runner.DaemonRunner(CssefDaemon())
+	#This ensures that the logger file handle does not get closed during daemonization
+	daemonRunner.daemon_context.files_preserve = [handler.stream]
+	daemonRunner.do_action()
