@@ -12,10 +12,6 @@ class Competition(ModelWrapper):
 	'Competition object for controling competition settings and operation'
 	modelObject = CompetitionModel
 
-	class __metaclass__(type):
-		def __str__(self):
-			return "Competition '%s' (id: %d)" % (self.name, self.getId())
-
 	def edit(self, **kwargs):
 		for i in kwargs:
 			if i == 'organization':							self.organization = kwargs.get(i)
@@ -28,6 +24,18 @@ class Competition(ModelWrapper):
 			elif i == 'autoStart':							self.autoStart = kwargs.get(i)
 			elif i == 'scoringEngine':						self.scoringEngine = kwargs.get(i)
 
+	def asDict(self):
+		return {
+			'id': self.getId(),
+			'name': self.name,
+			'url': self.url,
+			'description': self.description,
+			'datetimeDisplay': self.datetimeDisplay,
+			'datetimeStart': self.datetimeStart,
+			'datetimeFinish': self.datetimeFinish,
+			'autoStart': self.autoStart
+		}
+
 	@property
 	def organization(self):
 		return self.model.organization
@@ -35,7 +43,7 @@ class Competition(ModelWrapper):
 	@organization.setter
 	def organization(self, value):
 		self.model.organization = value
-		self.model.save()
+		self.db.save()
 
 	@property
 	def name(self):
@@ -44,7 +52,7 @@ class Competition(ModelWrapper):
 	@name.setter
 	def name(self, value):
 		self.model.name = value
-		self.model.save()
+		self.db.save()
 
 	@property
 	def url(self):
@@ -53,7 +61,7 @@ class Competition(ModelWrapper):
 	@url.setter
 	def url(self, value):
 		self.model.url = value
-		self.model.save()
+		self.db.save()
 
 	@property
 	def description(self):
@@ -62,7 +70,7 @@ class Competition(ModelWrapper):
 	@description.setter
 	def description(self, value):
 		self.model.description = value
-		self.model.save()
+		self.db.save()
 
 	@property
 	def datetimeDisplay(self):
@@ -71,7 +79,7 @@ class Competition(ModelWrapper):
 	@datetimeDisplay.setter
 	def datetimeDisplay(self, value):
 		self.model.datetimeDisplay = value
-		self.model.save()
+		self.db.save()
 
 	@property
 	def datetimeStart(self):
@@ -80,7 +88,7 @@ class Competition(ModelWrapper):
 	@datetimeStart.setter
 	def datetimeStart(self, value):
 		self.model.datetimeStart = value
-		self.model.save()
+		self.db.save()
 
 	@property
 	def datetimeFinish(self):
@@ -89,7 +97,7 @@ class Competition(ModelWrapper):
 	@datetimeFinish.setter
 	def datetimeFinish(self, value):
 		self.model.datetimeFinish = value
-		self.model.save()
+		self.db.save()
 
 	@property
 	def autoStart(self):
@@ -98,7 +106,7 @@ class Competition(ModelWrapper):
 	@autoStart.setter
 	def autoStart(self, value):
 		self.model.autoStart = value
-		self.model.save()
+		self.db.save()
 
 	@property
 	def scoringEngine(self):
@@ -107,11 +115,12 @@ class Competition(ModelWrapper):
 	@scoringEngine.setter
 	def scoringEngine(self, value):
 		self.model.scoringEngine = value
-		self.model.save()
+		self.db.save()
 
-	@staticmethod
-	def count(**kwargs):
-		return Competition.modelObject.objects.filter(**kwargs).count()
+	@classmethod
+	def count(cls, db, **kwargs):
+		#return Competition.modelObject.objects.filter(**kwargs).count()
+		db.query(cls.modelObject).filter_by(**kwargs).count()
 
 	def check(self):
 		# This conducts a consistency check on the competiton settings.
@@ -119,27 +128,27 @@ class Competition(ModelWrapper):
 
 	def createTeam(self, kwDict):
 		kwDict['competition'] = self.getId()
-		return Team.create(kwDict)
+		return Team.fromDict(self.db, kwDict)
 
 	def createIncident(self, kwDict):
 		kwDict['competition'] = self.getId()
-		return Incident.create(kwDict)
+		return Incident.fromDict(self.db, kwDict)
 
 	def createIncidentResponse(self, kwDict):
 		kwDict['competition'] = self.getId()
-		return IncidentResponse.create(kwDict)
+		return IncidentResponse.fromDict(self.db, kwDict)
 
 	def createInject(self, kwDict):
 		kwDict['competition'] = self.getId()
-		return Inject.create(kwDict)
+		return Inject.fromDict(self.db, kwDict)
 
 	def createInjectResponse(self, kwDict):
 		kwDict['competition'] = self.getId()
-		return InjectResponse.create(kwDict)
+		return InjectResponse.fromDict(self.db, kwDict)
 
 	def createScore(self, kwDict):
 		kwDict['competition'] = self.getId()
-		return Score.create(kwDict)
+		return Score.fromDict(self.db, kwDict)
 
 class Team(ModelWrapper):
 	'Team object for controling team settings'
@@ -160,7 +169,7 @@ class Team(ModelWrapper):
 	@username.setter
 	def username(self, value):
 		self.model.username = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def name(self):
@@ -169,7 +178,7 @@ class Team(ModelWrapper):
 	@name.setter
 	def name(self, value):
 		self.model.name = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def password(self):
@@ -178,7 +187,7 @@ class Team(ModelWrapper):
 	@password.setter
 	def password(self, value):
 		self.model.password = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def networkCidr(self):
@@ -187,7 +196,7 @@ class Team(ModelWrapper):
 	@networkCidr.setter
 	def networkCidr(self, value):
 		self.model.networkCidr = value
-		self.model.save()
+		self.db.commit()
 
 	def getScoreConfigurations(self):
 		return self.model.scoreConfigurations
@@ -196,7 +205,7 @@ class Team(ModelWrapper):
 		# This function will also need to change as I improve the way
 		# score configurations are interacted with....
 		self.model.scoreConfigurations = scoreConfigurations
-		self.model.save()
+		self.db.commit()
 
 	def getScores(self, **kwargs):
 		return Scores.search(team = self.model, **kwargs)
@@ -227,7 +236,7 @@ class Score(ModelWrapper):
 	@datetime.setter
 	def datetime(self, value):
 		self.model.datetime = datetime
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def value(self):
@@ -236,7 +245,7 @@ class Score(ModelWrapper):
 	@value.setter
 	def value(self, value):
 		self.model.value = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def message(self):
@@ -245,7 +254,7 @@ class Score(ModelWrapper):
 	@message.setter
 	def message(self, value):
 		self.model.message
-		self.model.save()
+		self.db.commit()
 
 class Inject(ModelWrapper):
 	'Inject object for controling inject settings'
@@ -268,7 +277,7 @@ class Inject(ModelWrapper):
 	@requireResponse.setter
 	def requireResponse(self, value):
 		self.model.requireResponse = value
-		self.model.save()
+		self.db.commit()
 
 	# Manual Delivery modules
 	@property
@@ -278,7 +287,7 @@ class Inject(ModelWrapper):
 	@manualDelivery.setter
 	def manualDelivery(self, value):
 		self.model.manualDelivery = value
-		self.model.save()
+		self.db.commit()
 
 	# Datetime Delivery modules
 	@property
@@ -288,7 +297,7 @@ class Inject(ModelWrapper):
 	@datetimeDelivery.setter
 	def datetimeDelivery(self, value):
 		self.model.datetimeDelivery = value
-		self.model.save()
+		self.db.commit()
 
 	# Datetime Response Due modules
 	@property
@@ -298,7 +307,7 @@ class Inject(ModelWrapper):
 	@datetimeResponseDue.setter
 	def datetimeResponseDue(self, value):
 		self.model.datetimeResponseDue = value
-		self.model.save()
+		self.db.commit()
 
 	# Datetime Response Close modules
 	@property
@@ -308,7 +317,7 @@ class Inject(ModelWrapper):
 	@datetimeResponseClose.setter
 	def datetimeResponseClose(self, value):
 		self.model.datetimeResponseClose = value
-		self.model.save()
+		self.db.commit()
 
 	# Title modules
 	@property
@@ -318,7 +327,7 @@ class Inject(ModelWrapper):
 	@title.setter
 	def title(self, value):
 		self.model.title = value
-		self.model.save()
+		self.db.commit()
 
 	# Body modules
 	@property
@@ -328,7 +337,7 @@ class Inject(ModelWrapper):
 	@body.setter
 	def body(self, value):
 		self.model.body = value
-		self.model.save()
+		self.db.commit()
 
 	# Document modules
 	def addDocument(self, fileObj, contentType, filePath, filename, **kwargs):
@@ -367,7 +376,7 @@ class InjectResponse(ModelWrapper):
 	@datetime.setter
 	def datetime(self, value):
 		self.model.datetime = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def content(self):
@@ -376,7 +385,7 @@ class InjectResponse(ModelWrapper):
 	@content.setter
 	def content(self, value):
 		self.model.content = value
-		self.model.save()
+		self.db.commit()
 
 class Incident(ModelWrapper):
 	'Incident object for controlling incident settings'
@@ -395,7 +404,7 @@ class Incident(ModelWrapper):
 	@datetime.setter
 	def datetime(self, value):
 		self.model.datetime = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def subject(self):
@@ -404,7 +413,7 @@ class Incident(ModelWrapper):
 	@subject.setter
 	def subject(self, value):
 		self.model.subject = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def content(self):
@@ -413,7 +422,7 @@ class Incident(ModelWrapper):
 	@content.setter
 	def content(self, value):
 		self.model.content = value
-		self.model.save()
+		self.db.commit()
 
 class IncidentResponse(ModelWrapper):
 	'Incident Response object for controlling incident response settings'
@@ -433,7 +442,7 @@ class IncidentResponse(ModelWrapper):
 	@replyTo.setter
 	def replyTo(self, value):
 		self.model.replyTo
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def datetime(self):
@@ -442,7 +451,7 @@ class IncidentResponse(ModelWrapper):
 	@datetime.setter
 	def datetime(self, value):
 		self.model.replyTo
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def subject(self):
@@ -451,7 +460,7 @@ class IncidentResponse(ModelWrapper):
 	@subject.setter
 	def subject(self, value):
 		self.model.subject = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def content(self):
@@ -460,4 +469,4 @@ class IncidentResponse(ModelWrapper):
 	@content.setter
 	def content(self, value):
 		self.model.content = value
-		self.modle.save()
+		self.db.commit()

@@ -15,7 +15,7 @@ from celery.bin import worker
 
 import engines
 
-from framework.core import getScoringEngine
+from framework.core import ScoringEngine
 from framework.core import createScoringEngine
 from framework.core import ScoringEngine as ScoringEngineWrapper
 from api import celeryApp
@@ -37,7 +37,7 @@ def createEngineModules(self):
 
 def importScoringEngine(name):
 	enginesModule = 'engines.%s'
-	scoringEngine = getScoringEngine(name = name)
+	scoringEngine = ScoringEngine.search(name = name)[0]
 	package = enginesModule % scoringEngine.packageName
 	module = __import__(package)
 	for i in package.split('.')[1:]:
