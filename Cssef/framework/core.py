@@ -24,10 +24,6 @@ class MaxMembersReached(Exception):
 class Organization(ModelWrapper):
 	modelObject = OrganizationModel
 
-	class __metaclass__(type):
-		def __str__(self):
-			return "Organization '%s' (id: %d)" % (self.name, self.getId())
-
 	def edit(self, **kwargs):
 		for i in kwargs:
 			if i == 'name':					self.name = kwargs.get(i)
@@ -35,6 +31,16 @@ class Organization(ModelWrapper):
 			elif i == 'description':		self.description = kwargs.get(i)
 			elif i == 'maxMembers':			self.maxMembers = kwargs.get(i)
 			elif i == 'maxCompetitions':	self.maxCompetitions = kwargs.get(i)
+
+	def asDict(self):
+		return {
+			'id': self.getId(),
+			'name': self.name,
+			'url': self.url,
+			'description': self.description,
+			'maxMembers': self.maxMembers,
+			'maxCompetitions': self.maxCompetitions
+		}
 
 	def isDeleteable(self):
 		return self.model.deleteable
@@ -46,7 +52,7 @@ class Organization(ModelWrapper):
 	@name.setter
 	def name(self, value):
 		self.model.name = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def url(self):
@@ -55,7 +61,7 @@ class Organization(ModelWrapper):
 	@url.setter
 	def url(self,value):
 		self.model.url = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def description(self):
@@ -64,7 +70,7 @@ class Organization(ModelWrapper):
 	@description.setter
 	def description(self, value):
 		self.model.description = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def maxMembers(self):
@@ -73,7 +79,7 @@ class Organization(ModelWrapper):
 	@maxMembers.setter
 	def maxMembers(self, value):
 		self.model.maxMembers = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def maxCompetitions(self):
@@ -82,21 +88,21 @@ class Organization(ModelWrapper):
 	@maxCompetitions.setter
 	def maxCompetitions(self, value):
 		self.model.maxCompetitions = values
-		self.model.save()
+		self.db.commit()
 
 	def getNumMembers(self):
 		return self.model.numMembers
 
 	def setNumMembers(self):
 		self.model.numMembers = User.count(organization = self.getId())
-		self.model.save()
+		self.db.commit()
 
 	def getNumCompetitions(self):
 		return self.model.setNumCompetitions
 
 	def setNumCompetitions(self):
-		self.model.numCompetitions = Competition.count(organization = self.getId())
-		self.model.save()
+		self.model.numCompetitions = Competition.count(self.db, organization = self.getId())
+		self.db.commit()
 
 	def getCompetitions(self, **kwargs):
 		return Competition.search(Competition, organization = self.getId(), **kwargs)
@@ -110,11 +116,11 @@ class Organization(ModelWrapper):
 	def getMember(self, **kwargs):
 		return User(**kwargs)
 
-	def createCompetition(self, kwDict):
+	def createCompetition(self, dc, kwDict):
 		if self.model.numCompetitions >= self.maxCompetitions:
 			raise MaxCompetitionsReached(self.maxCompetitions)
 		kwDict['organization'] = self.getId()
-		newCompetition = Competition.create(kwDict)
+		newCompetition = Competition.fromDict(dc, kwDict)
 		self.setNumCompetitions()
 		return newCompetition
 
@@ -122,27 +128,9 @@ class Organization(ModelWrapper):
 		if self.model.numMembers >= self.maxMembers:
 			raise MaxMembersReached(self.maxMembers)
 		kwDict['organization'] = self.getId()
-		newUser = User.create(kwDict)
+		newUser = User.fromDict(dc, kwDict)
 		self.setNumMembers()
 		return newUser
-
-	def deleteCompetition(self, **kwargs):
-		competition = self.getCompetition(**kwargs)
-		competition.delete()
-		self.setNumCompetitions()
-
-	def deleteMember(self, **kwargs):
-		member = self.getMember(**kwargs)
-		member.delete()
-		self.setNumMembers()
-
-	def editMember(self, **kwargs):
-		member = self.getMember(pkid = kwargs.pop('pkid', None))
-		return member.edit(**kwargs)
-
-	def editCompetition(self, **kwargs):
-		competition = self.getCompetition(pkid = kwargs.pop('pkid', None))
-		return competition.edit(**kwargs)
 
 class User(ModelWrapper):
 	modelObject = UserModel
@@ -166,7 +154,7 @@ class User(ModelWrapper):
 	@name.setter
 	def name(self, value):
 		self.model.name = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def username(self):
@@ -175,7 +163,7 @@ class User(ModelWrapper):
 	@username.setter
 	def username(self, value):
 		self.model.username = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def password(self):
@@ -184,7 +172,7 @@ class User(ModelWrapper):
 	@password.setter
 	def password(self, value):
 		self.model.password = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def description(self):
@@ -193,7 +181,7 @@ class User(ModelWrapper):
 	@description.setter
 	def description(self, value):
 		self.model.description = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def organization(self):
@@ -202,7 +190,7 @@ class User(ModelWrapper):
 	@organization.setter
 	def organization(self, value):
 		self.model.organization = value
-		self.model.save()
+		self.db.commit()
 
 class ScoringEngine(ModelWrapper):
 	modelObject = ScoringEngineModel
@@ -224,7 +212,7 @@ class ScoringEngine(ModelWrapper):
 	@name.setter
 	def name(self, value):
 		self.model.name = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def disabled(self):
@@ -233,7 +221,7 @@ class ScoringEngine(ModelWrapper):
 	@disabled.setter
 	def disabled(self, value):
 		self.model.disabled = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def packageName(self):
@@ -242,7 +230,7 @@ class ScoringEngine(ModelWrapper):
 	@packageName.setter
 	def packageName(self, value):
 		self.model.packageName = value
-		self.model.save()
+		self.db.commit()
 
 class Document(ModelWrapper):
 	modelObject = DocumentModel
@@ -262,7 +250,7 @@ class Document(ModelWrapper):
 	@contentType.setter
 	def contentType(self, value):
 		self.model.contentType = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def fileHash(self):
@@ -271,7 +259,7 @@ class Document(ModelWrapper):
 	@fileHash.setter
 	def fileHash(self, value):
 		self.model.fileHash = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def filePath(self):
@@ -280,7 +268,7 @@ class Document(ModelWrapper):
 	@filePath.setter
 	def filePath(self, value):
 		self.model.filePath = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def fileName(self):
@@ -289,7 +277,7 @@ class Document(ModelWrapper):
 	@fileName.setter
 	def fileName(self, value):
 		self.model.fileName = value
-		self.model.save()
+		self.db.commit()
 
 	@property
 	def urlEncodedFileName(self):
@@ -298,43 +286,10 @@ class Document(ModelWrapper):
 	@urlEncodedFileName.setter
 	def setUrlEncodedFileName(self, value):
 		self.model.urlEncodedFileName = value
-		self.model.save()
-
-def getObjects(db, classPointer, **kwargs):
-	return classPointer.search(db, classPointer, **kwargs)
-
-def getObject(classPointer, **kwargs):
-	return classPointer(**kwargs)
-
-def getCompetition(**kwargs):
-	return getObject(Competition, **kwargs)
-
-def getCompetitions(**kwargs):
-	return getObjects(Competition, **kwargs)
-
-def getOrganization(**kwargs):
-	return getObject(Organization, **kwargs)
-
-def getOrganizations(**kwargs):
-	return getObjects(Organization, **kwargs)
+		self.db.commit()
 
 def createOrganization(kwDict):
 	return Organization.create(kwDict)
-
-def deleteOrganization():
-	pass
-
-def getUser(**kwargs):
-	return getObject(User, **kwargs)
-
-def getUsers(**kwargs):
-	return getObjects(User, **kwargs)
-
-def getScoringEngine(**kwargs):
-	return getObject(ScoringEngine, **kwargs)
-
-def getScoringEngines(**kwargs):
-	return getObjects(ScoringEngine, **kwargs)
 
 def createScoringEngine(kwDict):
 	return ScoringEngine.create(kwDict)
