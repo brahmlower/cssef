@@ -10,15 +10,11 @@ import pkgutil
 import ConfigParser
 from daemon import runner
 from time import sleep
-#from celery import Celery
 from celery.bin import worker
 
 import engines
-
-from framework.core import ScoringEngine
-from framework.core import createScoringEngine
-from framework.core import ScoringEngine as ScoringEngineWrapper
 from api import celeryApp
+from framework.core import ScoringEngine
 from framework.utils import databaseConnection
 
 def createEngineModules(self):
@@ -30,8 +26,8 @@ def createEngineModules(self):
 			mod.run()
 		except OperationalError:
 			return None
-		except ScoringEngineWrapper.ObjectDoesNotExist:
-			createScoringEngine({'name': modname, 'packageName': modname})
+		except ScoringEngine.ObjectDoesNotExist:
+			ScoringEngine.fromDict({'name': modname, 'packageName': modname})
 			mod = importScoringEngine(modname)
 			mod.run()
 
@@ -71,9 +67,7 @@ class CssefDaemon(object):
 	def stop(self):
 		del(self.celeryWorker)
 		engines = reload(engines)
-		getScoringEngine = reload(getScoringEngine)
-		createScoringEngine = reload(createScoringEngine)
-		ScoringEngineWrapper = reload(ScoringEngineWrapper)
+		ScoringEngine = reload(ScoringEngine)
 		celeryApp = reload(celeryApp)
 		databaseConnection = reload(databaseConnection)
 
@@ -117,10 +111,9 @@ def configureLogger():
 	return logger, handler
 
 if __name__ == "__main__":
-	config = Configuration('cssef.conf')
+	config = Configuration('cssefd.conf')
 	configureLoggingFiles()
 	logger, handler = configureLogger()
-	#db = databaseConnection('db.sqlite3')
 
 	daemonRunner = runner.DaemonRunner(CssefDaemon())
 	#This ensures that the logger file handle does not get closed during daemonization

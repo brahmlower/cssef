@@ -20,6 +20,7 @@ class ModelWrapper(object):
 			return repr(self.message)
 
 	modelObject = None
+	fields = None
 
 	def __init__(self, db, model):
 		self.db = db
@@ -28,12 +29,25 @@ class ModelWrapper(object):
 	def getId(self):
 		return self.model.pkid
 
+	def edit(self, **kwargs):
+		for i in kwargs:
+			if i in self.fields:
+				setattr(self, i, kwargs[i])
+
 	def delete(self):
 		self.db.delete(self.model)
 		self.db.commit()
 
-	# def reload(self,):
-	# 	self.model.refresh_from_db()
+	def asDict(self):
+		tmpDict = {}
+		tmpDict['id'] = self.getId()
+		for i in self.fields:
+			tmpDict[i] = getattr(self, i)
+		return tmpDict
+
+	@classmethod
+	def count(cls, db, **kwargs):
+		return db.query(cls.modelObject).filter_by(**kwargs).count()
 
 	@classmethod
 	def search(cls, db, **kwargs):

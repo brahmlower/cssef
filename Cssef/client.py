@@ -458,12 +458,12 @@ def help():
 	exit()
 
 def getConn():
-	rpcUsername = "butts"
-	rpcPassword = "butts"
+	rpcUsername = "cssefd"
+	rpcPassword = "cssefd-pass"
 	rpcHost = "localhost"
 
-	amqpUsername = "butts"
-	amqpPassword = "butts"
+	amqpUsername = "cssefd"
+	amqpPassword = "cssefd-pass"
 	amqpHost = "localhost"
 	
 	conn = Celery(
@@ -539,11 +539,12 @@ if __name__ == "__main__":
 	output = command(**kwDict)
 	if output['value'] == 0:
 		# No error
-		outputTable = PrettyTable(output['content'][0].keys())
-		outputTable.padding_width = 1
-		for i in output['content']:
-			outputTable.add_row(i.values())
-		print outputTable
+		if len(output['content']) > 0:
+			outputTable = PrettyTable(output['content'][0].keys())
+			outputTable.padding_width = 1
+			for i in output['content']:
+				outputTable.add_row(i.values())
+			print outputTable
 	else:
 		# Error!
 		print "Error code: %d" % output['value']
