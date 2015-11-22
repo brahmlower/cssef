@@ -11,30 +11,14 @@ from framework.utils import ModelWrapper
 class Competition(ModelWrapper):
 	'Competition object for controling competition settings and operation'
 	modelObject = CompetitionModel
-
-	def edit(self, **kwargs):
-		for i in kwargs:
-			if i == 'organization':							self.organization = kwargs.get(i)
-			elif i == 'name':								self.name = kwargs.get(i)
-			elif i == 'url':								self.url = kwargs.get(i)
-			elif i == 'description':						self.description = kwargs.get(i)
-			elif i == 'datetimeDisplay':					self.datetimeDisplay = kwargs.get(i)
-			elif i == 'datetimeStart':						self.datetimeStart = kwargs.get(i)
-			elif i == 'datetimeFinish':						self.datetimeFinish = kwargs.get(i)
-			elif i == 'autoStart':							self.autoStart = kwargs.get(i)
-			elif i == 'scoringEngine':						self.scoringEngine = kwargs.get(i)
-
-	def asDict(self):
-		return {
-			'id': self.getId(),
-			'name': self.name,
-			'url': self.url,
-			'description': self.description,
-			'datetimeDisplay': self.datetimeDisplay,
-			'datetimeStart': self.datetimeStart,
-			'datetimeFinish': self.datetimeFinish,
-			'autoStart': self.autoStart
-		}
+	fields = [
+		'name',
+		'url',
+		'description',
+		'datetimeDisplay',
+		'datetimeStart',
+		'datetimeFinish',
+		'autoStart']
 
 	@property
 	def organization(self):
@@ -43,7 +27,7 @@ class Competition(ModelWrapper):
 	@organization.setter
 	def organization(self, value):
 		self.model.organization = value
-		self.db.save()
+		self.db.commit()
 
 	@property
 	def name(self):
@@ -52,7 +36,7 @@ class Competition(ModelWrapper):
 	@name.setter
 	def name(self, value):
 		self.model.name = value
-		self.db.save()
+		self.db.commit()
 
 	@property
 	def url(self):
@@ -61,7 +45,7 @@ class Competition(ModelWrapper):
 	@url.setter
 	def url(self, value):
 		self.model.url = value
-		self.db.save()
+		self.db.commit()
 
 	@property
 	def description(self):
@@ -70,7 +54,7 @@ class Competition(ModelWrapper):
 	@description.setter
 	def description(self, value):
 		self.model.description = value
-		self.db.save()
+		self.db.commit()
 
 	@property
 	def datetimeDisplay(self):
@@ -79,7 +63,7 @@ class Competition(ModelWrapper):
 	@datetimeDisplay.setter
 	def datetimeDisplay(self, value):
 		self.model.datetimeDisplay = value
-		self.db.save()
+		self.db.commit()
 
 	@property
 	def datetimeStart(self):
@@ -88,7 +72,7 @@ class Competition(ModelWrapper):
 	@datetimeStart.setter
 	def datetimeStart(self, value):
 		self.model.datetimeStart = value
-		self.db.save()
+		self.db.commit()
 
 	@property
 	def datetimeFinish(self):
@@ -97,7 +81,7 @@ class Competition(ModelWrapper):
 	@datetimeFinish.setter
 	def datetimeFinish(self, value):
 		self.model.datetimeFinish = value
-		self.db.save()
+		self.db.commit()
 
 	@property
 	def autoStart(self):
@@ -106,7 +90,7 @@ class Competition(ModelWrapper):
 	@autoStart.setter
 	def autoStart(self, value):
 		self.model.autoStart = value
-		self.db.save()
+		self.db.commit()
 
 	@property
 	def scoringEngine(self):
@@ -115,52 +99,21 @@ class Competition(ModelWrapper):
 	@scoringEngine.setter
 	def scoringEngine(self, value):
 		self.model.scoringEngine = value
-		self.db.save()
-
-	@classmethod
-	def count(cls, db, **kwargs):
-		#return Competition.modelObject.objects.filter(**kwargs).count()
-		db.query(cls.modelObject).filter_by(**kwargs).count()
+		self.db.commit()
 
 	def check(self):
 		# This conducts a consistency check on the competiton settings.
 		print "A consistency check was conducted here..."
 
-	def createTeam(self, kwDict):
-		kwDict['competition'] = self.getId()
-		return Team.fromDict(self.db, kwDict)
-
-	def createIncident(self, kwDict):
-		kwDict['competition'] = self.getId()
-		return Incident.fromDict(self.db, kwDict)
-
-	def createIncidentResponse(self, kwDict):
-		kwDict['competition'] = self.getId()
-		return IncidentResponse.fromDict(self.db, kwDict)
-
-	def createInject(self, kwDict):
-		kwDict['competition'] = self.getId()
-		return Inject.fromDict(self.db, kwDict)
-
-	def createInjectResponse(self, kwDict):
-		kwDict['competition'] = self.getId()
-		return InjectResponse.fromDict(self.db, kwDict)
-
-	def createScore(self, kwDict):
-		kwDict['competition'] = self.getId()
-		return Score.fromDict(self.db, kwDict)
-
 class Team(ModelWrapper):
 	'Team object for controling team settings'
 	modelObject = TeamModel
-
-	def edit(self, **kwargs):
-		for i in kwargs:
-			if i == 'username':					self.username = kwargs.get(i)
-			elif i == 'name':					self.name = kwargs.get(i)
-			elif i == 'password':				self.password = kwargs.get(i)
-			elif i == 'networkCidr':			self.networkCidr = kwargs.get(i)
-			elif i == 'scoreConfigurations':	self.scoreConfigurations = kwargs.get(i)
+	fields = [
+		'username',
+		'name',
+		'password',
+		'networkCidr',
+		'scoreConfigurations']
 
 	@property
 	def username(self):
@@ -198,14 +151,16 @@ class Team(ModelWrapper):
 		self.model.networkCidr = value
 		self.db.commit()
 
-	def getScoreConfigurations(self):
+	@property
+	def scoreConfigurations(self):
 		return self.model.scoreConfigurations
 
-	def setScoreConfigurations(self, scoreConfigurations):
+	@scoreConfigurations.setter
+	def scoreConfigurations(self, value):
 		# This function will also need to change as I improve the way
 		# score configurations are interacted with....
 		self.model.scoreConfigurations = scoreConfigurations
-		self.db.commit()
+		self.db.commit()		
 
 	def getScores(self, **kwargs):
 		return Scores.search(team = self.model, **kwargs)
@@ -222,12 +177,10 @@ class Team(ModelWrapper):
 class Score(ModelWrapper):
 	'Score object for controlling score settings'
 	modelObject = ScoreModel
-
-	def edit(self, **kwargs):
-		for i in kwargs:
-			if i == 'datetime':		self.datetime = kwargs.get(i)
-			elif i == 'value':		self.value = kwargs.get(i)
-			elif i == 'message':	self.message = kwargs.get(i)
+	fields = [
+		'datetime',
+		'value',
+		'message']
 
 	@property
 	def datetime(self):
@@ -259,16 +212,14 @@ class Score(ModelWrapper):
 class Inject(ModelWrapper):
 	'Inject object for controling inject settings'
 	modelObject = InjectModel
-
-	def edit(self, **kwargs):
-		for i in kwargs:
-			if i == 'requireResponse':			self.requireResponse = kwargs.get(i)
-			elif i == 'manualDelivery':			self.manualDelivery = kwargs.get(i)
-			elif i == 'datetimeDelivery':		self.datetimeDelivery = kwargs.get(i)
-			elif i == 'datetimeResponseDue':	self.datetimeResponseDue = kwargs.get(i)
-			elif i == 'datetimeResponseClose':	self.datetimeResponseClose = kwargs.get(i)
-			elif i == 'title':					self.title = kwargs.get(i)
-			elif i == 'body':					self.body = kwargs.get(i)
+	fields = [
+		'requireResponse',
+		'manualDelivery',
+		'datetimeDelivery',
+		'datetimeResponseDue',
+		'datetimeResponseClose',
+		'title',
+		'body']
 
 	@property
 	def requireResponse(self):
@@ -363,11 +314,9 @@ class Inject(ModelWrapper):
 class InjectResponse(ModelWrapper):
 	'Inject Response object for controling inject response settings'
 	modelObject = InjectResponseModel
-
-	def edit(self, **kwargs):
-		for i in kwargs:
-			if i == 'datetime':		self.datetime = kwargs.get(i)
-			elif i == 'content':	self.content = kwargs.get(i)
+	fields = [
+		'datetime',
+		'content']
 
 	@property
 	def datetime(self):
@@ -390,12 +339,10 @@ class InjectResponse(ModelWrapper):
 class Incident(ModelWrapper):
 	'Incident object for controlling incident settings'
 	modelObject = IncidentModel
-
-	def edit(self, **kwargs):
-		for i in kwargs:
-			if i == 'datetime':		self.datetime = kwargs.get(i)
-			elif i == 'subject':	self.subject = kwargs.get(i)
-			elif i == 'content':	self.content = kwargs.get(i)
+	fields = [
+		'datetime',
+		'subject',
+		'content']
 
 	@property
 	def datetime(self):
@@ -427,13 +374,11 @@ class Incident(ModelWrapper):
 class IncidentResponse(ModelWrapper):
 	'Incident Response object for controlling incident response settings'
 	modelObject = IncidentResponseModel
-
-	def edit(self, **kwargs):
-		for i in kwargs:
-			if i == 'replyTo':		self.replyTo = kwargs.get(i)
-			elif i == 'datetime':	self.datetime = kwargs.get(i)
-			elif i == 'subject':	self.subject = kwargs.get(i)
-			elif i == 'content':	self.content = kwargs.get(i)
+	fields = [
+		'replyTo',
+		'datetime',
+		'subject',
+		'content']
 
 	@property
 	def replyTo(self):

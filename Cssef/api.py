@@ -4,9 +4,8 @@ from framework.core import *
 from framework.competition import *
 from framework.utils import databaseConnection
 
-
 from celery import Celery
-celeryApp = Celery('api', backend='rpc://butts:butts@localhost//', broker='amqp://butts:butts@localhost//')
+celeryApp = Celery('api', backend='rpc://cssefd:cssefd-pass@localhost//', broker='amqp://cssefd:cssefd-pass@localhost//')
 
 EmptyReturnDict = {
 	'value': 0,
@@ -14,19 +13,22 @@ EmptyReturnDict = {
 	'content': []
 }
 
-def modelDel(cls, db, pkid):
+def modelDel(cls, pkid):
+	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
 	modelObj = cls.fromDatabase(db, pkid)
 	modelObj.delete()
 	return EmptyReturnDict
 
-def modelSet(cls, db, pkid, **kwargs):
+def modelSet(cls, pkid, **kwargs):
+	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
 	modelObj = cls.fromDatabase(db, pkid)
 	modelObj.edit(**kwargs)
 	returnDict = EmptyReturnDict
 	returnDict['content'].append(modelObj.asDict())
 	return returnDict
 
-def modelGet(cls, db, **kwargs):
+def modelGet(cls, **kwargs):
+	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
 	modelObjs = cls.search(db, **kwargs)
 	returnDict = EmptyReturnDict
 	for i in modelObjs:
@@ -46,251 +48,328 @@ def handleException(e):
 # ==================================================
 @celeryApp.task(name = 'competitionAdd')
 def competitionAdd(organization = None, name = None, **kwargs):
-	if not organization or not name:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	organization = Organization.fromDatabase(db, organization)
-	competition = organization.createCompetition(db, kwargs)
-	returnDict = EmptyReturnDict
-	returnDict['content'].append(competition.asDict())
-	return returnDict
+	try:
+		if not organization or not name:
+			raise Exception
+		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		organization = Organization.fromDatabase(db, organization)
+		competition = organization.createCompetition(db, kwargs)
+		returnDict = EmptyReturnDict
+		returnDict['content'].append(competition.asDict())
+		return returnDict
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionDel')
-def competitionDel(competition = None):
-	if not competition:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelDel(Competition, db, competition)
+def competitionDel(pkid = None):
+	try:
+		if not pkid:
+			raise Exception
+		return modelDel(Competition, pkid)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionSet')
-def competitionSet(competition = None, **kwargs):
-	if not competition:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelSet(Competition, db, competition, **kwargs)
+def competitionSet(pkid = None, **kwargs):
+	try:
+		if not pkid:
+			raise Exception
+		return modelSet(Competition, pkid, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionGet')
 def competitionGet(**kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelGet(Competition, db, **kwargs)
+	try:
+		return modelGet(Competition, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 # ==================================================
 # Team Endpoints
 # ==================================================
 @celeryApp.task(name = 'competitionTeamAdd')
 def competitionTeamAdd(competition = None, **kwargs):
-	if not competition:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	competitionObj = Competition.fromDatabase(db, competition)
-	team = competitionObj.createTeam(**kwargs)
-	returnDict = EmptyReturnDict
-	returnDict['content'].append(team.asDict())
-	return returnDict
+	try:
+		if not competition:
+			raise Exception
+		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		competitionObj = Competition.fromDatabase(db, competition)
+		#team = competitionObj.createTeam(**kwargs)
+		tmpDict = kwargs
+		tmpDict['competition'] = competitionObj.getId()
+		team = Team.fromDict(db, tmpDict)
+		returnDict = EmptyReturnDict
+		returnDict['content'].append(team.asDict())
+		return returnDict
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionTeamDel')
-def competitionTeamDel(team = None):
-	if not team:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelDel(Team, db, team)
+def competitionTeamDel(pkid = None):
+	try:
+		if not pkid:
+			raise Exception
+		return modelDel(Team, pkid)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionTeamSet')
-def competitionTeamSet(team = None, **kwargs):
-	if not team:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelSet(Team, db, team, **kwargs)
+def competitionTeamSet(pkid = None, **kwargs):
+	try:
+		if not pkid:
+			raise Exception
+		return modelSet(Team, pkid, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionTeamGet')
 def competitionTeamGet(**kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelGet(Team, db, **kwargs)
+	try:
+		return modelGet(Team, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 # ==================================================
 # Score Endpoints
 # ==================================================
-
-@celeryApp.task(name = 'competitionTeamAdd')
+@celeryApp.task(name = 'competitionScoreAdd')
 def competitionScoreAdd(competition = None, **kwargs):
-	if not competition:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	competitionObj = Competition.fromDatabase(db, competition)
-	score = competitionObj.createScore(**kwargs)
-	returnDict = EmptyReturnDict
-	returnDict['content'].append(score.asDict())
-	return returnDict
+	try:
+		if not competition:
+			raise Exception
+		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		competitionObj = Competition.fromDatabase(db, competition)
+		tmpDict = kwargs
+		tmpDict['competition'] = competitionObj.getId()
+		score = Score.fromDict(tmpDict)
+		returnDict = EmptyReturnDict
+		returnDict['content'].append(score.asDict())
+		return returnDict
+	except Exception as e:
+		return handleException(e)
 
-@celeryApp.task(name = 'competitionTeamDel')
+@celeryApp.task(name = 'competitionScoreDel')
 def competitionScoreDel(score = None):
-	if not score:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelDel(Score, db, score)
+	try:
+		if not score:
+			raise Exception
+		return modelDel(Score, score)
+	except Exception as e:
+		return handleException(e)
 
-@celeryApp.task(name = 'competitionTeamSet')
+@celeryApp.task(name = 'competitionScoreSet')
 def competitionScoreSet(score = None, **kwargs):
-	if not score:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelSet(Score, db, score, **kwargs)
+	try:
+		if not score:
+			raise Exception
+		return modelSet(Score, score, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
-@celeryApp.task(name = 'competitionTeamGet')
+@celeryApp.task(name = 'competitionScoreGet')
 def competitionScoreGet(**kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelGet(Score, db, **kwargs)
+	try:
+		return modelGet(Score, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 # ==================================================
 # Inject Endpoints
 # ==================================================
 @celeryApp.task(name = 'competitionInjectAdd')
 def competitionInjectAdd(competition = None, **kwargs):
-	if not competition:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	competitionObj = Competition.fromDatabase(db, competition)
-	inject = competitionObj.createInject(**kwargs)
-	returnDict = EmptyReturnDict
-	returnDict['content'].append(inject.asDict())
-	return returnDict
+	try:
+		if not competition:
+			raise Exception
+		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		competitionObj = Competition.fromDatabase(db, competition)
+		tmpDict = kwargs
+		tmpDict['competition'] = competitionObj.getId()
+		inject = Inject.fromDict(tmpDict)
+		returnDict = EmptyReturnDict
+		returnDict['content'].append(inject.asDict())
+		return returnDict
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionInjectDel')
 def competitionInjectDel(inject = None):
-	if not inject:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelDel(Inject, db, inject)
+	try:
+		if not inject:
+			raise Exception
+		return modelDel(Inject, inject)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionInjectSet')
 def competitionInjectSet(inject = None, **kwargs):
-	if not inject:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelSet(Inject, db, inject, **kwargs)
+	try:
+		if not inject:
+			raise Exception
+		return modelSet(Inject, inject, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionInjectGet')
 def competitionInjectGet(**kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelGet(Inject, db, **kwargs)
+	try:
+		return modelGet(Inject, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 # ==================================================
 # Inject Response Endpoints
 # ==================================================
 @celeryApp.task(name = 'competitionInjectResponseAdd')
 def competitionInjectResponseAdd(competition = None, **kwargs):
-	if not competition:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	competitionObj = Competition.fromDatabase(db, competition)
-	injectResponse = competitionObj.createInjectResponse(**kwargs)
-	returnDict = EmptyReturnDict
-	returnDict['content'].append(injectResponse.asDict())
-	return returnDict
+	try:
+		if not competition:
+			raise Exception
+		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		competitionObj = Competition.fromDatabase(db, competition)
+		tmpDict = kwargs
+		tmpDict['competition'] = competitionObj.getId()
+		injectResponse = InjectResponse.fromDict(tmpDict)
+		returnDict = EmptyReturnDict
+		returnDict['content'].append(injectResponse.asDict())
+		return returnDict
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionInjectResponseDel')
 def competitionInjectResponseDel(injectResponse = None):
-	if not injectResponse:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelDel(InjectResponse, db, injectResponse)
+	try:
+		if not injectResponse:
+			raise Exception
+		return modelDel(InjectResponse, injectResponse)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionInjectResponseSet')
 def competitionInjectResponseSet(injectResponse = None, **kwargs):
-	if not injectResponse:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelSet(InjectResponse, db, injectResponse, **kwargs)
+	try:
+		if not injectResponse:
+			raise Exception
+		return modelSet(InjectResponse, injectResponse, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionInjectResponseDel')
 def competitionInjectResponseGet(**kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelGet(InjectResponse, db, **kwargs)
+	try:
+		return modelGet(InjectResponse, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 # ==================================================
 # Incident Endpoints
 # ==================================================
 @celeryApp.task(name = 'competitionIncidentAdd')
 def competitionIncidentAdd(competition = None, **kwargs):
-	if not competition:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	competitionObj = Competition.fromDatabase(db, competition)
-	incident = competitionObj.createIncident(**kwargs)
-	returnDict = EmptyReturnDict
-	returnDict['content'].append(incident.asDict())
-	return returnDict
+	try:
+		if not competition:
+			raise Exception
+		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		competitionObj = Competition.fromDatabase(db, competition)
+		tmpDict = kwargs
+		tmpDict['competition'] = competitionObj.getId()
+		incident = Incident.fromDict(tmpDict)
+		returnDict = EmptyReturnDict
+		returnDict['content'].append(incident.asDict())
+		return returnDict
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionIncidentDel')
 def competitionIncidentDel(incident = None):
-	if not incident:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelDel(Incident, db, incident)
+	try:
+		if not incident:
+			raise Exception
+		return modelDel(Incident, incident)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionIncidentSet')
 def competitionIncidentSet(incident = None, **kwargs):
-	if not incident:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelSet(Incident, db, incident, **kwargs)
+	try:
+		if not incident:
+			raise Exception
+		return modelSet(Incident, incident, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionIncidentGet')
 def competitionIncidentGet(**kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelGet(Incident, db, **kwargs)
+	try:
+		return modelGet(Incident, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 # ==================================================
 # Incident Response Endpoints
 # ==================================================
 @celeryApp.task(name = 'competitionIncidentResponseAdd')
 def competitionIncidentResponseAdd(competition = None, **kwargs):
-	if not competition:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	competitionObj = Competition.fromDatabase(db, competition)
-	incidentResponse = competitionObj.createIncidentResponse(**kwargs)
-	returnDict = EmptyReturnDict
-	returnDict['content'].append(incidentResponse.asDict())
-	return returnDict
+	try:
+		if not competition:
+			raise Exception
+		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		competitionObj = Competition.fromDatabase(db, competition)
+		tmpDict = kwargs
+		tmpDict['competition'] = competitionObj.getId()
+		incidentResponse = IncidentResponse.fromDict(tmpDict)
+		returnDict = EmptyReturnDict
+		returnDict['content'].append(incidentResponse.asDict())
+		return returnDict
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionIncidentResponseDel')
 def competitionIncidentResponseDel(incidentResponse = None):
-	if not incidentResponse:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelDel(IncidentResponse, db, incidentResponse)
+	try:
+		if not incidentResponse:
+			raise Exception
+		return modelDel(IncidentResponse, incidentResponse)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionIncidentResponseSet')
 def competitionIncidentResponseSet(incidentResponse = None, **kwargs):
-	if not incidentResponse:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelSet(IncidentResponse, db, incidentResponse, **kwargs)
+	try:
+		if not incidentResponse:
+			raise Exception
+		return modelSet(IncidentResponse, incidentResponse, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'competitionIncidentResponseGet')
 def compeititonIncidentResponseGet(**kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelGet(IncidentResponse, db, **kwargs)
+	try:
+		return modelGet(IncidentResponse, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 # ==================================================
 # Organization Endpoints
 # ==================================================
 @celeryApp.task(name = 'organizationAdd')
 def organizationAdd(**kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	organization = Organization.fromDict(db, kwargs)
-	returnDict = EmptyReturnDict
-	returnDict['content'].append(organization.asDict())
-	return returnDict
+	try:
+		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		organization = Organization.fromDict(db, kwargs)
+		returnDict = EmptyReturnDict
+		returnDict['content'].append(organization.asDict())
+		return returnDict
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'organizationDel')
-def organizationDel(organization = None):
+def organizationDel(pkid = None):
 	try:
-		if not organization:
+		if not pkid:
 			raise Exception
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-		return modelDel(Organization, db, organization)
+		return modelDel(Organization, pkid)
 	except Exception as e:
 		return handleException(e)
 
@@ -299,16 +378,14 @@ def organizationSet(pkid = None, **kwargs):
 	try:
 		if not pkid:
 			raise Exception
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-		return modelSet(Organization, db, pkid, **kwargs)
+		return modelSet(Organization, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
 @celeryApp.task(name = 'organizationGet')
 def organizationGet(**kwargs):
 	try:
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-		return modelGet(Organization, db, **kwargs)
+		return modelGet(Organization, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -317,31 +394,40 @@ def organizationGet(**kwargs):
 # ==================================================
 @celeryApp.task(name = 'userAdd')
 def userAdd(organization = None, **kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	organization = Organization.fromDatabase(pkid = organization)
-	user = organization.createMember(**kwargs)
-	returnDict = EmptyReturnDict
-	returnDict['content'].append(user.asDict())
-	return returnDict
+	try:
+		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		organization = Organization.fromDatabase(pkid = organization)
+		user = organization.createMember(**kwargs)
+		returnDict = EmptyReturnDict
+		returnDict['content'].append(user.asDict())
+		return returnDict
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'userDel')
 def userDel(user = None):
-	if not user:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelDel(User, db, user)
+	try:
+		if not user:
+			raise Exception
+		return modelDel(User, user)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'userSet')
 def userSet(user = None, **kwargs):
-	if not user:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelSet(User, db, user, **kwargs)
+	try:
+		if not user:
+			raise Exception
+		return modelSet(User, user, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'userGet')
 def userGet(**kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelGet(User, db, **kwargs)
+	try:
+		return modelGet(User, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 
 # ==================================================
@@ -349,30 +435,39 @@ def userGet(**kwargs):
 # ==================================================
 @celeryApp.task(name = 'documentAdd')
 def documentAdd(**kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	document = Document.fromDict(db, kwargs)
-	returnDict = EmptyReturnDict
-	returnDict['content'].append(document.asDict())
-	return returnDict
+	try:
+		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		document = Document.fromDict(db, kwargs)
+		returnDict = EmptyReturnDict
+		returnDict['content'].append(document.asDict())
+		return returnDic
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'documentDel')
 def documentDel(document = None):
-	if not document:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelDel(Document, db, document)
+	try:
+		if not document:
+			raise Exception
+		return modelDel(Document, document)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'documentSet')
 def documentSet(document = None, **kwargs):
-	if not document:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelSet(Document, db, document, **kwargs)
+	try:
+		if not document:
+			raise Exception
+		return modelSet(Document, document, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'documentGet')
 def documentGet(**kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelGet(Document, db, **kwargs)
+	try:
+		return modelGet(Document, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 
 # ==================================================
@@ -380,27 +475,36 @@ def documentGet(**kwargs):
 # ==================================================
 @celeryApp.task(name = 'scoringEngineAdd')
 def scoringengineAdd(**kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	scoringEngine = ScoringEngine.fromDict(db, kwargs)
-	returnDict = EmptyReturnDict
-	returnDict['content'].append(scoringEngine.asDict())
-	return returnDict
+	try:
+		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		scoringEngine = ScoringEngine.fromDict(db, kwargs)
+		returnDict = EmptyReturnDict
+		returnDict['content'].append(scoringEngine.asDict())
+		return returnDict
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'scoringEngineDel')
 def scoringengineDel(scoringEngine = None):
-	if not scoringEngine:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelDel(ScoringEngine, db, scoringEngine)
+	try:
+		if not scoringEngine:
+			raise Exception
+		return modelDel(ScoringEngine, scoringEngine)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'scoringEngineSet')
 def scoringengineSet(scoringEngine = None, **kwargs):
-	if not scoringEngine:
-		raise Exception
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelSet(ScoringEngine, db, scoringEngine, **kwargs)
+	try:
+		if not scoringEngine:
+			raise Exception
+		return modelSet(ScoringEngine, scoringEngine, **kwargs)
+	except Exception as e:
+		return handleException(e)
 
 @celeryApp.task(name = 'scoringEngineGet')
 def scoringengineGet(**kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	return modelGet(ScoringEngine, db, **kwargs)
+	try:
+		return modelGet(ScoringEngine, **kwargs)
+	except Exception as e:
+		return handleException(e)

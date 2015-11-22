@@ -23,24 +23,12 @@ class MaxMembersReached(Exception):
 
 class Organization(ModelWrapper):
 	modelObject = OrganizationModel
-
-	def edit(self, **kwargs):
-		for i in kwargs:
-			if i == 'name':					self.name = kwargs.get(i)
-			elif i == 'url':				self.url = kwargs.get(i)
-			elif i == 'description':		self.description = kwargs.get(i)
-			elif i == 'maxMembers':			self.maxMembers = kwargs.get(i)
-			elif i == 'maxCompetitions':	self.maxCompetitions = kwargs.get(i)
-
-	def asDict(self):
-		return {
-			'id': self.getId(),
-			'name': self.name,
-			'url': self.url,
-			'description': self.description,
-			'maxMembers': self.maxMembers,
-			'maxCompetitions': self.maxCompetitions
-		}
+	fields = [
+		'name',
+		'url',
+		'description',
+		'maxMembers',
+		'maxCompetitions']
 
 	def isDeleteable(self):
 		return self.model.deleteable
@@ -87,7 +75,7 @@ class Organization(ModelWrapper):
 
 	@maxCompetitions.setter
 	def maxCompetitions(self, value):
-		self.model.maxCompetitions = values
+		self.model.maxCompetitions = value
 		self.db.commit()
 
 	def getNumMembers(self):
@@ -134,18 +122,12 @@ class Organization(ModelWrapper):
 
 class User(ModelWrapper):
 	modelObject = UserModel
-
-	@staticmethod
-	def count(**kwargs):
-		return User.modelObject.objects.filter(**kwargs).count()
-
-	def edit(self, **kwargs):
-		for i in kwargs:
-			if i == 'name':				self.name = kwargs.get(i)
-			elif i == 'username':		self.username = kwargs.get(i)
-			elif i == 'password':		self.password = kwargs.get(i)
-			elif i == 'description':	self.description = kwargs.get(i)
-			elif i == 'organization':	self.organization = kwargs.get(i)
+	fields = [
+		'name',
+		'username',
+		'password',
+		'description',
+		'organization']
 
 	@property
 	def name(self):
@@ -194,6 +176,10 @@ class User(ModelWrapper):
 
 class ScoringEngine(ModelWrapper):
 	modelObject = ScoringEngineModel
+	fields = [
+		'name',
+		'disabled',
+		'packageName']
 
 	def delete(self):
 		print '[WARNING] Cannot delete ScoringEngine. Redirecting to disable.'
@@ -234,14 +220,12 @@ class ScoringEngine(ModelWrapper):
 
 class Document(ModelWrapper):
 	modelObject = DocumentModel
-
-	def edit(self, **kwargs):
-		for i in kwargs:
-			if i == 'contentType':			self.contentType = kwargs.get(i)
-			elif i == 'fileHash':			self.fileHash = kwargs.get(i)
-			elif i == 'filePath':			self.filePath = kwargs.get(i)
-			elif i == 'filename':			self.fileName = kwargs.get(i)
-			elif i == 'urlEncodedFilename': self.urlEncodedFilename = kwargs.get(i)
+	fields = [
+		'contentType',
+		'fileHash',
+		'fielPath',
+		'fileName',
+		'urlEncodedFileName']
 
 	@property
 	def contentType(self):
