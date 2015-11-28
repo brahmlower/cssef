@@ -1,6 +1,4 @@
 #!/usr/bin/python
-# ./client.py competition-add organization=1 name="Competition One" url="comp_one" autostart=True
-#
 from celery import Celery
 import sys
 from time import sleep
@@ -24,10 +22,7 @@ class Endpoint(object):
 
 	def __call__(self, *args, **kwargs):
 		x = self.conn.send_task(self.celeryName, args = args, kwargs = kwargs)
-		while not x.ready():
-			# this will loop VERY ungracefully...
-			pass
-		return x.result
+		return x.get()
 
 	def usage(self):
 		for i in self.args:
