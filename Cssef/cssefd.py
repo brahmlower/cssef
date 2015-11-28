@@ -1,21 +1,214 @@
 #!/usr/bin/python
-# To kick off the script, run the following from the python directory:
-#   PYTHONPATH=`pwd` python cssefDaemon.py start
 from __future__ import absolute_import
 import logging
 import time
 import atexit
-import os.path
 import pkgutil
 import ConfigParser
-from daemon import runner
+import sys
+import os
+import os.path
+from signal import SIGTERM
 from time import sleep
 from celery.bin import worker
 
 import engines
-from api import celeryApp
+from api import CssefCeleryApp
 from framework.core import ScoringEngine
 from framework.utils import databaseConnection
+
+class Daemon(object):
+	"""
+	A generic daemon class.
+	
+	Usage: subclass the Daemon class and override the run() method
+	"""
+	def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+		self.stdin = stdin
+		self.stdout = stdout
+		self.stderr = stderr
+		self.pidfile = pidfile
+	
+	def daemonize(self):
+		"""
+		do the UNIX double-fork magic, see Stevens' "Advanced 
+		Programming in the UNIX Environment" for details (ISBN 0201563177)
+		http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
+		"""
+		try: 
+			pid = os.fork() 
+			if pid > 0:
+				# exit first parent
+				sys.exit(0) 
+		except OSError, e: 
+			sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
+			sys.exit(1)
+	
+		# decouple from parent environment
+		os.chdir("/") 
+		os.setsid() 
+		os.umask(0) 
+	
+		# do second fork
+		try: 
+			pid = os.fork() 
+			if pid > 0:
+				# exit from second parent
+				sys.exit(0) 
+		except OSError, e: 
+			sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
+			sys.exit(1) 
+	
+		# redirect standard file descriptors
+		sys.stdout.flush()
+		sys.stderr.flush()
+		si = file(self.stdin, 'r')
+		so = file(self.stdout, 'a+')
+		se = file(self.stderr, 'a+', 0)
+		os.dup2(si.fileno(), sys.stdin.fileno())
+		os.dup2(so.fileno(), sys.stdout.fileno())
+		os.dup2(se.fileno(), sys.stderr.fileno())
+	
+		# write pidfile
+		atexit.register(self.delpid)
+		pid = str(os.getpid())
+		file(self.pidfile,'w+').write("%s" % pid)
+	
+	def delpid(self):
+		os.remove(self.pidfile)
+
+	def start(self):
+		"""
+		Start the daemon
+		"""
+		# Check for a pidfile to see if the daemon already runs
+		try:
+			pf = file(self.pidfile,'r')
+			pid = int(pf.read().strip())
+			pf.close()
+		except IOError:
+			pid = None
+	
+		if pid:
+			message = "pidfile %s already exist. Daemon already running?\n"
+			sys.stderr.write(message % self.pidfile)
+			sys.exit(1)
+		
+		# Start the daemon
+		self.daemonize()
+		self.run()
+
+	def stop(self):
+		"""
+		Stop the daemon
+		"""
+		# Get the pid from the pidfile
+		try:
+			pf = file(self.pidfile,'r')
+			pid = int(pf.read().strip())
+			pf.close()
+		except IOError:
+			pid = None
+	
+		if not pid:
+			message = "pidfile %s does not exist. Daemon not running?\n"
+			sys.stderr.write(message % self.pidfile)
+			return # not an error in a restart
+
+		# Try killing the daemon process	
+		try:
+			while 1:
+				os.kill(pid, SIGTERM)
+				time.sleep(0.1)
+		except OSError, err:
+			err = str(err)
+			if err.find("No such process") > 0:
+				if os.path.exists(self.pidfile):
+					os.remove(self.pidfile)
+			else:
+				print str(err)
+				sys.exit(1)
+
+	def restart(self):
+		"""
+		Restart the daemon
+		"""
+		self.stop()
+		self.start()
+
+	def status(self):
+		"""
+		Display the status of the daemon
+		"""
+		try:
+			print "Running with pid %s" % file(self.pidfile,'r').read()
+		except IOError:
+			print "Daemon not running"
+			sys.exit(1)
+
+class CssefDaemon(Daemon):
+	def __init__(self, configFile = 'cssefd.conf'):
+		self.config = Configuration(configFile)
+		logger, handler = configureLogger(self.config)
+		super(CssefDaemon, self).__init__(
+			self.config.rawConfig.get('default', 'pidfile'),
+			stderr = self.config.rawConfig.get('logging', 'cssef_stderr'),
+			stdout = self.config.rawConfig.get('logging', 'cssef_stdout'))
+		self.celeryWorker = None
+
+	def run(self):
+		celeryOptions = {
+			'concurrency': 1,
+			'broker': self.config.amqpUrl,
+			'backend': self.config.rpcUrl,
+			'loglevel': self.config.rawConfig.get('logging', 'celery_loglevel'),
+			'logfile': self.config.rawConfig.get('logging', 'celery_stdout'),
+			'traceback': True
+		}
+		atexit.register(self.stop)
+		self.celeryWorker = worker.worker(app = CssefCeleryApp)
+		self.celeryWorker.run(**celeryOptions)
+
+class Configuration(object):
+	def __init__(self, configFilePath):
+		self.rawConfig = ConfigParser.ConfigParser()
+		self.rawConfig.read(configFilePath)
+
+	@property
+	def amqpUrl(self):
+		username = self.rawConfig.get('celery', 'amqp_username')
+		password = self.rawConfig.get('celery', 'amqp_password')
+		host = self.rawConfig.get('celery', 'amqp_host')
+		return 'amqp://%s:%s@%s//' % (username, password, host)
+
+	@property
+	def rpcUrl(self):
+		username = self.rawConfig.get('celery', 'rpc_username')
+		password = self.rawConfig.get('celery', 'rpc_password')
+		host = self.rawConfig.get('celery', 'rpc_host')
+		return 'rpc://%s:%s@%s//' % (username, password, host)
+
+def makeLogFiles(config):
+	files = [
+		config.rawConfig.get('logging', 'cssef_stderr'),
+		config.rawConfig.get('logging', 'cssef_stdout'),
+		config.rawConfig.get('logging', 'celery_stderr'),
+		config.rawConfig.get('logging', 'celery_stdout')]
+	for i in files:
+		if not os.path.isfile(i):
+			open(i, 'a').close()
+
+def configureLogger(config):
+	# Make sure the files exist first
+	makeLogFiles(config)
+	# Set up the loggers (kinda... i suck at this)
+	logger = logging.getLogger("CssefDaemonLog")
+	logger.setLevel(logging.DEBUG)
+	formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+	handler = logging.FileHandler(config.rawConfig.get('logging', 'cssef_stdout'))
+	handler.setFormatter(formatter)
+	logger.addHandler(handler)
+	return logger, handler
 
 def createEngineModules(self):
 	package = engines
@@ -40,82 +233,21 @@ def importScoringEngine(name):
 		module = getattr(module, i)
 	return module
 
-class CssefDaemon(object):
-	def __init__(self):
-		# Prepare logging information
-		# Required by python-daemon
-		self.stdin_path = '/dev/null'
-		self.stdout_path = config.rawConfig.get('logging', 'cssef_stdout')
-		self.stderr_path = config.rawConfig.get('logging', 'cssef_stderr')
-		#self.pidfile_path = '/var/run/cssefd.pid'
-		self.pidfile_path = '/home/sk4ly/Documents/cssef/Cssef/cssefd.pid'
-		self.pidfile_timeout = 5
-		self.celeryWorker = None
-
-	def run(self):
-		celeryOptions = {
-			'broker': config.amqpUrl,
-			'backend': config.rpcUrl,
-			'loglevel': 'DEBUG',
-			'logfile': config.rawConfig.get('logging', 'celery_stdout'),
-			'traceback': True
-		}
-		atexit.register(self.stop)
-		self.celeryWorker = worker.worker(app = celeryApp)
-		self.celeryWorker.run(**celeryOptions)
-
-	def stop(self):
-		del(self.celeryWorker)
-		engines = reload(engines)
-		ScoringEngine = reload(ScoringEngine)
-		celeryApp = reload(celeryApp)
-		databaseConnection = reload(databaseConnection)
-
-class Configuration(object):
-	def __init__(self, configFilePath):
-		self.rawConfig = ConfigParser.ConfigParser()
-		self.rawConfig.read(configFilePath)
-
-	@property
-	def amqpUrl(self):
-		username = self.rawConfig.get('celery', 'amqp_username')
-		password = self.rawConfig.get('celery', 'amqp_password')
-		host = self.rawConfig.get('celery', 'amqp_host')
-		return 'amqp://%s:%s@%s//' % (username, password, host)
-
-	@property
-	def rpcUrl(self):
-		username = self.rawConfig.get('celery', 'rpc_username')
-		password = self.rawConfig.get('celery', 'rpc_password')
-		host = self.rawConfig.get('celery', 'rpc_host')
-		return 'rpc://%s:%s@%s//' % (username, password, host)
-
-def configureLoggingFiles():
-	files = [
-		config.rawConfig.get('logging', 'cssef_stderr'),
-		config.rawConfig.get('logging', 'cssef_stdout'),
-		config.rawConfig.get('logging', 'celery_stderr'),
-		config.rawConfig.get('logging', 'celery_stdout')]
-	for i in files:
-		if not os.path.isfile(i):
-			open(i, 'a').close()
-
-def configureLogger():
-	# Get the logger started ASAP
-	logger = logging.getLogger("CssefDaemonLog")
-	logger.setLevel(logging.DEBUG)
-	formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-	handler = logging.FileHandler(config.rawConfig.get('logging', 'cssef_stdout'))
-	handler.setFormatter(formatter)
-	logger.addHandler(handler)
-	return logger, handler
-
 if __name__ == "__main__":
-	config = Configuration('cssefd.conf')
-	configureLoggingFiles()
-	logger, handler = configureLogger()
-
-	daemonRunner = runner.DaemonRunner(CssefDaemon())
-	#This ensures that the logger file handle does not get closed during daemonization
-	daemonRunner.daemon_context.files_preserve = [handler.stream]
-	daemonRunner.do_action()
+	daemon = CssefDaemon()
+	if len(sys.argv) == 2:
+		if 'start' == sys.argv[1]:
+			daemon.start()
+		elif 'stop' == sys.argv[1]:
+			daemon.stop()
+		elif 'restart' == sys.argv[1]:
+			daemon.restart()
+		elif 'status' == sys.argv[1]:
+			daemon.status()
+		else:
+			print "Unknown command"
+			sys.exit(2)
+		sys.exit(0)
+	else:
+		print "usage: %s start|stop|restart|status" % sys.argv[0]
+		sys.exit(2)

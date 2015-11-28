@@ -5,7 +5,7 @@ from framework.competition import *
 from framework.utils import databaseConnection
 
 from celery import Celery
-celeryApp = Celery('api', backend='rpc://cssefd:cssefd-pass@localhost//', broker='amqp://cssefd:cssefd-pass@localhost//')
+CssefCeleryApp = Celery('api', backend='rpc://cssefd:cssefd-pass@localhost//', broker='amqp://cssefd:cssefd-pass@localhost//')
 
 EmptyReturnDict = {
 	'value': 0,
@@ -33,6 +33,7 @@ def modelGet(cls, **kwargs):
 	returnDict = EmptyReturnDict
 	for i in modelObjs:
 		returnDict['content'].append(i.asDict())
+	print returnDict
 	return returnDict
 
 def handleException(e):
@@ -46,7 +47,7 @@ def handleException(e):
 # ==================================================
 # Competition Endpoints
 # ==================================================
-@celeryApp.task(name = 'competitionAdd')
+@CssefCeleryApp.task(name = 'competitionAdd')
 def competitionAdd(organization = None, name = None, **kwargs):
 	try:
 		if not organization or not name:
@@ -60,7 +61,7 @@ def competitionAdd(organization = None, name = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionDel')
+@CssefCeleryApp.task(name = 'competitionDel')
 def competitionDel(pkid = None):
 	try:
 		if not pkid:
@@ -69,7 +70,7 @@ def competitionDel(pkid = None):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionSet')
+@CssefCeleryApp.task(name = 'competitionSet')
 def competitionSet(pkid = None, **kwargs):
 	try:
 		if not pkid:
@@ -78,7 +79,7 @@ def competitionSet(pkid = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionGet')
+@CssefCeleryApp.task(name = 'competitionGet')
 def competitionGet(**kwargs):
 	try:
 		return modelGet(Competition, **kwargs)
@@ -88,7 +89,7 @@ def competitionGet(**kwargs):
 # ==================================================
 # Team Endpoints
 # ==================================================
-@celeryApp.task(name = 'competitionTeamAdd')
+@CssefCeleryApp.task(name = 'competitionTeamAdd')
 def competitionTeamAdd(competition = None, **kwargs):
 	try:
 		if not competition:
@@ -105,7 +106,7 @@ def competitionTeamAdd(competition = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionTeamDel')
+@CssefCeleryApp.task(name = 'competitionTeamDel')
 def competitionTeamDel(pkid = None):
 	try:
 		if not pkid:
@@ -114,7 +115,7 @@ def competitionTeamDel(pkid = None):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionTeamSet')
+@CssefCeleryApp.task(name = 'competitionTeamSet')
 def competitionTeamSet(pkid = None, **kwargs):
 	try:
 		if not pkid:
@@ -123,7 +124,7 @@ def competitionTeamSet(pkid = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionTeamGet')
+@CssefCeleryApp.task(name = 'competitionTeamGet')
 def competitionTeamGet(**kwargs):
 	try:
 		return modelGet(Team, **kwargs)
@@ -133,7 +134,7 @@ def competitionTeamGet(**kwargs):
 # ==================================================
 # Score Endpoints
 # ==================================================
-@celeryApp.task(name = 'competitionScoreAdd')
+@CssefCeleryApp.task(name = 'competitionScoreAdd')
 def competitionScoreAdd(competition = None, **kwargs):
 	try:
 		if not competition:
@@ -149,7 +150,7 @@ def competitionScoreAdd(competition = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionScoreDel')
+@CssefCeleryApp.task(name = 'competitionScoreDel')
 def competitionScoreDel(score = None):
 	try:
 		if not score:
@@ -158,7 +159,7 @@ def competitionScoreDel(score = None):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionScoreSet')
+@CssefCeleryApp.task(name = 'competitionScoreSet')
 def competitionScoreSet(score = None, **kwargs):
 	try:
 		if not score:
@@ -167,7 +168,7 @@ def competitionScoreSet(score = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionScoreGet')
+@CssefCeleryApp.task(name = 'competitionScoreGet')
 def competitionScoreGet(**kwargs):
 	try:
 		return modelGet(Score, **kwargs)
@@ -177,7 +178,7 @@ def competitionScoreGet(**kwargs):
 # ==================================================
 # Inject Endpoints
 # ==================================================
-@celeryApp.task(name = 'competitionInjectAdd')
+@CssefCeleryApp.task(name = 'competitionInjectAdd')
 def competitionInjectAdd(competition = None, **kwargs):
 	try:
 		if not competition:
@@ -193,7 +194,7 @@ def competitionInjectAdd(competition = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionInjectDel')
+@CssefCeleryApp.task(name = 'competitionInjectDel')
 def competitionInjectDel(inject = None):
 	try:
 		if not inject:
@@ -202,7 +203,7 @@ def competitionInjectDel(inject = None):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionInjectSet')
+@CssefCeleryApp.task(name = 'competitionInjectSet')
 def competitionInjectSet(inject = None, **kwargs):
 	try:
 		if not inject:
@@ -211,7 +212,7 @@ def competitionInjectSet(inject = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionInjectGet')
+@CssefCeleryApp.task(name = 'competitionInjectGet')
 def competitionInjectGet(**kwargs):
 	try:
 		return modelGet(Inject, **kwargs)
@@ -221,7 +222,7 @@ def competitionInjectGet(**kwargs):
 # ==================================================
 # Inject Response Endpoints
 # ==================================================
-@celeryApp.task(name = 'competitionInjectResponseAdd')
+@CssefCeleryApp.task(name = 'competitionInjectResponseAdd')
 def competitionInjectResponseAdd(competition = None, **kwargs):
 	try:
 		if not competition:
@@ -237,7 +238,7 @@ def competitionInjectResponseAdd(competition = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionInjectResponseDel')
+@CssefCeleryApp.task(name = 'competitionInjectResponseDel')
 def competitionInjectResponseDel(injectResponse = None):
 	try:
 		if not injectResponse:
@@ -246,7 +247,7 @@ def competitionInjectResponseDel(injectResponse = None):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionInjectResponseSet')
+@CssefCeleryApp.task(name = 'competitionInjectResponseSet')
 def competitionInjectResponseSet(injectResponse = None, **kwargs):
 	try:
 		if not injectResponse:
@@ -255,7 +256,7 @@ def competitionInjectResponseSet(injectResponse = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionInjectResponseDel')
+@CssefCeleryApp.task(name = 'competitionInjectResponseDel')
 def competitionInjectResponseGet(**kwargs):
 	try:
 		return modelGet(InjectResponse, **kwargs)
@@ -265,7 +266,7 @@ def competitionInjectResponseGet(**kwargs):
 # ==================================================
 # Incident Endpoints
 # ==================================================
-@celeryApp.task(name = 'competitionIncidentAdd')
+@CssefCeleryApp.task(name = 'competitionIncidentAdd')
 def competitionIncidentAdd(competition = None, **kwargs):
 	try:
 		if not competition:
@@ -281,7 +282,7 @@ def competitionIncidentAdd(competition = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionIncidentDel')
+@CssefCeleryApp.task(name = 'competitionIncidentDel')
 def competitionIncidentDel(incident = None):
 	try:
 		if not incident:
@@ -290,7 +291,7 @@ def competitionIncidentDel(incident = None):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionIncidentSet')
+@CssefCeleryApp.task(name = 'competitionIncidentSet')
 def competitionIncidentSet(incident = None, **kwargs):
 	try:
 		if not incident:
@@ -299,7 +300,7 @@ def competitionIncidentSet(incident = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionIncidentGet')
+@CssefCeleryApp.task(name = 'competitionIncidentGet')
 def competitionIncidentGet(**kwargs):
 	try:
 		return modelGet(Incident, **kwargs)
@@ -309,7 +310,7 @@ def competitionIncidentGet(**kwargs):
 # ==================================================
 # Incident Response Endpoints
 # ==================================================
-@celeryApp.task(name = 'competitionIncidentResponseAdd')
+@CssefCeleryApp.task(name = 'competitionIncidentResponseAdd')
 def competitionIncidentResponseAdd(competition = None, **kwargs):
 	try:
 		if not competition:
@@ -325,7 +326,7 @@ def competitionIncidentResponseAdd(competition = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionIncidentResponseDel')
+@CssefCeleryApp.task(name = 'competitionIncidentResponseDel')
 def competitionIncidentResponseDel(incidentResponse = None):
 	try:
 		if not incidentResponse:
@@ -334,7 +335,7 @@ def competitionIncidentResponseDel(incidentResponse = None):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionIncidentResponseSet')
+@CssefCeleryApp.task(name = 'competitionIncidentResponseSet')
 def competitionIncidentResponseSet(incidentResponse = None, **kwargs):
 	try:
 		if not incidentResponse:
@@ -343,7 +344,7 @@ def competitionIncidentResponseSet(incidentResponse = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'competitionIncidentResponseGet')
+@CssefCeleryApp.task(name = 'competitionIncidentResponseGet')
 def compeititonIncidentResponseGet(**kwargs):
 	try:
 		return modelGet(IncidentResponse, **kwargs)
@@ -353,7 +354,7 @@ def compeititonIncidentResponseGet(**kwargs):
 # ==================================================
 # Organization Endpoints
 # ==================================================
-@celeryApp.task(name = 'organizationAdd')
+@CssefCeleryApp.task(name = 'organizationAdd')
 def organizationAdd(**kwargs):
 	try:
 		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
@@ -364,7 +365,7 @@ def organizationAdd(**kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'organizationDel')
+@CssefCeleryApp.task(name = 'organizationDel')
 def organizationDel(pkid = None):
 	try:
 		if not pkid:
@@ -373,7 +374,7 @@ def organizationDel(pkid = None):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'organizationSet')
+@CssefCeleryApp.task(name = 'organizationSet')
 def organizationSet(pkid = None, **kwargs):
 	try:
 		if not pkid:
@@ -382,17 +383,19 @@ def organizationSet(pkid = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'organizationGet')
+@CssefCeleryApp.task(name = 'organizationGet')
 def organizationGet(**kwargs):
 	try:
-		return modelGet(Organization, **kwargs)
+		x = modelGet(Organization, **kwargs)
+		print x
+		return x
 	except Exception as e:
 		return handleException(e)
 
 # ==================================================
 # User Endpoints
 # ==================================================
-@celeryApp.task(name = 'userAdd')
+@CssefCeleryApp.task(name = 'userAdd')
 def userAdd(organization = None, **kwargs):
 	try:
 		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
@@ -404,7 +407,7 @@ def userAdd(organization = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'userDel')
+@CssefCeleryApp.task(name = 'userDel')
 def userDel(user = None):
 	try:
 		if not user:
@@ -413,7 +416,7 @@ def userDel(user = None):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'userSet')
+@CssefCeleryApp.task(name = 'userSet')
 def userSet(user = None, **kwargs):
 	try:
 		if not user:
@@ -422,7 +425,7 @@ def userSet(user = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'userGet')
+@CssefCeleryApp.task(name = 'userGet')
 def userGet(**kwargs):
 	try:
 		return modelGet(User, **kwargs)
@@ -433,7 +436,7 @@ def userGet(**kwargs):
 # ==================================================
 # Document Endpoints
 # ==================================================
-@celeryApp.task(name = 'documentAdd')
+@CssefCeleryApp.task(name = 'documentAdd')
 def documentAdd(**kwargs):
 	try:
 		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
@@ -444,7 +447,7 @@ def documentAdd(**kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'documentDel')
+@CssefCeleryApp.task(name = 'documentDel')
 def documentDel(document = None):
 	try:
 		if not document:
@@ -453,7 +456,7 @@ def documentDel(document = None):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'documentSet')
+@CssefCeleryApp.task(name = 'documentSet')
 def documentSet(document = None, **kwargs):
 	try:
 		if not document:
@@ -462,7 +465,7 @@ def documentSet(document = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'documentGet')
+@CssefCeleryApp.task(name = 'documentGet')
 def documentGet(**kwargs):
 	try:
 		return modelGet(Document, **kwargs)
@@ -473,7 +476,7 @@ def documentGet(**kwargs):
 # ==================================================
 # Scoring Engine Endpoints
 # ==================================================
-@celeryApp.task(name = 'scoringEngineAdd')
+@CssefCeleryApp.task(name = 'scoringEngineAdd')
 def scoringengineAdd(**kwargs):
 	try:
 		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
@@ -484,7 +487,7 @@ def scoringengineAdd(**kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'scoringEngineDel')
+@CssefCeleryApp.task(name = 'scoringEngineDel')
 def scoringengineDel(scoringEngine = None):
 	try:
 		if not scoringEngine:
@@ -493,7 +496,7 @@ def scoringengineDel(scoringEngine = None):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'scoringEngineSet')
+@CssefCeleryApp.task(name = 'scoringEngineSet')
 def scoringengineSet(scoringEngine = None, **kwargs):
 	try:
 		if not scoringEngine:
@@ -502,7 +505,7 @@ def scoringengineSet(scoringEngine = None, **kwargs):
 	except Exception as e:
 		return handleException(e)
 
-@celeryApp.task(name = 'scoringEngineGet')
+@CssefCeleryApp.task(name = 'scoringEngineGet')
 def scoringengineGet(**kwargs):
 	try:
 		return modelGet(ScoringEngine, **kwargs)
