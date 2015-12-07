@@ -7,39 +7,41 @@ from framework.utils import databaseConnection
 from celery import Celery
 CssefCeleryApp = Celery('api', backend='rpc://cssefd:cssefd-pass@localhost//', broker='amqp://cssefd:cssefd-pass@localhost//')
 
-EmptyReturnDict = {
-	'value': 0,
-	'message': 'Success',
-	'content': []
-}
+def getEmptyReturnDict():
+	emptyReturnDict = {
+		'value': 0,
+		'message': 'Success',
+		'content': []
+	}
+	return emptyReturnDict
 
 def modelDel(cls, pkid):
 	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
 	modelObj = cls.fromDatabase(db, pkid)
 	modelObj.delete()
-	return EmptyReturnDict
+	return getEmptyReturnDict()
 
 def modelSet(cls, pkid, **kwargs):
 	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
 	modelObj = cls.fromDatabase(db, pkid)
 	modelObj.edit(**kwargs)
-	returnDict = EmptyReturnDict
+	returnDict = getEmptyReturnDict()
 	returnDict['content'].append(modelObj.asDict())
 	return returnDict
 
 def modelGet(cls, **kwargs):
+	f = open('/home/sk4ly/temp_out.txt', 'w+')
 	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
 	modelObjs = cls.search(db, **kwargs)
-	returnDict = EmptyReturnDict
+	returnDict = getEmptyReturnDict()
 	for i in modelObjs:
 		returnDict['content'].append(i.asDict())
-	print returnDict
 	return returnDict
 
 def handleException(e):
 	# todo
 	# log the full stacktrace!
-	returnDict = EmptyReturnDict
+	returnDict = getEmptyReturnDict()
 	returnDict['value'] = 1
 	returnDict['message'] = traceback.format_exc().splitlines()
 	return returnDict
@@ -386,9 +388,7 @@ def organizationSet(pkid = None, **kwargs):
 @CssefCeleryApp.task(name = 'organizationGet')
 def organizationGet(**kwargs):
 	try:
-		x = modelGet(Organization, **kwargs)
-		print x
-		return x
+		return modelGet(Organization, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
