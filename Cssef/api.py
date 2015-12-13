@@ -5,15 +5,16 @@ from framework.competition import *
 from framework.utils import databaseConnection
 
 from celery import Celery
-CssefCeleryApp = Celery('api', backend='rpc://cssefd:cssefd-pass@localhost//', broker='amqp://cssefd:cssefd-pass@localhost//')
+CssefCeleryApp = Celery(	'api',
+							backend='rpc://cssefd:cssefd-pass@localhost//',
+							broker='amqp://cssefd:cssefd-pass@localhost//')
 
 def getEmptyReturnDict():
-	emptyReturnDict = {
+	return {
 		'value': 0,
 		'message': 'Success',
 		'content': []
 	}
-	return emptyReturnDict
 
 def modelDel(cls, pkid):
 	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
@@ -30,7 +31,6 @@ def modelSet(cls, pkid, **kwargs):
 	return returnDict
 
 def modelGet(cls, **kwargs):
-	f = open('/home/sk4ly/temp_out.txt', 'w+')
 	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
 	modelObjs = cls.search(db, **kwargs)
 	returnDict = getEmptyReturnDict()
@@ -57,7 +57,7 @@ def competitionAdd(organization = None, name = None, **kwargs):
 		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
 		organization = Organization.fromDatabase(db, organization)
 		competition = organization.createCompetition(db, kwargs)
-		returnDict = EmptyReturnDict
+		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(competition.asDict())
 		return returnDict
 	except Exception as e:
@@ -102,7 +102,7 @@ def competitionTeamAdd(competition = None, **kwargs):
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
 		team = Team.fromDict(db, tmpDict)
-		returnDict = EmptyReturnDict
+		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(team.asDict())
 		return returnDict
 	except Exception as e:
@@ -146,7 +146,7 @@ def competitionScoreAdd(competition = None, **kwargs):
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
 		score = Score.fromDict(tmpDict)
-		returnDict = EmptyReturnDict
+		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(score.asDict())
 		return returnDict
 	except Exception as e:
@@ -190,7 +190,7 @@ def competitionInjectAdd(competition = None, **kwargs):
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
 		inject = Inject.fromDict(tmpDict)
-		returnDict = EmptyReturnDict
+		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(inject.asDict())
 		return returnDict
 	except Exception as e:
@@ -234,7 +234,7 @@ def competitionInjectResponseAdd(competition = None, **kwargs):
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
 		injectResponse = InjectResponse.fromDict(tmpDict)
-		returnDict = EmptyReturnDict
+		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(injectResponse.asDict())
 		return returnDict
 	except Exception as e:
@@ -278,7 +278,7 @@ def competitionIncidentAdd(competition = None, **kwargs):
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
 		incident = Incident.fromDict(tmpDict)
-		returnDict = EmptyReturnDict
+		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(incident.asDict())
 		return returnDict
 	except Exception as e:
@@ -322,7 +322,7 @@ def competitionIncidentResponseAdd(competition = None, **kwargs):
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
 		incidentResponse = IncidentResponse.fromDict(tmpDict)
-		returnDict = EmptyReturnDict
+		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(incidentResponse.asDict())
 		return returnDict
 	except Exception as e:
@@ -361,7 +361,7 @@ def organizationAdd(**kwargs):
 	try:
 		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
 		organization = Organization.fromDict(db, kwargs)
-		returnDict = EmptyReturnDict
+		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(organization.asDict())
 		return returnDict
 	except Exception as e:
@@ -399,9 +399,10 @@ def organizationGet(**kwargs):
 def userAdd(organization = None, **kwargs):
 	try:
 		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-		organization = Organization.fromDatabase(pkid = organization)
+		#organization = Organization.fromDatabase(db, pkid = organization)
+		organization = Organization.fromDatabase(db, organization)
 		user = organization.createMember(**kwargs)
-		returnDict = EmptyReturnDict
+		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(user.asDict())
 		return returnDict
 	except Exception as e:
@@ -441,7 +442,7 @@ def documentAdd(**kwargs):
 	try:
 		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
 		document = Document.fromDict(db, kwargs)
-		returnDict = EmptyReturnDict
+		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(document.asDict())
 		return returnDic
 	except Exception as e:
@@ -481,7 +482,7 @@ def scoringengineAdd(**kwargs):
 	try:
 		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
 		scoringEngine = ScoringEngine.fromDict(db, kwargs)
-		returnDict = EmptyReturnDict
+		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(scoringEngine.asDict())
 		return returnDict
 	except Exception as e:

@@ -15,11 +15,18 @@ from django.forms import HiddenInput
 from django.forms.widgets import PasswordInput
 from django.utils import timezone
 
-from WebInterface.settings import SCORING_ENGINE_API_URL
+#from WebInterface.settings import SCORING_ENGINE_API_URL
 from urllib2 import urlopen
 import json
 
 from WebInterface import cssefApi
+#from WebInterface.utils import makeApiRequest
+from WebInterface.client import OrganizationGet as ApiOrganizationGet
+from WebInterface.client import getConn as getCeleryConnection
+def makeApiRequest(apiEndpoint, argsDict, apiConnection = getCeleryConnection()):
+	print 'Making api request to endpoint "%s" with arguments "%s"' % (apiEndpoint, argsDict)
+	command = apiEndpoint(apiConnection)
+	return command.execute(**argsDict)
 
 def apiGet(page):
 	url = SCORING_ENGINE_API_URL + page
@@ -45,8 +52,27 @@ class LoginOrganizationUser(Form):
 	password = CharField(label = 'Password', widget = PasswordInput(attrs={'class':'form-control', 'required': True}))
 
 class CreateOrganization(Form):
-	name = CharField(label = 'Organization Name', widget = TextInput(attrs={'class':'form-control', 'required': True}))
-	url = CharField(label = 'Organization URL', widget = TextInput(attrs={'class':'form-control', 'required': True}))
+	name = CharField(
+		label = 'Organization Name',
+		widget = TextInput(attrs={'class':'form-control', 'required': True})
+	)
+	url = CharField(
+		label = 'Organization URL',
+		widget = TextInput(attrs={'class':'form-control', 'required': True})
+	)
+	description = CharField(
+		label = 'Description',
+		widget = TextInput(attrs={'class':'form-control'}),
+		required = False
+	)
+	maxMembers = CharField(
+		label = 'Maximum Members',
+		widget = NumberInput(attrs={'class': 'form-control', 'required': True})
+	)
+	maxCompetitions = CharField(
+		label = 'Maximum Competitions',
+		widget = NumberInput(attrs={'class': 'form-control', 'required': True})
+	)
 
 class CreatePlugin(Form):
 	name = CharField(label = 'Name', widget = TextInput(attrs={'class':'form-control', 'required': True}))
@@ -57,13 +83,27 @@ class CreateUser(Form):
 	def __init__(self, *args, **kwargs):
 			super(CreateUser, self).__init__(*args, **kwargs)
 			organizationChoices = []
-			for i in apiQuery('organizations.json'):
-				organizationChoices.append((i['organizationId'], i['name']))
+			output = makeApiRequest(ApiOrganizationGet, {})
+			for i in output['content']:
+				organizationChoices.append((i['id'], i['name']))
 			self.fields['organizationId'].choices = organizationChoices
-	name = CharField(label = 'Name', widget = TextInput(attrs={'class':'form-control', 'required': True}))
-	username = CharField(label = 'Username', widget = TextInput(attrs={'class':'form-control', 'required': True}))
-	password = CharField(label = 'Password', widget = PasswordInput(attrs={'class':'form-control', 'required': True}))
-	organizationId = ChoiceField(label = 'Organization', choices = [], widget = Select(attrs={'class':'form-control', 'required': True}))
+	name = CharField(
+		label = 'Name',
+		widget = TextInput(attrs={'class':'form-control', 'required': True})
+	)
+	username = CharField(
+		label = 'Username',
+		widget = TextInput(attrs={'class':'form-control', 'required': True})
+	)
+	password = CharField(
+		label = 'Password',
+		widget = PasswordInput(attrs={'class':'form-control', 'required': True})
+	)
+	organizationId = ChoiceField(
+		label = 'Organization',
+		choices = [],
+		widget = Select(attrs={'class':'form-control', 'required': True})
+	)
 
 class CreateCompetition(Form):
 	name = CharField(label = 'Name', widget = TextInput(attrs={'class':'form-control', 'required': True}))

@@ -16,19 +16,69 @@
 
 {% block page_content %}
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+{% if debug %}
+Debug Output<pre>
+returnValue: {{ returnValue }}
+errors: {{ errors }}
+formData: {{ formData }}
+apiData: {{ apiData }}</pre>
+{% endif %}
+
+	{% if returnValue != 0 %}
+		<pre>{{ errors }}</pre>
+	{% endif %}
+
 	{% if action == "create" %}
 	<form action="/admin/organizations/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
 	{% else %}
-	<form action="/admin/organizations/edit/{{organizationId}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	<form action="/admin/organizations/edit/{{objectId}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 	{% endif %}
 		{% csrf_token %}
+		<!-- Name input section -->
 		{{ form.name.errors }}
-		<label for="{{ form.name.id_for_label }}" class="col-lg-2 control-label">{{ form.name.label }}</label>
-		<div class="col-lg-10">{{ form.name }}<br></div>
+		<label for="{{ form.name.id_for_label }}" class="col-lg-2 control-label">
+			{{ form.name.label }}
+		</label>
+		<div class="col-lg-10">
+			{{ form.name }}<br>
+		</div>
 
+		<!-- URL input section -->
 		{{ form.url.errors }}
-		<label for="{{ form.url.id_for_label }}" class="col-lg-2 control-label">{{ form.url.label }}</label>
-		<div class="col-lg-10">{{ form.url }}<br></div>
+		<label for="{{ form.url.id_for_label }}" class="col-lg-2 control-label">
+			{{ form.url.label }}
+		</label>
+		<div class="col-lg-10">
+			{{ form.url }}<br>
+		</div>
+
+		<!-- Description input section -->
+		{{ form.description.errors }}
+		<label for="{{ form.description.id_for_label }}" class="col-lg-2 control-label">
+			{{ form.description.label }}
+		</label>
+		<div class="col-lg-10">
+			{{ form.description }}<br>
+		</div>
+
+		<!-- Maximum Members input section -->
+		{{ form.maxMembers.errors }}
+		<label for="{{ form.maxMembers.id_for_label }}" class="col-lg-2 control-label">
+			{{ form.maxMembers.label }}
+		</label>
+		<div class="col-lg-10">
+			{{ form.maxMembers }}<br>
+		</div>
+
+		<!-- Maximum Competitions input section -->
+		{{ form.maxCompetitions.errors }}
+		<label for="{{ form.maxCompetitions.id_for_label }}" class="col-lg-2 control-label">
+			{{ form.maxCompetitions.label }}
+		</label>
+		<div class="col-lg-10">
+			{{ form.maxCompetitions }}<br>
+		</div>
 
 		<div class="col-lg-10 col-lg-offset-2">
 			<a class="btn btn-default" href="/admin/organizations/">Cancel</a>

@@ -11,9 +11,59 @@ from WebInterface.forms import CreateUser
 from WebInterface.forms import CreatePlugin
 from WebInterface.forms import DeleteObject
 from WebInterface.settings import SCORING_ENGINE_API_URL
-from WebInterface import cssefApi
 from WebInterface.utils import ContextFactory
 from django.core.files.uploadedfile import UploadedFile
+
+from WebInterface.client import getConn as getCeleryConnection
+# from WebInterface.client import CompetitionAdd as ApiCompetitionAdd
+# from WebInterface.client import CompetitionDel as ApiCompetitionDel
+# from WebInterface.client import CompetitionGet as ApiCompetitionGet
+# from WebInterface.client import CompetitionSet as ApiCompetitionSet
+# from WebInterface.client import CompetitionTeamAdd as 
+# from WebInterface.client import CompetitionTeamDel as 
+# from WebInterface.client import CompetitionTeamSet as 
+# from WebInterface.client import CompetitionTeamGet as 
+# from WebInterface.client import CompetitionScoreAdd as 
+# from WebInterface.client import CompetitionScoreDel as 
+# from WebInterface.client import CompetitionScoreSet as 
+# from WebInterface.client import CompetitionScoreGet as 
+# from WebInterface.client import CompetitionInjectAdd as 
+# from WebInterface.client import CompetitionInjectDel as 
+# from WebInterface.client import CompetitionInjectSet as 
+# from WebInterface.client import CompetitionInjectGet as 
+# from WebInterface.client import CompetitionInjectResponseAdd as 
+# from WebInterface.client import CompetitionInjectResponseDel as 
+# from WebInterface.client import CompetitionInjectResponseSet as 
+# from WebInterface.client import CompetitionInjectResponseGet as 
+# from WebInterface.client import CompetitionIncidentAdd as 
+# from WebInterface.client import CompetitionIncidentDel as 
+# from WebInterface.client import CompetitionIncidentSet as 
+# from WebInterface.client import CompetitionIncidentGet as 
+# from WebInterface.client import CompetitionIncidentResponseAdd as 
+# from WebInterface.client import CompetitionIncidentResponseDel as 
+# from WebInterface.client import CompetitionIncidentResponseSet as 
+# from WebInterface.client import CompetitionIncidentResponseGet as 
+# from WebInterface.client import DocumentAdd as 
+# from WebInterface.client import DocumentDel as 
+# from WebInterface.client import DocumentSet as 
+# from WebInterface.client import DocumentGet as 
+# from WebInterface.client import ScoringEngineAdd as 
+# from WebInterface.client import ScoringEngineDel as 
+# from WebInterface.client import ScoringEngineSet as 
+# from WebInterface.client import ScoringEngineGet as 
+
+from WebInterface.utils import CreateOrganizationContext
+from WebInterface.utils import EditOrganizationContext
+from WebInterface.utils import ListOrganizationContext
+
+from WebInterface.utils import CreateUserContext
+from WebInterface.utils import EditUserContext
+from WebInterface.utils import ListUserContext
+
+def getContext(contextClass, pageTemplate, request, **kwargs):
+	context = contextClass(request, **kwargs)
+	context.processContext()
+	return render_to_response(pageTemplate, context.getContext())
 
 def home(request):
 	context = ContextFactory(request)
@@ -35,65 +85,63 @@ def login(request):
 	auth.login(request, admin)
 	return HttpResponseRedirect("/admin/home")
 
-def logout(request):
-	auth.logout(request)
-	return HttpResponseRedirect("/")
-
 def siteConfig(request):
 	context = ContextFactory(request)
 	return render_to_response('administrator/siteConfigs.html', context.General())
 
+#####################################
+# User management pages
+#####################################
 def listUsers(request):
-	if request.method == 'POST':
-		response = cssefApi.delete('users/%s.json' % request.POST['objectId'])
-		return HttpResponseRedirect('/admin/users/')
-	context = ContextFactory(request)
-	context.push({'users': cssefApi.getUsers()})
-	for i in context['users']:
-		i['deleteForm'] = DeleteObject(objectId = i['userId'])
-	return render_to_response('administrator/listUsers.html', context.General())
+	pageTemplate = 'administrator/listUsers.html'
+	return getContext(ListUserContext, pageTemplate, request)
 
-def createEditUser(request, userId = None):
-	context = ContextFactory(request, userId)
-	if request.method != 'POST':
-		return render_to_response('administrator/createEditUser.html', context.User())
-	formData = CreateUser(request.POST)
-	if not formData.is_valid():
-		return render_to_response('administrator/createEditUser.html', context.User())
-	print formData.cleaned_data
-	response = cssefApi.post('users.json', formData.cleaned_data)
-	if response.status_code/200 != 1:
-		return HttpResponse(response.text)
-	return HttpResponseRedirect('/admin/users/')
+def createUser(request):
+	pageTemplate = 'administrator/createEditUser.html'
+	return getContext(CreateUserContext, pageTemplate, request)
 
+def editUser(request):
+	pageTemplate = 'administrator/createEditUser.html'
+	return getContext(EditUserContext, pageTemplate, request)
+
+# def createEditUser(request, userId = None):
+# 	context = ContextFactory(request, userId)
+# 	if request.method != 'POST':
+# 		return render_to_response('administrator/createEditUser.html', context.User())
+# 	formData = CreateUser(request.POST)
+# 	if not formData.is_valid():
+# 		return render_to_response('administrator/createEditUser.html', context.User())
+# 	print formData.cleaned_data
+# 	response = cssefApi.post('users.json', formData.cleaned_data)
+# 	if response.status_code/200 != 1:
+# 		return HttpResponse(response.text)
+# 	return HttpResponseRedirect('/admin/users/')
+
+#####################################
+# Organization management pages
+#####################################
 def listOrganizations(request):
-	if request.method == 'POST':
-		response = cssefApi.delete('organizations/%s.json' % request.POST['objectId'])
-		return HttpResponseRedirect('/admin/organizations/')
-	context = ContextFactory(request)
-	context.push({'organizations': cssefApi.get('organizations.json')})
-	for i in context['organizations']:
-		i['deleteForm'] = DeleteObject(objectId = i['organizationId'])
-	return render_to_response('administrator/listOrganizations.html', context.General())
+	pageTemplate = 'administrator/listOrganizations.html'
+	return getContext(ListOrganizationContext, pageTemplate, request)
 
-def createEditOrganization(request, organizationId = None):
-	context = ContextFactory(request, organizationId)
-	if request.method != 'POST':
-		return render_to_response('administrator/createEditOrganization.html', context.Organization())
-	formData = CreateOrganization(request.POST)
-	if not formData.is_valid():
-		return render_to_response('administrator/createEditOrganization.html', context.Organization())
-	response = cssefApi.post('organizations.json', formData.cleaned_data)
-	return HttpResponseRedirect('/admin/organizations/')
+def createOrganization(request):
+	pageTemplate = 'administrator/createEditOrganization.html'
+	return getContext(CreateOrganizationContext, pageTemplate, request)
 
+def editOrganization(request, organizationId):
+	pageTemplate = 'administrator/createEditOrganization.html'
+	return getContext(EditOrganizationContext, pageTemplate, request, pkid = organizationId)
+
+#####################################
+# Plugin management pages
+#####################################
 def listPlugins(request):
-	if request.method == 'POST':
-		response = cssefApi.delete('plugins/%s.json' % request.POST['objectId'])
-		return HttpResponseRedirect('/admin/plugins/')
 	context = ContextFactory(request)
-	context.push({'plugins': cssefApi.get('plugins.json')})
-	for i in context['plugins']:
-		i['deleteForm'] = DeleteObject(objectId = i['pluginId'])
+	command = CssefClient.pluginsGet
+	command.conn = getCeleryConnection()
+	output = command()
+	if output['value'] == 0:
+		context.push({'plugins': output['value']})
 	return render_to_response('administrator/listPlugins.html', context.General())
 
 def createEditPlugin(request, pluginId = None):

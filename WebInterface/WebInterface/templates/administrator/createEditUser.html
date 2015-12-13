@@ -4,6 +4,19 @@
 
 {% block page_content %}
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+{% if debug %}
+Debug Output<pre>
+returnValue: {{ returnValue }}
+errors: {{ errors }}
+formData: {{ formData }}
+apiData: {{ apiData }}</pre>
+{% endif %}
+
+	{% if returnValue != 0 %}
+		<pre>{{ errors }}</pre>
+	{% endif %}
+
 	{% if action == "create" %}
 	<form action="/admin/users/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
 	{% else %}
