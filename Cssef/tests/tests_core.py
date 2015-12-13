@@ -1,5 +1,6 @@
-from django.test import TestCase
-from ScoringEngine.framework.core import *
+#from django.test import TestCase
+from unittest import TestCase
+from framework.core import *
 
 class GeneralEndpoints(TestCase):
 	def testGetCompetition(self):

@@ -89,4 +89,14 @@ STATICFILES_DIRS = (BASE_DIR + '/static/',)
 
 STATIC_URL = '/static/'
 
-SCORING_ENGINE_API_URL = "http://127.0.0.1:8000/"
+SCORING_ENGINE_API_URL = 'depricated'
+
+# RPC Settings
+
+RPC_USERNAME = 'cssefd'
+RPC_PASSWORD = 'cssefd-pass'
+RPC_HOST = 'localhost'
+
+AMQP_USERNAME = 'cssefd'
+AMQP_PASSWORD = 'cssefd-pass'
+AMQP_HOST = 'localhost'

@@ -1,11 +1,10 @@
 from django.conf.urls import patterns
-from django.conf.urls import include
 from django.conf.urls import url
 from views import general
 from views import organization
 from views import administrator
-from views import competitionWhite
-#from views import competitionBlue
+#from views.competition import blueteam
+from views.competition import whiteteam
 
 urlpatterns = patterns('',
 	# General site pages
@@ -13,9 +12,13 @@ urlpatterns = patterns('',
 	url(r'^updates/$',	general.updates),
 	url(r'^contact/$',	general.contact),
 
+	# Login/logout pages
+	url(r'^login/admin/$',			administrator.login),
+	url(r'^login/organization/$',	organization.login),
+	#url(r'^login/competitions/$',	blueteam.login),
+	url(r'^logout/$',				general.logout),
+
 	# Blue Team Competition pages
-	# url(r'^competitions/login/$',																		competitionBlue.login),
-	# url(r'^competitions/logout/$',																		competitionBlue.logout),
 	# url(r'^competitions/(?P<competition>[\w\-\_]{0,50})/summary/$',										competitionBlue.summary),
 	# url(r'^competitions/(?P<competition>[\w\-\_]{0,50})/details/$',										competitionBlue.details),
 	# url(r'^competitions/(?P<competition>[\w\-\_]{0,50})/ranking/$',										competitionBlue.ranking),
@@ -28,7 +31,6 @@ urlpatterns = patterns('',
 	# url(r'^competitions/(?P<competition>[\w\-\_]{0,50})/incidentresponse/(?P<intrspid>[1-9][1-9]*)/$',	competitionBlue.incidentresponse_respond),
 
 	# # Organization pages
-	url(r'^organization/login/$',													organization.login),
 	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/$',						organization.home),
 	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/home/$',				organization.home),
 	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/members/$',				organization.members),
@@ -37,31 +39,29 @@ urlpatterns = patterns('',
 	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/settings/$',			organization.settings),
 
 	# # White Team Competition pages
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/$',												competitionWhite.summary),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/summary/$',										competitionWhite.summary),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/settings/$',									competitionWhite.settings),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/teams/$',										competitionWhite.listTeams),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/teams/create/$',								competitionWhite.createEditTeam),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/teams/edit/(?P<teamId>[1-9][1-9]*)/$',			competitionWhite.createEditTeam),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/services/$',									competitionWhite.listServices),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/services/create/$',								competitionWhite.createEditService),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/services/edit/(?P<serviceId>[1-9][1-9]*)/$',	competitionWhite.createEditService),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/injects/$',										competitionWhite.listInjects),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/injects/create/$',								competitionWhite.createEditInject),
-	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/injects/edit/(?P<injectId>[1-9][1-9]*)/$',		competitionWhite.createEditInject),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/$',												whiteteam.summary),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/summary/$',										whiteteam.summary),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/settings/$',									whiteteam.settings),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/teams/$',										whiteteam.listTeams),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/teams/create/$',								whiteteam.createEditTeam),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/teams/edit/(?P<teamId>[1-9][1-9]*)/$',			whiteteam.createEditTeam),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/services/$',									whiteteam.listServices),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/services/create/$',								whiteteam.createEditService),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/services/edit/(?P<serviceId>[1-9][1-9]*)/$',	whiteteam.createEditService),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/injects/$',										whiteteam.listInjects),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/injects/create/$',								whiteteam.createEditInject),
+	url(r'^organization/(?P<organizationUrl>[\w\-\_]{0,50})/competitions/(?P<competitionUrl>[\w\-\_]{0,50})/injects/edit/(?P<injectId>[1-9][1-9]*)/$',		whiteteam.createEditInject),
 
 	# Site Administrator pages
 	url(r'^admin/$',											administrator.home),
 	url(r'^admin/home/$',										administrator.home),
-	url(r'^admin/login/$',										administrator.login),
-	url(r'^admin/logout/$',										administrator.logout),
 	url(r'^admin/siteconfigs/$',								administrator.siteConfig),
 	url(r'^admin/users/$',										administrator.listUsers),
-	url(r'^admin/users/create/$',								administrator.createEditUser),
-	url(r'^admin/users/edit/(?P<userId>[\w\-\_]{0,50})/$',		administrator.createEditUser),
+	url(r'^admin/users/create/$',								administrator.createUser),
+	url(r'^admin/users/edit/(?P<userId>[\w\-\_]{0,50})/$',		administrator.editUser),
 	url(r'^admin/organizations/$',								administrator.listOrganizations),
-	url(r'^admin/organizations/create/$',						administrator.createEditOrganization),
-	url(r'^admin/organizations/edit/(?P<organizationId>[\w\-\_]{0,50})/$',	administrator.createEditOrganization),
+	url(r'^admin/organizations/create/$',						administrator.createOrganization),
+	url(r'^admin/organizations/edit/(?P<organizationId>[\w\-\_]{0,50})/$',	administrator.editOrganization),
 	url(r'^admin/plugins/$',									administrator.listPlugins),
 	url(r'^admin/plugins/create/$',								administrator.createEditPlugin),
 	url(r'^admin/plugins/edit/(?P<pluginId>[1-9][1-9]*)/$',		administrator.createEditPlugin),

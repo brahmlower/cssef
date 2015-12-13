@@ -1,6 +1,5 @@
-from django.test import TestCase
-from ScoringEngine.framework.core import *
-from ScoringEngine.framework.competition import *
+from unittest import TestCase
+from api import *
 
 class CompetitionEndpoints(TestCase):
 	def testCount(self):

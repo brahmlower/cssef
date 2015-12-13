@@ -59,7 +59,12 @@ class ModelWrapper(object):
 
 	@classmethod
 	def fromDatabase(cls, db, pkid):
-		return cls.search(db, pkid = pkid)[0]
+		try:
+			return cls.search(db, pkid = pkid)[0]
+		except IndexError:
+			print pkid
+			return None
+
 
 	@classmethod
 	def fromDict(cls, db, kwDict):

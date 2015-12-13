@@ -11,8 +11,8 @@
 		<a class="btn btn-primary btn-lg" href="/admin/users/create/">New User</a>
 	</div>
 
-	{% if users %}
-	{% for i in users %}
+	{% if apiData %}
+	{% for i in apiData %}
 	<div class="panel panel-default">
 		<div class="panel-heading">{{ i.name }}</div>
 		<div class="panel-body">
@@ -22,7 +22,7 @@
 			<div class="bt-component pull-right">
 				<form class="pull-right" action="/admin/users/" method="POST"> {% csrf_token %}
 				{{ i.deleteForm }} <input class="btn btn-danger" type="submit" value="Delete"> </form>
-				<a href="/admin/users/edit/{{ i.userId }}/" class="pull-right btn btn-primary">Edit</a>
+				<a href="/admin/users/edit/{{ i.id }}/" class="pull-right btn btn-primary">Edit</a>
 			</div>
 		</div>
 	</div>

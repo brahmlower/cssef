@@ -16,3 +16,7 @@ def updates(request):
 def contact(request):
 	context = {}
 	return renderToResponse('general/contact.html', context)
+
+def logout(request):
+	auth.logout(request)
+	return HttpResponseRedirect("/")
