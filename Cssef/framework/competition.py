@@ -206,7 +206,7 @@ class Score(ModelWrapper):
 
 	@message.setter
 	def message(self, value):
-		self.model.message
+		self.model.message = value
 		self.db.commit()
 
 class Inject(ModelWrapper):

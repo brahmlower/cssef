@@ -145,7 +145,7 @@ def competitionScoreAdd(competition = None, **kwargs):
 		competitionObj = Competition.fromDatabase(db, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
-		score = Score.fromDict(tmpDict)
+		score = Score.fromDict(db, tmpDict)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(score.asDict())
 		return returnDict
@@ -153,20 +153,20 @@ def competitionScoreAdd(competition = None, **kwargs):
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'competitionScoreDel')
-def competitionScoreDel(score = None):
+def competitionScoreDel(pkid = None):
 	try:
-		if not score:
+		if not pkid:
 			raise Exception
-		return modelDel(Score, score)
+		return modelDel(Score, pkid)
 	except Exception as e:
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'competitionScoreSet')
-def competitionScoreSet(score = None, **kwargs):
+def competitionScoreSet(pkid = None, **kwargs):
 	try:
-		if not score:
+		if not pkid:
 			raise Exception
-		return modelSet(Score, score, **kwargs)
+		return modelSet(Score, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -189,7 +189,7 @@ def competitionInjectAdd(competition = None, **kwargs):
 		competitionObj = Competition.fromDatabase(db, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
-		inject = Inject.fromDict(tmpDict)
+		inject = Inject.fromDict(db, tmpDict)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(inject.asDict())
 		return returnDict
@@ -197,20 +197,20 @@ def competitionInjectAdd(competition = None, **kwargs):
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'competitionInjectDel')
-def competitionInjectDel(inject = None):
+def competitionInjectDel(pkid = None):
 	try:
-		if not inject:
+		if not pkid:
 			raise Exception
-		return modelDel(Inject, inject)
+		return modelDel(Inject, pkid)
 	except Exception as e:
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'competitionInjectSet')
-def competitionInjectSet(inject = None, **kwargs):
+def competitionInjectSet(pkid = None, **kwargs):
 	try:
-		if not inject:
+		if not pkid:
 			raise Exception
-		return modelSet(Inject, inject, **kwargs)
+		return modelSet(Inject, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -233,7 +233,7 @@ def competitionInjectResponseAdd(competition = None, **kwargs):
 		competitionObj = Competition.fromDatabase(db, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
-		injectResponse = InjectResponse.fromDict(tmpDict)
+		injectResponse = InjectResponse.fromDict(db, tmpDict)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(injectResponse.asDict())
 		return returnDict
@@ -241,24 +241,24 @@ def competitionInjectResponseAdd(competition = None, **kwargs):
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'competitionInjectResponseDel')
-def competitionInjectResponseDel(injectResponse = None):
+def competitionInjectResponseDel(pkid = None):
 	try:
-		if not injectResponse:
+		if not pkid:
 			raise Exception
-		return modelDel(InjectResponse, injectResponse)
+		return modelDel(InjectResponse, pkid)
 	except Exception as e:
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'competitionInjectResponseSet')
-def competitionInjectResponseSet(injectResponse = None, **kwargs):
+def competitionInjectResponseSet(pkid = None, **kwargs):
 	try:
-		if not injectResponse:
+		if not pkid:
 			raise Exception
-		return modelSet(InjectResponse, injectResponse, **kwargs)
+		return modelSet(InjectResponse, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
-@CssefCeleryApp.task(name = 'competitionInjectResponseDel')
+@CssefCeleryApp.task(name = 'competitionInjectResponseGet')
 def competitionInjectResponseGet(**kwargs):
 	try:
 		return modelGet(InjectResponse, **kwargs)
@@ -277,7 +277,7 @@ def competitionIncidentAdd(competition = None, **kwargs):
 		competitionObj = Competition.fromDatabase(db, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
-		incident = Incident.fromDict(tmpDict)
+		incident = Incident.fromDict(db, tmpDict)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(incident.asDict())
 		return returnDict
@@ -285,20 +285,20 @@ def competitionIncidentAdd(competition = None, **kwargs):
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'competitionIncidentDel')
-def competitionIncidentDel(incident = None):
+def competitionIncidentDel(pkid = None):
 	try:
-		if not incident:
+		if not pkid:
 			raise Exception
-		return modelDel(Incident, incident)
+		return modelDel(Incident, pkid)
 	except Exception as e:
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'competitionIncidentSet')
-def competitionIncidentSet(incident = None, **kwargs):
+def competitionIncidentSet(pkid = None, **kwargs):
 	try:
-		if not incident:
+		if not pkid:
 			raise Exception
-		return modelSet(Incident, incident, **kwargs)
+		return modelSet(Incident, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -321,7 +321,7 @@ def competitionIncidentResponseAdd(competition = None, **kwargs):
 		competitionObj = Competition.fromDatabase(db, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
-		incidentResponse = IncidentResponse.fromDict(tmpDict)
+		incidentResponse = IncidentResponse.fromDict(db, tmpDict)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(incidentResponse.asDict())
 		return returnDict
@@ -329,20 +329,20 @@ def competitionIncidentResponseAdd(competition = None, **kwargs):
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'competitionIncidentResponseDel')
-def competitionIncidentResponseDel(incidentResponse = None):
+def competitionIncidentResponseDel(pkid = None):
 	try:
-		if not incidentResponse:
+		if not pkid:
 			raise Exception
-		return modelDel(IncidentResponse, incidentResponse)
+		return modelDel(IncidentResponse, pkid)
 	except Exception as e:
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'competitionIncidentResponseSet')
-def competitionIncidentResponseSet(incidentResponse = None, **kwargs):
+def competitionIncidentResponseSet(pkid = None, **kwargs):
 	try:
-		if not incidentResponse:
+		if not pkid:
 			raise Exception
-		return modelSet(IncidentResponse, incidentResponse, **kwargs)
+		return modelSet(IncidentResponse, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 

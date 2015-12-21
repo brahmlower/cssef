@@ -2,7 +2,6 @@ sudo: false
 notifications:
   email: false
 
-
 language: python
 python:
   -  "2.7"
@@ -13,5 +12,6 @@ install:
   - pip install -q Django==$DJANGO_VERSION
   - pip install -q djangorestframework==3.1.1
   - pip install -q django-celery==3.1.16
+  - pip install nose
 script:
-  - cd ScoringEngine; python manage.py test
+  - nosetests --tests=Cssef,CssefClient,WebApi,WebInterface
