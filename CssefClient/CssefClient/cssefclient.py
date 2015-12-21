@@ -1,24 +1,28 @@
-#!/usr/bin/python
-from celery import Celery
 import sys
 from time import sleep
-from prettytable import PrettyTable
-import settings
+from celery import Celery
 
 versionMajor = '0'
 versionMinor = '0'
 versionRelease = '1'
 version = ".".join([versionMajor, versionMinor, versionRelease])
 
+RPC_USERNAME = 'cssefd'
+RPC_PASSWORD = 'cssefd-pass'
+RPC_HOST = 'localhost'
+AMQP_USERNAME = 'cssefd'
+AMQP_PASSWORD = 'cssefd-pass'
+AMQP_HOST = 'localhost'
+
 def getConn():
 	backend = "rpc://%s:%s@%s//" % (
-		settings.RPC_USERNAME, 
-		settings.RPC_PASSWORD,
-		settings.RPC_HOST)
+		'cssefd',#settings.RPC_USERNAME, 
+		'cssefd-pass',#settings.RPC_PASSWORD,
+		'localhost')#settings.RPC_HOST)
 	broker = "amqp://%s:%s@%s//" % (
-		settings.AMQP_USERNAME,
-		settings.AMQP_PASSWORD,
-		settings.AMQP_HOST) 
+		'cssefd',#settings.AMQP_USERNAME,
+		'cssefd-pass',#settings.AMQP_PASSWORD,
+		'localhost')#settings.AMQP_HOST) 
 	return Celery('api', backend = backend, broker = broker)
 
 class Argument(object):
@@ -37,13 +41,7 @@ class Endpoint(object):
 		self.celeryName = celeryName
 		self.args = args
 
-	def __call__(self, *args, **kwargs):
-		x = self.apiConn.send_task(self.celeryName, args = args, kwargs = kwargs)
-		print "Endpoint.__call__() is depricated."
-		return x.get()
-
 	def execute(self, *args, **kwargs):
-		#return self.__call__(*args, **kwargs)
 		x = self.apiConn.send_task(self.celeryName, args = args, kwargs = kwargs)
 		return x.get()
 
@@ -308,7 +306,7 @@ class CompetitionIncidentAdd(Endpoint):
 			Argument('Content', keyword = True)
 		]
 
-class competitionIncidentDel(Endpoint):
+class CompetitionIncidentDel(Endpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionIncidentDel'
@@ -434,7 +432,7 @@ class OrganizationAdd(Endpoint):
 
 class OrganizationDel(Endpoint):
 	def __init__(self, apiConn = None):
-		self.apConn = apiConn
+		self.apiConn = apiConn
 		self.celeryName = 'organizationDel'
 		args = [
 			Argument('Organization', keyword = True)
@@ -534,7 +532,7 @@ class ScoringEngineDel(Endpoint):
 			Argument("Scoring Engine", keyword = True, optional = False)
 		]
 
-class scoringEngineSet(Endpoint):
+class ScoringEngineSet(Endpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'scoringEngineSet'

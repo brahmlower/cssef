@@ -18,39 +18,23 @@ The CSSEF is meant to provide an easy to use interface for the competition manag
 
 Future goals include the addition of interfaces for Red and Orange teams.
 
-## Aditional Documentation
-Web API documentation is located in the  [README.md](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md) file within the Web API folder.<br>
+## Documentation
 Project Planning is located in the [TODO.MD](https://github.com/bplower/cssef/blob/refactor/TODO.md) file.<br>
-Older documentation can be found on the projects github [wiki](https://github.com/bplower/cssef/wiki). This documentation is older and may contain outdated and incomplete information.
 
-## Dependancies
-### WebInterface ###
-* Python 2.7.10
-* Django 1.8.0
+The project is broken up into several main parts:
+* CssefServer
+* CssefClient
+* WebApi
+* WebInterface
 
-### ScoringEngine/WebAPI ###
-* Python 2.7.10
-* Django 1.8.0
-* celery 3.1.17
-* django-celery 3.1.16
+### CssefServer
+This is the primary backend for the framework. It receives messages via rabbitmq and celery. It is a standalone service and can operate without any other parts of the project being installed. For more information, see the CssefServer Documentation.
 
-## Running for Development
-### Easy Run ###
-For convienence, the script 'start_cssef' will start the web interface as well as the backend scoring engine. It assumes you are in the root level directory of the cssef project.
-```
-cd ~/cssef/
-./start_cssef
-```
-### Running Manually
-Starting everything manualy requires that the web interface and scoring engine be started seperately. Starting each component is similar to how you would start a normal django project that is still in development. As it stands, the port numbers are hardcoded into the settings files for each component, so if you change these, be sure the changes are reflected in the respective ```settings.py``` file.
-```
-cd ~/cssef/ScoringEngine/
-python manage.py syncdb
-python manage.py runserver 0.0.0.0:8000
-```
-Then open a new shell and and start the web frontend:
-```
-cd ~/cssef/WebInterface/
-python manage.py syncdb
-python manage.py runserver 0.0.0.0:8080
-```
+### CssefClient
+This is the primary python and command line client for the framework. This package provides the python client, as well as a command line client. Once installed, you will be able to interact with the server through the commandline utility, or install and run the WebApi or WebInterface. For more information, see the CssefClient Documentation.
+
+### WebApi
+The webapi provides a json api to interact with the server through. For more information, see the [WebApi Documentation](https://github.com/bplower/cssef/blob/refactor/ScoringEngine/WebApi/README.md).
+
+### WebInterface
+The webinterface is the primary interface for interacting with the cssef server. For more information, see the WebInterface Documentation.

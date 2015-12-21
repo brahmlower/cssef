@@ -1,0 +1,160 @@
+#!/usr/bin/python
+import sys
+from prettytable import PrettyTable
+from cssefclient.cssefclient import *
+
+class ArgumentParser(object):
+	def __init__(self, inputList):
+		self.inputList = inputList
+		self.command = None
+		self.arguments = None
+		self.options = None
+		self.parseCommand()
+		self.parseArguments()
+
+	def parseCommand(self):
+		i = 0
+		commandList = []
+		while i < len(self.inputList) and self.inputList[i][0] != '-':
+			commandList.append(self.inputList[i])
+			i += 1
+		# Now get the command object through the command dictionary
+		tempDict = commands
+		for i in commandList[:-1]:
+			tempDict = tempDict['subcommands'][i]
+		self.command = tempDict['commands'][commandList[-1]]
+
+	def parseArguments(self):
+		i = 0
+		argumentsDict = {}
+		while i < len(self.inputList) and self.inputList[i][0] != '-':
+			i += 1
+		while i < len(self.inputList) and self.inputList[i][0] == '-':
+			# Strip the dashes off the front of the keyword
+			if self.inputList[i][:2] == '--':
+				key = self.inputList[i][2:]
+			else:
+				key = self.inputList[i][1:]
+			# Determine of the value is in the same element
+			if '=' in key:
+				value = key.split('=')[1]
+				key = key.split('=')[0]
+				i += 1
+			else:
+				value = self.inputList[i+1]
+				i += 2
+			argumentsDict[key] = value
+		self.arguments = argumentsDict
+
+def displayOutput(outputDict):
+	if outputDict['value'] != 0:
+		sys.exit(outputDict['value'], outputDict['message'])
+	if len(outputDict['content']) > 0:
+		outputTable = PrettyTable(output['content'][0].keys())
+		outputTable.padding_width = 1
+		for i in outputDict['content']:
+			outputTable.add_row(i.values())
+		print outputTable
+
+if __name__ == "__main__":
+	commands = {
+		"commands": {},
+		"subcommands": {
+			"organization": {
+				"commands": {
+					"add": OrganizationAdd,
+					"del": OrganizationDel,
+					"set": OrganizationSet,
+					"get": OrganizationGet
+				},
+				"subcommands": {}
+			},
+			"user": {
+				"commands": {
+					"add": UserAdd,
+					"del": UserDel,
+					"set": UserSet,
+					"get": UserGet
+				},
+				"subcommands": {}
+			},
+			"scoringengine": {
+				"commands": {
+					"add": ScoringEngineAdd,
+					"del": ScoringEngineDel,
+					"set": ScoringEngineSet,
+					"get": ScoringEngineGet
+				},
+				"subcommands": {}
+			},
+			"competition": {
+				"commands": {
+					"add": CompetitionAdd,
+					"del": CompetitionDel,
+					"set": CompetitionSet,
+					"get": CompetitionGet
+				},
+				"subcommands": {
+					"team": {
+						"commands": {
+							"add": CompetitionTeamAdd,
+							"del": CompetitionTeamDel,
+							"set": CompetitionTeamSet,
+							"get": CompetitionTeamGet
+						}
+					},
+					"score": {
+						"commands": {
+							"add": CompetitionScoreAdd,
+							"del": CompetitionScoreDel,
+							"set": CompetitionScoreSet,
+							"get": CompetitionScoreGet
+						}
+					},
+					"inject": {
+						"commands": {
+							"add": CompetitionInjectAdd,
+							"del": CompetitionInjectDel,
+							"set": CompetitionInjectSet,
+							"get": CompetitionInjectGet
+						}
+					},
+					"injectresponse": {
+						"commands": {
+							"add": CompetitionInjectResponseAdd,
+							"del": CompetitionInjectResponseDel,
+							"set": CompetitionInjectResponseSet,
+							"get": CompetitionInjectResponseGet
+						}
+					},
+					"incident": {
+						"commands": {
+							"add": CompetitionIncidentAdd,
+							"del": CompetitionIncidentDel,
+							"set": CompetitionIncidentSet,
+							"get": CompetitionIncidentGet
+						}
+					},
+					"incidentresponse": {
+						"commands": {
+							"add": CompetitionIncidentResponseAdd,
+							"del": CompetitionIncidentResponseDel,
+							"set": CompetitionIncidentResponseSet,
+							"get": CompetitionIncidentResponseGet
+						}
+					}
+				}
+			}
+		}
+	}
+
+	# cli format:
+	# ./cssef-cli [COMMAND] [ARGUMENTS]
+
+	argparse = ArgumentParser(sys.argv[1:])
+	commandInstance = argparse.command(getConn())
+	if argparse.arguments:
+		output = commandInstance.execute(**argparse.arguments)
+	else:
+		output = commandInstance.execute()
+	displayOutput(output)
