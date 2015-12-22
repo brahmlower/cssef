@@ -56,7 +56,7 @@ def competitionAdd(organization = None, name = None, **kwargs):
 			raise Exception
 		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
 		organization = Organization.fromDatabase(db, organization)
-		competition = organization.createCompetition(db, kwargs)
+		competition = organization.createCompetition(kwargs)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(competition.asDict())
 		return returnDict
@@ -401,7 +401,7 @@ def userAdd(organization = None, **kwargs):
 		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
 		#organization = Organization.fromDatabase(db, pkid = organization)
 		organization = Organization.fromDatabase(db, organization)
-		user = organization.createMember(**kwargs)
+		user = organization.createMember(kwargs)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(user.asDict())
 		return returnDict
