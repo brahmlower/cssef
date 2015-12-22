@@ -82,7 +82,7 @@ class Organization(ModelWrapper):
 		return self.model.numMembers
 
 	def setNumMembers(self):
-		self.model.numMembers = User.count(organization = self.getId())
+		self.model.numMembers = User.count(self.db, organization = self.getId())
 		self.db.commit()
 
 	def getNumCompetitions(self):
@@ -104,11 +104,11 @@ class Organization(ModelWrapper):
 	def getMember(self, **kwargs):
 		return User(**kwargs)
 
-	def createCompetition(self, dc, kwDict):
+	def createCompetition(self, kwDict):
 		if self.model.numCompetitions >= self.maxCompetitions:
 			raise MaxCompetitionsReached(self.maxCompetitions)
 		kwDict['organization'] = self.getId()
-		newCompetition = Competition.fromDict(dc, kwDict)
+		newCompetition = Competition.fromDict(self.db, kwDict)
 		self.setNumCompetitions()
 		return newCompetition
 
@@ -116,7 +116,7 @@ class Organization(ModelWrapper):
 		if self.model.numMembers >= self.maxMembers:
 			raise MaxMembersReached(self.maxMembers)
 		kwDict['organization'] = self.getId()
-		newUser = User.fromDict(dc, kwDict)
+		newUser = User.fromDict(self.db, kwDict)
 		self.setNumMembers()
 		return newUser
 
