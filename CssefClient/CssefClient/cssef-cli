@@ -1,28 +1,54 @@
 #!/usr/bin/python
 import sys
 from prettytable import PrettyTable
-from cssefclient.cssefclient import *
+#from cssefclient.cssefclient import *
+from cssefclient import *
 
 class ArgumentParser(object):
 	def __init__(self, inputList):
 		self.inputList = inputList
-		self.command = None
 		self.arguments = None
-		self.options = None
-		self.parseCommand()
-		self.parseArguments()
+		self.rawArguments = []
+		self.command = self.parseCommand(inputList)
 
-	def parseCommand(self):
+	def argInCommands(self, arg, commandDict):
+		# This logical crazyness is to get actual True/False values.
+		return None != commandDict['commands'].get(arg, None)
+
+	def argInSubcommands(self, arg, commandDict):
+		# This logical crazyness is to get actual True/False values.
+		return None != commandDict['subcommands'].get(arg, None)
+
+	def parseCommand(self, inputList):
 		i = 0
-		commandList = []
-		while i < len(self.inputList) and self.inputList[i][0] != '-':
-			commandList.append(self.inputList[i])
-			i += 1
-		# Now get the command object through the command dictionary
-		tempDict = commands
-		for i in commandList[:-1]:
-			tempDict = tempDict['subcommands'][i]
-		self.command = tempDict['commands'][commandList[-1]]
+		tempCommandsDict = commands
+		while i < len(inputList) and self.inputList[i][0] != '-':
+			arg = inputList[i]
+			# Itterates through the items until it starts with a '-'
+			# or until the item matches an entry in that sections 'commands' dict
+			if self.argInCommands(arg, tempCommandsDict):
+				# This means the argument was an endpoint. Break out of the loop now
+				self.rawArguments = inputList[i:]
+				return tempCommandsDict['commands'][arg]
+			if self.argInSubcommands(arg, tempCommandsDict):
+				# This means the argument is listed in the subcommands section
+				tempCommandsDict = tempCommandsDict['subcommands'][arg]
+				i += 1
+				continue
+			# This means the argument was in neither the commands nor subcommands section
+			print "Invalid command '%s'." % arg
+			break
+
+		# Reaching this point means no endpoint was found.
+		if len(tempCommandsDict['commands'].keys()) > 0:
+			print '\nAvailable commands:'
+			for i in tempCommandsDict['commands']:
+				print ' *  %s' % i
+		if len(tempCommandsDict['subcommands'].keys()) > 0:
+			print '\nAvailable subcommands:'
+			for i in tempCommandsDict['subcommands']:
+				print ' *  %s' % i
+		sys.exit()
 
 	def parseArguments(self):
 		i = 0
@@ -45,6 +71,9 @@ class ArgumentParser(object):
 				i += 2
 			argumentsDict[key] = value
 		self.arguments = argumentsDict
+
+def endpointHelp(endpoint):
+	print endpoint.help()
 
 def displayOutput(outputDict):
 	if outputDict['value'] != 0:
@@ -101,7 +130,8 @@ if __name__ == "__main__":
 							"del": CompetitionTeamDel,
 							"set": CompetitionTeamSet,
 							"get": CompetitionTeamGet
-						}
+						},
+						"subcommands": {}
 					},
 					"score": {
 						"commands": {
@@ -109,7 +139,8 @@ if __name__ == "__main__":
 							"del": CompetitionScoreDel,
 							"set": CompetitionScoreSet,
 							"get": CompetitionScoreGet
-						}
+						},
+						"subcommands": {}
 					},
 					"inject": {
 						"commands": {
@@ -117,7 +148,8 @@ if __name__ == "__main__":
 							"del": CompetitionInjectDel,
 							"set": CompetitionInjectSet,
 							"get": CompetitionInjectGet
-						}
+						},
+						"subcommands": {}
 					},
 					"injectresponse": {
 						"commands": {
@@ -125,7 +157,8 @@ if __name__ == "__main__":
 							"del": CompetitionInjectResponseDel,
 							"set": CompetitionInjectResponseSet,
 							"get": CompetitionInjectResponseGet
-						}
+						},
+						"subcommands": {}
 					},
 					"incident": {
 						"commands": {
@@ -133,7 +166,8 @@ if __name__ == "__main__":
 							"del": CompetitionIncidentDel,
 							"set": CompetitionIncidentSet,
 							"get": CompetitionIncidentGet
-						}
+						},
+						"subcommands": {}
 					},
 					"incidentresponse": {
 						"commands": {
@@ -141,7 +175,8 @@ if __name__ == "__main__":
 							"del": CompetitionIncidentResponseDel,
 							"set": CompetitionIncidentResponseSet,
 							"get": CompetitionIncidentResponseGet
-						}
+						},
+						"subcommands": {}
 					}
 				}
 			}
