@@ -4,7 +4,7 @@ from celery import Celery
 
 versionMajor = '0'
 versionMinor = '0'
-versionRelease = '1'
+versionRelease = '2'
 version = ".".join([versionMajor, versionMinor, versionRelease])
 
 RPC_USERNAME = 'cssefd'
@@ -35,8 +35,24 @@ class Argument(object):
 		self.keyword = keyword
 		self.optional = optional
 
+	def helpFormat(self, *args, **kwargs):
+		return '--%s' % self.name
+
 class Endpoint(object):
+	def __init__(self, name):
+		self.name = name.lower()
+		self.args = []
+
+	def help(self, *args, **kwargs):
+		helpRows = []
+		helpRows.append('Endpoint: %s' % self.name)
+		for i in self.args:
+			helpRows.append(i.helpFormat(*args, **kwargs))
+		return helpRows
+
+class CeleryEndpoint(Endpoint):
 	def __init__(self, celeryName, args):
+		super(CeleryEndpoint, self).__init__(self, celeryName)
 		self.apiConn = None
 		self.celeryName = celeryName
 		self.args = args
@@ -45,10 +61,11 @@ class Endpoint(object):
 		x = self.apiConn.send_task(self.celeryName, args = args, kwargs = kwargs)
 		return x.get()
 
+
 ############################################
 # Competition endpoints
 ############################################
-class CompetitionAdd(Endpoint):
+class CompetitionAdd(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionAdd'
@@ -63,7 +80,7 @@ class CompetitionAdd(Endpoint):
 			Argument('Auto-start', keyword = True, optional = True)
 		]
 
-class CompetitionDel(Endpoint):
+class CompetitionDel(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionDel'
@@ -71,7 +88,7 @@ class CompetitionDel(Endpoint):
 			Argument('Competition', keyword = True)
 		]
 
-class CompetitionSet(Endpoint):
+class CompetitionSet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionSet'
@@ -86,7 +103,7 @@ class CompetitionSet(Endpoint):
 			Argument('Auto-start', keyword = True, optional = True)
 		]
 
-class CompetitionGet(Endpoint):
+class CompetitionGet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionGet'
@@ -104,7 +121,7 @@ class CompetitionGet(Endpoint):
 ############################################
 # Competition - Team endpoints
 ############################################
-class CompetitionTeamAdd(Endpoint):
+class CompetitionTeamAdd(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionTeamAdd'
@@ -116,7 +133,7 @@ class CompetitionTeamAdd(Endpoint):
 			Argument('Network CIDR', keyword = True, optional = True)
 		]
 
-class CompetitionTeamDel(Endpoint):
+class CompetitionTeamDel(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionTeamDel'
@@ -125,7 +142,7 @@ class CompetitionTeamDel(Endpoint):
 		]
 
 
-class CompetitionTeamSet (Endpoint):
+class CompetitionTeamSet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionTeamSet'
@@ -136,7 +153,7 @@ class CompetitionTeamSet (Endpoint):
 			Argument('Network CIDR', keyword = True, optional = True)
 		]
 
-class CompetitionTeamGet(Endpoint):
+class CompetitionTeamGet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionTeamGet'
@@ -150,7 +167,7 @@ class CompetitionTeamGet(Endpoint):
 ############################################
 # Competition - Score endpoints
 ############################################
-class CompetitionScoreAdd(Endpoint):
+class CompetitionScoreAdd(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionScoreAdd'
@@ -162,7 +179,7 @@ class CompetitionScoreAdd(Endpoint):
 			Argument('Message', keyword = True, optional = True)
 		]
 
-class CompetitionScoreDel(Endpoint):
+class CompetitionScoreDel(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionScoreDel'
@@ -170,7 +187,7 @@ class CompetitionScoreDel(Endpoint):
 			Argument('Score', keyword = True)
 		]
 
-class CompetitionScoreSet(Endpoint):
+class CompetitionScoreSet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionScoreSet'
@@ -180,7 +197,7 @@ class CompetitionScoreSet(Endpoint):
 			Argument('Message', keyword = True, optional =True)
 		]
 
-class CompetitionScoreGet(Endpoint):
+class CompetitionScoreGet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionScoreGet'
@@ -193,7 +210,7 @@ class CompetitionScoreGet(Endpoint):
 ############################################
 # Competition - Inject endpoints
 ############################################
-class CompetitionInjectAdd(Endpoint):
+class CompetitionInjectAdd(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionInjectAdd'
@@ -208,7 +225,7 @@ class CompetitionInjectAdd(Endpoint):
 			Argument('Body', keyword = True)
 		]
 
-class CompetitionInjectDel(Endpoint):
+class CompetitionInjectDel(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionInjectDel'
@@ -216,7 +233,7 @@ class CompetitionInjectDel(Endpoint):
 			Argument('Inject', keyword = True)
 		]
 
-class CompetitionInjectSet(Endpoint):
+class CompetitionInjectSet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionInjectSet'
@@ -230,7 +247,7 @@ class CompetitionInjectSet(Endpoint):
 			Argument('Body', keyword = True, optional = True)
 		]
 
-class CompetitionInjectGet(Endpoint):
+class CompetitionInjectGet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionInjectGet'
@@ -247,7 +264,7 @@ class CompetitionInjectGet(Endpoint):
 ############################################
 # Competition - Inject Response endpoints
 ############################################
-class CompetitionInjectResponseAdd(Endpoint):
+class CompetitionInjectResponseAdd(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionInjectResponseAdd'
@@ -259,7 +276,7 @@ class CompetitionInjectResponseAdd(Endpoint):
 			Argument('Content', keyword = True)
 		]
 
-class CompetitionInjectResponseDel(Endpoint):
+class CompetitionInjectResponseDel(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionInjectResponseDel'
@@ -267,7 +284,7 @@ class CompetitionInjectResponseDel(Endpoint):
 			Argument('Inject Response', keyword = True)
 		]
 
-class CompetitionInjectResponseSet(Endpoint):
+class CompetitionInjectResponseSet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionInjectResponseSet'
@@ -279,7 +296,7 @@ class CompetitionInjectResponseSet(Endpoint):
 			Argument('Content', keyword = True, optional = True)
 		]
 
-class CompetitionInjectResponseGet(Endpoint):
+class CompetitionInjectResponseGet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionInjectResponseGet'
@@ -294,7 +311,7 @@ class CompetitionInjectResponseGet(Endpoint):
 ############################################
 # Competition - Incident endpoints
 ############################################
-class CompetitionIncidentAdd(Endpoint):
+class CompetitionIncidentAdd(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionIncidentAdd'
@@ -306,7 +323,7 @@ class CompetitionIncidentAdd(Endpoint):
 			Argument('Content', keyword = True)
 		]
 
-class CompetitionIncidentDel(Endpoint):
+class CompetitionIncidentDel(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionIncidentDel'
@@ -314,7 +331,7 @@ class CompetitionIncidentDel(Endpoint):
 			Argument('Incident', keyword = True)
 		]
 
-class CompetitionIncidentSet(Endpoint):
+class CompetitionIncidentSet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionIncidentSet'
@@ -326,7 +343,7 @@ class CompetitionIncidentSet(Endpoint):
 			Argument('Content', keyword = True, optional = True)
 		]
 
-class CompetitionIncidentGet(Endpoint):
+class CompetitionIncidentGet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionIncidentSet'
@@ -341,7 +358,7 @@ class CompetitionIncidentGet(Endpoint):
 ############################################
 # Competition - Incident Response endpoints
 ############################################
-class CompetitionIncidentResponseAdd(Endpoint):
+class CompetitionIncidentResponseAdd(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionIncidentResponseAdd'
@@ -355,7 +372,7 @@ class CompetitionIncidentResponseAdd(Endpoint):
 			Argument('Content', keyword = True)
 		]
 
-class CompetitionIncidentResponseDel(Endpoint):
+class CompetitionIncidentResponseDel(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionIncidentResponseDel'
@@ -363,7 +380,7 @@ class CompetitionIncidentResponseDel(Endpoint):
 			Argument('Incident Response', keyword = True)
 		]
 
-class CompetitionIncidentResponseSet(Endpoint):
+class CompetitionIncidentResponseSet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionIncidentResponseSet'
@@ -377,7 +394,7 @@ class CompetitionIncidentResponseSet(Endpoint):
 			Argument('Content', keyword = True, optional = True)
 		]
 
-class CompetitionIncidentResponseGet(Endpoint):
+class CompetitionIncidentResponseGet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'competitionIncidentResponseGet'
@@ -394,7 +411,7 @@ class CompetitionIncidentResponseGet(Endpoint):
 ############################################
 # Organization endpoints
 ############################################
-class OrganizationGet(Endpoint):
+class OrganizationGet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'organizationGet'
@@ -406,7 +423,7 @@ class OrganizationGet(Endpoint):
 			Argument('Max Competitions', optional = True)
 		]
 
-class OrganizationSet(Endpoint):
+class OrganizationSet(CeleryEndpoint):
 	def __init__ (self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'organizationSet'
@@ -418,7 +435,7 @@ class OrganizationSet(Endpoint):
 			Argument('Max Competitions', keyword = True, optional = True)
 		]
 
-class OrganizationAdd(Endpoint):
+class OrganizationAdd(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'organizationAdd'
@@ -430,7 +447,7 @@ class OrganizationAdd(Endpoint):
 			Argument('Max Competitions', keyword = True, optional = True)
 		]
 
-class OrganizationDel(Endpoint):
+class OrganizationDel(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'organizationDel'
@@ -441,7 +458,7 @@ class OrganizationDel(Endpoint):
 ############################################
 # User endpoints
 ############################################
-class UserAdd(Endpoint):
+class UserAdd(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'userAdd'
@@ -453,7 +470,7 @@ class UserAdd(Endpoint):
 			Argument('Description', keyword = True, optional = True)
 		]
 
-class UserDel(Endpoint):
+class UserDel(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'userDel'
@@ -461,7 +478,7 @@ class UserDel(Endpoint):
 			Argument('User', keyword = True)
 		]
 
-class UserSet(Endpoint):
+class UserSet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'userSet'
@@ -473,7 +490,7 @@ class UserSet(Endpoint):
 			Argument('Description', keyword = True, optional = True)
 		]
 
-class UserGet(Endpoint):
+class UserGet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'userGet'
@@ -488,25 +505,25 @@ class UserGet(Endpoint):
 ############################################
 # Document endpoints
 ############################################
-class DocumentAdd(Endpoint):
+class DocumentAdd(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'documentAdd'
 		self.args = []
 
-class DocumentDel(Endpoint):
+class DocumentDel(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'documentDel'
 		self.args = []
 
-class DocumentSet(Endpoint):
+class DocumentSet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'documentSet'
 		self.args = []
 
-class DocumentGet(Endpoint):
+class DocumentGet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'documentGet'
@@ -515,7 +532,7 @@ class DocumentGet(Endpoint):
 ############################################
 # Scoring Engine endpoints
 ############################################
-class ScoringEngineAdd(Endpoint):
+class ScoringEngineAdd(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'scoringEngineAdd'
@@ -524,7 +541,7 @@ class ScoringEngineAdd(Endpoint):
 			Argument("Package Name", keyword = True, optional = False),
 		]
 
-class ScoringEngineDel(Endpoint):
+class ScoringEngineDel(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'scoringEngineDel'
@@ -532,7 +549,7 @@ class ScoringEngineDel(Endpoint):
 			Argument("Scoring Engine", keyword = True, optional = False)
 		]
 
-class ScoringEngineSet(Endpoint):
+class ScoringEngineSet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'scoringEngineSet'
@@ -542,7 +559,7 @@ class ScoringEngineSet(Endpoint):
 			Argument('Disabled', keyword = True, optional = True)
 		]
 
-class ScoringEngineGet(Endpoint):
+class ScoringEngineGet(CeleryEndpoint):
 	def __init__(self, apiConn = None):
 		self.apiConn = apiConn
 		self.celeryName = 'scoringEngineGet'
