@@ -1,8 +1,8 @@
 from setuptools import setup
-from CssefClient import cssefclient 
+from cssefclient import cssefclient 
 setup(
 	# Application name:
-	name = "CssefClient",
+	name = "cssefclient",
 	
 	# Version number:
 	version = cssefclient.version,
@@ -12,17 +12,17 @@ setup(
 	author_email = "bplower@gmail.com",
 
 	# Packages:
-	packages = ["CssefClient"],
+	packages = ["cssefclient"],
 
 	# Details:
 	url = "http://github.com/bplower/cssef/",
 
 	# Scripts:
 	scripts=[
-		'CssefClient/cssef-cli'],
+		'cssefclient/cssef-cli'],
 
 	data_files=[
-		('/etc/cssef/', ['CssefClient/conf/cssef.conf'],)
+		('/etc/cssef/', ['cssefclient/cssef.conf'],)
 	],
 
 	# Description:

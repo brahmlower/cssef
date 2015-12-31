@@ -1,15 +1,14 @@
 #!/usr/bin/python
 import sys
 from prettytable import PrettyTable
-#from cssefclient.cssefclient import *
-from cssefclient import *
+from cssefclient.cssefclient import *
 
 class ArgumentParser(object):
 	def __init__(self, inputList):
 		self.inputList = inputList
-		self.arguments = None
 		self.rawArguments = []
 		self.command = self.parseCommand(inputList)
+		self.arguments = self.parseArguments()
 
 	def argInCommands(self, arg, commandDict):
 		# This logical crazyness is to get actual True/False values.
@@ -27,11 +26,11 @@ class ArgumentParser(object):
 			# Itterates through the items until it starts with a '-'
 			# or until the item matches an entry in that sections 'commands' dict
 			if self.argInCommands(arg, tempCommandsDict):
-				# This means the argument was an endpoint. Break out of the loop now
+				# This means the argument IS a client endpoint. Break out of the loop now
 				self.rawArguments = inputList[i:]
 				return tempCommandsDict['commands'][arg]
 			if self.argInSubcommands(arg, tempCommandsDict):
-				# This means the argument is listed in the subcommands section
+				# This means the argument IS listed in the subcommands section
 				tempCommandsDict = tempCommandsDict['subcommands'][arg]
 				i += 1
 				continue
@@ -39,7 +38,7 @@ class ArgumentParser(object):
 			print "Invalid command '%s'." % arg
 			break
 
-		# Reaching this point means no endpoint was found.
+		# Reaching this point means no client endpoint was found.
 		if len(tempCommandsDict['commands'].keys()) > 0:
 			print '\nAvailable commands:'
 			for i in tempCommandsDict['commands']:
@@ -48,7 +47,7 @@ class ArgumentParser(object):
 			print '\nAvailable subcommands:'
 			for i in tempCommandsDict['subcommands']:
 				print ' *  %s' % i
-		sys.exit()
+		sys.exit(2)
 
 	def parseArguments(self):
 		i = 0
@@ -67,17 +66,18 @@ class ArgumentParser(object):
 				key = key.split('=')[0]
 				i += 1
 			else:
-				value = self.inputList[i+1]
+				value = self.inputList[i + 1]
 				i += 2
 			argumentsDict[key] = value
-		self.arguments = argumentsDict
-
-def endpointHelp(endpoint):
-	print endpoint.help()
+		if argumentsDict == {}:
+			return None
+		else:
+			return argumentsDict
 
 def displayOutput(outputDict):
 	if outputDict['value'] != 0:
-		sys.exit(outputDict['value'], outputDict['message'])
+		sys.stderr.write("\n".join(outputDict['message'])+"\n")
+		sys.exit(outputDict['value'])
 	if len(outputDict['content']) > 0:
 		outputTable = PrettyTable(output['content'][0].keys())
 		outputTable.padding_width = 1
@@ -185,9 +185,9 @@ if __name__ == "__main__":
 
 	# cli format:
 	# ./cssef-cli [COMMAND] [ARGUMENTS]
-
+	config = Configuration('/etc/cssef/cssef.conf')
 	argparse = ArgumentParser(sys.argv[1:])
-	commandInstance = argparse.command(getConn())
+	commandInstance = argparse.command(getConn(config))
 	if argparse.arguments:
 		output = commandInstance.execute(**argparse.arguments)
 	else:
