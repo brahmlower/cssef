@@ -15,16 +15,18 @@ from django.forms import HiddenInput
 from django.forms.widgets import PasswordInput
 from django.utils import timezone
 
-#from WebInterface.settings import SCORING_ENGINE_API_URL
 from urllib2 import urlopen
 import json
+import traceback
 
 from WebInterface import cssefApi
 #from WebInterface.utils import makeApiRequest
-from WebInterface.client import OrganizationGet as ApiOrganizationGet
-from WebInterface.client import getConn as getCeleryConnection
+from CssefClient.cssefclient import getConn as getCeleryConnection
+from CssefClient.cssefclient import OrganizationGet as ApiOrganizationGet
+
 def makeApiRequest(apiEndpoint, argsDict, apiConnection = getCeleryConnection()):
-	print 'Making api request to endpoint "%s" with arguments "%s"' % (apiEndpoint, argsDict)
+	print '[FORMS] Making api request to endpoint "%s" with arguments "%s"' % (apiEndpoint, argsDict)
+	#print traceback.print_stack(limit = 5)
 	command = apiEndpoint(apiConnection)
 	return command.execute(**argsDict)
 
@@ -81,12 +83,13 @@ class CreatePlugin(Form):
 
 class CreateUser(Form):
 	def __init__(self, *args, **kwargs):
-			super(CreateUser, self).__init__(*args, **kwargs)
-			organizationChoices = []
-			output = makeApiRequest(ApiOrganizationGet, {})
-			for i in output['content']:
-				organizationChoices.append((i['id'], i['name']))
-			self.fields['organizationId'].choices = organizationChoices
+		super(CreateUser, self).__init__(*args, **kwargs)
+		organizationChoices = []
+		output = makeApiRequest(ApiOrganizationGet, {})
+		for i in output['content']:
+			organizationChoices.append((i['id'], i['name']))
+		self.fields['organization'].choices = organizationChoices
+
 	name = CharField(
 		label = 'Name',
 		widget = TextInput(attrs={'class':'form-control', 'required': True})
@@ -99,7 +102,7 @@ class CreateUser(Form):
 		label = 'Password',
 		widget = PasswordInput(attrs={'class':'form-control', 'required': True})
 	)
-	organizationId = ChoiceField(
+	organization = ChoiceField(
 		label = 'Organization',
 		choices = [],
 		widget = Select(attrs={'class':'form-control', 'required': True})

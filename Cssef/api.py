@@ -3,11 +3,14 @@ import traceback
 from framework.core import *
 from framework.competition import *
 from framework.utils import databaseConnection
-
 from celery import Celery
-CssefCeleryApp = Celery(	'api',
-							backend='rpc://cssefd:cssefd-pass@localhost//',
-							broker='amqp://cssefd:cssefd-pass@localhost//')
+
+CssefCeleryApp = Celery(
+	'api',
+	backend='rpc://cssefd:cssefd-pass@localhost//',
+	broker='amqp://cssefd:cssefd-pass@localhost//')
+
+dbPath = '/home/sk4ly/Documents/cssef/Cssef/db.sqlite3'
 
 def getEmptyReturnDict():
 	return {
@@ -17,13 +20,45 @@ def getEmptyReturnDict():
 	}
 
 def modelDel(cls, pkid):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-	modelObj = cls.fromDatabase(db, pkid)
-	modelObj.delete()
+	db = databaseConnection(dbPath)
+	if pkid == "*":
+		# todo: implement a wildcard
+		returnDict = getEmptyReturnDict()
+		returnDict['value'] = 1
+		returnDict['message'] = ["Wildcards are not implemented yet."]
+		return returnDict
+	elif type(pkid) == str and "-" in pkid:
+		x = pkid.split("-")
+		if len(x) == 2:
+			try:
+				for pkid in range(int(x[0]), int(x[1])+1):
+					modelObj = cls.fromDatabase(db, pkid)
+					if modelObj:
+						modelObj.delete()
+			except ValueError:
+				# One of the ranges provided could not be cast as an integer. Return error.
+				returnDict = getEmptyReturnDict()
+				returnDict['value'] = 1
+				returnDict['message'] = ["Range value could not be cast to integer. Expected integer range like 1-4. Got '%s' instead." % pkid]
+				return returnDict
+		else:
+			print x
+			returnDict = getEmptyReturnDict()
+			returnDict['value'] = 1
+			returnDict['message'] = ["Expected integer range like 1-4. Got '%s' instead." % pkid]
+			return returnDict
+	elif type(pkid) == int:
+		modelObj = cls.fromDatabase(db, pkid)
+		modelObj.delete()
+	else:
+		# We don't know what the hell we were given. Disregard it and thow an error :(
+		returnDict = getEmptyReturnDict()
+		returnDict['value'] = 1
+		returnDict['message'] = ["Expected integer value (5) or range (2-7). Got '%s' of type %s instead." % (str(pkid), str(type(pkid)))]
 	return getEmptyReturnDict()
 
 def modelSet(cls, pkid, **kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+	db = databaseConnection(dbPath)
 	modelObj = cls.fromDatabase(db, pkid)
 	modelObj.edit(**kwargs)
 	returnDict = getEmptyReturnDict()
@@ -31,7 +66,7 @@ def modelSet(cls, pkid, **kwargs):
 	return returnDict
 
 def modelGet(cls, **kwargs):
-	db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+	db = databaseConnection(dbPath)
 	modelObjs = cls.search(db, **kwargs)
 	returnDict = getEmptyReturnDict()
 	for i in modelObjs:
@@ -54,7 +89,7 @@ def competitionAdd(organization = None, name = None, **kwargs):
 	try:
 		if not organization or not name:
 			raise Exception
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		db = databaseConnection(dbPath)
 		organization = Organization.fromDatabase(db, organization)
 		competition = organization.createCompetition(kwargs)
 		returnDict = getEmptyReturnDict()
@@ -96,9 +131,8 @@ def competitionTeamAdd(competition = None, **kwargs):
 	try:
 		if not competition:
 			raise Exception
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		db = databaseConnection(dbPath)
 		competitionObj = Competition.fromDatabase(db, competition)
-		#team = competitionObj.createTeam(**kwargs)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
 		team = Team.fromDict(db, tmpDict)
@@ -141,7 +175,7 @@ def competitionScoreAdd(competition = None, **kwargs):
 	try:
 		if not competition:
 			raise Exception
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		db = databaseConnection(dbPath)
 		competitionObj = Competition.fromDatabase(db, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
@@ -185,7 +219,7 @@ def competitionInjectAdd(competition = None, **kwargs):
 	try:
 		if not competition:
 			raise Exception
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		db = databaseConnection(dbPath)
 		competitionObj = Competition.fromDatabase(db, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
@@ -229,7 +263,7 @@ def competitionInjectResponseAdd(competition = None, **kwargs):
 	try:
 		if not competition:
 			raise Exception
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		db = databaseConnection(dbPath)
 		competitionObj = Competition.fromDatabase(db, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
@@ -273,7 +307,7 @@ def competitionIncidentAdd(competition = None, **kwargs):
 	try:
 		if not competition:
 			raise Exception
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		db = databaseConnection(dbPath)
 		competitionObj = Competition.fromDatabase(db, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
@@ -317,7 +351,7 @@ def competitionIncidentResponseAdd(competition = None, **kwargs):
 	try:
 		if not competition:
 			raise Exception
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		db = databaseConnection(dbPath)
 		competitionObj = Competition.fromDatabase(db, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
@@ -359,7 +393,7 @@ def compeititonIncidentResponseGet(**kwargs):
 @CssefCeleryApp.task(name = 'organizationAdd')
 def organizationAdd(**kwargs):
 	try:
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		db = databaseConnection(dbPath)
 		organization = Organization.fromDict(db, kwargs)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(organization.asDict())
@@ -398,8 +432,7 @@ def organizationGet(**kwargs):
 @CssefCeleryApp.task(name = 'userAdd')
 def userAdd(organization = None, **kwargs):
 	try:
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
-		#organization = Organization.fromDatabase(db, pkid = organization)
+		db = databaseConnection(dbPath)
 		organization = Organization.fromDatabase(db, organization)
 		user = organization.createMember(kwargs)
 		returnDict = getEmptyReturnDict()
@@ -440,11 +473,11 @@ def userGet(**kwargs):
 @CssefCeleryApp.task(name = 'documentAdd')
 def documentAdd(**kwargs):
 	try:
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		db = databaseConnection(dbPath)
 		document = Document.fromDict(db, kwargs)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(document.asDict())
-		return returnDic
+		return returnDict
 	except Exception as e:
 		return handleException(e)
 
@@ -480,7 +513,7 @@ def documentGet(**kwargs):
 @CssefCeleryApp.task(name = 'scoringEngineAdd')
 def scoringengineAdd(**kwargs):
 	try:
-		db = databaseConnection('/home/sk4ly/Documents/cssef/Cssef/db.sqlite3')
+		db = databaseConnection(dbPath)
 		scoringEngine = ScoringEngine.fromDict(db, kwargs)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(scoringEngine.asDict())

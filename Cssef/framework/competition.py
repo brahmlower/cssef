@@ -26,6 +26,8 @@ class Competition(ModelWrapper):
 
 	@organization.setter
 	def organization(self, value):
+		# Todo:
+		# Only site admins should be able to change this
 		self.model.organization = value
 		self.db.commit()
 
@@ -35,6 +37,8 @@ class Competition(ModelWrapper):
 
 	@name.setter
 	def name(self, value):
+		# Todo:
+		# Only site admins & organization admins should be able to change this
 		self.model.name = value
 		self.db.commit()
 
@@ -44,6 +48,8 @@ class Competition(ModelWrapper):
 
 	@url.setter
 	def url(self, value):
+		# Todo:
+		# Only site admins should be able to change this
 		self.model.url = value
 		self.db.commit()
 
@@ -53,6 +59,8 @@ class Competition(ModelWrapper):
 
 	@description.setter
 	def description(self, value):
+		# Todo:
+		# Only site admins & organization admins should be able to change this
 		self.model.description = value
 		self.db.commit()
 
@@ -62,6 +70,8 @@ class Competition(ModelWrapper):
 
 	@datetimeDisplay.setter
 	def datetimeDisplay(self, value):
+		# Todo:
+		# Only site admins & organization admins should be able to change this
 		self.model.datetimeDisplay = value
 		self.db.commit()
 
@@ -71,6 +81,8 @@ class Competition(ModelWrapper):
 
 	@datetimeStart.setter
 	def datetimeStart(self, value):
+		# Todo:
+		# Only site admins & organization admins should be able to change this
 		self.model.datetimeStart = value
 		self.db.commit()
 
@@ -80,6 +92,8 @@ class Competition(ModelWrapper):
 
 	@datetimeFinish.setter
 	def datetimeFinish(self, value):
+		# Todo:
+		# Only site admins & organization admins should be able to change this
 		self.model.datetimeFinish = value
 		self.db.commit()
 
@@ -89,6 +103,8 @@ class Competition(ModelWrapper):
 
 	@autoStart.setter
 	def autoStart(self, value):
+		# Todo:
+		# Only site admins & organization admins should be able to change this
 		self.model.autoStart = value
 		self.db.commit()
 
@@ -98,10 +114,14 @@ class Competition(ModelWrapper):
 
 	@scoringEngine.setter
 	def scoringEngine(self, value):
+		# Todo:
+		# Only site admins & organization admins should be able to change this
 		self.model.scoringEngine = value
 		self.db.commit()
 
 	def check(self):
+		# Todo:
+		# I don't think this is necessary. Lets just remove this
 		# This conducts a consistency check on the competiton settings.
 		print "A consistency check was conducted here..."
 

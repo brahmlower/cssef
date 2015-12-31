@@ -65,7 +65,6 @@ class ModelWrapper(object):
 			print pkid
 			return None
 
-
 	@classmethod
 	def fromDict(cls, db, kwDict):
 		modelObjectInst = cls.modelObject(**kwDict)
