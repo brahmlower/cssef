@@ -271,9 +271,3 @@ class Document(ModelWrapper):
 	def setUrlEncodedFileName(self, value):
 		self.model.urlEncodedFileName = value
 		self.db.commit()
-
-def createOrganization(kwDict):
-	return Organization.create(kwDict)
-
-def createScoringEngine(kwDict):
-	return ScoringEngine.create(kwDict)

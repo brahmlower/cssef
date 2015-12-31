@@ -3,18 +3,18 @@ from WebInterface.forms import CreateCompetition
 from WebInterface.forms import CreateOrganization as CreateOrganizationForm
 from WebInterface.forms import CreateUser as CreateUserForm
 from WebInterface.forms import CreatePlugin
-from WebInterface.client import getConn as getCeleryConnection
-from WebInterface.client import OrganizationGet as ApiOrganizationGet
-from WebInterface.client import OrganizationSet as ApiOrganizationSet
-from WebInterface.client import OrganizationAdd as ApiOrganizationAdd
-from WebInterface.client import OrganizationDel as ApiOrganizationDel
-from WebInterface.client import UserAdd as ApiUserAdd
-from WebInterface.client import UserDel as ApiUserDel
-from WebInterface.client import UserSet as ApiUserSet
-from WebInterface.client import UserGet as ApiUserGet
+from CssefClient.cssefclient import getConn as getCeleryConnection
+from CssefClient.cssefclient import OrganizationGet as ApiOrganizationGet
+from CssefClient.cssefclient import OrganizationSet as ApiOrganizationSet
+from CssefClient.cssefclient import OrganizationAdd as ApiOrganizationAdd
+from CssefClient.cssefclient import OrganizationDel as ApiOrganizationDel
+from CssefClient.cssefclient import UserAdd as ApiUserAdd
+from CssefClient.cssefclient import UserDel as ApiUserDel
+from CssefClient.cssefclient import UserSet as ApiUserSet
+from CssefClient.cssefclient import UserGet as ApiUserGet
 
 def makeApiRequest(apiEndpoint, argsDict, apiConnection = getCeleryConnection()):
-	print 'Making api request to endpoint "%s" with arguments "%s"' % (apiEndpoint, argsDict)
+	print '[UTILS] Making api request to endpoint "%s" with arguments "%s"' % (apiEndpoint, argsDict)
 	command = apiEndpoint(apiConnection)
 	return command.execute(**argsDict)
 
@@ -35,6 +35,7 @@ class BaseContext(object):
 		try:
 			return self.httpMethodActions[self.request.method]()
 		except KeyError:
+			# the http method isn't supported by the context processor
 			return None
 
 	def translateApiReturn(self, output):
@@ -42,14 +43,16 @@ class BaseContext(object):
 		if type(output['message']) == list:
 			self.errors = "\n".join(output['message'])
 		else:
-			self.error = output['message']
+			self.errors = output['message']
 		self.apiData = output['content']
 
 	def getContext(self):
+		print 'getContext'
 		self.context.push({'debug': self.debug})
 		self.context.push({'returnValue': self.returnValue})
 		self.context.push({'errors': self.errors})
 		self.context.push({'apiData': self.apiData})
+		print 'end getContext'
 		return self.context
 
 class FormContext(BaseContext):
@@ -61,12 +64,12 @@ class FormContext(BaseContext):
 		self.formData = None
 		self.form = None
 
-	def validateFormData(self):
-		formData = self.form(self.request.POST)
+	def validateFormData(self, **kwargs):
+		formData = self.form(self.request.POST, **kwargs)
 		self.errors = formData.errors
 		if self.errors:
 			self.returnValue = 1
-			self.form = self.form(initial = self.request.POST)
+			self.form = self.form(initial = self.request.POST, **kwargs)
 		self.formData = formData.cleaned_data
 		return self.isValid()
 
@@ -158,12 +161,25 @@ class CreateUserContext(FormContext):
 		super(CreateUserContext, self).__init__(request)
 		self.action = self.CREATE
 		self.form = CreateUserForm
+		# self.formChoices = self.getOrganizations()
 		self.httpMethodActions['POST'] = self.apiOnPost
+		# self.httpMethodActions['GET'] = self.apiOnGet
+
+	# def getOrganizations(self):
+	# 	organizationChoices = []
+	# 	output = makeApiRequest(ApiOrganizationGet, {})
+	# 	for i in output['content']:
+	# 		organizationChoices.append((i['id'], i['name']))
+	# 	return organizationChoices
+
+	# def apiOnGet(self):
+	# 	self.form = self.form(organizationChoices = self.formChoices)
 
 	def apiOnPost(self):
 		if not self.validateFormData():
 			return False
 		output = makeApiRequest(ApiUserAdd, self.formData)
+		print 'end of apiOnPost'
 		self.translateApiReturn(output)
 
 

@@ -14,35 +14,7 @@ from WebInterface.settings import SCORING_ENGINE_API_URL
 from WebInterface.utils import ContextFactory
 from django.core.files.uploadedfile import UploadedFile
 
-from WebInterface.client import getConn as getCeleryConnection
-# from WebInterface.client import CompetitionAdd as ApiCompetitionAdd
-# from WebInterface.client import CompetitionDel as ApiCompetitionDel
-# from WebInterface.client import CompetitionGet as ApiCompetitionGet
-# from WebInterface.client import CompetitionSet as ApiCompetitionSet
-# from WebInterface.client import CompetitionTeamAdd as 
-# from WebInterface.client import CompetitionTeamDel as 
-# from WebInterface.client import CompetitionTeamSet as 
-# from WebInterface.client import CompetitionTeamGet as 
-# from WebInterface.client import CompetitionScoreAdd as 
-# from WebInterface.client import CompetitionScoreDel as 
-# from WebInterface.client import CompetitionScoreSet as 
-# from WebInterface.client import CompetitionScoreGet as 
-# from WebInterface.client import CompetitionInjectAdd as 
-# from WebInterface.client import CompetitionInjectDel as 
-# from WebInterface.client import CompetitionInjectSet as 
-# from WebInterface.client import CompetitionInjectGet as 
-# from WebInterface.client import CompetitionInjectResponseAdd as 
-# from WebInterface.client import CompetitionInjectResponseDel as 
-# from WebInterface.client import CompetitionInjectResponseSet as 
-# from WebInterface.client import CompetitionInjectResponseGet as 
-# from WebInterface.client import CompetitionIncidentAdd as 
-# from WebInterface.client import CompetitionIncidentDel as 
-# from WebInterface.client import CompetitionIncidentSet as 
-# from WebInterface.client import CompetitionIncidentGet as 
-# from WebInterface.client import CompetitionIncidentResponseAdd as 
-# from WebInterface.client import CompetitionIncidentResponseDel as 
-# from WebInterface.client import CompetitionIncidentResponseSet as 
-# from WebInterface.client import CompetitionIncidentResponseGet as 
+from CssefClient.cssefclient import getConn as getCeleryConnection
 # from WebInterface.client import DocumentAdd as 
 # from WebInterface.client import DocumentDel as 
 # from WebInterface.client import DocumentSet as 
@@ -63,7 +35,9 @@ from WebInterface.utils import ListUserContext
 def getContext(contextClass, pageTemplate, request, **kwargs):
 	context = contextClass(request, **kwargs)
 	context.processContext()
-	return render_to_response(pageTemplate, context.getContext())
+	c = context.getContext()
+	print 'end of getContext in administrator'
+	return render_to_response(pageTemplate, c)
 
 def home(request):
 	context = ContextFactory(request)
@@ -98,7 +72,10 @@ def listUsers(request):
 
 def createUser(request):
 	pageTemplate = 'administrator/createEditUser.html'
-	return getContext(CreateUserContext, pageTemplate, request)
+	print 'getting context'
+	x = getContext(CreateUserContext, pageTemplate, request)
+	print 'before createUser return'
+	return x
 
 def editUser(request):
 	pageTemplate = 'administrator/createEditUser.html'
