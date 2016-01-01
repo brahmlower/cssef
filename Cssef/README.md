@@ -27,14 +27,14 @@ user@host:~$ cd cssef/Cssef
 user@host:~/cssef/Cssef$ sudo pip install .
 ```
 
-If you see an error "fatal error: Python.h: No such file or directory" while the package is installing sqlalchemy, it's most likely because you don't have the python headers installed.
+If you see an error ```fatal error: Python.h: No such file or directory``` while the package is installing sqlalchemy, it's most likely because you don't have the python headers installed.
 ```
-sudo pip uninstall sqlalchemy
-sudo apt-get install python-dev
-sudo pip install .
+user@host:~$ sudo pip uninstall sqlalchemy
+user@host:~$ sudo apt-get install python-dev
+user@host:~$ sudo pip install .
 ```
 
-Be sure to set the rabbitmq username and password in the celery section of the config file located at /etc/cssef/cssefd.conf.
+Be sure to set the rabbitmq username and password in the celery section of the config file located at ```/etc/cssef/cssefd.conf```.
 ```
 rpc_username = cssefd-user
 rpc_password = cssefd-pass
