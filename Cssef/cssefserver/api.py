@@ -1,15 +1,22 @@
 from __future__ import absolute_import
 import traceback
-from framework.core import *
-from framework.competition import *
-from framework.utils import databaseConnection
+from cssefserver.framework.core import *
+from cssefserver.framework.competition import *
+from cssefserver.framework.utils import databaseConnection
 from celery import Celery
 
+versionMajor = '0'
+versionMinor = '0'
+versionPatch = '1'
+version = ".".join([versionMajor, versionMinor, versionPatch])
+
+# Todo: pull the backend url from the config file instead of hardcoding
 CssefCeleryApp = Celery(
 	'api',
 	backend='rpc://cssefd:cssefd-pass@localhost//',
 	broker='amqp://cssefd:cssefd-pass@localhost//')
 
+# Todo: pull the sqlite database path from the config file instead of hardcoding
 dbPath = '/home/sk4ly/Documents/cssef/Cssef/db.sqlite3'
 
 def getEmptyReturnDict():

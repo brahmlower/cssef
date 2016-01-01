@@ -18,10 +18,11 @@ setup(
 	url = "http://github.com/bplower/cssef/",
 
 	# Scripts:
-	scripts=[
-		'cssefclient/cssef-cli'],
+	scripts = [
+		'cssefclient/cssef-cli'
+	],
 
-	data_files=[
+	data_files = [
 		('/etc/cssef/', ['cssefclient/cssef.conf'],)
 	],
 
@@ -30,7 +31,7 @@ setup(
 	long_description = open("README.md").read(),
 
 	# Dependant packages
-	install_requires=[
+	install_requires = [
 		"prettytable",
 		"celery",
 	],

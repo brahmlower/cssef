@@ -3,7 +3,6 @@ from __future__ import absolute_import
 import logging
 import time
 import atexit
-import pkgutil
 import ConfigParser
 import sys
 import os
@@ -12,10 +11,9 @@ from signal import SIGTERM
 from time import sleep
 from celery.bin import worker
 
-import engines
-from api import CssefCeleryApp
-from framework.core import ScoringEngine
-from framework.utils import databaseConnection
+from cssefserver.api import CssefCeleryApp
+from cssefserver.framework.core import ScoringEngine
+from cssefserver.framework.utils import databaseConnection
 
 class Daemon(object):
 	"""
@@ -147,7 +145,7 @@ class Daemon(object):
 			sys.exit(1)
 
 class CssefDaemon(Daemon):
-	def __init__(self, configFile = 'cssefd.conf'):
+	def __init__(self, configFile):
 		self.config = Configuration(configFile)
 		logger, handler = configureLogger(self.config)
 		super(CssefDaemon, self).__init__(
@@ -194,7 +192,14 @@ def makeLogFiles(config):
 		config.rawConfig.get('logging', 'cssef_stdout'),
 		config.rawConfig.get('logging', 'celery_stderr'),
 		config.rawConfig.get('logging', 'celery_stdout')]
+
+	# Now create the log files within that directory
 	for i in files:
+		# Get the directory the file should be in
+		log_directory = "/".join(i.split('/')[:-1])
+		if not os.path.exists(log_directory):
+			os.makedirs(log_directory)
+		# Now create the files in that directory
 		if not os.path.isfile(i):
 			open(i, 'a').close()
 
@@ -210,31 +215,8 @@ def configureLogger(config):
 	logger.addHandler(handler)
 	return logger, handler
 
-def createEngineModules(self):
-	package = engines
-	for importer, modname, ispkg in pkgutil.iter_modules(package.__path__):
-		try:
-			#scoringEngineEntry = getScoringEngine(packageName = modname)
-			mod = importScoringEngine(modname)
-			mod.run()
-		except OperationalError:
-			return None
-		except ScoringEngine.ObjectDoesNotExist:
-			ScoringEngine.fromDict({'name': modname, 'packageName': modname})
-			mod = importScoringEngine(modname)
-			mod.run()
-
-def importScoringEngine(name):
-	enginesModule = 'engines.%s'
-	scoringEngine = ScoringEngine.search(name = name)[0]
-	package = enginesModule % scoringEngine.packageName
-	module = __import__(package)
-	for i in package.split('.')[1:]:
-		module = getattr(module, i)
-	return module
-
 if __name__ == "__main__":
-	daemon = CssefDaemon()
+	daemon = CssefDaemon('/etc/cssef/cssefd.conf')
 	if len(sys.argv) == 2:
 		if 'start' == sys.argv[1]:
 			daemon.start()

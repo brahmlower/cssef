@@ -1,10 +1,10 @@
-from models import ScoringEngine as ScoringEngineModel
-from models import Organization as OrganizationModel
-from models import Document as DocumentModel
-from models import User as UserModel
+from cssefserver.models import ScoringEngine as ScoringEngineModel
+from cssefserver.models import Organization as OrganizationModel
+from cssefserver.models import Document as DocumentModel
+from cssefserver.models import User as UserModel
 
-from framework.utils import ModelWrapper
-from framework.competition import Competition
+from cssefserver.framework.utils import ModelWrapper
+from cssefserver.framework.competition import Competition
 
 class MaxCompetitionsReached(Exception):
 	def __init__(self, maxCompetitions):
