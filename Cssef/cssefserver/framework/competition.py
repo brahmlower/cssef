@@ -1,12 +1,12 @@
-from models import Competition as CompetitionModel
-from models import Team as TeamModel
-from models import Score as ScoreModel
-from models import Inject as InjectModel
-from models import InjectResponse as InjectResponseModel
-from models import Incident as IncidentModel
-from models import IncidentResponse as IncidentResponseModel
+from cssefserver.models import Competition as CompetitionModel
+from cssefserver.models import Team as TeamModel
+from cssefserver.models import Score as ScoreModel
+from cssefserver.models import Inject as InjectModel
+from cssefserver.models import InjectResponse as InjectResponseModel
+from cssefserver.models import Incident as IncidentModel
+from cssefserver.models import IncidentResponse as IncidentResponseModel
 
-from framework.utils import ModelWrapper
+from cssefserver.framework.utils import ModelWrapper
 
 class Competition(ModelWrapper):
 	'Competition object for controling competition settings and operation'

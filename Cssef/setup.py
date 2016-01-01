@@ -1,8 +1,40 @@
-from distutils.core import setup
+from setuptools import setup
+from setuptools import find_packages
+#from cssefserver.api import version
 
 setup(
-	name = 'Cyber Security Scoring Engine Framework',
-	version = '0.0.1',
-	py_modules = ['cssef'],
-	install_requires = ['python-daemon >= 1.6','celery >= 3.1.19', 'sqlalchemy >= 0.9.8']
+	# Application name:
+	name = "cssefserver",
+
+	# Version number:
+	version = "0.0.1",
+
+	# Application author details:
+	author = "Brahm Lower",
+	author_email = "bplower@gmail.com",
+
+	# Packages:
+	packages = find_packages(),
+
+	# Details:
+	url = "http://github.com/bplower/cssef/",
+
+	# Scripts:
+	scripts = [
+		"cssefserver/cssefd"
+	],
+
+	data_files = [
+		('/etc/cssef/', ['cssefserver/cssefd.conf'])
+	],
+
+	# Description:
+	description = "The CSSEF server.",
+	long_description = open("README.md").read(),
+
+	# Dependant packages:
+	install_requires = [
+		"sqlalchemy",
+		"celery"
+	],
 )
