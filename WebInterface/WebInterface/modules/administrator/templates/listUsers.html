@@ -1,0 +1,44 @@
+{% extends "administrator/templates/adminPageTemplate.html" %}
+
+{% block sidebar_id %}sidebar_users{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<div class="jumbotron">
+		<h1>User List</h1>
+		<p>The following are currently available users. Here you can create, edit or delete users.</p>
+		<br>
+		<a class="btn btn-primary btn-lg" href="/admin/users/create/">New User</a>
+	</div>
+
+	{% if apiData %}
+	<table class="table">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>Username</th>
+				<th>Organization</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in apiData %}
+			<tr>
+				<th>{{ i.id }}</th>
+				<th>{{ i.name }}</th>
+				<th>{{ i.username }}</th>
+				<th>{{ i.organization }}</th>
+				<th>
+					<a href="/admin/users/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
+					<a href="/admin/users/delete/{{ i.id }}/" class="btn-sm btn-danger">Delete</a>
+				</th>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% else %}
+	<p>No users have been created yet. Go ahead and make one!</p>
+	{% endif %}
+
+{% endblock %}

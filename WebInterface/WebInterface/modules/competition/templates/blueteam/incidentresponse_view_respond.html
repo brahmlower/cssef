@@ -1,0 +1,64 @@
+{% extends "competition/templates/blueteam/competitionBlueTeamPageTemplate.html" %}
+
+{% block sidebar_id %}sidebar_incidentresponse{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	{% if auth_name == "auth_team_blue" %}
+	<div class="panel panel-default">
+		<div class="panel-heading">{{ firstpost.response.subject }}</div>
+		<div class="panel-body">
+			<strong> Submitted at: </strong> {{ firstpost.response.datetime }} <br>
+			<strong> Submitted Text: </strong>
+			<p>{{ firstpost.response.textentry }}</p>
+			{% for i in firstpost.files %}
+			<strong> Attached File: </strong><a href="/resources/incidentresponses/{{firstpost.response.compid}}/{{firstpost.response.teamid}}/{{firstpost.response.intrspid}}/{{i.urlencfilename}}">{{ i.filename }}</a><br>
+			{% endfor %}
+		</div>
+	</div>
+
+	{% for i in response_list %}
+	<div class="panel panel-default">
+		<div class="panel-heading">Reply to: {{ firstpost.response.subject }}</div>
+		<div class="panel-body">
+			<strong> Submitted at: </strong> {{ i.response.datetime }} <br>
+			<strong> Submitted Text: </strong>
+			<p>{{ i.response.textentry }}</p>
+			{% for k in i.files %}
+			<strong> Attached File: </strong><a href="/resources/incidentresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.intrspid}}/{{k.urlencfilename}}">{{ k.filename }}</a>
+			{% if "image" in k.content_type %}
+			<br>
+			<img src="/resources/injectresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.teamid}}/{{k.urlencfilename}}">
+			{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+	{% endfor %}
+
+	<div class="panel panel-default">
+		<div class="panel-heading"> Reply </div>
+		<div class="panel-body">
+			<form action="/competitions/{{ comp_obj.compurl }}/incidentresponse/{{firstpost.response.intrspid}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+				{% csrf_token %}
+				{{ responseform.textentry.errors }}
+				<label for="{{ responseform.textentry.id_for_label }}" class="col-lg-2 control-label">{{ responseform.textentry.label }}</label>
+				<div class="col-lg-10">{{ responseform.textentry }}<br></div>
+
+				{{ responseform.docfile.errors }}
+				<label for="{{ responseform.docfile.id_for_label }}" class="col-lg-2 control-label">{{ responseform.docfile.label }}</label>
+				<div class="col-lg-10">{{ responseform.docfile }}</div>
+
+				<div class="bt-component pull-right">
+					<br>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	{% else %}
+	<p>
+		You must be authenticated as a team of this competition to view the page contents.
+	</p>
+	{% endif %}
+</div>
+{% endblock %}

@@ -24,7 +24,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-TEMPLATE_DIRS = (BASE_DIR + "/WebInterface/templates",)
+TEMPLATE_DIRS = (BASE_DIR + "/WebInterface/templates", BASE_DIR + "/WebInterface/modules")
 
 ALLOWED_HOSTS = []
 
@@ -88,15 +88,3 @@ STATIC_ROOT = ''
 STATICFILES_DIRS = (BASE_DIR + '/static/',)
 
 STATIC_URL = '/static/'
-
-SCORING_ENGINE_API_URL = 'depricated'
-
-# RPC Settings
-
-RPC_USERNAME = 'cssefd'
-RPC_PASSWORD = 'cssefd-pass'
-RPC_HOST = 'localhost'
-
-AMQP_USERNAME = 'cssefd'
-AMQP_PASSWORD = 'cssefd-pass'
-AMQP_HOST = 'localhost'

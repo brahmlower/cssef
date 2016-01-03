@@ -1,0 +1,41 @@
+{% extends "administrator/templates/adminPageTemplate.html" %}
+
+{% block sidebar_id %}sidebar_users{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	{% if returnValue != 0 %}
+		<pre>{{ errors }}</pre>
+	{% endif %}
+
+	{% if action == "create" %}
+	<form action="/admin/users/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	{% else %}
+	<form action="/admin/users/edit/{{userId}}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	{% endif %}
+		{% csrf_token %}
+
+		
+		<label for="{{ form.name.id_for_label }}" class="col-lg-2 control-label">{{ form.name.label }}</label>
+		<div class="col-lg-10">{{ form.name }}<br></div>
+
+		
+		<label for="{{ form.username.id_for_label }}" class="col-lg-2 control-label">{{ form.username.label }}</label>
+		<div class="col-lg-10">{{ form.username }}<br></div>
+
+		
+		<label for="{{ form.password.id_for_label }}" class="col-lg-2 control-label">{{ form.password.label }}</label>
+		<div class="col-lg-10">{{ form.password }}<br></div>
+
+		
+		<label for="{{ form.organization.id_for_label }}" class="col-lg-2 control-label">{{ form.organization.label }}</label>
+		<div class="col-lg-10">{{ form.organization }}<br></div>
+
+		<div class="col-lg-10 col-lg-offset-2">
+			<a class="btn btn-default" href="/admin/users/">Cancel</a>
+			<button id="form_sub_button" type="submit" class="btn btn-primary">Save</button>
+			<p id="form_messages"></p>
+		</div>
+	</form>
+</div>
+{% endblock %}

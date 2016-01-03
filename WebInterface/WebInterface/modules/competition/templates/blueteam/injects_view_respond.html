@@ -1,0 +1,74 @@
+{% extends "competition/templates/blueteam/competitionBlueTeamPageTemplate.html" %}
+
+{% block sidebar_id %}sidebar_injects{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	{% if auth_name == "auth_team_blue" %}
+	<div class="panel panel-{{inject.display_state}}">
+		<div class="panel-heading"> {{ inject.ijct_obj.title }} </div>
+		<div class="panel-body">
+			<strong>Released at: </strong>{{ inject.ijct_obj.dt_delivery }}<br>
+			<strong>Due at: </strong>{{ inject.ijct_obj.dt_response_due }}<br>
+			<strong>Closes at: </strong>{{ inject.ijct_obj.dt_response_close }}<br>
+			{% for k in inject.files %}
+			<strong> Attached File: </strong><a href="/resources/injects/{{inject.ijct_obj.compid}}/{{inject.ijct_obj.ijctid}}/{{k.urlencfilename}}">{{ k.filename }}</a><br>
+			{% endfor %}
+			<strong>Inject body:</strong><br>
+			{{ inject.ijct_obj.body }}
+		</div>
+	</div>
+
+	{% for i in response_list %}
+	<div class="panel panel-default">
+		<div class="panel-heading"> Submitted at: {{ i.response.datetime }}</div>
+		<div class="panel-body">
+			{% if i.response.textentry %}
+			<strong> Submitted Text </strong>
+			<p>{{ i.response.textentry }}</p>
+			{% endif %}
+			{% for k in i.files %}
+			<strong> Attached File: </strong><a href="/resources/injectresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.ijctrespid}}/{{k.urlencfilename}}">{{ k.filename }}</a>
+			{% if "image" in k.content_type %}
+			<br>
+			<img src="/resources/injectresponses/{{i.response.compid}}/{{i.response.teamid}}/{{i.response.ijctrespid}}/{{k.urlencfilename}}">
+			{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+	{% endfor %}
+
+	<div class="panel panel-default">
+		<div class="panel-heading"> Response Submission </div>
+		<div class="panel-body">
+			{% if not response_locked %}
+			<form action="/competitions/{{ comp_obj.compurl }}/injects/{{ inject.ijct_obj.ijctid }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+				{% csrf_token %}
+				{{ responseform.textentry.errors }}
+				<label for="{{ responseform.textentry.id_for_label }}" class="col-lg-2 control-label">{{ responseform.textentry.label }}</label>
+				<div class="col-lg-10">{{ responseform.textentry }}<br></div>
+
+				{{ responseform.docfile.errors }}
+				<label for="{{ responseform.docfile.id_for_label }}" class="col-lg-2 control-label">{{ responseform.docfile.label }}</label>
+				<div class="col-lg-10">{{ responseform.docfile }}</div>
+
+				<div class="bt-component pull-right">
+					<br>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
+			</form>
+			{% else %}
+			<p>
+				Response submission for this inject has been locked. The inject expired at {{ inject.ijct_obj.dt_response_close }} 
+			</p>
+			{% endif %}
+		</div>
+	</div>
+
+	{% else %}
+	<p>
+		You must be authenticated as a team of this competition to view the page contents.
+	</p>
+	{% endif %}
+</div>
+{% endblock %}

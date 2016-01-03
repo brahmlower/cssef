@@ -1,0 +1,44 @@
+{% extends "administrator/templates/adminPageTemplate.html" %}
+
+{% block sidebar_id %}sidebar_organizations{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<div class="jumbotron">
+		<h1>Organization List</h1>
+		<p>The following are currently available organizations. Here you can create, edit or delete organizations.</p>
+		<br>
+		<a class="btn btn-primary btn-lg" href="/admin/organizations/create/">New Organization</a>
+	</div>
+
+	{% if apiData %}
+	<table class="table">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>Description</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in apiData %}
+			<tr>
+				<th>{{ i.id }}</th>
+				<th>{{ i.name }}</th>
+				<th>{{ i.description }}</th>
+				<th>
+					<a href="/admin/organizations/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
+					{% if i.deleteable %}
+					<a href="/admin/users/delete/{{ i.id }}/" class="btn-sm btn-danger">Delete</a>
+					{% endif %}
+				</th>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% else %}
+	<p>No organizations have been created yet. Go ahead and make one!</p>
+	{% endif %}
+</div>
+{% endblock %}
