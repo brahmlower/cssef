@@ -1,0 +1,74 @@
+{% extends "competition/templates/blueteam/competitionBlueTeamPageTemplate.html" %}
+
+{% block headers_js %}
+{% load staticfiles %}
+<script src="{% static "js/chart.min.js" %}"></script>
+<script>
+	var pieData = [
+		{% for i in score_pie_chart %}
+		{
+			value: {{i.value}},
+			color:"{{i.color}}",
+			highlight: "{{i.highlight}}",
+			label: "{{i.label}}"
+		{% if forloop.last %}
+		}
+		{% else %}
+		},
+		{% endif%}
+		{% endfor %}
+	];
+	var pieOptions = {
+		segmentShowStroke: true,
+		animationSteps : 1
+	};
+
+	window.onload = function(){
+		var ctx = $('#score_pie_chart').get(0).getContext("2d");
+		window.myPie = new Chart(ctx).Pie(pieData, pieOptions);
+	};
+</script>
+{% endblock %}
+
+{% block sidebar_id %}sidebar_servicestatistics{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	{% if auth_name == "auth_team_blue" %}
+	<!-- Service selection form start -->
+	<div>
+		<form action="/competitions/{{ comp_obj.compurl }}/servicestatistics/" method="post" class="form-inline">
+			{% csrf_token %}
+			{{ form.service.errors }}
+			<label for="{{ form.service.id_for_label }}" class="control-label">{{ form.service.label }}</label>
+			{{ form.service }}
+			<button type="submit" class="btn btn-primary">Go!</button>
+		</form>
+	<div>
+	<hr>
+	<!-- Service selection form end -->
+	{% if score_vals %}
+	<div class="progress">
+		{% for i in score_vals %}
+		{% if i.value == 0 %}
+		<div class="progress-bar progress-bar-danger" style="width: {{i.percentage}}%"></div>
+		{% else %}
+		<div class="progress-bar progress-bar-success" style="width: {{i.percentage}}%"></div>
+		{% endif %}
+		{% endfor %}
+	</div>
+	{% endif %}
+	<div class="panel panel-default">
+		<div class="panel-heading"> Overall Service Uptime </div>
+		<div class="panel-body">
+			<canvas id="score_pie_chart" width="300" height="300" style="width: 300px; height: 300px;"></canvas>
+		</div>
+	</div>
+	{% else %}
+	<p>
+		You must be authenticated as a team of this competition to view the page contents.
+	</p>
+	{% endif %}
+	<br>
+</div>
+{% endblock %}

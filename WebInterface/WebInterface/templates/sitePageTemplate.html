@@ -13,6 +13,22 @@
 			$("#"+sidebar_id).toggleClass("active")
 		});
 		</script>
+		{% if debug %}
+		<script type="text/javascript">
+		function toggle_debug_output(id) {
+			var e = document.getElementById(id);
+			if(e.style.display == 'block') {
+				console.log('was block');
+				e.style.display = 'none';
+				document.getElementById("global-debug-button").className = "glyphicon glyphicon-plus";
+			} else {
+				console.log('was not block');
+				e.style.display = 'block';
+				document.getElementById("global-debug-button").className = "glyphicon glyphicon-minus";
+			}
+		}
+		</script>
+		{% endif %}
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top">
@@ -58,9 +74,22 @@
 
 		<div class="container-fluid">
 			<div class="row">
-				{% block sidebar %}{% endblock %}
+				{% block sidebar %}
+				{% endblock %}
 				<!-- End admin navigation sidebar -->
-				{% block page_content %}{% endblock %}
+{% if debug %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+<button id="global-debug-button" onclick="toggle_debug_output('global-debug')" class="glyphicon glyphicon-minus"> </button> Debug Output
+<div id="global-debug" style="display: block"><pre>
+returnValue: {{ returnValue }}
+errors: {{ errors }}
+formData: {{ formData }}
+apiData: {{ apiData }}</pre>
+</div>
+</div>
+{% endif %}
+				{% block page_content %}
+				{% endblock %}
 			</div>
 		</div>
 	</body>

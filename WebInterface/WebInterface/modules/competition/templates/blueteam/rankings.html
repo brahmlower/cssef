@@ -1,0 +1,22 @@
+{% extends "competition/templates/blueteam/competitionBlueTeamPageTemplate.html" %}
+
+{% block sidebar_id %}sidebar_rankings{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<table class="table">
+		<tr>
+			<th>Team Name</th>
+			<th>Score</th>
+			<th>Rank</th>
+		</tr>
+		{% for i in ranks %}
+		<tr>
+			<td>{{i.team}}</td>
+			<td>{{i.score}}</td>
+			<td>{{i.place}}</td>
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+{% endblock %}

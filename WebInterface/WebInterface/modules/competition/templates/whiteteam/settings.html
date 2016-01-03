@@ -1,0 +1,87 @@
+{% extends "competition/templates/whiteteam/competitionWhiteTeamPageTemplate.html" %}
+
+{% load staticfiles %}
+{% block headers_css %}
+<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-datetimepicker.min.css" %}">
+{% endblock %}
+
+{% block headers_js %}
+<script src="{% static "js/moment.min.js" %}"></script>
+<script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
+<script>
+	$(function() {
+		var competitionName = $("#{{ form.name.id_for_label }}");
+		var competitionUrl = $("#{{ form.url.id_for_label }}");
+		var datetimeDisplay = $('#{{ form.datetimeDisplay.id_for_label }}');
+		var datetimeStart = $('#{{ form.datetimeStart.id_for_label }}');
+		var datetimeFinish = $('#{{ form.datetimeFinish.id_for_label }}');
+		var autoStart = $('#{{ form.autoStart.id_for_label }}');
+		var scoringEnabled = $('#{{ form.scoringEnabled.id_for_label }}');
+		var scoringInterval = $('#{{ form.scoringInterval.id_for_label }}');
+		var scoringIntervalUncertainty = $('#{{ form.scoringIntervalUncertainty.id_for_label }}');
+		var scoringMethod = $('#{{ form.scoringMethod.id_for_label }}');
+		var scoringSlaEnabled = $('#{{ form.scoringSlaEnabled.id_for_label }}');
+		var scoringSlaThreashold = $('#{{ form.scoringSlaThreashold.id_for_label }}');
+		var scoringSlaPenalty = $('#{{ form.scoringSlaPenalty.id_for_label }}');
+
+		datetimeDisplay.datetimepicker();
+		datetimeStart.datetimepicker();
+		datetimeFinish.datetimepicker();
+
+		competitionName.keyup( function() {
+			var compname = competitionName.val();
+			competitionUrl.val(compname.toLowerCase().replace(/\s/g, '_').replace(/[^\w]/gi, ''));
+		});
+
+		function toggleDisable (targetField) {
+			targetField.prop('disabled', function(idx, oldProp) { return !oldProp; });
+			targetField.val('');
+		}
+		scoringEnabled.click(function () {
+			toggleDisable(scoringInterval);
+			toggleDisable(scoringIntervalUncertainty);
+			toggleDisable(scoringMethod);
+		});
+		scoringSlaEnabled.click(function () {
+			toggleDisable(scoringSlaThreashold);
+			toggleDisable(scoringSlaPenalty);
+		});
+		autoStart.click(function () {
+			toggleDisable(datetimeStart)
+		});
+
+		$(document).ready(function() {
+			if (!autoStart.attr('checked')) {
+				datetimeStart.attr('disabled', true);
+			}
+			if (!scoringEnabled.attr('checked')) {
+				scoringInterval.attr('disabled', true);
+				scoringIntervalUncertainty.attr('disabled', true);
+				scoringMethod.attr('disabled', true);
+			}
+			if (!scoringSlaEnabled.attr('checked')) {
+				scoringSlaThreashold.attr('disabled', true);
+				scoringSlaPenalty.attr('disabled', true);
+			}
+		});
+	});
+
+</script>
+{% endblock %}
+
+{% block sidebar_id %}sidebar_settings{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<div class="page-header"><h1> {{ competition.name }} - Settings</h1></div>
+
+	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/settings/" method="post" class="form-horizontal" enctype="multipart/form-data">
+		{% csrf_token %}
+		{{form}}
+		<div class="col-lg-10 col-lg-offset-2">
+			<a class="btn btn-default" href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/">Cancel</a>
+			<button type="submit" class="btn btn-primary">Save</button>
+		</div>
+	</form>
+</div>
+{% endblock %}
