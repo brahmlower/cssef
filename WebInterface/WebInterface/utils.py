@@ -3,17 +3,20 @@ from WebInterface.forms import CreateCompetition
 from WebInterface.forms import CreateOrganization as CreateOrganizationForm
 from WebInterface.forms import CreateUser as CreateUserForm
 from WebInterface.forms import CreatePlugin
-from CssefClient.cssefclient import getConn as getCeleryConnection
-from CssefClient.cssefclient import OrganizationGet as ApiOrganizationGet
-from CssefClient.cssefclient import OrganizationSet as ApiOrganizationSet
-from CssefClient.cssefclient import OrganizationAdd as ApiOrganizationAdd
-from CssefClient.cssefclient import OrganizationDel as ApiOrganizationDel
-from CssefClient.cssefclient import UserAdd as ApiUserAdd
-from CssefClient.cssefclient import UserDel as ApiUserDel
-from CssefClient.cssefclient import UserSet as ApiUserSet
-from CssefClient.cssefclient import UserGet as ApiUserGet
+from cssefclient.cssefclient import Configuration
+from cssefclient.cssefclient import getConn as getCeleryConnection
+from cssefclient.cssefclient import OrganizationGet as ApiOrganizationGet
+from cssefclient.cssefclient import OrganizationSet as ApiOrganizationSet
+from cssefclient.cssefclient import OrganizationAdd as ApiOrganizationAdd
+from cssefclient.cssefclient import OrganizationDel as ApiOrganizationDel
+from cssefclient.cssefclient import UserAdd as ApiUserAdd
+from cssefclient.cssefclient import UserDel as ApiUserDel
+from cssefclient.cssefclient import UserSet as ApiUserSet
+from cssefclient.cssefclient import UserGet as ApiUserGet
 
-def makeApiRequest(apiEndpoint, argsDict, apiConnection = getCeleryConnection()):
+config = Configuration('/etc/cssef/cssef.conf')
+
+def makeApiRequest(apiEndpoint, argsDict, apiConnection = getCeleryConnection(config)):
 	print '[UTILS] Making api request to endpoint "%s" with arguments "%s"' % (apiEndpoint, argsDict)
 	command = apiEndpoint(apiConnection)
 	return command.execute(**argsDict)
@@ -47,12 +50,12 @@ class BaseContext(object):
 		self.apiData = output['content']
 
 	def getContext(self):
-		print 'getContext'
+		print 'utils.getContext - start'
 		self.context.push({'debug': self.debug})
 		self.context.push({'returnValue': self.returnValue})
 		self.context.push({'errors': self.errors})
 		self.context.push({'apiData': self.apiData})
-		print 'end getContext'
+		print 'utils.getContext - end'
 		return self.context
 
 class FormContext(BaseContext):
@@ -161,25 +164,12 @@ class CreateUserContext(FormContext):
 		super(CreateUserContext, self).__init__(request)
 		self.action = self.CREATE
 		self.form = CreateUserForm
-		# self.formChoices = self.getOrganizations()
 		self.httpMethodActions['POST'] = self.apiOnPost
-		# self.httpMethodActions['GET'] = self.apiOnGet
-
-	# def getOrganizations(self):
-	# 	organizationChoices = []
-	# 	output = makeApiRequest(ApiOrganizationGet, {})
-	# 	for i in output['content']:
-	# 		organizationChoices.append((i['id'], i['name']))
-	# 	return organizationChoices
-
-	# def apiOnGet(self):
-	# 	self.form = self.form(organizationChoices = self.formChoices)
 
 	def apiOnPost(self):
 		if not self.validateFormData():
 			return False
 		output = makeApiRequest(ApiUserAdd, self.formData)
-		print 'end of apiOnPost'
 		self.translateApiReturn(output)
 
 

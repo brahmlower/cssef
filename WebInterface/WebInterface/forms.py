@@ -20,13 +20,14 @@ import json
 import traceback
 
 from WebInterface import cssefApi
-#from WebInterface.utils import makeApiRequest
-from CssefClient.cssefclient import getConn as getCeleryConnection
-from CssefClient.cssefclient import OrganizationGet as ApiOrganizationGet
+from cssefclient.cssefclient import Configuration
+from cssefclient.cssefclient import getConn as getCeleryConnection
+from cssefclient.cssefclient import OrganizationGet as ApiOrganizationGet
 
-def makeApiRequest(apiEndpoint, argsDict, apiConnection = getCeleryConnection()):
+config = Configuration('/etc/cssef/cssef.conf')
+
+def makeApiRequest(apiEndpoint, argsDict, apiConnection = getCeleryConnection(config)):
 	print '[FORMS] Making api request to endpoint "%s" with arguments "%s"' % (apiEndpoint, argsDict)
-	#print traceback.print_stack(limit = 5)
 	command = apiEndpoint(apiConnection)
 	return command.execute(**argsDict)
 
@@ -69,17 +70,24 @@ class CreateOrganization(Form):
 	)
 	maxMembers = CharField(
 		label = 'Maximum Members',
-		widget = NumberInput(attrs={'class': 'form-control', 'required': True})
+		widget = NumberInput(attrs={'class': 'form-control'})
 	)
 	maxCompetitions = CharField(
 		label = 'Maximum Competitions',
-		widget = NumberInput(attrs={'class': 'form-control', 'required': True})
+		widget = NumberInput(attrs={'class': 'form-control'})
 	)
 
 class CreatePlugin(Form):
 	name = CharField(label = 'Name', widget = TextInput(attrs={'class':'form-control', 'required': True}))
 	description = CharField(label = 'Description', widget = Textarea(attrs={'class':'form-control', 'required': True}))
 	pluginFile = FileField(label = "File Upload", required = False)
+
+def getOrganizationChoices():
+	organizationChoices = []
+	output = makeApiRequest(ApiOrganizationGet, {})
+	for i in output['content']:
+		organizationChoices.append((i['id'], i['name']))
+	return organizationChoices
 
 class CreateUser(Form):
 	def __init__(self, *args, **kwargs):
@@ -92,19 +100,20 @@ class CreateUser(Form):
 
 	name = CharField(
 		label = 'Name',
-		widget = TextInput(attrs={'class':'form-control', 'required': True})
+		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
 	)
 	username = CharField(
 		label = 'Username',
-		widget = TextInput(attrs={'class':'form-control', 'required': True})
+		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
 	)
 	password = CharField(
 		label = 'Password',
-		widget = PasswordInput(attrs={'class':'form-control', 'required': True})
+		widget = PasswordInput(attrs={'class':'form-control', 'required': 'True'})
 	)
 	organization = ChoiceField(
 		label = 'Organization',
 		choices = [],
+		#choices = getOrganizationChoices(),
 		widget = Select(attrs={'class':'form-control', 'required': True})
 	)
 
