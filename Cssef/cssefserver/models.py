@@ -138,7 +138,7 @@ class ScoringEngine(Base):
 class Organization(Base):
 	__tablename__ = tablePrefix + 'organization'
 	pkid			= Column(Integer, primary_key = True)
-	deleteable		= Column(Boolean)
+	deletable		= Column(Boolean, default = True)
 	name			= Column(String(256))
 	url				= Column(String(256))
 	description		= Column(String(1000))

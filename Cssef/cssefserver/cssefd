@@ -88,7 +88,7 @@ class Daemon(object):
 			pid = None
 	
 		if pid:
-			message = "pidfile %s already exist. Daemon already running?\n"
+			message = "Pidfile %s already exist. Daemon already running?\n"
 			sys.stderr.write(message % self.pidfile)
 			sys.exit(1)
 		
@@ -109,7 +109,7 @@ class Daemon(object):
 			pid = None
 	
 		if not pid:
-			message = "pidfile %s does not exist. Daemon not running?\n"
+			message = "Pidfile %s does not exist. Daemon not running?\n"
 			sys.stderr.write(message % self.pidfile)
 			return # not an error in a restart
 
@@ -139,9 +139,13 @@ class Daemon(object):
 		Display the status of the daemon
 		"""
 		try:
-			print "Running with pid %s" % file(self.pidfile,'r').read()
+			pid = file(self.pidfile, 'r').read().split("\n")[0]
+			if os.path.exists('/proc/%s' % pid):
+				print "Running with pid %s" % pid
+			else:
+				print "Lockfile exists with pid %s, but the process is not running." % pid
 		except IOError:
-			print "Daemon not running"
+			print "Daemon not running."
 			sys.exit(1)
 
 class CssefDaemon(Daemon):

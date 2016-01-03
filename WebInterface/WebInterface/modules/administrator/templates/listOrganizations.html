@@ -29,7 +29,7 @@
 				<th>{{ i.description }}</th>
 				<th>
 					<a href="/admin/organizations/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
-					{% if i.deleteable %}
+					{% if i.deletable %}
 					<a href="/admin/users/delete/{{ i.id }}/" class="btn-sm btn-danger">Delete</a>
 					{% endif %}
 				</th>
