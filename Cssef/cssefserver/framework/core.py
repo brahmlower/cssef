@@ -30,8 +30,13 @@ class Organization(ModelWrapper):
 		'maxMembers',
 		'maxCompetitions']
 
-	def isDeleteable(self):
-		return self.model.deleteable
+	def asDict(self):
+		tmpDict = super(Organization, self).asDict()
+		tmpDict['deletable'] = self.isDeletable()
+		return tmpDict
+
+	def isDeletable(self):
+		return self.model.deletable
 
 	@property
 	def name(self):
