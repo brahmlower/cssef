@@ -14,7 +14,8 @@ from WebInterface.settings import SCORING_ENGINE_API_URL
 from WebInterface.utils import ContextFactory
 from django.core.files.uploadedfile import UploadedFile
 
-from CssefClient.cssefclient import getConn as getCeleryConnection
+from cssefclient.cssefclient import Configuration
+from cssefclient.cssefclient import getConn as getCeleryConnection
 # from WebInterface.client import DocumentAdd as 
 # from WebInterface.client import DocumentDel as 
 # from WebInterface.client import DocumentSet as 
@@ -32,12 +33,12 @@ from WebInterface.utils import CreateUserContext
 from WebInterface.utils import EditUserContext
 from WebInterface.utils import ListUserContext
 
+config = Configuration('/etc/cssef/cssef.conf')
+
 def getContext(contextClass, pageTemplate, request, **kwargs):
 	context = contextClass(request, **kwargs)
 	context.processContext()
-	c = context.getContext()
-	print 'end of getContext in administrator'
-	return render_to_response(pageTemplate, c)
+	return render_to_response(pageTemplate, context.getContext())
 
 def home(request):
 	context = ContextFactory(request)
@@ -72,27 +73,14 @@ def listUsers(request):
 
 def createUser(request):
 	pageTemplate = 'administrator/createEditUser.html'
-	print 'getting context'
-	x = getContext(CreateUserContext, pageTemplate, request)
-	print 'before createUser return'
-	return x
+	print 'administrator.createUser - before getContext call'
+	context = getContext(CreateUserContext, pageTemplate, request)
+	print 'administrator.createUser - after geteContext call'
+	return context
 
 def editUser(request):
 	pageTemplate = 'administrator/createEditUser.html'
 	return getContext(EditUserContext, pageTemplate, request)
-
-# def createEditUser(request, userId = None):
-# 	context = ContextFactory(request, userId)
-# 	if request.method != 'POST':
-# 		return render_to_response('administrator/createEditUser.html', context.User())
-# 	formData = CreateUser(request.POST)
-# 	if not formData.is_valid():
-# 		return render_to_response('administrator/createEditUser.html', context.User())
-# 	print formData.cleaned_data
-# 	response = cssefApi.post('users.json', formData.cleaned_data)
-# 	if response.status_code/200 != 1:
-# 		return HttpResponse(response.text)
-# 	return HttpResponseRedirect('/admin/users/')
 
 #####################################
 # Organization management pages
@@ -103,7 +91,8 @@ def listOrganizations(request):
 
 def createOrganization(request):
 	pageTemplate = 'administrator/createEditOrganization.html'
-	return getContext(CreateOrganizationContext, pageTemplate, request)
+	context = getContext(CreateOrganizationContext, pageTemplate, request)
+	return context
 
 def editOrganization(request, organizationId):
 	pageTemplate = 'administrator/createEditOrganization.html'
@@ -115,7 +104,7 @@ def editOrganization(request, organizationId):
 def listPlugins(request):
 	context = ContextFactory(request)
 	command = CssefClient.pluginsGet
-	command.conn = getCeleryConnection()
+	command.conn = getCeleryConnection(config)
 	output = command()
 	if output['value'] == 0:
 		context.push({'plugins': output['value']})
