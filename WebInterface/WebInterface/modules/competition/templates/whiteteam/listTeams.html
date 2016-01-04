@@ -1,4 +1,4 @@
-{% extends "competition/templates/whiteteam/competitionWhiteTeamPageTemplate.html" %}
+{% extends "competition/templates/whiteteam/pageTemplate.html" %}
 
 {% block sidebar_id %}sidebar_teams{% endblock %}
 
@@ -7,7 +7,7 @@
 	<div class="page-header">
 		<h1> {{ competition.name }} - Teams</h1>
 	</div>
-	<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/teams/create/" class="btn btn-primary">Create Team</a>
+	<a href="/competition/{{ competition.url }}/teamwhite/teams/create/" class="btn btn-primary">Create Team</a>
 	<br><br>
 	{% if teams %}
 	{% for i in teams %}
@@ -20,7 +20,7 @@
 			<strong>CIDR: </strong>{{ i.networkCidr }}<br>
 			<strong>Score Configurations: </strong>{{ i.scoreConfigurations }}
 			<div class="bt-component pull-right">
-				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/teams/edit/{{ i.teamId }}" class="btn btn-primary">Edit</a>
+				<a href="/competition/{{ competition.url }}/teamwhite/teams/edit/{{ i.id }}" class="btn btn-primary">Edit</a>
 				<a href="#" class="btn btn-danger">Delete</a>
 			</div>
 		</div>

@@ -1,4 +1,4 @@
-{% extends "competition/templates/whiteteam/competitionWhiteTeamPageTemplate.html" %}
+{% extends "competition/templates/whiteteam/pageTemplate.html" %}
 
 {% block sidebar_id %}sidebar_injects{% endblock %}
 
@@ -7,10 +7,10 @@
 	<div class="page-header">
 		<h1> {{ competition.name }} - Injects</h1>
 	</div>
-	<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/create/" class="btn btn-primary">Create Inject</a>
+	<a href="/competition/{{ competition.url }}/teamwhite/injects/create/" class="btn btn-primary">Create Inject</a>
 	<br><br>
-	{% if injects %}
-	{% for i in injects %}
+	{% if apiData %}
+	{% for i in apiData %}
 	<div class="panel panel-default">
 		<div class="panel-heading"> {{ i.title }} </div>
 		<div class="panel-body">
@@ -26,12 +26,12 @@
 			<strong>Due at: </strong>No response required<br>
 			{% endif %}
 			{% for k in i.files %}
-			<strong> Attached File: </strong><a href="/resources/injects/{{ i.competitionId }}/{{ i.injectId }}/{{ k.urlencfilename }}">{{ k.filename }}</a><br>
+			<!-- <strong> Attached File: </strong><a href="/resources/injects/{{ i.competitionId }}/{{ i.injectId }}/{{ k.urlencfilename }}">{{ k.filename }}</a><br> -->
 			{% endfor %}
 			<strong>Inject body:</strong><br>
 			{{ i.body }}
 			<div class="bt-component pull-right">
-				<a href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/injects/edit/{{ i.injectId }}/" class="btn btn-primary">Edit</a>
+				<a href="/competition/{{ competition.url }}/teamwhite/injects/edit/{{ i.id }}/" class="btn btn-primary">Edit</a>
 				<a href="#" class="btn btn-danger">Delete</a>
 			</div>
 			<br>

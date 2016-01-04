@@ -92,9 +92,9 @@ def handleException(e):
 # Competition Endpoints
 # ==================================================
 @CssefCeleryApp.task(name = 'competitionAdd')
-def competitionAdd(organization = None, name = None, **kwargs):
+def competitionAdd(organization = None, **kwargs):
 	try:
-		if not organization or not name:
+		if not organization:
 			raise Exception
 		db = databaseConnection(dbPath)
 		organization = Organization.fromDatabase(db, organization)

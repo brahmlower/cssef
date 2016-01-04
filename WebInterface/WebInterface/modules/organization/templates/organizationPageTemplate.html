@@ -8,10 +8,14 @@
 <div class="col-sm-3 col-md-2 sidebar">
 	<ul class="nav nav-sidebar">
 		<li id="sidebar_home"><a href="/organization/{{organization.url}}/home/">Home</a></li>
+		<!-- This is some SUPER hackish css because I don't want to put in the time to do it right at the moment.
+		I'll fix this later, I promise -->
+		<li style="padding-top: 10px; padding-left: 20px; padding-right: 20px, padding-bottom: 15px"> Management </li>
 		<li id="sidebar_members"><a href="/organization/{{organization.url}}/members/">Members</a></li>
-		<li id="sidebar_competitions"><a href="/organization/{{organization.url}}/competitions/">Competitions</a></li>
 		<li id="sidebar_settings"><a href="/organization/{{organization.url}}/settings/">Settings</a></li>
-		<li id="sidebar_account" class="disabled"><a href="#">Account</a></li>
+		<li style="padding-top: 10px; padding-left: 20px; padding-right: 20px, padding-bottom: 15px"> Modules </li>
+		<!-- <li id="sidebar_competitions"><a href="/organization/{{organization.url}}/competitions/">Competitions</a></li> -->
+		<li id="sidebar_competitions"><a href="/competition/{{organization.url}}/management/summary"> Competitions </a></li>
 	</ul>
 </div>
 {% endblock %}

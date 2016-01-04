@@ -1,0 +1,44 @@
+{% extends "organization/templates/organizationPageTemplate.html" %}
+
+{% block sidebar_id %}sidebar_members{% endblock %}
+
+{% block page_content %}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+	<div class="jumbotron">
+		<h1>Organization Members</h1>
+		<p>This is a list of the members in the organization.</p>
+		<!-- using apiData|legth is somewhat hackish here. I should really be using organization.numMembers, but that doesn't fit well with the way organization object is serialized. Once I get that sorted out, this should be updated -->
+		<p>You have {{ apiData|length }} member(s) of a maximum of {{ organization.maxMembers }}.</p>
+	</div>
+
+	{% if apiData %}
+	<table class="table">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>Username</th>
+				<th>Organization</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in apiData %}
+			<tr>
+				<th>{{ i.id }}</th>
+				<th>{{ i.name }}</th>
+				<th>{{ i.username }}</th>
+				<th>{{ i.organization }}</th>
+				<th>
+					<a href="/organization/{{ organization.url }}/members/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
+					<a href="/organization/{{ organization.url }}/members/delete/{{ i.id }}/" class="btn-sm btn-danger">Delete</a>
+				</th>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% else %}
+	<p>No members have been created yet. Go ahead and make one!</p>
+	{% endif %}
+</div>
+{% endblock %}

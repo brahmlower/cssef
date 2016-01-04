@@ -24,11 +24,13 @@ class CreateOrganizationForm(Form):
 	)
 	maxMembers = CharField(
 		label = 'Maximum Members',
-		widget = NumberInput(attrs={'class': 'form-control'})
+		widget = NumberInput(attrs={'class': 'form-control'}),
+		required = False
 	)
 	maxCompetitions = CharField(
 		label = 'Maximum Competitions',
-		widget = NumberInput(attrs={'class': 'form-control'})
+		widget = NumberInput(attrs={'class': 'form-control'}),
+		required = False
 	)
 
 def getOrganizationChoices():
@@ -42,6 +44,13 @@ class CreateUserForm(Form):
 	def __init__(self, *args, **kwargs):
 		super(CreateUserForm, self).__init__(*args, **kwargs)
 		self.fields['organization'].choices = getOrganizationChoices()
+
+	def getOrganizationChoices():
+		organizationChoices = []
+		output = makeApiRequest(ApiOrganizationGet, {})
+		for i in output['content']:
+			organizationChoices.append((i['id'], i['name']))
+		return organizationChoices
 
 	name = CharField(
 		label = 'Name',
@@ -58,5 +67,5 @@ class CreateUserForm(Form):
 	organization = ChoiceField(
 		label = 'Organization',
 		choices = [],
-		widget = Select(attrs={'class':'form-control', 'required': True})
+		widget = Select(attrs={'class':'form-control', 'required': 'True'})
 	)

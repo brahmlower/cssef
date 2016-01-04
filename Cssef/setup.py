@@ -7,7 +7,7 @@ setup(
 	name = "cssefserver",
 
 	# Version number:
-	version = "0.0.1",
+	version = "0.0.2",
 
 	# Application author details:
 	author = "Brahm Lower",
