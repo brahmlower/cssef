@@ -78,14 +78,14 @@ class Inject(Base):
 	__tablename__ = tablePrefix + 'inject'
 	pkid					= Column(Integer, primary_key = True)
 	competition				= Column(Integer, ForeignKey(tablePrefix + 'competition.pkid'))
-	responses				= relationship('InjectResponse')
-	requireResponse			= Column(Boolean)
-	manualDelivery			= Column(Boolean)
-	datetimeDelivery		= Column(DateTime)
-	datetimeResponseDue		= Column(DateTime)
-	datetimeResponseClose	= Column(DateTime)
 	title					= Column(String(50))
 	body					= Column(String(1000))
+	responses				= relationship('InjectResponse')
+	requireResponse			= Column(Boolean, default = True)
+	manualDelivery			= Column(Boolean, default = False)
+	datetimeDelivery		= Column(DateTime, nullable = True, default = None)
+	datetimeResponseDue		= Column(DateTime, nullable = True, default = None)
+	datetimeResponseClose	= Column(DateTime, nullable = True, default = None)
 
 class InjectResponse(Base):
 	__tablename__ = tablePrefix + 'injectresponse'

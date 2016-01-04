@@ -1,11 +1,17 @@
 from django.conf.urls import patterns
 from django.conf.urls import url
-#from modules.competition.views import orangeteam
+from WebInterface.modules.competition.views import management
+#from WebInterface.modules.competition.views import orangeteam
 from WebInterface.modules.competition.views import whiteteam
 from WebInterface.modules.competition.views import blueteam
-#from modules.competition.views import redteam
+#from WebInterface.modules.competition.views import redteam
 
 urlpatterns = patterns('',
+	# Management pages
+	url(r'^(?P<organizationUrl>[\w\-\_]{0,50})/management/summary/$',	management.summary),
+	url(r'^(?P<organizationUrl>[\w\-\_]{0,50})/management/list/$',		management.listCompetitions),
+	url(r'^(?P<organizationUrl>[\w\-\_]{0,50})/management/create/$',	management.createCompetition),
+
 	# Orange Team pages
 	#url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamorange/$', orangeteam.summary),
 
@@ -13,14 +19,14 @@ urlpatterns = patterns('',
 	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/summary/$',										whiteteam.summary),
 	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/settings/$',									whiteteam.settings),
 	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/teams/$',										whiteteam.listTeams),
-	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/teams/create/$',								whiteteam.createEditTeam),
-	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/teams/edit/(?P<teamId>[1-9][1-9]*)/$',			whiteteam.createEditTeam),
-	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/services/$',									whiteteam.listServices),
-	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/services/create/$',								whiteteam.createEditService),
-	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/services/edit/(?P<serviceId>[1-9][1-9]*)/$',	whiteteam.createEditService),
+	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/teams/create/$',								whiteteam.createTeam),
+	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/teams/edit/(?P<teamId>[1-9][1-9]*)/$',			whiteteam.editTeam),
+	# url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/services/$',									whiteteam.listServices),
+	# url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/services/create/$',								whiteteam.createService),
+	# url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/services/edit/(?P<serviceId>[1-9][1-9]*)/$',	whiteteam.editService),
 	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/injects/$',										whiteteam.listInjects),
-	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/injects/create/$',								whiteteam.createEditInject),
-	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/injects/edit/(?P<injectId>[1-9][1-9]*)/$',		whiteteam.createEditInject),
+	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/injects/create/$',								whiteteam.createInject),
+	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamwhite/injects/edit/(?P<injectId>[1-9][1-9]*)/$',		whiteteam.editInject),
 
 	# Blue Team pages
 	url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamblue/summary/$',										blueteam.summary),
