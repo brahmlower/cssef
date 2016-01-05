@@ -7,9 +7,9 @@ from cssefclient.cssefclient import CompetitionGet as ApiCompetitionGet
 from cssefclient.cssefclient import UserGet as ApiUserGet
 
 class OrganizationContext(BaseContext):
-	def __init__(self, request, organizationUrl = None):
+	def __init__(self, request, organizationId = None):
 		super(OrganizationContext, self).__init__(request)
-		apiReturn = makeApiRequest(ApiOrganizationGet, {'url': organizationUrl})
+		apiReturn = makeApiRequest(ApiOrganizationGet, {'pkid': organizationId})
 		self.organization = apiReturn['content'][0]
 
 	def getContext(self):
@@ -18,9 +18,9 @@ class OrganizationContext(BaseContext):
 		return self.context
 
 class OrganizationFormContext(FormContext):
-	def __init__(self, request, organizationUrl = None):
+	def __init__(self, request, organizationId = None):
 		super(OrganizationFormContext, self).__init__(request)
-		apiReturn = makeApiRequest(ApiOrganizationGet, {'url': organizationUrl})
+		apiReturn = makeApiRequest(ApiOrganizationGet, {'pkid': organizationId})
 		self.organization = apiReturn['content'][0]
 
 	def getContext(self):
@@ -29,8 +29,8 @@ class OrganizationFormContext(FormContext):
 		return self.context
 
 class ListMemberContext(OrganizationContext):
-	def __init__(self, request, organizationUrl = None):
-		super(ListMemberContext, self).__init__(request, organizationUrl)
+	def __init__(self, request, organizationId = None):
+		super(ListMemberContext, self).__init__(request, organizationId)
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
@@ -65,8 +65,8 @@ class ListMemberContext(OrganizationContext):
 # 		self.translateApiReturn(output)
 
 class OrganizationSettingsContext(OrganizationContext):
-	def __init__(self, request, organizationUrl = None):
-		super(OrganizationSettingsContext, self).__init__(request, organizationUrl)
+	def __init__(self, request, organizationId = None):
+		super(OrganizationSettingsContext, self).__init__(request, organizationId)
 # class OrganizationSettingsContext(OrganizationFormContext):
 # 	def __init__(self, request, organizationUrl = None):
 # 		super(OrganizationSettingsContext, self).__init__(request, organizationUrl)

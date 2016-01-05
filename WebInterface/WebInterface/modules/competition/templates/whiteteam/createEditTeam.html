@@ -54,10 +54,10 @@
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">	
 	{% if action == "create" %}
 	<h2> Create Team </h2>
-	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/teams/{{ action }}/" method="post" class="form-horizontal">
+	<form action="/competition/{{ competition.id }}/teamwhite/teams/{{ action }}/" method="post" class="form-horizontal">
 	{% else%}
 	<h2> Edit Team </h2>
-	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/teams/{{ action }}/{{ team.teamId }}/" method="post" class="form-horizontal">
+	<form action="/competition/{{ competition.id }}/teamwhite/teams/{{ action }}/{{ team.teamId }}/" method="post" class="form-horizontal">
 	{% endif %}	
 		{% csrf_token %}
 		{{ form }}
@@ -69,7 +69,7 @@
 		{% endfor %} -->
 
 		<div class="col-lg-10 col-lg-offset-2">
-			<a class="btn btn-default" href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/teams/">Cancel</a>
+			<a class="btn btn-default" href="/competition/{{ competition.id }}/teamwhite/teams/">Cancel</a>
 			<button id="form_sub_button" type="submit" class="btn btn-primary">Save</button>
 			<p id="form_messages"></p>
 		</div>

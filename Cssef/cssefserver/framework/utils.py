@@ -42,7 +42,12 @@ class ModelWrapper(object):
 		tmpDict = {}
 		tmpDict['id'] = self.getId()
 		for i in self.fields:
-			tmpDict[i] = getattr(self, i)
+			try:
+				tmpDict[i] = getattr(self, i)
+			except AttributeError:
+				# The field is not an attribute of the subclassed model wrapper
+				# We'll try to find it in the classes modesl
+				tmpDict[i] = getattr(self.mode, i)
 		return tmpDict
 
 	@classmethod

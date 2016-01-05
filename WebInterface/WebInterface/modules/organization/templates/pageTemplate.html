@@ -1,0 +1,19 @@
+{% extends "sitePageTemplate.html" %}
+
+{% block authed_navbar_links %}
+<li class="active"><a href="/organization/{{ organization.id }}/">Organization</a></li>
+{% endblock %}
+
+{% block sidebar %}
+<div class="col-sm-3 col-md-2 sidebar">
+	<ul class="nav nav-sidebar">
+		<li id="sidebar_home"><a href="/organization/{{ organization.id }}/home/">Home</a></li>
+		<!-- This is some SUPER hackish css because I don't want to put in the time to do it right at the moment. I'll fix this later, I promise -->
+		<li style="padding-top: 10px; padding-left: 20px; padding-right: 20px, padding-bottom: 15px"> Management </li>
+		<li id="sidebar_members"><a href="/organization/{{ organization.id }}/members/">Members</a></li>
+		<li id="sidebar_settings"><a href="/organization/{{ organization.id }}/settings/">Settings</a></li>
+		<li style="padding-top: 10px; padding-left: 20px; padding-right: 20px, padding-bottom: 15px"> Modules </li>
+		<li id="sidebar_competitions"><a href="/competition/{{ organization.id }}/management/summary"> Competitions <span class="glyphicon glyphicon-chevron-right"></span></a></li>
+	</ul>
+</div>
+{% endblock %}

@@ -78,12 +78,12 @@ class CreateTeamForm(Form):
 	# 	kwargs.update(initial = cssefApi.getTeam(competitionId, teamId))
 	# 	super(CreateTeam, self).__init__(*args, **kwargs)
 
-	teamname = CharField(
+	name = CharField(
 		label = 'Team Name',
 		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
 	)
-	loginname = CharField(
-		label = 'Login Name',
+	username = CharField(
+		label = 'Username',
 		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
 	)
 	password = CharField(

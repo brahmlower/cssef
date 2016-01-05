@@ -39,15 +39,15 @@
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 	{% if action == "create" %}
 	<h2> Create Service </h2>
-	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/services/{{ action }}/" method="post" class="form-horizontal">
+	<form action="/organization/{{ organization.id }}/competitions/{{ competition.id }}/services/{{ action }}/" method="post" class="form-horizontal">
 	{% else%}
 	<h2> Edit Service </h2>
-	<form action="/organization/{{ organization.url }}/competitions/{{ competition.url }}/services/{{ action }}/{{ service.serviceId }}/" method="post" class="form-horizontal">
+	<form action="/organization/{{ organization.id }}/competitions/{{ competition.id }}/services/{{ action }}/{{ service.serviceId }}/" method="post" class="form-horizontal">
 	{% endif %}
 		{% csrf_token %}
 		{{ form }}
 		<div class="col-lg-offset-2 col-lg-10">
-			<a class="btn btn-default" href="/organization/{{ organization.url }}/competitions/{{ competition.url }}/services/">Cancel</a>
+			<a class="btn btn-default" href="/organization/{{ organization.id }}/competitions/{{ competition.id }}/services/">Cancel</a>
 			<button id="form_sub_button" type="submit" class="btn btn-primary">Save</button>
 			<label id="form_messages"></label>
 		</div>

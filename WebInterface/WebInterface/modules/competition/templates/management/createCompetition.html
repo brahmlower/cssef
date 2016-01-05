@@ -18,7 +18,7 @@
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 	{% autoescape off %}
 	<h2>New Competition</h2>
-	<form action="/competition/{{ organization.url }}/management/create/" method="post" class="form-horizontal">
+	<form action="/competition/{{ organization.id }}/management/create/" method="post" class="form-horizontal">
 		{% csrf_token %}
 		{{ form.name.errors}}
 		<label for="{{ form.name.id_for_label }}" class="col-lg-2 control-label">{{ form.name.label }}</label>
@@ -33,7 +33,7 @@
 		<div class="col-lg-10">{{ form.description }}<br></div>
 
 		<div class="col-lg-10 col-lg-offset-2">
-			<a class="btn btn-default" href="/competition/{{ organization.url }}/management/list/">Cancel</a>
+			<a class="btn btn-default" href="/competition/{{ organization.id }}/management/list/">Cancel</a>
 			<button type="submit" class="btn btn-primary">Create</button>
 		</div>
 	</form>
