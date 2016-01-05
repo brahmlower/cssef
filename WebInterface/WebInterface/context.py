@@ -1,3 +1,4 @@
+from django.forms import Form
 from django.template import RequestContext
 
 class BaseContext(object):
@@ -58,5 +59,11 @@ class FormContext(BaseContext):
 	def getContext(self):
 		super(FormContext, self).getContext()
 		self.context.push({'action': self.action})
-		self.context.push({'form': self.form()})
+		# All things considered, this is not a great way to solve this issue, since an inconsistent
+		# state of self.form is bad and makes stack tracing more confusing. Just another item for the
+		# todo list...
+		if isinstance(self.form, Form):
+			self.context.push({'form': self.form})
+		else:
+			self.context.push({'form': self.form()})
 		return self.context

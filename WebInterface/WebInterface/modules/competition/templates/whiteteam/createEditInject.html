@@ -53,14 +53,14 @@
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 	<h2> Create Inject </h2>
 	{% if action == "create" %}
-	<form action="/competition/{{ competition.url }}/teamwhite/injects/{{ action }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	<form action="/competition/{{ competition.id }}/teamwhite/injects/{{ action }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 	{% else%}
-	<form action="/competition/{{ competition.url }}/teamwhite/injects/{{ action }}/{{ apiData.0.id }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
+	<form action="/competition/{{ competition.id }}/teamwhite/injects/{{ action }}/{{ apiData.0.id }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
 	{% endif %}
 		{% csrf_token %}
 		{{form}}
 		<div class="col-lg-10 col-lg-offset-2">
-			<a class="btn btn-default" href="/competition/{{ competition.url }}/teamwhite/injects/">Cancel</a>
+			<a class="btn btn-default" href="/competition/{{ competition.id }}/teamwhite/injects/">Cancel</a>
 			<button type="submit" class="btn btn-primary">Save</button>
 		</div>
 	</form>

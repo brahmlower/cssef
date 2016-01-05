@@ -11,11 +11,13 @@ from cssefclient.cssefclient import OrganizationGet as ApiOrganizationGet
 class CreateOrganizationForm(Form):
 	name = CharField(
 		label = 'Organization Name',
-		widget = TextInput(attrs={'class':'form-control', 'required': True})
+		widget = TextInput(attrs={'class':'form-control'}),
+		required = True
 	)
 	url = CharField(
 		label = 'Organization URL',
-		widget = TextInput(attrs={'class':'form-control', 'required': True})
+		widget = TextInput(attrs={'class':'form-control'}),
+		required = True
 	)
 	description = CharField(
 		label = 'Description',
@@ -54,18 +56,18 @@ class CreateUserForm(Form):
 
 	name = CharField(
 		label = 'Name',
-		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
+		widget = TextInput(attrs={'class':'form-control'})
 	)
 	username = CharField(
 		label = 'Username',
-		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
+		widget = TextInput(attrs={'class':'form-control'})
 	)
 	password = CharField(
 		label = 'Password',
-		widget = PasswordInput(attrs={'class':'form-control', 'required': 'True'})
+		widget = PasswordInput(attrs={'class':'form-control'})
 	)
 	organization = ChoiceField(
 		label = 'Organization',
 		choices = [],
-		widget = Select(attrs={'class':'form-control', 'required': 'True'})
+		widget = Select(attrs={'class':'form-control'})
 	)

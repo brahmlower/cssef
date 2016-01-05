@@ -1,4 +1,4 @@
-{% extends "organization/templates/organizationPageTemplate.html" %}
+{% extends "organization/templates/pageTemplate.html" %}
 
 {% block sidebar_id %}sidebar_members{% endblock %}
 
@@ -30,8 +30,8 @@
 				<th>{{ i.username }}</th>
 				<th>{{ i.organization }}</th>
 				<th>
-					<a href="/organization/{{ organization.url }}/members/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
-					<a href="/organization/{{ organization.url }}/members/delete/{{ i.id }}/" class="btn-sm btn-danger">Delete</a>
+					<a href="/organization/{{ organization.id }}/members/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
+					<a href="/organization/{{ organization.id }}/members/delete/{{ i.id }}/" class="btn-sm btn-danger">Delete</a>
 				</th>
 			</tr>
 			{% endfor %}

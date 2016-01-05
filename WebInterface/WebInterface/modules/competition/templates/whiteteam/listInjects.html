@@ -7,37 +7,37 @@
 	<div class="page-header">
 		<h1> {{ competition.name }} - Injects</h1>
 	</div>
-	<a href="/competition/{{ competition.url }}/teamwhite/injects/create/" class="btn btn-primary">Create Inject</a>
-	<br><br>
+	<a href="/competition/{{ competition.id }}/teamwhite/injects/create/" class="btn btn-primary">Create Inject</a>
+	<br>
+	<br>
 	{% if apiData %}
-	{% for i in apiData %}
-	<div class="panel panel-default">
-		<div class="panel-heading"> {{ i.title }} </div>
-		<div class="panel-body">
-			{% if i.manualDelivery %}
-			<strong>Released at: </strong>Delivered Manually<br>
-			{% else %}
-			<strong>Released at: </strong>{{ i.datetimeDelivery }}<br>
-			{% endif %}
-			{% if i.requireResponse %}
-			<strong>Due at: </strong>{{ i.datetimeResponseDue }}<br>
-			<strong>Closes at: </strong>{{ i.datetimeResponseClose }}<br>
-			{% else %}
-			<strong>Due at: </strong>No response required<br>
-			{% endif %}
-			{% for k in i.files %}
-			<!-- <strong> Attached File: </strong><a href="/resources/injects/{{ i.competitionId }}/{{ i.injectId }}/{{ k.urlencfilename }}">{{ k.filename }}</a><br> -->
+	<table class="table">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Title</th>
+				<th>Manual Delivery</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in apiData %}
+			<tr>
+				<th>{{ i.id }}</th>
+				<th>{{ i.title }}</th>
+				<th>{{ i.manualDelivery }}</th>
+				<th>
+					{% if i.manualDelivery %}
+					{# This will eventually also have to check if the competition is already started. If not, don't show the button. #}
+					<a href="/competition/{{ i.id }}/teamwhite/inject/deliver/" class="btn-sm btn-success">Deliver</a>
+					{% endif %}
+					<a href="/competition/{{ i.id }}/teamwhite/inject/edit/" class="btn-sm btn-primary">Manage</a>
+					<a href="/competition/{{ organization.id }}/manage/delete/" class="btn-sm btn-danger">Delete </a>
+				</th>
+			</tr>
 			{% endfor %}
-			<strong>Inject body:</strong><br>
-			{{ i.body }}
-			<div class="bt-component pull-right">
-				<a href="/competition/{{ competition.url }}/teamwhite/injects/edit/{{ i.id }}/" class="btn btn-primary">Edit</a>
-				<a href="#" class="btn btn-danger">Delete</a>
-			</div>
-			<br>
-		</div>
-	</div>
-	{% endfor %}
+		</tbody>
+	</table>
 	{% else %}
 	<p>No injects have been created yet. Go ahead and make one!</p>
 	{% endif %}

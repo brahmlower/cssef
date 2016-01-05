@@ -24,14 +24,14 @@ templatePathPrefix = "organization/templates/"
 # 	organizationName = 'testingorg'
 # 	return HttpResponseRedirect("/organization/%s/home" % organizationName)
 
-def home(request, organizationUrl):
+def home(request, organizationId):
 	pageTemplate = templatePathPrefix + 'home.html'
-	return getContext(OrganizationContext, pageTemplate, request, organizationUrl = organizationUrl)
+	return getContext(OrganizationContext, pageTemplate, request, organizationId = organizationId)
 
-def members(request, organizationUrl):
+def members(request, organizationId):
 	pageTemplate = templatePathPrefix + 'listMembers.html'
-	return getContext(ListMemberContext, pageTemplate, request, organizationUrl = organizationUrl)
+	return getContext(ListMemberContext, pageTemplate, request, organizationId = organizationId)
 
-def settings(request, organizationUrl):
+def settings(request, organizationId):
 	pageTemplate = templatePathPrefix + 'settings.html'
-	return getContext(OrganizationSettingsContext, pageTemplate, request, organizationUrl = organizationUrl)
+	return getContext(OrganizationSettingsContext, pageTemplate, request, organizationId = organizationId)

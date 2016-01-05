@@ -12,6 +12,7 @@ class Competition(ModelWrapper):
 	'Competition object for controling competition settings and operation'
 	modelObject = CompetitionModel
 	fields = [
+		'organization',
 		'name',
 		'url',
 		'description',
