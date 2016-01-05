@@ -58,5 +58,5 @@ class FormContext(BaseContext):
 	def getContext(self):
 		super(FormContext, self).getContext()
 		self.context.push({'action': self.action})
-		self.context.push({'form': self.form})
+		self.context.push({'form': self.form()})
 		return self.context
