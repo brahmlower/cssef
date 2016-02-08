@@ -28,7 +28,11 @@ class Organization(ModelWrapper):
 		'url',
 		'description',
 		'maxMembers',
-		'maxCompetitions']
+		'maxCompetitions',
+		'canAddUsers',
+		'canDeleteUsers',
+		'canAddCompetitions',
+		'canDeleteCompetitions']
 
 	def asDict(self):
 		tmpDict = super(Organization, self).asDict()
@@ -37,6 +41,42 @@ class Organization(ModelWrapper):
 
 	def isDeletable(self):
 		return self.model.deletable
+
+	@property
+	def canAddUsers(self):
+		return self.model.canAddUsers
+
+	@canAddUsers.setter
+	def canAddUsers(self, value):
+		self.model.canAddUsers = value
+		self.db.commit()
+
+	@property
+	def canDeleteUsers(self):
+		return self.model.canDeleteUsers
+
+	@canDeleteUsers.setter
+	def canDeleteUsers(self, value):
+		self.model.canDeleteUsers = value
+		self.db.commit()
+
+	@property
+	def canAddCompetitions(self):
+		return self.model.canAddCompetitions
+
+	@canAddCompetitions.setter
+	def canAddCompetitions(self, value):
+		self.model.canAddCompetitions = value
+		self.db.commit()
+
+	@property
+	def canDeleteCompetitions(self):
+		return self.model.canDeleteCompetitions
+
+	@canDeleteCompetitions.setter
+	def canDeleteCompetitions(self, value):
+		self.model.canDeleteCompetitions = value
+		self.db.commit()
 
 	@property
 	def name(self):

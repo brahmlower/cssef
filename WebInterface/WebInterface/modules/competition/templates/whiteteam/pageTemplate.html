@@ -1,13 +1,13 @@
 {% extends "sitePageTemplate.html" %}
 
 {% block authed_navbar_links %}
-<li class="active"><a href="/organization{{ competition.organization }}/home/">{{ organization.name }} Home</a></li>
+<li class="active"><a href="/organization/{{ competition.organization }}/home/">{{ organization.name }} Home</a></li>
 {% endblock %}
 
 {% block sidebar %}
 <div class="col-sm-3 col-md-2 sidebar">
 	<ul class="nav nav-sidebar">
-		<li><a href="/competition/{{ competition.organization }}/management/list/"><span class="glyphicon glyphicon-chevron-left"></span> Back </a></li>
+		<li><a href="/competition/{{ competition.organization }}/management/summary/"><span class="glyphicon glyphicon-chevron-left"></span> Back </a></li>
 		<li class="nav-divider"><li>
 		<li id="sidebar_summary"><a href="/competition/{{ competition.id }}/teamwhite/summary/">Summary</a></li>
 		<li id="sidebar_settings"><a href="/competition/{{ competition.id }}/teamwhite/settings/">Settings</a></li>

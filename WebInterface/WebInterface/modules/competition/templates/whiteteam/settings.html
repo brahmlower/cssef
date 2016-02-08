@@ -77,9 +77,33 @@
 
 	<form action="/competition/{{ competition.id }}/teamwhite/settings/" method="post" class="form-horizontal" enctype="multipart/form-data">
 		{% csrf_token %}
-		{{form}}
+
+		<label for="{{ form.name.id_for_label }}" class="col-lg-2 control-label">{{ form.name.label }}</label>
+		<div class="col-lg-4">{{ form.name }}<br></div>
+
+		<label for="{{ form.url.id_for_label }}" class="col-lg-2 control-label">{{ form.url.label }}</label>
+		<div class="col-lg-4">{{ form.url }}<br></div>
+
+		<label for="{{ form.description.id_for_label }}" class="col-lg-2 control-label">{{ form.description.label }}</label>
+		<div class="col-lg-4">{{ form.description }}</div>
+
+		<label for="{{ form.datetimeDisplay.id_for_label }}" class="col-lg-2 control-label">{{ form.datetimeDisplay.label }}</label>
+		<div class="col-lg-4">{{ form.datetimeDisplay }}<br></div>
+
+		<label for="{{ form.autoStart.id_for_label }}" class="col-lg-2 control-label">{{ form.autoStart.label }}</label>
+		<div class="col-lg-4">{{ form.autoStart }}<br><br></div>
+
+		<label for="{{ form.datetimeStart.id_for_label }}" class="col-lg-2 control-label">{{ form.datetimeStart.label }}</label>
+		<div class="col-lg-4">{{ form.datetimeStart }}<br></div>
+
+		<label for="{{ form.datetimeFinish.id_for_label }}" class="col-lg-2 control-label">{{ form.datetimeFinish.label }}</label>
+		<div class="col-lg-4">{{ form.datetimeFinish }}<br></div>
+
+		<label for="{{ form.scoringEnabled.id_for_label }}" class="col-lg-2 control-label">{{ form.scoringEnabled.label }}</label>
+		<div class="col-lg-4">{{ form.scoringEnabled }}<br></div>
+
 		<div class="col-lg-10 col-lg-offset-2">
-			<a class="btn btn-default" href="/competition/{{ competition.id }}/teamwhite/summary/">Cancel</a>
+			<br><a class="btn btn-default" href="/competition/{{ competition.id }}/teamwhite/summary/">Cancel</a>
 			<button type="submit" class="btn btn-primary">Save</button>
 		</div>
 	</form>

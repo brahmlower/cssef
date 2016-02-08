@@ -32,6 +32,7 @@ class ModelWrapper(object):
 	def edit(self, **kwargs):
 		for i in kwargs:
 			if i in self.fields:
+				print i
 				setattr(self, i, kwargs[i])
 
 	def delete(self):

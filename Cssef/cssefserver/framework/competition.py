@@ -169,6 +169,7 @@ class Team(ModelWrapper):
 
 	@networkCidr.setter
 	def networkCidr(self, value):
+		x = ipaddr.IPNetwork(value)
 		self.model.networkCidr = value
 		self.db.commit()
 

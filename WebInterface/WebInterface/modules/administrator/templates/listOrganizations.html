@@ -24,15 +24,16 @@
 		<tbody>
 			{% for i in apiData %}
 			<tr>
-				<th>{{ i.id }}</th>
-				<th>{{ i.name }}</th>
-				<th>{{ i.description }}</th>
-				<th>
+				<td>{{ i.id }}</td>
+				<td>{{ i.name }}</td>
+				<td>{{ i.description }}</td>
+				<td>
+					<a href="/organization/{{ i.id }}/home/" class="btn-sm btn-success">Org Home</a>
 					<a href="/admin/organizations/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
 					{% if i.deletable %}
 					<a href="/admin/users/delete/{{ i.id }}/" class="btn-sm btn-danger">Delete</a>
 					{% endif %}
-				</th>
+				</td>
 			</tr>
 			{% endfor %}
 		</tbody>

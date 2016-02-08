@@ -449,20 +449,20 @@ def userAdd(organization = None, **kwargs):
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'userDel')
-def userDel(user = None):
+def userDel(pkid = None):
 	try:
-		if not user:
+		if not pkid:
 			raise Exception
-		return modelDel(User, user)
+		return modelDel(User, pkid)
 	except Exception as e:
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'userSet')
-def userSet(user = None, **kwargs):
+def userSet(pkid = None, **kwargs):
 	try:
-		if not user:
+		if not pkid:
 			raise Exception
-		return modelSet(User, user, **kwargs)
+		return modelSet(User, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 

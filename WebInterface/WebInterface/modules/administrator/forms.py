@@ -3,8 +3,10 @@ from django.forms import CharField
 from django.forms import TextInput
 from django.forms import NumberInput
 from django.forms import ChoiceField
+from django.forms import BooleanField
 from django.forms import Select
 from django.forms import PasswordInput
+from django.forms import HiddenInput
 from WebInterface.utils import makeApiRequest
 from cssefclient.cssefclient import OrganizationGet as ApiOrganizationGet
 
@@ -32,6 +34,26 @@ class CreateOrganizationForm(Form):
 	maxCompetitions = CharField(
 		label = 'Maximum Competitions',
 		widget = NumberInput(attrs={'class': 'form-control'}),
+		required = False
+	)
+	canAddUsers = BooleanField(
+		label = 'Can Create Users',
+		initial = True,
+		required = False
+	)
+	canDeleteUsers = BooleanField(
+		label = 'Can Delete Users',
+		initial = True,
+		required = False
+	)
+	canAddCompetitions = BooleanField(
+		label = 'Can Create Competitions',
+		initial = True,
+		required = False
+	)
+	canDeleteCompetitions = BooleanField(
+		label = 'Can Delete Competitions',
+		initial = True,
 		required = False
 	)
 
@@ -70,4 +92,9 @@ class CreateUserForm(Form):
 		label = 'Organization',
 		choices = [],
 		widget = Select(attrs={'class':'form-control'})
+	)
+
+class DeleteUserForm(Form):
+	user = CharField(
+		widget = HiddenInput()
 	)
