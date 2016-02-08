@@ -2,6 +2,15 @@
 
 {% block sidebar_id %}sidebar_users{% endblock %}
 
+{% block headers_js %}
+	<script >
+		function deleteUser(userid) {
+			document.getElementById('deleteuserid').value = userid;
+			document.getElementById('deleteuserform').submit();
+		}
+	</script>
+{% endblock %}
+
 {% block page_content %}
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 	<div class="jumbotron">
@@ -12,6 +21,12 @@
 	</div>
 
 	{% if apiData %}
+	<!-- Form for submitting account deletions -->
+	<form id="deleteuserform" action="/admin/users/delete">
+		{{ form }}
+		<input id="deleteuserid" type="hidden" name="userid" value="">
+	</form>
+	<!-- List of users -->
 	<table class="table">
 		<thead>
 			<tr>
@@ -25,14 +40,14 @@
 		<tbody>
 			{% for i in apiData %}
 			<tr>
-				<th>{{ i.id }}</th>
-				<th>{{ i.name }}</th>
-				<th>{{ i.username }}</th>
-				<th>{{ i.organization }}</th>
-				<th>
+				<td>{{ i.id }}</td>
+				<td>{{ i.name }}</td>
+				<td>{{ i.username }}</td>
+				<td>{{ i.organization }}</td>
+				<td>
 					<a href="/admin/users/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
-					<a href="/admin/users/delete/{{ i.id }}/" class="btn-sm btn-danger">Delete</a>
-				</th>
+					<a class="btn-sm btn-danger" onclick="deleteUser({{ i.id }})">Delete</a>
+				</td>
 			</tr>
 			{% endfor %}
 		</tbody>

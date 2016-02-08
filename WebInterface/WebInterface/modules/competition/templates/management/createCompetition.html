@@ -1,6 +1,6 @@
-{% extends "competition/templates/management/pageTemplate.html" %}
+{% extends "organization/templates/pageTemplate.html" %}
 
-{% block sidebar_id %}sidebar_list{% endblock %}
+{% block sidebar_id %}sidebar_competitions{% endblock %}
 
 {% block headers_js %}
 {% load staticfiles %}
@@ -33,7 +33,7 @@
 		<div class="col-lg-10">{{ form.description }}<br></div>
 
 		<div class="col-lg-10 col-lg-offset-2">
-			<a class="btn btn-default" href="/competition/{{ organization.id }}/management/list/">Cancel</a>
+			<a class="btn btn-default" href="/competition/{{ organization.id }}/management/summary/">Cancel</a>
 			<button type="submit" class="btn btn-primary">Create</button>
 		</div>
 	</form>

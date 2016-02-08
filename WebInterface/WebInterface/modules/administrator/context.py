@@ -3,6 +3,7 @@ from WebInterface.context import FormContext
 from WebInterface.utils import makeApiRequest
 from WebInterface.modules.administrator.forms import CreateOrganizationForm
 from WebInterface.modules.administrator.forms import CreateUserForm
+from WebInterface.modules.administrator.forms import DeleteUserForm
 from cssefclient.cssefclient import OrganizationGet as ApiOrganizationGet
 from cssefclient.cssefclient import OrganizationSet as ApiOrganizationSet
 from cssefclient.cssefclient import OrganizationAdd as ApiOrganizationAdd
@@ -54,7 +55,10 @@ class EditOrganizationContext(FormContext):
 		self.formData['pkid'] = self.pkid
 		output = makeApiRequest(ApiOrganizationSet, self.formData)
 		self.translateApiReturn(output)
-		self.form = self.form(initial = output['content'][0])
+		if output['value'] == 0:
+			self.form = self.form(initial = output['content'][0])
+		else:
+			self.form = self.form(initial = self.formData)
 
 	def getContext(self):
 		super(EditOrganizationContext, self).getContext()
@@ -96,7 +100,7 @@ class EditUserContext(FormContext):
 		self.httpMethodActions['POST'] = self.apiOnPost
 
 	def apiOnGet(self):
-		output = makeApiRequest(self.request, ApiUserGet, {'pkid': self.pkid})
+		output = makeApiRequest(ApiUserGet, {'pkid': self.pkid})
 		self.translateApiReturn(output)
 		self.form = self.form(initial = output['content'][0])
 
@@ -104,9 +108,19 @@ class EditUserContext(FormContext):
 		if not self.validateFormData():
 			return False
 		self.formData['pkid'] = self.pkid
-		output = makeApiRequest(self.request, ApiUserSet, self.formData)
+		output = makeApiRequest(ApiUserSet, self.formData)
 		self.translateApiReturn(output)
-		self.form = self.form(initial = output['content'][0])
+		if output['value'] == 0:
+			self.form = self.form(initial = output['content'][0])
+		else:
+			# There's an error here, but fill the form with the data
+			# that was provided when the form was posted
+			self.form = self.form(initial = self.formData)
+
+	def getContext(self):
+		super(EditUserContext, self).getContext()
+		self.context.push({'objectId': self.pkid})
+		return self.context
 
 class CreateUserContext(FormContext):
 	def __init__(self, request):
@@ -121,14 +135,28 @@ class CreateUserContext(FormContext):
 		output = makeApiRequest(ApiUserAdd, self.formData)
 		self.translateApiReturn(output)
 
-
-class ListUserContext(BaseContext):
+class ListUserContext(FormContext):
 	def __init__(self, request):
 		super(ListUserContext, self).__init__(request)
+		self.action = self.CREATE
+		self.form = DeleteUserForm
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
 		output = makeApiRequest(ApiUserGet, {})
+		self.translateApiReturn(output)
+
+class DeleteUserContext(FormContext):
+	def __init__(self, request):
+		super(DeleteUserContext, self).__init__(request)
+		self.action = self.DELETE
+		self.form = DeleteUserForm
+		self.httpMethodActions['POST'] = self.apiOnPost
+
+	def apiOnPost(self):
+		if not self.validateFormData():
+			return False
+		output = makeApiRequest(ApiUserDel, self.formData)
 		self.translateApiReturn(output)
 
 ###################################################

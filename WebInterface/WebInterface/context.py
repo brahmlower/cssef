@@ -30,16 +30,17 @@ class BaseContext(object):
 		self.apiData = output['content']
 
 	def getContext(self):
-		print 'utils.getContext - start'
+		#print 'utils.getContext - start'
 		self.context.push({'debug': self.debug})
 		self.context.push({'returnValue': self.returnValue})
 		self.context.push({'errors': self.errors})
 		self.context.push({'apiData': self.apiData})
-		print 'utils.getContext - end'
+		#print 'utils.getContext - end'
 		return self.context
 
 class FormContext(BaseContext):
 	CREATE = 'create'
+	DELETE = 'delete'
 	EDIT = 'edit'
 	def __init__(self, request):
 		super(FormContext, self).__init__(request)

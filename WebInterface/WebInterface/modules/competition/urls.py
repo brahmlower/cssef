@@ -8,8 +8,8 @@ from WebInterface.modules.competition.views import blueteam
 
 urlpatterns = patterns('',
 	# Management pages
-	url(r'^(?P<organizationUrl>[\w\-\_]{0,50})/management/summary/$',	management.summary),
-	url(r'^(?P<organizationUrl>[\w\-\_]{0,50})/management/list/$',		management.listCompetitions),
+	url(r'^(?P<organizationUrl>[\w\-\_]{0,50})/management/summary/$',	management.listCompetitions),
+	#url(r'^(?P<organizationUrl>[\w\-\_]{0,50})/management/list/$',		management.listCompetitions),
 	url(r'^(?P<organizationUrl>[\w\-\_]{0,50})/management/create/$',	management.createCompetition),
 
 	# Orange Team pages

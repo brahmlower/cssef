@@ -4,6 +4,7 @@ from WebInterface.modules.administrator.context import CreateOrganizationContext
 from WebInterface.modules.administrator.context import EditOrganizationContext
 from WebInterface.modules.administrator.context import ListOrganizationContext
 from WebInterface.modules.administrator.context import CreateUserContext
+from WebInterface.modules.administrator.context import DeleteUserContext
 from WebInterface.modules.administrator.context import EditUserContext
 from WebInterface.modules.administrator.context import ListUserContext
 
@@ -26,14 +27,15 @@ def listUsers(request):
 
 def createUser(request):
 	pageTemplate = templatePathPrefix + 'createEditUser.html'
-	print 'administrator.createUser - before getContext call'
-	context = getContext(CreateUserContext, pageTemplate, request)
-	print 'administrator.createUser - after geteContext call'
-	return context
+	return getContext(CreateUserContext, pageTemplate, request)
 
-def editUser(request):
+def editUser(request, userId):
 	pageTemplate = templatePathPrefix + 'createEditUser.html'
-	return getContext(EditUserContext, pageTemplate, request)
+	return getContext(EditUserContext, pageTemplate, request, pkid = userId)
+
+def deleteUser(request):
+	pageTemplate = templatePathPrefix + 'pageTemplate.html'
+	return getContext(DeleteUserContext, pageTemplate, request)
 
 #####################################
 # Organization management pages

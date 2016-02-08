@@ -5,12 +5,12 @@ from WebInterface.modules.competition.context import CreateCompetitionContext
 
 templatePathPrefix = "competition/templates/management/"
 
-def summary(request, organizationUrl):
-	pageTemplate = templatePathPrefix + "summary.html"
-	return getContext(SummaryCompetitionContext, pageTemplate, request, organizationUrl = organizationUrl)
+# def summary(request, organizationUrl):
+# 	pageTemplate = templatePathPrefix + "summary.html"
+# 	return getContext(SummaryCompetitionContext, pageTemplate, request, organizationUrl = organizationUrl)
 
 def listCompetitions(request, organizationUrl):
-	pageTemplate = templatePathPrefix + 'listCompetitions.html'
+	pageTemplate = templatePathPrefix + 'summary.html'
 	return getContext(ListCompetitionContext, pageTemplate, request, organizationUrl = organizationUrl)
 
 def createCompetition(request, organizationUrl):

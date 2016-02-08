@@ -1,12 +1,49 @@
-{% extends "competition/templates/management/pageTemplate.html" %}
+{% extends "organization/templates/pageTemplate.html" %}
 
-{% block sidebar_id %}sidebar_summary{% endblock %}
+{% block sidebar_id %}sidebar_competitions{% endblock %}
 
 {% block page_content %}
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 	<div class="jumbotron">
-		<h1>Competition Summary</h1>
-		<p>This pages provides a summary of competitions for your organization.</p>
+		<h1>Competition List</h1>
+		<p>This is a list of competitions hosted by the organization.</p>
+		<p>You have {{ apiData|length }} competition(s) of a maximum of {{ organization.maxCompetitions }}.</p>
+		{% if organization.canAddCompetitions %}
+		<br>
+		<a class="btn btn-primary btn-lg" href="/competition/{{ organization.id }}/management/create/">New Competition</a>
+		{% endif %}
+	</div>
+
+	<div id="competition_list">
+		{% if apiData %}
+		<table class="table">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for i in apiData %}
+				<tr>
+					<td>{{ i.id }}</td>
+					<td>{{ i.name }}</td>
+					<td>{{ i.description }}</td>
+					<td>
+						<a href="/competition/{{ i.id }}/teamwhite/summary/" class="btn-sm btn-primary">Manage</a>
+						{% if organization.canDeleteCompetitions %}
+						<a href="/competition/{{ organization.id }}/management/delete/" class="btn-sm btn-danger">Delete</a>
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% else %}
+		<p>No competitions have been created yet. Go ahead and make one!</p>
+		{% endif %}
 	</div>
 </div>
 {% endblock %}
