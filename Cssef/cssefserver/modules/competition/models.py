@@ -1,4 +1,3 @@
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy import Boolean
@@ -6,11 +5,8 @@ from sqlalchemy import Integer
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm import backref
-
-
-Base = declarative_base()
-tablePrefix = 'cssef_'
+from cssefserver.framework.models import Base
+from cssefserver.framework.models import tablePrefix
 
 class Competition(Base):
 	__tablename__ = tablePrefix + 'competition'
@@ -48,6 +44,15 @@ class Competition(Base):
 	teamsViewInjectsEnabled				= Column(Boolean)
 	teamsViewIncidentResponseEnabled	= Column(Boolean)
 
+class Score(Base):
+	__tablename__ = tablePrefix + 'score'
+	pkid		= Column(Integer, primary_key = True)
+	competition	= Column(Integer, ForeignKey(tablePrefix + 'competition.pkid'))
+	team		= Column(Integer, ForeignKey(tablePrefix + 'team.pkid'))
+	datetime	= Column(DateTime)
+	value		= Column(Integer)
+	message		= Column(String(100))
+
 class Team(Base):
 	__tablename__ = tablePrefix + 'team'
 	pkid				= Column(Integer, primary_key = True)
@@ -59,20 +64,6 @@ class Team(Base):
 	password			= Column(String(64))
 	networkCidr			= Column(String(30))
 	scoreConfigurations	= Column(String(1000))
-	# ^ With regard to score configuration
-	# holy shitballs! Use a serialziser for this!
-	# teh scoring engine will have an object to interpret this, and then when it needs to save the object
-	# or load it, it will be serialized and then saved to the database. Wehnt htis is read from the database,
-	# it is de-serialized!
-
-class Score(Base):
-	__tablename__ = tablePrefix + 'score'
-	pkid		= Column(Integer, primary_key = True)
-	competition	= Column(Integer, ForeignKey(tablePrefix + 'competition.pkid'))
-	team		= Column(Integer, ForeignKey(tablePrefix + 'team.pkid'))
-	datetime	= Column(DateTime)
-	value		= Column(Integer)
-	message		= Column(String(100))
 
 class Inject(Base):
 	__tablename__ = tablePrefix + 'inject'
@@ -117,45 +108,9 @@ class IncidentResponse(Base):
 	subject		= Column(String(100))
 	content		= Column(String(1000))
 
-
-class User(Base):
-	__tablename__ = tablePrefix + 'user'
-	pkid			= Column(Integer, primary_key = True)
-	organization	= Column(Integer, ForeignKey(tablePrefix + 'organization.pkid'))
-	last_login		= Column(DateTime)
-	name			= Column(String(20))
-	username		= Column(String(20))
-	password		= Column(String(64))
-	description		= Column(String(256))
-
 class ScoringEngine(Base):
 	__tablename__ = tablePrefix + 'scoringengine'
 	pkid		= Column(Integer, primary_key = True)
 	name		= Column(String(256))
 	packageName	= Column(String(256))
 	disabled	= Column(Boolean)
-
-class Organization(Base):
-	__tablename__ = tablePrefix + 'organization'
-	pkid			= Column(Integer, primary_key = True)
-	deletable		= Column(Boolean, default = True)
-	canAddUsers		= Column(Boolean, default = True)
-	canDeleteUsers	= Column(Boolean, default = True)
-	canAddCompetitions = Column(Boolean, default = True)
-	canDeleteCompetitions = Column(Boolean, default = True)
-	name			= Column(String(256))
-	url				= Column(String(256))
-	description		= Column(String(1000))
-	maxMembers		= Column(Integer)
-	maxCompetitions	= Column(Integer)
-	numMembers		= Column(Integer)
-	numCompetitions	= Column(Integer)
-
-class Document(Base):
-	__tablename__ = tablePrefix + 'document'
-	pkid				= Column(Integer, primary_key = True)
-	contentType			= Column(String(64))
-	fileHash			= Column(String(32))
-	filePath			= Column(String(64))
-	fileName			= Column(String(64))
-	urlEncodedFilename	= Column(String(128))

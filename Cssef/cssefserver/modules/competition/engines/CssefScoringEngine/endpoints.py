@@ -7,6 +7,51 @@ from models import Plugin as PluginModel
 from serializers import ServiceSerializer
 from serializers import PluginSerializer
 
+
+class ScoringEngine(ModelWrapper):
+	modelObject = ScoringEngineModel
+	fields = [
+		'name',
+		'disabled',
+		'packageName']
+
+	def delete(self):
+		print '[WARNING] Cannot delete ScoringEngine. Redirecting to disable.'
+		return self.disable()
+
+	def disable(self):
+		self.disabled = True
+
+	def enable(self):
+		self.disabled = False
+
+	@property
+	def name(self):
+		return self.model.name
+
+	@name.setter
+	def name(self, value):
+		self.model.name = value
+		self.db.commit()
+
+	@property
+	def disabled(self):
+		return self.model.disabled
+
+	@disabled.setter
+	def disabled(self, value):
+		self.model.disabled = value
+		self.db.commit()
+
+	@property
+	def packageName(self):
+		return self.model.packageName
+
+	@packageName.setter
+	def packageName(self, value):
+		self.model.packageName = value
+		self.db.commit()
+
 class Plugin(ModelWrapper):
 	serializerObject = PluginSerializer
 	modelObject = PluginModel

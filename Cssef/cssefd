@@ -10,10 +10,7 @@ import os.path
 from signal import SIGTERM
 from time import sleep
 from celery.bin import worker
-
-from cssefserver.api import CssefCeleryApp
-from cssefserver.framework.core import ScoringEngine
-from cssefserver.framework.utils import databaseConnection
+from cssefserver.framework.api import CssefCeleryApp
 
 class Daemon(object):
 	"""
