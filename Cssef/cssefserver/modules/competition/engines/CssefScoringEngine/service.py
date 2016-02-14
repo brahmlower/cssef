@@ -11,9 +11,9 @@ def startScoringCompetition(competition):
 	# This function is only called if scoring is enabled for the competition
 	print 'starting the scheduled competition'
 	thread = Thread(target = competition.startScoring, args = ())
-    thread.start()
-    thread.join()
-    print "thread finished...exiting"
+	thread.start()
+	thread.join()
+	print "thread finished...exiting"
 
 @receiver(post_save, sender = Competition)
 def scheduleCompetitionStart(sender, **kwargs):

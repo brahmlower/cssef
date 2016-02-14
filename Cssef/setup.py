@@ -1,13 +1,12 @@
 from setuptools import setup
 from setuptools import find_packages
-#from cssefserver.api import version
 
 setup(
 	# Application name:
 	name = "cssefserver",
 
 	# Version number:
-	version = "0.0.4",
+	version = "0.0.5",
 
 	# Application author details:
 	author = "Brahm Lower",
@@ -21,11 +20,11 @@ setup(
 
 	# Scripts:
 	scripts = [
-		"cssefserver/cssefd"
+		"cssefd"
 	],
 
 	data_files = [
-		('/etc/cssef/', ['cssefserver/cssefd.conf'])
+		('/etc/cssef/', ['cssefd.conf'])
 	],
 
 	# Description:
