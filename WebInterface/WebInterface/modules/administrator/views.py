@@ -7,6 +7,7 @@ from WebInterface.modules.administrator.context import CreateUserContext
 from WebInterface.modules.administrator.context import DeleteUserContext
 from WebInterface.modules.administrator.context import EditUserContext
 from WebInterface.modules.administrator.context import ListUserContext
+from WebInterface.modules.administrator.context import ListScoringEnginesContext
 
 templatePathPrefix = "administrator/templates/"
 
@@ -51,6 +52,19 @@ def createOrganization(request):
 def editOrganization(request, organizationId):
 	pageTemplate = templatePathPrefix + 'createEditOrganization.html'
 	return getContext(EditOrganizationContext, pageTemplate, request, pkid = organizationId)
+
+#####################################
+# Organization management pages
+#####################################
+def listScoringEngines(request):
+	pageTemplate = templatePathPrefix + 'listScoringEngines.html'
+	return getContext(ListScoringEnginesContext, pageTemplate, request)
+
+def createScoringEngine(request):
+	pass
+
+def editScoringEngine(request):
+	pass
 
 # Holding on to the plugin code until I work out how best to include it in the new codebase.
 #####################################

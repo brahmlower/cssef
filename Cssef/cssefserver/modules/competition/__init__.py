@@ -125,6 +125,10 @@ class Competition(ModelWrapper):
 		# This conducts a consistency check on the competiton settings.
 		print "A consistency check was conducted here..."
 
+	def start(self):
+		# Somehow start scoring the competition :O
+		pass
+
 class Team(ModelWrapper):
 	'Team object for controling team settings'
 	modelObject = TeamModel

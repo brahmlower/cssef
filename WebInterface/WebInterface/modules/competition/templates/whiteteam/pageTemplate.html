@@ -10,13 +10,19 @@
 		<li><a href="/competition/{{ competition.organization }}/management/summary/"><span class="glyphicon glyphicon-chevron-left"></span> Back </a></li>
 		<li class="nav-divider"><li>
 		<li id="sidebar_summary"><a href="/competition/{{ competition.id }}/teamwhite/summary/">Summary</a></li>
+		<!-- This is some SUPER hackish css because I don't want to put in the time to do it right at the moment. I'll fix this later, I promise -->
+		<li class="nav-divider"><li>
+		<li style="padding-top: 10px; padding-left: 20px; padding-right: 20px, padding-bottom: 15px"> Configuration </li>
 		<li id="sidebar_settings"><a href="/competition/{{ competition.id }}/teamwhite/settings/">Settings</a></li>
 		<!-- Built in configuables -->
-		<li class="nav-divider"><li
 		<li id="sidebar_teams"><a href="/competition/{{ competition.id }}/teamwhite/teams/">Teams</a></li>
 		<li id="sidebar_injects"><a href="/competition/{{ competition.id }}/teamwhite/injects/">Injects</a></li>
 		<!-- Scoring engine configurables -->
 		<li class="nav-divider"><li>
+		<li style="padding-top: 10px; padding-left: 20px; padding-right: 20px, padding-bottom: 15px"> Review </li>
+		<li id="sidebar_injects"><a href="/competition/{{ competition.id }}/teamwhite/injects/">Inject Response</a></li>
+		<li id="sidebar_injects"><a href="/competition/{{ competition.id }}/teamwhite/injects/">Incidents</a></li>
+		<li id="sidebar_injects"><a href="/competition/{{ competition.id }}/teamwhite/injects/">Scores</a></li>
 	</ul>
 </div>
 {% endblock %}

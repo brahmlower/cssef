@@ -46,21 +46,8 @@ class Argument(object):
 	def helpFormat(self, *args, **kwargs):
 		return '--%s' % self.name
 
-class Endpoint(object):
-	def __init__(self, name):
-		self.name = name.lower()
-		self.args = []
-
-	def help(self, *args, **kwargs):
-		helpRows = []
-		helpRows.append('Endpoint: %s' % self.name)
-		for i in self.args:
-			helpRows.append(i.helpFormat(*args, **kwargs))
-		return helpRows
-
-class CeleryEndpoint(Endpoint):
+class CeleryEndpoint(object):
 	def __init__(self, celeryName, args):
-		#super(CeleryEndpoint, self).__init__(self, celeryName)
 		self.apiConn = None
 		self.celeryName = celeryName
 		self.args = args
@@ -83,6 +70,17 @@ class CeleryEndpoint(Endpoint):
 			args = args,
 			kwargs = kwargs)
 		return task.get()
+
+class ServerEndpoints(object):
+	def __init__(self, apiConn):
+		self.apiConn = apiConn
+		result = AvailableEndpoints(self.apiConn).execute()
+		if result['value'] != 0:
+			raise Exception
+		for i in result['content']:
+			for k in i['endpoints']:
+				instance = CeleryEndpoint.fromDict(k, self.apiConn)
+				setattr(self, k['celeryName'], instance)
 
 ############################################
 # General endpoints

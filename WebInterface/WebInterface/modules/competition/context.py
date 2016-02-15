@@ -9,20 +9,11 @@ from WebInterface.modules.competition.forms import CreateTeamForm
 from WebInterface.modules.competition.forms import CompetitionSettingsForm
 from WebInterface.modules.organization.context import OrganizationContext
 from WebInterface.modules.organization.context import OrganizationFormContext
-from cssefclient.cssefclient import CompetitionGet as ApiCompetitionGet
-from cssefclient.cssefclient import CompetitionAdd as ApiCompetitionAdd
-from cssefclient.cssefclient import CompetitionSet as ApiCompetitionSet
-from cssefclient.cssefclient import CompetitionTeamAdd as ApiTeamAdd
-from cssefclient.cssefclient import CompetitionTeamGet as ApiTeamGet
-from cssefclient.cssefclient import CompetitionTeamSet as ApiTeamSet
-from cssefclient.cssefclient import CompetitionInjectAdd as ApiInjectAdd
-from cssefclient.cssefclient import CompetitionInjectGet as ApiInjectGet
-from cssefclient.cssefclient import CompetitionInjectSet as ApiInjectSet
 
 class CompetitionContext(BaseContext):
 	def __init__(self, request, competitionId = None):
 		super(CompetitionContext, self).__init__(request)
-		apiReturn = makeApiRequest(ApiCompetitionGet, {'pkid': competitionId})
+		apiReturn = makeApiRequest('competitionGet', {'pkid': competitionId})
 		self.competition = apiReturn['content'][0]
 
 	def getContext(self):
@@ -33,7 +24,7 @@ class CompetitionContext(BaseContext):
 class CompetitionFormContext(FormContext):
 	def __init__(self, request, competitionId = None):
 		super(CompetitionFormContext, self).__init__(request)
-		apiReturn = makeApiRequest(ApiCompetitionGet, {'pkid': competitionId})
+		apiReturn = makeApiRequest('competitionGet', {'pkid': competitionId})
 		self.competition = apiReturn['content'][0]
 
 	def getContext(self):
@@ -54,7 +45,7 @@ class ListCompetitionContext(OrganizationContext):
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
-		apiReturn = makeApiRequest(ApiCompetitionGet, {'organization': self.organization['id']})
+		apiReturn = makeApiRequest('competitionGet', {'organization': self.organization['id']})
 		self.translateApiReturn(apiReturn)
 
 class CreateCompetitionContext(OrganizationFormContext):
@@ -68,7 +59,7 @@ class CreateCompetitionContext(OrganizationFormContext):
 		if not self.validateFormData():
 			return False
 		self.formData['organization'] = self.organization['id']
-		apiReturn = makeApiRequest(ApiCompetitionAdd, self.formData)
+		apiReturn = makeApiRequest('competitionAdd', self.formData)
 		self.translateApiReturn(apiReturn)
 
 # ==================================================
@@ -87,7 +78,7 @@ class WhiteteamSettingsContext(CompetitionFormContext):
 		self.httpMethodActions['POST'] = self.apiOnPost
 
 	def apiOnGet(self):
-		apiReturn = makeApiRequest(ApiCompetitionGet, {'pkid': self.competition['id']})
+		apiReturn = makeApiRequest('competitionGet', {'pkid': self.competition['id']})
 		self.translateApiReturn(apiReturn)
 		self.form = self.form(initial = apiReturn['content'][0])
 
@@ -95,7 +86,7 @@ class WhiteteamSettingsContext(CompetitionFormContext):
 		if not self.validateFormData():
 			return False
 		self.formData['pkid'] = self.competition['id']
-		apiReturn = makeApiRequest(ApiCompetitionSet, self.formData)
+		apiReturn = makeApiRequest('competitionSet', self.formData)
 		self.translateApiReturn(apiReturn)
 		self.form = self.form(initial = apiReturn['content'][0])
 
@@ -108,7 +99,7 @@ class TeamListContext(CompetitionContext):
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
-		apiReturn = makeApiRequest(ApiTeamGet, {'competition': self.competition['id']})
+		apiReturn = makeApiRequest('competitionTeamGet', {'competition': self.competition['id']})
 		self.translateApiReturn(apiReturn)
 
 class TeamEditContext(CompetitionFormContext):
@@ -121,7 +112,7 @@ class TeamEditContext(CompetitionFormContext):
 		self.httpMethodActions['POST'] = self.apiOnPost
 
 	def apiOnGet(self):
-		apiReturn = makeApiRequest(ApiTeamGet, {'pkid': self.pkid})
+		apiReturn = makeApiRequest('competitionTeamGet', {'pkid': self.pkid})
 		self.translateApiReturn(apiReturn)
 		self.form = self.form(initial = apiReturn['content'][0])
 
@@ -146,7 +137,7 @@ class TeamEditContext(CompetitionFormContext):
 			self.form = self.form(initial = self.formData)
 			return False
 		self.formData['pkid'] = self.pkid
-		apiReturn = makeApiRequest(ApiTeamSet, self.formData)
+		apiReturn = makeApiRequest('competitionTeamSet', self.formData)
 		self.translateApiReturn(apiReturn)
 		if self.returnValue != 0:
 			self.form = self.form(initial = self.formData)
@@ -181,7 +172,7 @@ class TeamCreateContext(CompetitionFormContext):
 			self.form = self.form(initial = self.formData)
 			return False
 		self.formData['competition'] = self.competition['id']
-		apiReturn = makeApiRequest(ApiTeamAdd, self.formData)
+		apiReturn = makeApiRequest('competitionTeamAdd', self.formData)
 		self.translateApiReturn(apiReturn)
 
 # ==================================================
@@ -193,7 +184,7 @@ class InjectListContext(CompetitionContext):
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
-		apiReturn = makeApiRequest(ApiInjectGet, {'competition': self.competition['id']})
+		apiReturn = makeApiRequest('competitionInjectGet', {'competition': self.competition['id']})
 		self.translateApiReturn(apiReturn)
 
 class InjectEditContext(CompetitionFormContext):
@@ -206,7 +197,7 @@ class InjectEditContext(CompetitionFormContext):
 		self.httpMethodActions['POST'] = self.apiOnPost
 
 	def apiOnGet(self):
-		apiReturn = makeApiRequest(ApiInjectGet, {'pkid': self.pkid})
+		apiReturn = makeApiRequest('competitionInjectGet', {'pkid': self.pkid})
 		self.translateApiReturn(apiReturn)
 		self.form = self.form(initial = apiReturn['content'][0])
 
@@ -219,18 +210,12 @@ class InjectEditContext(CompetitionFormContext):
 				self.formData[i] = datetime.strptime(self.formData[i], "%Y-%m-%d %H:%M:%S")
 			else:
 				self.formData.pop(i, None)
-		apiReturn = makeApiRequest(ApiInjectSet, self.formData)
+		apiReturn = makeApiRequest('competitionInjectSet', self.formData)
 		self.translateApiReturn(apiReturn)
 		if self.returnValue != 0:
 			self.form = self.form(initial = self.formData)
 		else:
 			self.form = self.form(initial = apiReturn['content'][0])
-
-	# def getContext(self):
-	# 	super(EditOrganizationContext, self).getContext()
-	# 	self.context.push({'objectId': self.pkid})
-	# 	return self.context
-
 
 class InjectCreateContext(CompetitionFormContext):
 	def __init__(self, request, competitionId = None):
@@ -248,5 +233,5 @@ class InjectCreateContext(CompetitionFormContext):
 				self.formData[i] = datetime.strptime(self.formData[i], "%Y-%m-%d %H:%M:%S")
 			else:
 				self.formData.pop(i, None)
-		apiReturn = makeApiRequest(ApiInjectAdd, self.formData)
+		apiReturn = makeApiRequest('competitionInjectAdd', self.formData)
 		self.translateApiReturn(apiReturn)

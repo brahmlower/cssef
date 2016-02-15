@@ -13,8 +13,6 @@ from django.forms import IntegerField
 from django.forms import HiddenInput
 from django.forms.widgets import PasswordInput
 
-from WebInterface.utils import makeApiRequest
-
 class CreateCompetitionForm(Form):
 	name = CharField(
 		label = 'Name',
@@ -28,13 +26,6 @@ class CreateCompetitionForm(Form):
 		label = 'Description',
 		widget = Textarea(attrs={'class':'form-control', 'required': 'True'})
 	)
-
-# def getOrganizationChoices():
-# 	organizationChoices = []
-# 	output = makeApiRequest(ApiOrganizationGet, {})
-# 	for i in output['content']:
-# 		organizationChoices.append((i['id'], i['name']))
-# 	return organizationChoices
 
 class CreateInjectForm(Form):
 	title = CharField(
@@ -72,12 +63,6 @@ class CreateInjectForm(Form):
 	)
 
 class CreateTeamForm(Form):
-	# def __init__(self, *args, **kwargs):
-	# 	competitionId = kwargs.pop('competitionId', None)
-	# 	teamId = kwargs.pop('teamId', None)
-	# 	kwargs.update(initial = cssefApi.getTeam(competitionId, teamId))
-	# 	super(CreateTeam, self).__init__(*args, **kwargs)
-
 	name = CharField(
 		label = 'Team Name',
 		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
