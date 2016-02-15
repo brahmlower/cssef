@@ -47,7 +47,7 @@ def organizationGet(**kwargs):
 endpointsDict = {
 	"name": "Organizations",
 	"author": "",
-	"menuName": ["organization"],
+	"menuName": "organization",
 	"endpoints": [
 		{	"name": "Add Organization",
 			"celeryName": "organizationAdd",

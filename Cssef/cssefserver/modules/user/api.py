@@ -6,6 +6,7 @@ from cssefserver.framework.utils import modelSet
 from cssefserver.framework.utils import modelGet
 from cssefserver.framework import CssefCeleryApp
 from cssefserver.framework import dbPath
+from cssefserver.modules.organization import Organization
 from cssefserver.modules.user import User
 
 @CssefCeleryApp.task(name = 'userAdd')
@@ -48,7 +49,7 @@ def userGet(**kwargs):
 endpointsDict = {
 	"name": "Users",
 	"author": "",
-	"menuName": ["user"],
+	"menuName": "user",
 	"endpoints": [
 		{	"name": "Add User",
 			"celeryName": "userAdd",

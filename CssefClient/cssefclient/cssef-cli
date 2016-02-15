@@ -4,8 +4,6 @@ import traceback
 from prettytable import PrettyTable
 from cssefclient.cssefclient import *
 
-import pprint
-
 class ArgumentParser(object):
 	def __init__(self, inputList):
 		self.inputList = inputList
@@ -13,13 +11,14 @@ class ArgumentParser(object):
 		self.command = None
 		self.arguments = self.parseArguments()
 
-	def parseCommand(self, instanceDict):
+	def parseCommand(self, menuDict, apiConn):
 		i = 0
 		argString = ""
+		currentDict = menuDict
 		while i < len(self.inputList) and self.inputList[i][0] != '-':
-			argString += self.inputList[i] + " "
+			currentDict = currentDict[self.inputList[i]]
 			i+=1
-		self.command = instanceDict[argString[:-1]]
+		self.command = CeleryEndpoint.fromDict(currentDict, apiConn)
 
 	def parseArguments(self):
 		i = 0
@@ -46,6 +45,52 @@ class ArgumentParser(object):
 		else:
 			return argumentsDict
 
+	def execute(self):
+		try:
+			if self.arguments:
+				output = self.command.execute(**self.arguments)
+			else:
+				output = self.command.execute()
+		except Exception as e:
+			output = {"value": 9000, "message": ["The server encountered an error:", str(e)]}
+		return output
+
+class Menu(object):
+	def __init__(self):
+		self.availableEndpoints = None
+		self.menuDict = {}
+
+	def loadFromServer(self, apiConn):
+		result = AvailableEndpoints(apiConn).execute()
+		if result['value'] != 0:
+			print "Failed to get available endpoints"
+			sys.exit()
+		self.availableEndpoints = result['content']
+
+	def loadFromFile(self, path):
+		pass
+
+	def construct(self):
+		for moduleDict in self.availableEndpoints:
+			self.menuDict[moduleDict['menuName']] = {}
+			for endpointDict in moduleDict['endpoints']:
+				self.menuDict[moduleDict['menuName']] = self.buildMenuBranch(
+					self.menuDict[moduleDict['menuName']],	# This is the current menu
+					endpointDict['menu'],					# This is the menu heiarchy
+					endpointDict)							# This is the content for the end of the menu
+
+	def buildMenuBranch(self, currentMenu, menuList, endpointContent):
+		if len(menuList) == 1:
+			currentMenu[menuList[0]] = endpointContent
+			return currentMenu
+		else:
+			try:
+				currentMenu[menuList[0]] = self.buildMenuBranch(currentMenu[menuList[0]], menuList[1:], endpointContent)
+			except KeyError:
+				currentMenu[menuList[0]] = {}
+				currentMenu[menuList[0]] = self.buildMenuBranch(currentMenu[menuList[0]], menuList[1:], endpointContent)
+			return currentMenu
+
 def displayOutput(outputDict):
 	if outputDict['value'] != 0:
 		sys.stderr.write("The server encountered an error:\n")
@@ -64,24 +109,12 @@ if __name__ == "__main__":
 	config = Configuration('/etc/cssef/cssef.conf')
 	apiConn = getConn(config)
 
-	# Dict to map the endpoint instances
-	instanceDict = {}
-	availableEndpoints = AvailableEndpoints(apiConn).execute()
-	for moduleDict in availableEndpoints['content']:
-		for endpointDict in moduleDict['endpoints']:
-			instance = CeleryEndpoint.fromDict(endpointDict, apiConn)
-			moduleString = " ".join(moduleDict['menuName'] + endpointDict['menu'])
-			instanceDict[moduleString] = instance
+	m = Menu()
+	m.loadFromServer(apiConn)
+	m.construct()
 
-	pprint.pprint(instanceDict)
+	a = ArgumentParser(sys.argv[1:])
+	a.parseCommand(m.menuDict, apiConn)
+	output = a.execute()
 
-	argparse = ArgumentParser(sys.argv[1:])
-	argparse.parseCommand(instanceDict)
-	try:
-		if argparse.arguments:
-			output = argparse.command.execute(**argparse.arguments)
-		else:
-			output = argparse.command.execute()
-	except Exception as e:
-		output = {"value": 9000, "message": ["The server encountered an error:", str(e)]}
 	displayOutput(output)

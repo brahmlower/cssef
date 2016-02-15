@@ -57,6 +57,19 @@ def competitionGet(**kwargs):
 	except Exception as e:
 		return handleException(e)
 
+@CssefCeleryApp.task(name = 'competitionStart')
+def competitionStart(pkid = None):
+	try:
+		if not pkid:
+			raise Exception
+		db = databaseConnection(dbPath)
+		competition = Competition.fromDatabase(db, pkid)
+		if not competition.autoStart:
+			raise Exception
+		competition.start()
+	except Exception as e:
+		return handleException(e)
+
 # ==================================================
 # Team Endpoints
 # ==================================================
@@ -324,7 +337,7 @@ def compeititonIncidentResponseGet(**kwargs):
 endpointsDict = {
 	"name": "Competition",
 	"author": "",
-	"menuName": ["competition"],
+	"menuName": "competition",
 	"endpoints": [
 		# Competition Endpoints
 		{	"name": "Add Competition",

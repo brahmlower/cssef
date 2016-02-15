@@ -19,6 +19,6 @@ def availableEndpoints():
 endpointsDict = {
 	"name": "Framework",
 	"author": "",
-	"menuName": ["framework"],
+	"menuName": "framework",
 	"endpoints": []
 }

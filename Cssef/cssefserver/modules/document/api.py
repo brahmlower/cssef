@@ -47,7 +47,7 @@ def documentGet(**kwargs):
 endpointsDict = {
 	"name": "Document",
 	"author": "",
-	"menuName": ["document"],
+	"menuName": "document",
 	"endpoints": [
 		{	"name": "Add Document",
 			"celeryName": "documentAdd",
