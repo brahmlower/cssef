@@ -2,14 +2,11 @@ from WebInterface.utils import makeApiRequest
 from WebInterface.context import BaseContext
 from WebInterface.context import FormContext
 from WebInterface.modules.competition.forms import CreateCompetitionForm
-from cssefclient.cssefclient import OrganizationGet as ApiOrganizationGet
-from cssefclient.cssefclient import CompetitionGet as ApiCompetitionGet
-from cssefclient.cssefclient import UserGet as ApiUserGet
 
 class OrganizationContext(BaseContext):
 	def __init__(self, request, organizationId = None):
 		super(OrganizationContext, self).__init__(request)
-		apiReturn = makeApiRequest(ApiOrganizationGet, {'pkid': organizationId})
+		apiReturn = makeApiRequest('organizationGet', {'pkid': organizationId})
 		self.organization = apiReturn['content'][0]
 
 	def getContext(self):
@@ -20,7 +17,7 @@ class OrganizationContext(BaseContext):
 class OrganizationFormContext(FormContext):
 	def __init__(self, request, organizationId = None):
 		super(OrganizationFormContext, self).__init__(request)
-		apiReturn = makeApiRequest(ApiOrganizationGet, {'pkid': organizationId})
+		apiReturn = makeApiRequest('organizationGet', {'pkid': organizationId})
 		self.organization = apiReturn['content'][0]
 
 	def getContext(self):
@@ -34,7 +31,7 @@ class ListMemberContext(OrganizationContext):
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
-		apiReturn = makeApiRequest(ApiUserGet, {'organization': self.organization['id']})
+		apiReturn = makeApiRequest('userGet', {'organization': self.organization['id']})
 		self.translateApiReturn(apiReturn)
 
 	def getContext(self):

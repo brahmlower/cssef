@@ -1,6 +1,8 @@
 from cssefserver.framework.utils import ModelWrapper
 from cssefserver.modules.organization.models import Organization as OrganizationModel
 from cssefserver.modules.organization.errors import *
+from cssefserver.modules.user import User
+from cssefserver.modules.competition import Competition
 
 class Organization(ModelWrapper):
 	modelObject = OrganizationModel

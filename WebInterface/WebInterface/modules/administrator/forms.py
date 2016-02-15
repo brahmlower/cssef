@@ -8,7 +8,8 @@ from django.forms import Select
 from django.forms import PasswordInput
 from django.forms import HiddenInput
 from WebInterface.utils import makeApiRequest
-from cssefclient.cssefclient import OrganizationGet as ApiOrganizationGet
+from cssefclient.cssefclient import ServerEndpoints
+#from cssefclient.cssefclient.ServerEndpoints import organizationGet as ApiOrganizationGet
 
 class CreateOrganizationForm(Form):
 	name = CharField(
@@ -59,7 +60,7 @@ class CreateOrganizationForm(Form):
 
 def getOrganizationChoices():
 	organizationChoices = []
-	output = makeApiRequest(ApiOrganizationGet, {})
+	output = makeApiRequest('organizationGet', {})
 	for i in output['content']:
 		organizationChoices.append((i['id'], i['name']))
 	return organizationChoices
@@ -68,13 +69,6 @@ class CreateUserForm(Form):
 	def __init__(self, *args, **kwargs):
 		super(CreateUserForm, self).__init__(*args, **kwargs)
 		self.fields['organization'].choices = getOrganizationChoices()
-
-	def getOrganizationChoices():
-		organizationChoices = []
-		output = makeApiRequest(ApiOrganizationGet, {})
-		for i in output['content']:
-			organizationChoices.append((i['id'], i['name']))
-		return organizationChoices
 
 	name = CharField(
 		label = 'Name',
