@@ -1,5 +1,6 @@
-# Cyber Security Scoring Engine Framework [![Build Status](https://travis-ci.org/bplower/cssef.svg?branch=refactor)](https://travis-ci.org/bplower/cssef)
+# Cyber Security Scoring Engine Framework 
 
+[![Build Status](https://travis-ci.org/bplower/cssef.svg?branch=refactor)](https://travis-ci.org/bplower/cssef)
 [![Join the chat at https://gitter.im/bplower/cssef](https://badges.gitter.im/bplower/cssef.svg)](https://gitter.im/bplower/cssef?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
