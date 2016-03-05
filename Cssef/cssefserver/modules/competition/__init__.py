@@ -6,6 +6,39 @@ from cssefserver.modules.competition.models import Inject as InjectModel
 from cssefserver.modules.competition.models import InjectResponse as InjectResponseModel
 from cssefserver.modules.competition.models import Incident as IncidentModel
 from cssefserver.modules.competition.models import IncidentResponse as IncidentResponseModel
+from cssefserver.modules.competition.models import ScoringEngine as ScoringEngineModel
+
+class ScoringEngine(ModelWrapper):
+	'Scoring Engine object to represent a scoring engine module available for use by competitions.'
+	modelObject = ScoringEngineModel
+	fields = [
+		'name',
+		'packageName',
+		'enabled'
+	]
+
+	@property
+	def name(self):
+		return self.model.name
+
+	@name.setter
+	def name(self, value):
+		self.model.name = value
+		self.db.commit()
+
+	@property
+	def enabled(self):
+		return self.model.enabled
+
+	@enabled.setter
+	def enabled(self, value):
+		self.model.enabled = value
+		self.db.commit()
+
+	@property
+	def packageName(self):
+		# This is a read-only attribute, so there is no corresponding setter method
+		return self.model.name
 
 class Competition(ModelWrapper):
 	'Competition object for controling competition settings and operation'

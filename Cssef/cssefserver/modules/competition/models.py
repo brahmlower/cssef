@@ -113,4 +113,4 @@ class ScoringEngine(Base):
 	pkid		= Column(Integer, primary_key = True)
 	name		= Column(String(256))
 	packageName	= Column(String(256))
-	disabled	= Column(Boolean)
+	enabled		= Column(Boolean, default = True)

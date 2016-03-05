@@ -4,6 +4,29 @@ import traceback
 from prettytable import PrettyTable
 from cssefclient.cssefclient import *
 
+class Help(object):
+	def __init__(self, availableMenu):
+		self.availableMenu = availableMenu
+
+	def execute(self):
+		returnString = ""
+		for i in self.availableMenu:
+			returnString += "Module: %s\n" % i
+			for k in self.availableMenu[i]:
+				try:
+					arguments = ""
+					for j in self.availableMenu[i][k]['arguments']:
+						arguments += j['argument'] + ", "
+					returnString += "Endpoint: %s (%s)\n" % (k, arguments)
+				except KeyError:
+					returnString += "Menu: %s\n" % k
+			returnString += "\n"
+
+		returnDict = {}
+		returnDict['value'] = 0
+		returnDict['content'] = returnString
+		return returnDict
+
 class ArgumentParser(object):
 	def __init__(self, inputList):
 		self.inputList = inputList
@@ -18,7 +41,11 @@ class ArgumentParser(object):
 		while i < len(self.inputList) and self.inputList[i][0] != '-':
 			currentDict = currentDict[self.inputList[i]]
 			i+=1
-		self.command = CeleryEndpoint.fromDict(currentDict, apiConn)
+		if currentDict == menuDict:
+			# This means the selected menu hasn't changed. There was no input
+			self.command = Help(currentDict)
+		else:
+			self.command = CeleryEndpoint.fromDict(currentDict, apiConn)
 
 	def parseArguments(self):
 		i = 0
@@ -52,7 +79,7 @@ class ArgumentParser(object):
 			else:
 				output = self.command.execute()
 		except Exception as e:
-			output = {"value": 9000, "message": ["The server encountered an error:", str(e)]}
+			output = {"value": -1, "message": [str(e)]}
 		return output
 
 class Menu(object):
@@ -97,11 +124,16 @@ def displayOutput(outputDict):
 		sys.stderr.write("\n".join(outputDict['message'])+"\n")
 		sys.exit(outputDict['value'])
 	if len(outputDict['content']) > 0:
-		outputTable = PrettyTable(output['content'][0].keys())
-		outputTable.padding_width = 1
-		for i in outputDict['content']:
-			outputTable.add_row(i.values())
-		print outputTable
+		if output['content'].__class__.__name__ == "list":
+			outputTable = PrettyTable(output['content'][0].keys())
+			outputTable.padding_width = 1
+			for i in outputDict['content']:
+				outputTable.add_row(i.values())
+			print outputTable
+		elif output['content'].__class__.__name__ == "str":
+			print output['content']
+		else:
+			print "Unknown outputDict content type: %s" % str(output['content'].__class__.__name__)
 
 if __name__ == "__main__":
 	# cli format:

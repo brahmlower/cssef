@@ -7,4 +7,6 @@ import views
 urlpatterns = patterns('',
 	url(r'^plugins.json', views.plugins),
 	url(r'^plugins/(?P<pluginId>[0-9]+).json', views.plugin),
+	url(r'^services.json', views.services),
+	url(r'^services/(?P<serviceId>[0-9]+).json', views.service),
 )

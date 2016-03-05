@@ -22,11 +22,11 @@
 		{% csrf_token %}
 		{{ form.name.errors}}
 		<label for="{{ form.name.id_for_label }}" class="col-lg-2 control-label">{{ form.name.label }}</label>
-		<div class="col-lg-10">{{ form.name }}<br></div>
+		<div class="col-lg-4">{{ form.name }}<br></div>
 
 		{{ form.url.errors }}
 		<label for="{{ form.url.id_for_label }}" class="col-lg-2 control-label">{{ form.url.label }}</label>
-		<div class="col-lg-10">{{ form.url }}<br></div>
+		<div class="col-lg-4">{{ form.url }}<br></div>
 
 		{{ form.description.errors }}
 		<label for="{{ form.description.id_for_label }}" class="col-lg-2 control-label">{{ form.description.label }}</label>

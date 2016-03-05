@@ -14,6 +14,7 @@ from cssefserver.modules.competition import Inject
 from cssefserver.modules.competition import InjectResponse
 from cssefserver.modules.competition import Incident
 from cssefserver.modules.competition import IncidentResponse
+from cssefserver.modules.competition import ScoringEngine
 
 # ==================================================
 # Competition Endpoints
@@ -334,11 +335,73 @@ def compeititonIncidentResponseGet(**kwargs):
 	except Exception as e:
 		return handleException(e)
 
+
+# ==================================================
+# Scoring Engine Endpoints
+# ==================================================
+@CssefCeleryApp.task(name = 'competitionScoringEngineAdd')
+def competitionScoringEngineAdd(**kwargs):
+	try:
+		db = databaseConnection(dbPath)
+		scoringEngine = ScoringEngine.fromDict(db, kwargs)
+		returnDict = getEmptyReturnDict()
+		returnDict['content'].append(scoringEngine.asDict())
+		return returnDict
+	except Exception as e:
+		return handleException(e)
+
+@CssefCeleryApp.task(name = 'competitionScoringEngineDel')
+def competitionScoringEngineDel(pkid = None):
+	try:
+		if not pkid:
+			raise Exception
+		return modelDel(ScoringEngine, pkid)
+	except Exception as e:
+		return handleException(e)
+
+@CssefCeleryApp.task(name = 'competitionScoringEngineSet')
+def competitionScoringEngineSet(pkid = None, **kwargs):
+	try:
+		if not pkid:
+			raise Exception
+		return modelSet(ScoringEngine, pkid, **kwargs)
+	except Exception as e:
+		return handleException(e)
+
+@CssefCeleryApp.task(name = 'competitionScoringEngineGet')
+def competitionScoringEngineGet(**kwargs):
+	try:
+		return modelGet(ScoringEngine, **kwargs)
+	except Exception as e:
+		return handleException(e)
+
+
 endpointsDict = {
 	"name": "Competition",
 	"author": "",
 	"menuName": "competition",
 	"endpoints": [
+		# Scoring Engine Endpoints
+		{	"name": "Add Scoring Engine",
+			"celeryName": "competitionScoringEngineAdd",
+			"menu": ["engine", "add"],
+			"arguments": []
+		},
+		{	"name": "Del Scoring Engine",
+			"celeryName": "competitionScoringEngineDel",
+			"menu": ["engine", "del"],
+			"arguments": []
+		},
+		{	"name": "Set Scoring Engine",
+			"celeryName": "competitionScoringEngineSet",
+			"menu": ["engine", "set"],
+			"arguments": []
+		},
+		{	"name": "Get Scoring Engine",
+			"celeryName": "competitionScoringEngineGet",
+			"menu": ["engine", "get"],
+			"arguments": []
+		},
 		# Competition Endpoints
 		{	"name": "Add Competition",
 			"celeryName": "competitionAdd",

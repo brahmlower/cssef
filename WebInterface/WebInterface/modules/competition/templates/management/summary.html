@@ -8,7 +8,7 @@
 		<h1>Competition List</h1>
 		<p>This is a list of competitions hosted by the organization.</p>
 		<p>You have {{ apiData|length }} competition(s) of a maximum of {{ organization.maxCompetitions }}.</p>
-		{% if organization.canAddCompetitions %}
+		{% if organization.canAddCompetitions and apiData|length < organization.maxCompetitions %}
 		<br>
 		<a class="btn btn-primary btn-lg" href="/competition/{{ organization.id }}/management/create/">New Competition</a>
 		{% endif %}
@@ -28,13 +28,19 @@
 			<tbody>
 				{% for i in apiData %}
 				<tr>
-					<td>{{ i.id }}</td>
-					<td>{{ i.name }}</td>
-					<td>{{ i.description }}</td>
+					<td style="vertical-align: middle">{{ i.id }}</td>
+					<td style="vertical-align: middle">{{ i.name }}</td>
+					<td style="vertical-align: middle">{{ i.description }}</td>
 					<td>
-						<a href="/competition/{{ i.id }}/teamwhite/summary/" class="btn-sm btn-primary">Manage</a>
+						<div class="dropdown" style="float: left;">
+							<button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> View As <span class="caret"></span> </button>
+							<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+								<li><a href="/competition/{{ i.id }}/teamwhite/summary/">White Team</a></li>
+								<li><a href="/competition/{{ i.id }}/teamblue/summary/">Blue Team</a></li>
+							</ul>
+						</div>
 						{% if organization.canDeleteCompetitions %}
-						<a href="/competition/{{ organization.id }}/management/delete/" class="btn-sm btn-danger">Delete</a>
+						&nbsp;<button type="button" class="btn btn-sm btn-danger" href="/competition/{{ organization.id }}/management/delete/"> Delete </button>
 						{% endif %}
 					</td>
 				</tr>

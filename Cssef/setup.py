@@ -24,7 +24,8 @@ setup(
 	],
 
 	data_files = [
-		('/etc/cssef/', ['cssefd.conf'])
+		('/etc/cssef/', ['cssefd.conf']),
+		('/var/log/cssef/', [])
 	],
 
 	# Description:
