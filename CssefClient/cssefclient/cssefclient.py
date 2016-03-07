@@ -56,8 +56,8 @@ class CeleryEndpoint(object):
 	def fromDict(cls, inputDict, apiConn):
 		# Parse the arguments
 		args = []
-		for i in inputDict['arguments']:
-			pass
+		#for i in inputDict['arguments']:
+		#	pass
 		# Now create the instance
 		instance = cls(inputDict['celeryName'], args)
 		instance.name = inputDict['name']

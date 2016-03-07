@@ -1,5 +1,11 @@
+import time
+import tokenlib
+from cssefserver.framework.utils import PasswordHash
 from cssefserver.framework.utils import ModelWrapper
 from cssefserver.modules.user.models import User as UserModel
+
+# THIS IS HARDCODED, WHICH IS BAD
+secretSalt = "Gv1Z5EYyCJzNuc6hEbj5fd+E2P4+iNFw"
 
 class User(ModelWrapper):
 	modelObject = UserModel
@@ -30,12 +36,15 @@ class User(ModelWrapper):
 
 	@property
 	def password(self):
-		return self.model.password
+		return PasswordHash(self.model.password)
 
 	@password.setter
 	def password(self, value):
-		self.model.password = value
+		rounds = 10
+		ph = PasswordHash.new(value, rounds)
+		self.model.password = ph.hash
 		self.db.commit()
+		return ph.hash
 
 	@property
 	def description(self):
@@ -54,3 +63,15 @@ class User(ModelWrapper):
 	def organization(self, value):
 		self.model.organization = value
 		self.db.commit()
+
+	def authenticateToken(self, token):
+		tk = tokenlib.parse_token(token, secret = secretSalt, now = time.time())
+		return tk['id'] == self.getId() and tk['username'] == self.username and tk['organization'] == self.organization
+
+	def authenticatePassword(self, password):
+		if self.password == password:
+			tokenDict = {"id": self.getId(), "username": self.username, "organization": self.organization}
+			token = tokenlib.make_token(tokenDict, secret = secretSalt)
+			return token
+		else:
+			return None
