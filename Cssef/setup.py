@@ -35,6 +35,7 @@ setup(
 	# Dependant packages:
 	install_requires = [
 		"sqlalchemy",
-		"celery"
+		"celery",
+		"tokenlib"
 	],
 )

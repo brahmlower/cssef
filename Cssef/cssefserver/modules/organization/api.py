@@ -10,6 +10,15 @@ from cssefserver.modules.organization import Organization
 
 @CssefCeleryApp.task(name = 'organizationAdd')
 def organizationAdd(**kwargs):
+	"""Celery task to create a new organization.
+
+	Args:
+		**kwargs: Keyword arguments to be passed onto User.fromDict()
+
+	Returns:
+		A returnDict dictionary containing the results of the API call. See
+		getEmptyReturnDict for more information.
+	"""
 	try:
 		db = databaseConnection(dbPath)
 		organization = Organization.fromDict(db, kwargs)
@@ -21,6 +30,15 @@ def organizationAdd(**kwargs):
 
 @CssefCeleryApp.task(name = 'organizationDel')
 def organizationDel(pkid = None):
+	"""Celery task to delete an existing organization.
+
+	Args:
+		pkid (int): The ID of the organization to delete
+
+	Returns:
+		A returnDict dictionary containing the results of the API call. See
+		getEmptyReturnDict for more information.
+	"""
 	try:
 		if not pkid:
 			raise Exception
@@ -30,6 +48,16 @@ def organizationDel(pkid = None):
 
 @CssefCeleryApp.task(name = 'organizationSet')
 def organizationSet(pkid = None, **kwargs):
+	"""Celery task to edit an existing organization.
+
+	Args:
+		pkid (int): The ID of the organization to edit
+		**kwargs: Keyword arguments for values to change in the organization
+
+	Returns:
+		A returnDict dictionary containing the results of the API call. See
+		getEmptyReturnDict for more information.
+	"""
 	try:
 		if not pkid:
 			raise Exception
@@ -39,6 +67,15 @@ def organizationSet(pkid = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'organizationGet')
 def organizationGet(**kwargs):
+	"""Celery task to get one or more existing organization.
+
+	Args:
+		**kwargs: Keyword arguments to filter organization by
+
+	Returns:
+		A returnDict dictionary containing the results of the API call. See
+		getEmptyReturnDict for more information.
+	"""
 	try:
 		return modelGet(Organization, **kwargs)
 	except Exception as e:

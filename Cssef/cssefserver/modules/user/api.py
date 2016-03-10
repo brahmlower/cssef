@@ -11,6 +11,16 @@ from cssefserver.modules.user import User
 
 @CssefCeleryApp.task(name = 'userAdd')
 def userAdd(organization = None, **kwargs):
+	"""Celery task to create a new user.
+
+	Args:
+		organization (int): The ID of the organization the user belongs to
+		**kwargs: Keyword arguments to be passed onto User.fromDict()
+
+	Returns:
+		A returnDict dictionary containing the results of the API call. See
+		getEmptyReturnDict for more information.
+	"""
 	try:
 		db = databaseConnection(dbPath)
 		organization = Organization.fromDatabase(db, organization)
@@ -23,6 +33,15 @@ def userAdd(organization = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'userDel')
 def userDel(pkid = None):
+	"""Celery task to delete an existing user.
+
+	Args:
+		pkid (int): The ID of the user to delete
+
+	Returns:
+		A returnDict dictionary containing the results of the API call. See
+		getEmptyReturnDict for more information.
+	"""
 	try:
 		if not pkid:
 			raise Exception
@@ -32,6 +51,16 @@ def userDel(pkid = None):
 
 @CssefCeleryApp.task(name = 'userSet')
 def userSet(pkid = None, **kwargs):
+	"""Celery task to edit an existing user.
+
+	Args:
+		pkid (int): The ID of the user to edit
+		**kwargs: Keyword arguments for values to change in the user
+
+	Returns:
+		A returnDict dictionary containing the results of the API call. See
+		getEmptyReturnDict for more information.
+	"""
 	try:
 		if not pkid:
 			raise Exception
@@ -41,6 +70,15 @@ def userSet(pkid = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'userGet')
 def userGet(**kwargs):
+	"""Celery task to get one or more existing users.
+
+	Args:
+		**kwargs: Keyword arguments to filter users by
+
+	Returns:
+		A returnDict dictionary containing the results of the API call. See
+		getEmptyReturnDict for more information.
+	"""
 	try:
 		return modelGet(User, **kwargs)
 	except Exception as e:

@@ -6,6 +6,8 @@ from cssefserver.framework.models import Base
 from cssefserver.framework.models import tablePrefix
 
 class Organization(Base):
+	"""This is a base User SQLAlchemy model.
+	"""
 	__tablename__ = tablePrefix + 'organization'
 	pkid			= Column(Integer, primary_key = True)
 	deletable		= Column(Boolean, default = True)
