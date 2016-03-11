@@ -1,4 +1,6 @@
+import os
 import sys
+import yaml
 from time import sleep
 from celery import Celery
 import ConfigParser
@@ -19,29 +21,65 @@ def getConn(config):
 		server specified in the provided Configuration object. This Celery
 		object can be provided to CeleryEndpoint object to execute a task.
 	"""
-	return Celery(
-		'api',
-		backend = config.rpcUrl,
-		broker = config.amqpUrl)
+	rpcUrl = "rpc://%s:%s@%s//" % (config.rpc_username, config.rpc_password, config.rpc_host)
+	amqpUrl = "amqp://%s:%s@%s//" % (config.amqp_username, config.amqp_password, config.amqp_host)
+	return Celery('api', backend = rpcUrl, broker = amqpUrl)
 
 class Configuration(object):
-	def __init__(self, configFilePath):
-		self.rawConfig = ConfigParser.ConfigParser()
-		self.rawConfig.read(configFilePath)
+	def __init__(self):
+		# Super global configs
+		self.globalConfigPath = "/etc/cssef/cssef.yml"
+		self.configPath = os.path.expanduser("~/.cssef/cssef.yml")
+		# Default values for the client configuration
+		self.rpc_username = "cssefd"
+		self.rpc_password = "cssefd-pass"
+		self.rpc_host = "localhost"
+		self.amqp_username = "cssefd"
+		self.amqp_password = "cssefd-pass"
+		self.amqp_host = "localhost"
+		# Token configurations
+		self.token_auth_enabled = True
+		self.token = ''
+		self.token_file = os.path.expanduser("~/.cssef/token")
+		self.token_repoll_enabled = False
+		# Endpoint caching
+		self.endpoint_cache_enabled = True
+		self.endpoint_cache_file = os.path.expanduser("~/.cssef/endpoint-cache")
+		self.endpoint_cache_timeout = '12h'
 
-	@property
-	def amqpUrl(self):
-		username = self.rawConfig.get('celery', 'amqp_username')
-		password = self.rawConfig.get('celery', 'amqp_password')
-		host = self.rawConfig.get('celery', 'amqp_host')
-		return 'amqp://%s:%s@%s//' % (username, password, host)
+	def loadConfigFile(self, configPath):
+		"""
+		This will convert strings with hyphens (-) to underscores (_) that way
+		attributes can be added. Underscores are not used in the config files
+		because I think they look ugly. That's my only reasoning - deal with it.
+		"""
+		configDict = yaml.load(open(configPath, 'r'))
+		self.loadConfigDict(configDict)
 
-	@property
-	def rpcUrl(self):
-		username = self.rawConfig.get('celery', 'rpc_username')
-		password = self.rawConfig.get('celery', 'rpc_password')
-		host = self.rawConfig.get('celery', 'rpc_host')
-		return 'rpc://%s:%s@%s//' % (username, password, host)
+	def loadConfigDict(self, configDict):
+		for i in configDict:
+			if hasattr(self, i.replace('-','_')):
+				# Set the attribute
+				setting = i.replace('-','_')
+				value = configDict[i]
+				setattr(self, setting, value)
+				print "[LOGGING] Configuration '%s' set to '%s'." % (i, value)
+			elif type(configDict[i]) == dict:
+				# This is a dictionary and may contain additional values
+				self.loadConfigDict(configDict[i])
+			else:
+				# We don't care about it. Just skip it!
+				print "[LOGGING] Ignoring invalid setting '%s'." % i
+
+	def loadToken(self):
+		try:
+			token = open(self.token_file, 'r').read()
+			if len(token) > 0:
+				self.token = token
+			else:
+				print "[LOGGING] Token file empty. Cannot use token authentication."
+		except IOError:
+			print "[LOGGING] Token file not found. Cannot use token authentication."
 
 class Argument(object):
 	def __init__(self, displayName, name = None, keyword = False, optional = False):
@@ -120,10 +158,7 @@ class CeleryEndpoint(object):
 			checking here to cast anything that does not comply into that
 			dictionary.
 		"""
-		task = self.apiConn.send_task(
-			self.celeryName,
-			args = args,
-			kwargs = kwargs)
+		task = self.apiConn.send_task(self.celeryName, args = args, kwargs = kwargs)
 		return task.get()
 
 class ServerEndpoints(object):
@@ -157,3 +192,22 @@ class AvailableEndpoints(CeleryEndpoint):
 		self.apiConn = apiConn
 		self.celeryName = 'availableEndpoints'
 		self.args = []
+
+class Login(CeleryEndpoint):
+	def __init__(self, apiConn):
+		self.apiConn = apiConn
+		self.celeryName = 'login'
+		self.args = []
+
+	def execute(self):
+		if not config.token_auth_enabled:
+			# Bail if token authentication is disabled
+			print "[ERROR] Logging in requires that token authentication be enabled. Set 'token_auth_enabled: True' in your configuration."
+			return None
+		# Attempt to log in
+		returnDict = super(Login, self).execute()
+		if returnDict['value'] != 0:
+			return returnDict
+		# Save the returned token
+		open(config.token_file, 'w').write(returnDict['content'][0])
+		returnDict['content'][0] = "Authentication was successful."

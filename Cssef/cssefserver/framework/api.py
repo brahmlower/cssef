@@ -37,23 +37,5 @@ endpointsDict = {
 	"name": "Framework",
 	"author": "",
 	"menuName": "framework",
-	"endpoints": [
-		{	"name": "Login",
-			"celeryName": "login",
-			"menu": ['login'],
-			"arguments": [
-				{	"name": "Password",
-					"argument": "password",
-					"keyword": True,
-					"optional": False
-				},
-				{
-					"name": "Username",
-					"argument": "username",
-					"keyword": True,
-					"optional": False
-				}
-			]
-		}
-	]
+	"endpoints": []
 }

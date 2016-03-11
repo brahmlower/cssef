@@ -1,86 +1,10 @@
 #!/usr/bin/python
+import os
 import sys
 import traceback
+import yaml
 from prettytable import PrettyTable
 from cssefclient.cssefclient import *
-
-class Help(object):
-	def __init__(self, availableMenu):
-		self.availableMenu = availableMenu
-
-	def execute(self):
-		returnString = ""
-		for i in self.availableMenu:
-			returnString += "Module: %s\n" % i
-			for k in self.availableMenu[i]:
-				try:
-					arguments = ""
-					for j in self.availableMenu[i][k]['arguments']:
-						arguments += j['argument'] + ", "
-					returnString += "Endpoint: %s (%s)\n" % (k, arguments)
-				except KeyError:
-					returnString += "Menu: %s\n" % k
-			returnString += "\n"
-
-		returnDict = {}
-		returnDict['value'] = 0
-		returnDict['content'] = returnString
-		return returnDict
-
-class ArgumentParser(object):
-	def __init__(self, inputList):
-		self.inputList = inputList
-		self.rawArguments = []
-		self.command = None
-		self.arguments = self.parseArguments()
-
-	def parseCommand(self, menuDict, apiConn):
-		i = 0
-		argString = ""
-		currentDict = menuDict
-		while i < len(self.inputList) and self.inputList[i][0] != '-':
-			currentDict = currentDict[self.inputList[i]]
-			i+=1
-		if currentDict == menuDict:
-			# This means the selected menu hasn't changed. There was no input
-			self.command = Help(currentDict)
-		else:
-			self.command = CeleryEndpoint.fromDict(currentDict, apiConn)
-
-	def parseArguments(self):
-		i = 0
-		argumentsDict = {}
-		while i < len(self.inputList) and self.inputList[i][0] != '-':
-			i += 1
-		while i < len(self.inputList) and self.inputList[i][0] == '-':
-			# Strip the dashes off the front of the keyword
-			if self.inputList[i][:2] == '--':
-				key = self.inputList[i][2:]
-			else:
-				key = self.inputList[i][1:]
-			# Determine of the value is in the same element
-			if '=' in key:
-				value = key.split('=')[1]
-				key = key.split('=')[0]
-				i += 1
-			else:
-				value = self.inputList[i + 1]
-				i += 2
-			argumentsDict[key] = value
-		if argumentsDict == {}:
-			return None
-		else:
-			return argumentsDict
-
-	def execute(self):
-		try:
-			if self.arguments:
-				output = self.command.execute(**self.arguments)
-			else:
-				output = self.command.execute()
-		except Exception as e:
-			output = {"value": -1, "message": [str(e)]}
-		return output
 
 class Menu(object):
 	def __init__(self):
@@ -88,16 +12,19 @@ class Menu(object):
 		self.menuDict = {}
 
 	def loadFromServer(self, apiConn):
+		print "[LOGGING] Querying server for available endpoints."
 		result = AvailableEndpoints(apiConn).execute()
 		if result['value'] != 0:
-			print "Failed to get available endpoints"
+			print "[ERROR] Failed to get available endpoints"
 			sys.exit()
 		self.availableEndpoints = result['content']
+		print "[LOGGING] Finished loading available endpoints."
 
 	def loadFromFile(self, path):
 		pass
 
 	def construct(self):
+		# Remote endpoints
 		for moduleDict in self.availableEndpoints:
 			self.menuDict[moduleDict['menuName']] = {}
 			for endpointDict in moduleDict['endpoints']:
@@ -105,6 +32,15 @@ class Menu(object):
 					self.menuDict[moduleDict['menuName']],	# This is the current menu
 					endpointDict['menu'],					# This is the menu heiarchy
 					endpointDict)							# This is the content for the end of the menu
+		# Local endpoints
+		#hardcode the endpoints for now
+		self.menuDict['login'] = {
+			"name": "Login",
+			"celeryName": "login",
+			"menu": [],
+			"arguments": []
+		}
+
 
 	def buildMenuBranch(self, currentMenu, menuList, endpointContent):
 		if len(menuList) == 1:
@@ -117,6 +53,76 @@ class Menu(object):
 				currentMenu[menuList[0]] = {}
 				currentMenu[menuList[0]] = self.buildMenuBranch(currentMenu[menuList[0]], menuList[1:], endpointContent)
 			return currentMenu
+
+class ParseInput(object):
+	def __init__(self):
+		self.remainingArgs = sys.argv[1:]
+		self.options = {}
+		self.command = []
+		self.commandArgs = {}
+		self.parseInput()
+
+	def parseInput(self):
+		self.parseOptions()
+		self.parseCommand()
+		self.parseCommandArgs()
+
+	def parseOptions(self):
+		index = 0
+		while index < len(self.remainingArgs) and self.remainingArgs[index][0] == '-':
+			argument = self.remainingArgs[index]
+			argument = argument.strip('-')
+			if len(argument.split("=")) > 1:
+				# The value is in the same argument
+				keyword = argument.split('=')[0]
+				value = argument.split('=')[1]
+			else:
+				# The value is in the next argument
+				keyword = argument
+				value = self.remainingArgs[index + 1]
+				index += 1
+			self.options[keyword] = value
+			index += 1
+		self.remainingArgs = self.remainingArgs[index:]
+
+	def parseCommand(self):
+		index = 0
+		while index < len(self.remainingArgs) and self.remainingArgs[index][0] != '-':
+			self.command.append(self.remainingArgs[index])
+			index += 1
+		self.remainingArgs = self.remainingArgs[index:]
+
+	def parseCommandArgs(self):
+		index = 0
+		while index < len(self.remainingArgs) and self.remainingArgs[index][0] == '-':
+			argument = self.remainingArgs[index]
+			argument = argument.strip('-')
+			if len(argument.split("=")) > 1:
+				# The value is in the same argument
+				keyword = argument.split('=')[0]
+				value = argument.split('=')[1]
+			else:
+				# The value is in the next argument
+				keyword = argument
+				value = self.remainingArgs[index + 1]
+				index += 1
+			self.commandArgs[keyword] = value
+			index += 1
+
+def walkDictPath(d, l):
+	if len(l) == 0:
+		return None
+	if len(l) == 1:
+		return d[l[0]]
+	else:
+		return walkDictPath(d[l[0]], l[1:])
+
+def execute(endpoint, arguments):
+	try:
+		output = endpoint.execute(**arguments)
+	except Exception as e:
+		output = {"value": -1, "message": [str(e)]}
+	return output
 
 def displayOutput(outputDict):
 	if outputDict['value'] != 0:
@@ -136,17 +142,32 @@ def displayOutput(outputDict):
 			print "Unknown outputDict content type: %s" % str(output['content'].__class__.__name__)
 
 if __name__ == "__main__":
-	# cli format:
-	# ./cssef-cli [COMMAND] [ARGUMENTS]
-	config = Configuration('/etc/cssef/cssef.conf')
+	"""
+	Usage:
+	cssef-cli [OPTIONS] [COMMAND] [ARGUMENTS]
+	"""
+	# Parse the command line arguments
+	cliInput = ParseInput()
+	# Load the various configuration files
+	config = Configuration()
+	config.loadConfigFile(config.globalConfigPath)
+	config.loadConfigFile(config.configPath)
+	config.loadConfigDict(cliInput.options)
+	# Load token
+	if config.token_auth_enabled:
+		config.loadToken()
+	# Establish rabbitmq connection
 	apiConn = getConn(config)
-
+	# Load the available endpoints
 	m = Menu()
 	m.loadFromServer(apiConn)
 	m.construct()
-
-	a = ArgumentParser(sys.argv[1:])
-	a.parseCommand(m.menuDict, apiConn)
-	output = a.execute()
-
+	# Instantiate and execute the endpoint
+	endpointDict = walkDictPath(m.menuDict, cliInput.command)
+	if not endpointDict:
+		print "Invalid endpoint."
+		sys.exit(1)
+	endpoint = CeleryEndpoint.fromDict(endpointDict, apiConn)
+	output = execute(endpoint, cliInput.commandArgs)
+	# Display the output
 	displayOutput(output)
