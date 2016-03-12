@@ -1,30 +1,38 @@
 #!/usr/bin/python
-import os
+import ast
 import sys
-import traceback
-import yaml
 from prettytable import PrettyTable
 from cssefclient.cssefclient import *
 
 class Menu(object):
-	def __init__(self):
+	def __init__(self, config):
+		self.config = config
 		self.availableEndpoints = None
 		self.menuDict = {}
 
-	def loadFromServer(self, apiConn):
-		print "[LOGGING] Querying server for available endpoints."
-		result = AvailableEndpoints(apiConn).execute()
+	def loadFromServer(self):
+		"""Retrieves the available endpoints from the server.
+		"""
+		print "[LOGGING] Loading available endpoints from server."
+		result = AvailableEndpoints(self.config).execute()
 		if result['value'] != 0:
 			print "[ERROR] Failed to get available endpoints"
 			sys.exit()
 		self.availableEndpoints = result['content']
 		print "[LOGGING] Finished loading available endpoints."
+		self.construct()
 
 	def loadFromFile(self, path):
-		pass
+		"""Retrieves the available endpoints from the cache
+		"""
+		print "[LOGGING] Loading available endpoints from cache."
+		fileContent = open(self.config.endpoint_cache_file, 'r').read()
+		self.availableEndpoints = ast.literal_eval(fileContent)
+		print "[LOGGING] Finished loading available endpoints."
+		self.construct()
 
 	def construct(self):
-		# Remote endpoints
+		# Build dynamic celery endpoints
 		for moduleDict in self.availableEndpoints:
 			self.menuDict[moduleDict['menuName']] = {}
 			for endpointDict in moduleDict['endpoints']:
@@ -32,19 +40,15 @@ class Menu(object):
 					self.menuDict[moduleDict['menuName']],	# This is the current menu
 					endpointDict['menu'],					# This is the menu heiarchy
 					endpointDict)							# This is the content for the end of the menu
-		# Local endpoints
-		#hardcode the endpoints for now
-		self.menuDict['login'] = {
-			"name": "Login",
-			"celeryName": "login",
-			"menu": [],
-			"arguments": []
-		}
 
+		# Build local endpoints
+		self.menuDict['login'] = Login(self.config)
+		self.menuDict['logout'] = Logout(self.config)
 
 	def buildMenuBranch(self, currentMenu, menuList, endpointContent):
 		if len(menuList) == 1:
-			currentMenu[menuList[0]] = endpointContent
+			# This means endpointContent is a dictionary that defines an endpoint
+			currentMenu[menuList[0]] = CeleryEndpoint.fromDict(self.config, endpointContent)
 			return currentMenu
 		else:
 			try:
@@ -53,6 +57,19 @@ class Menu(object):
 				currentMenu[menuList[0]] = {}
 				currentMenu[menuList[0]] = self.buildMenuBranch(currentMenu[menuList[0]], menuList[1:], endpointContent)
 			return currentMenu
+
+	def walkDictPath(self, d, l):
+		"""This will walk down the path l through dictionary d
+		"""
+		if len(l) == 0:
+			return None
+		if len(l) == 1:
+			return d[l[0]]
+		else:
+			return self.walkDictPath(d[l[0]], l[1:])
+
+	def getCommand(self, commandList):
+		return Command(self.walkDictPath(self.menuDict, commandList))
 
 class ParseInput(object):
 	def __init__(self):
@@ -109,37 +126,61 @@ class ParseInput(object):
 			self.commandArgs[keyword] = value
 			index += 1
 
-def walkDictPath(d, l):
-	if len(l) == 0:
-		return None
-	if len(l) == 1:
-		return d[l[0]]
-	else:
-		return walkDictPath(d[l[0]], l[1:])
+class Command(object):
+	def __init__(self, endpoint):
+		self.endpoint = endpoint
 
-def execute(endpoint, arguments):
-	try:
-		output = endpoint.execute(**arguments)
-	except Exception as e:
-		output = {"value": -1, "message": [str(e)]}
-	return output
+	def __call__(self, **kwargs):
+		"""Wraps endpoint execution
 
-def displayOutput(outputDict):
-	if outputDict['value'] != 0:
-		sys.stderr.write("The server encountered an error:\n")
-		sys.stderr.write("\n".join(outputDict['message'])+"\n")
-		sys.exit(outputDict['value'])
-	if len(outputDict['content']) > 0:
-		if output['content'].__class__.__name__ == "list":
-			outputTable = PrettyTable(output['content'][0].keys())
+		This the point of this is just to catch any unhandled server exceptions.
+		Args:
+			endpoint (Endpoint): 
+			arguments (dict): Keyword dictionary of arguments to pass to endpoint.execute
+
+		Returns:
+			dict: returnDict with values filled in.
+		"""
+		try:
+			outputDict = self.endpoint.execute(**kwargs)
+		except Exception as e:
+			outputDict = {"value": -1, "message": [str(e)], "content": []}
+		return CommandOutput(**outputDict)
+
+class CommandOutput(object):
+	def __init__(self, value, message, content):
+		self.value = value
+		self.message = message
+		# Cast the content to a list 
+		if type(content) == list:
+			self.content = content
+		elif type(content) == str:
+			self.content = [content]
+		else:
+			raise ValueError
+		# Get the keys of the content if it's a dict
+		if len(self.content) > 0 and type(self.content[0]) == dict:
+			self.tableHeaders = self.content[0].keys()
+		else:
+			self.tableHeaders = None
+
+	def display(self):
+		if self.value != 0:
+			sys.stderr.write("The server encountered an error:\n")
+			sys.stderr.write("\n".join(self.message)+"\n")
+			sys.exit(self.value)
+		if self.tableHeaders:
+			# Its a dictionary list, make a table and print it
+			outputTable = PrettyTable(self.tableHeaders)
 			outputTable.padding_width = 1
-			for i in outputDict['content']:
+			for i in self.content:
 				outputTable.add_row(i.values())
 			print outputTable
-		elif output['content'].__class__.__name__ == "str":
-			print output['content']
 		else:
-			print "Unknown outputDict content type: %s" % str(output['content'].__class__.__name__)
+			# It's just a list of strings, print each one
+			# TODO: Maybe I just shouldn't support this...
+			for i in self.content:
+				print i
 
 if __name__ == "__main__":
 	"""
@@ -157,17 +198,12 @@ if __name__ == "__main__":
 	if config.token_auth_enabled:
 		config.loadToken()
 	# Establish rabbitmq connection
-	apiConn = getConn(config)
+	config.establishApiConnection()
 	# Load the available endpoints
-	m = Menu()
-	m.loadFromServer(apiConn)
-	m.construct()
-	# Instantiate and execute the endpoint
-	endpointDict = walkDictPath(m.menuDict, cliInput.command)
-	if not endpointDict:
-		print "Invalid endpoint."
-		sys.exit(1)
-	endpoint = CeleryEndpoint.fromDict(endpointDict, apiConn)
-	output = execute(endpoint, cliInput.commandArgs)
-	# Display the output
-	displayOutput(output)
+	commandMenu = Menu(config)
+	commandMenu.loadFromServer()
+	# Get the command, instantiate it, then call it
+	command = commandMenu.getCommand(cliInput.command)
+	output = command(**cliInput.commandArgs)
+	# Now display the output
+	output.display()

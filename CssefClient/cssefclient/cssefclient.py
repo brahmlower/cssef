@@ -1,9 +1,8 @@
 import os
 import sys
-import yaml
 from time import sleep
+import yaml
 from celery import Celery
-import ConfigParser
 
 versionMajor = '0'
 versionMinor = '0'
@@ -46,6 +45,8 @@ class Configuration(object):
 		self.endpoint_cache_enabled = True
 		self.endpoint_cache_file = os.path.expanduser("~/.cssef/endpoint-cache")
 		self.endpoint_cache_timeout = '12h'
+		# dksl;afjdksl;fjdkls;afjdk;sa
+		self.apiConn = None
 
 	def loadConfigFile(self, configPath):
 		"""
@@ -81,6 +82,18 @@ class Configuration(object):
 		except IOError:
 			print "[LOGGING] Token file not found. Cannot use token authentication."
 
+	def establishApiConnection(self):
+		"""Establishes a connection to the celery server
+
+		Returns:
+			This will return an instance of Celery, which is connected to the
+			server specified in the provided Configuration object. This Celery
+			object can be provided to CeleryEndpoint object to execute a task.
+		"""
+		rpcUrl = "rpc://%s:%s@%s//" % (self.rpc_username, self.rpc_password, self.rpc_host)
+		amqpUrl = "amqp://%s:%s@%s//" % (self.amqp_username, self.amqp_password, self.amqp_host)
+		self.apiConn = Celery('api', backend = rpcUrl, broker = amqpUrl)
+
 class Argument(object):
 	def __init__(self, displayName, name = None, keyword = False, optional = False):
 		self.displayName = displayName
@@ -100,8 +113,7 @@ class CeleryEndpoint(object):
 	This class gets subclassed by other classes to define a specific
 	task on the cssef server.
 	"""
-
-	def __init__(self, celeryName, args):
+	def __init__(self, config, celeryName, args):
 		"""
 		Args:
 			celeryName (str): The task name as defined by the celery server
@@ -113,12 +125,12 @@ class CeleryEndpoint(object):
 			celeryName (str):
 			args (list):
 		"""
-		self.apiConn = None
+		self.config = config
 		self.celeryName = celeryName
 		self.args = args
 
 	@classmethod
-	def fromDict(cls, inputDict, apiConn):
+	def fromDict(cls, config, inputDict):
 		"""Creates a CeleryEndpoint object from a dictionary
 
 		Args:
@@ -134,14 +146,9 @@ class CeleryEndpoint(object):
 		Example:
 			<todo>
 		"""
-		# Parse the arguments
 		args = []
-		#for i in inputDict['arguments']:
-		#	pass
-		# Now create the instance
-		instance = cls(inputDict['celeryName'], args)
+		instance = cls(config, inputDict['celeryName'], args)
 		instance.name = inputDict['name']
-		instance.apiConn = apiConn
 		return instance
 
 	def execute(self, *args, **kwargs):
@@ -158,25 +165,14 @@ class CeleryEndpoint(object):
 			checking here to cast anything that does not comply into that
 			dictionary.
 		"""
-		task = self.apiConn.send_task(self.celeryName, args = args, kwargs = kwargs)
+		task = self.config.apiConn.send_task(self.celeryName, args = args, kwargs = kwargs)
 		return task.get()
-
-class ServerEndpoints(object):
-	def __init__(self, apiConn):
-		self.apiConn = apiConn
-		result = AvailableEndpoints(self.apiConn).execute()
-		if result['value'] != 0:
-			raise Exception
-		for i in result['content']:
-			for k in i['endpoints']:
-				instance = CeleryEndpoint.fromDict(k, self.apiConn)
-				setattr(self, k['celeryName'], instance)
 
 ############################################
 # General endpoints
 ############################################
 class AvailableEndpoints(CeleryEndpoint):
-	def __init__(self, apiConn):
+	def __init__(self, config):
 		"""Instiantiates a new instance of AvailableEndpoints.
  
 		This is hardcoded because this task/endpoint will be available on all
@@ -189,25 +185,37 @@ class AvailableEndpoints(CeleryEndpoint):
 			celeryName (str): The task name to call through Celery
 			args (list): The required arguments while calling the celery task
 		"""
-		self.apiConn = apiConn
+		self.config = config
 		self.celeryName = 'availableEndpoints'
 		self.args = []
 
 class Login(CeleryEndpoint):
-	def __init__(self, apiConn):
-		self.apiConn = apiConn
+	def __init__(self, config):
 		self.celeryName = 'login'
 		self.args = []
+		self.config = config
 
-	def execute(self):
-		if not config.token_auth_enabled:
+	def execute(self, **kwargs):
+		if not self.config.token_auth_enabled:
 			# Bail if token authentication is disabled
-			print "[ERROR] Logging in requires that token authentication be enabled. Set 'token_auth_enabled: True' in your configuration."
+			print "[ERROR] Logging in requires that token authentication be \
+				enabled. Set 'token_auth_enabled: True' in your \
+				configuration."
 			return None
 		# Attempt to log in
-		returnDict = super(Login, self).execute()
+		returnDict = super(Login, self).execute(**kwargs)
 		if returnDict['value'] != 0:
 			return returnDict
 		# Save the returned token
-		open(config.token_file, 'w').write(returnDict['content'][0])
-		returnDict['content'][0] = "Authentication was successful."
+		open(self.config.token_file, 'w').write(returnDict['content'][0])
+		returnDict['content'] = ["Authentication was successful."]
+		return returnDict
+
+class Logout(CeleryEndpoint):
+	def __init__(self, config):
+		self.celeryName = 'logout'
+		self.args = []
+		self.config = config
+
+	def execute(self):
+		pass
