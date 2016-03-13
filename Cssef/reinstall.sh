@@ -11,6 +11,11 @@ sudo pip uninstall -y cssefserver
 
 # Now reinstall the CSSEF server package
 sudo pip install .
+if [ "$?" -ne "0" ]
+then
+	>&2 echo "[ERROR] The pip package failed to install."
+	exit 1
+fi
 
 # Fix permissions on the logging directory
 # This will eventually be unnecessary, but is only needed now 

@@ -115,7 +115,6 @@ class ModelWrapper(object):
 		try:
 			return cls.search(db, pkid = pkid)[0]
 		except IndexError:
-			#print pkid
 			return None
 
 	@classmethod

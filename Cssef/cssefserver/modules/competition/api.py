@@ -6,7 +6,7 @@ from cssefserver.framework.utils import modelSet
 from cssefserver.framework.utils import modelGet
 from cssefserver.framework import CssefCeleryApp
 from cssefserver.framework import dbPath
-from cssefserver.modules.organization import Organization
+from cssefserver.modules.account import Organization
 from cssefserver.modules.competition import Competition
 from cssefserver.modules.competition import Team
 from cssefserver.modules.competition import Score

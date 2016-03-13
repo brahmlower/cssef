@@ -3,10 +3,10 @@ from cssefserver.framework import CssefCeleryApp
 from cssefserver.framework import dbPath
 from cssefserver.framework.utils import getEmptyReturnDict
 from cssefserver.framework.utils import databaseConnection
-from cssefserver.modules.user import User
-from cssefserver.modules.user.api import endpointsDict as userEndpoints
+from cssefserver.modules.account import User
+from cssefserver.modules.account.api import organizationEndpointsDict as organizationEndpoints
+from cssefserver.modules.account.api import userEndpointsDict as userEndpoints
 from cssefserver.modules.competition.api import endpointsDict as competitionEndpoints
-from cssefserver.modules.organization.api import endpointsDict as organizationEndpoints
 
 @CssefCeleryApp.task(name = 'availableEndpoints')
 def availableEndpoints():

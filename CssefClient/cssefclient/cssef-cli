@@ -228,7 +228,7 @@ if __name__ == "__main__":
 	config.loadConfigDict(cliInput.options)
 	# Load token
 	if config.token_auth_enabled:
-		config.loadToken()
+		config.loadTokenFile()
 	# Establish rabbitmq connection
 	config.establishApiConnection()
 	# Load the available endpoints
