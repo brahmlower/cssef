@@ -9,22 +9,14 @@ versionMinor = '0'
 versionPatch = '3'
 version = ".".join([versionMajor, versionMinor, versionPatch])
 
-def getConn(config):
-	"""Establishes a connection to the celery server
-
-	Args:
-		config (Configuration): An instance of a Configuration object
-
-	Returns:
-		This will return an instance of Celery, which is connected to the
-		server specified in the provided Configuration object. This Celery
-		object can be provided to CeleryEndpoint object to execute a task.
-	"""
-	rpcUrl = "rpc://%s:%s@%s//" % (config.rpc_username, config.rpc_password, config.rpc_host)
-	amqpUrl = "amqp://%s:%s@%s//" % (config.amqp_username, config.amqp_password, config.amqp_host)
-	return Celery('api', backend = rpcUrl, broker = amqpUrl)
-
 class Configuration(object):
+	"""Contains and loads configuration values
+
+	There is one attribute for each configuration that can be set.
+	Configurations can be loaded from a file or dictionary. When loading
+	configurations, any hyphens wihtin key values will be converted to
+	underscores so that the attribute can be set.
+	"""
 	def __init__(self):
 		# Super global configs
 		self.globalConfigPath = "/etc/cssef/cssef.yml"
@@ -49,15 +41,36 @@ class Configuration(object):
 		self.apiConn = None
 
 	def loadConfigFile(self, configPath):
-		"""
-		This will convert strings with hyphens (-) to underscores (_) that way
-		attributes can be added. Underscores are not used in the config files
-		because I think they look ugly. That's my only reasoning - deal with it.
+		"""Load configuration from a file
+
+		This will read a yaml configuration file. The yaml file is converted
+		to a dictionary object, which is just passed to `loadConfigDict`.
+
+		Args:
+			configPath (str): A filepath to the yaml config file
+
+		Returns:
+			None
 		"""
 		configDict = yaml.load(open(configPath, 'r'))
 		self.loadConfigDict(configDict)
 
 	def loadConfigDict(self, configDict):
+		"""Load configurations from a dictionary
+
+		This will convert strings with hyphens (-) to underscores (_) that way
+		attributes can be added. Underscores are not used in the config files
+		because I think they look ugly. That's my only reasoning - deal with
+		it. Any key within the dictionary that is not an attribute of the
+		class will be ignored (this will be logged).
+
+		Args:
+			configDict (dict): A dictionary containing configurations and
+				values
+
+		Returns:
+			None
+		"""
 		for i in configDict:
 			if hasattr(self, i.replace('-','_')):
 				# Set the attribute
@@ -72,7 +85,13 @@ class Configuration(object):
 				# We don't care about it. Just skip it!
 				print "[LOGGING] Ignoring invalid setting '%s'." % i
 
-	def loadToken(self):
+	def loadTokenFile(self):
+		"""Load token from a file
+
+		This will try to load the token from the token cache file. If
+		successful, it will save the token it finds in the `token` attribute
+		for use while sending requests to the server.
+		"""
 		try:
 			token = open(self.token_file, 'r').read()
 			if len(token) > 0:
@@ -85,14 +104,14 @@ class Configuration(object):
 	def establishApiConnection(self):
 		"""Establishes a connection to the celery server
 
-		Returns:
-			This will return an instance of Celery, which is connected to the
-			server specified in the provided Configuration object. This Celery
-			object can be provided to CeleryEndpoint object to execute a task.
+		This sets the attribute `apiConn` to an open connection to the Celery
+		server, based on the settings. This connection can be provided to a
+		`CeleryEndpoint` to execute a task
 		"""
+		queueName = 'api' # We're going to have to improve this some day
 		rpcUrl = "rpc://%s:%s@%s//" % (self.rpc_username, self.rpc_password, self.rpc_host)
 		amqpUrl = "amqp://%s:%s@%s//" % (self.amqp_username, self.amqp_password, self.amqp_host)
-		self.apiConn = Celery('api', backend = rpcUrl, broker = amqpUrl)
+		self.apiConn = Celery(queueName, backend = rpcUrl, broker = amqpUrl)
 
 class Argument(object):
 	def __init__(self, displayName, name = None, keyword = False, optional = False):
@@ -116,14 +135,14 @@ class CeleryEndpoint(object):
 	def __init__(self, config, celeryName, args):
 		"""
 		Args:
+			config (Configuration): The current configuration to use
 			celeryName (str): The task name as defined by the celery server
 			args (list): Arguments that are available to the task
 
 		Attributes:
-			apiConn (None): This is an empty value to hold the celery server
-				connection
-			celeryName (str):
-			args (list):
+			config (Configuration): The current configuration to use
+			celeryName (str): The task name as defined by the celery server
+			args (list): Arguments that are available to the task
 		"""
 		self.config = config
 		self.celeryName = celeryName
@@ -134,10 +153,9 @@ class CeleryEndpoint(object):
 		"""Creates a CeleryEndpoint object from a dictionary
 
 		Args:
+			config (Configuration): The current configuration to use
 			inputDict (dict): Dictionary containing necessary values to define
 				the celery endpoint
-			apiConn (Celery): The celery server connection to use to execute
-				the request
 
 		Returns:
 			An instance of CeleryEndpoint that has been filled with the
@@ -179,9 +197,10 @@ class AvailableEndpoints(CeleryEndpoint):
 		configurations of the server.
 		
 		Args:
-			apiConn (Celery): A connection object to the celery server.
+			config (Configuration): The current configuration to use
+
 		Attributes:
-			apiConn (Celery): The celery connection to use
+			config (Configuration): The current configuration to use
 			celeryName (str): The task name to call through Celery
 			args (list): The required arguments while calling the celery task
 		"""
@@ -191,9 +210,9 @@ class AvailableEndpoints(CeleryEndpoint):
 
 class Login(CeleryEndpoint):
 	def __init__(self, config):
+		self.config = config
 		self.celeryName = 'login'
 		self.args = []
-		self.config = config
 
 	def execute(self, **kwargs):
 		if not self.config.token_auth_enabled:

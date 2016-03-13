@@ -60,6 +60,20 @@ class Menu(object):
 
 	def walkDictPath(self, d, l):
 		"""This will walk down the path l through dictionary d
+		Example:
+			Given list l defined as `l = ['a', 'b', 'c']` and dictionary d
+			defined as `d = {
+				'a': {
+					'b': {
+						'c': "object1",
+						'f': "object2"
+					},
+					'e': "object3"
+				},
+				'd': {
+					'g': "object4"
+				}
+			}` this function will return object1
 		"""
 		if len(l) == 0:
 			return None
@@ -69,6 +83,18 @@ class Menu(object):
 			return self.walkDictPath(d[l[0]], l[1:])
 
 	def getCommand(self, commandList):
+		"""Gets the selected command from the menu dictionary
+
+		This uses the walkDictPath method to retrieve the selected celery
+		endpoint based on the list of values in commandList.
+
+		Args:
+			commandList (list): List of menu names to traverse
+
+		Returns:
+			Command: Instantiated command class, which can be called to
+				ececute the celery task
+		"""
 		return Command(self.walkDictPath(self.menuDict, commandList))
 
 class ParseInput(object):
@@ -127,16 +153,22 @@ class ParseInput(object):
 			index += 1
 
 class Command(object):
+	"""
+	Todo: This can very likely be merged in with CeleryEndpoint.
+	"""
 	def __init__(self, endpoint):
 		self.endpoint = endpoint
 
 	def __call__(self, **kwargs):
 		"""Wraps endpoint execution
 
-		This the point of this is just to catch any unhandled server exceptions.
+		This the point of this is just to catch any unhandled server
+		exceptions.
+
 		Args:
 			endpoint (Endpoint): 
-			arguments (dict): Keyword dictionary of arguments to pass to endpoint.execute
+			arguments (dict): Keyword dictionary of arguments to pass to
+				`endpoint.execute`.
 
 		Returns:
 			dict: returnDict with values filled in.
