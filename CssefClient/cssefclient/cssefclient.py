@@ -1,5 +1,6 @@
 import os
 import sys
+import stat
 from time import sleep
 import yaml
 from celery import Celery
@@ -20,7 +21,12 @@ class Configuration(object):
 	def __init__(self):
 		# Super global configs
 		self.globalConfigPath = "/etc/cssef/cssef.yml"
-		self.configPath = os.path.expanduser("~/.cssef/cssef.yml")
+		self.userDataDir = os.path.expanduser("~/.cssef/")
+		self.configPath = self.userDataDir + "cssef.yml"
+		# General configurations
+		self.verbose = False
+		self.username = None
+		self.password = None
 		# Default values for the client configuration
 		self.rpc_username = "cssefd"
 		self.rpc_password = "cssefd-pass"
@@ -31,14 +37,18 @@ class Configuration(object):
 		# Token configurations
 		self.token_auth_enabled = True
 		self.token = ''
-		self.token_file = os.path.expanduser("~/.cssef/token")
+		self.token_file = self.userDataDir + "token"
 		self.token_repoll_enabled = False
 		# Endpoint caching
 		self.endpoint_cache_enabled = True
-		self.endpoint_cache_file = os.path.expanduser("~/.cssef/endpoint-cache")
+		self.endpoint_cache_file = self.userDataDir + "endpoint-cache"
 		self.endpoint_cache_timeout = '12h'
 		# dksl;afjdksl;fjdkls;afjdk;sa
 		self.apiConn = None
+
+		# Ensure user data directory exists
+		if not os.path.exists(self.userDataDir):
+			os.makedirs(self.userDataDir)
 
 	def loadConfigFile(self, configPath):
 		"""Load configuration from a file
@@ -77,13 +87,15 @@ class Configuration(object):
 				setting = i.replace('-','_')
 				value = configDict[i]
 				setattr(self, setting, value)
-				print "[LOGGING] Configuration '%s' set to '%s'." % (i, value)
+				if self.verbose:
+					print "[LOGGING] Configuration '%s' set to '%s'." % (i, value)
 			elif type(configDict[i]) == dict:
 				# This is a dictionary and may contain additional values
 				self.loadConfigDict(configDict[i])
 			else:
 				# We don't care about it. Just skip it!
-				print "[LOGGING] Ignoring invalid setting '%s'." % i
+				if self.verbose:
+					print "[LOGGING] Ignoring invalid setting '%s'." % i
 
 	def loadTokenFile(self):
 		"""Load token from a file
@@ -91,15 +103,32 @@ class Configuration(object):
 		This will try to load the token from the token cache file. If
 		successful, it will save the token it finds in the `token` attribute
 		for use while sending requests to the server.
+
+		Returns:
+			bool: True if token was successfully loaded, otherwise False.
 		"""
-		try:
-			token = open(self.token_file, 'r').read()
-			if len(token) > 0:
-				self.token = token
-			else:
+		# Make sure the file exists
+		if not os.path.isfile(self.token_file):
+			sys.stderr.write("[WARNING] Token file not found. Cannot use \
+				token authentication.")
+			sys.stderr.flush()
+		# Now make sure that only we have access to it
+		filePermissions = os.stat(self.token_file).st_mode
+		permissionsDenied = [stat.S_IRGRP, stat.S_IWGRP, stat.S_IXGRP,
+			stat.S_IROTH, stat.S_IWOTH, stat.S_IXOTH]
+		for i in permissionsDenied:
+			if bool(filePermissions & i):
+				sys.stderr.write("Token file may not have any permissions for group or other.\n")
+				sys.stderr.flush()
+				return False
+		# Now actually read in the file
+		token = open(self.token_file, 'r').read()
+		if len(token) > 0:
+			self.token = token
+			return True
+		else:
+			if self.verbose:
 				print "[LOGGING] Token file empty. Cannot use token authentication."
-		except IOError:
-			print "[LOGGING] Token file not found. Cannot use token authentication."
 
 	def establishApiConnection(self):
 		"""Establishes a connection to the celery server
@@ -217,9 +246,10 @@ class Login(CeleryEndpoint):
 	def execute(self, **kwargs):
 		if not self.config.token_auth_enabled:
 			# Bail if token authentication is disabled
-			print "[ERROR] Logging in requires that token authentication be \
-				enabled. Set 'token_auth_enabled: True' in your \
-				configuration."
+			if config.verbose:
+				print "[ERROR] Logging in requires that token authentication be \
+					enabled. Set 'token_auth_enabled: True' in your \
+					configuration."
 			return None
 		# Attempt to log in
 		returnDict = super(Login, self).execute(**kwargs)

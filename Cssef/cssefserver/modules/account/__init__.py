@@ -1,10 +1,11 @@
 import time
 import tokenlib
-from cssefserver.framework.utils import PasswordHash
+#from cssefserver.framework.utils import PasswordHash
 from cssefserver.framework.utils import ModelWrapper
 from cssefserver.modules.competition import Competition
 from cssefserver.modules.account.models import User as UserModel
 from cssefserver.modules.account.models import Organization as OrganizationModel
+from cssefserver.modules.account.utils import PasswordHash
 from cssefserver.modules.account.errors import *
 
 # THIS IS HARDCODED, WHICH IS BAD
@@ -220,6 +221,23 @@ class User(ModelWrapper):
 		org.setNumMembers()
 		return clsInst
 
+	def authorized(self, authDict, group):
+		# Testing right now
+		return True
+
+	def authenticate(self, authDict):
+		print authDict.keys()
+		if 'token' in authDict.keys():
+			# Do token authentication
+			return self.authenticateToken(authDict['token'])
+		elif 'password' in authDict.keys():
+			# Do password authentication
+			return self.authenticatePassword(authDict['password'], returnToken = False)
+		else:
+			# Cannot authenticate!
+			print "There was no password or token!"
+			return False
+
 	def authenticateToken(self, token):
 		"""Check if the provided token is valid for this user.
 
@@ -243,7 +261,7 @@ class User(ModelWrapper):
 		tk = tokenlib.parse_token(token, secret = secretSalt, now = time.time())
 		return tk['id'] == self.getId() and tk['username'] == self.username and tk['organization'] == self.organization
 
-	def authenticatePassword(self, password):
+	def authenticatePassword(self, password, returnToken = True):
 		"""Check if the provided plaintext password is valid for this user.
 
 		This will check that the provided password matches the users password.
@@ -261,9 +279,12 @@ class User(ModelWrapper):
 				password is incorrect.
 		"""
 		if self.password == password:
-			tokenDict = {"id": self.getId(), "username": self.username, "organization": self.organization}
-			token = tokenlib.make_token(tokenDict, secret = secretSalt)
-			return token
+			if not returnToken:
+				return True
+			else:
+				tokenDict = {"id": self.getId(), "username": self.username, "organization": self.organization}
+				token = tokenlib.make_token(tokenDict, secret = secretSalt)
+				return token
 		else:
 			return None
 

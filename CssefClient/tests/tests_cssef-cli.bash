@@ -5,11 +5,11 @@ pip list | grep cssefclient > /dev/null
 if [ "$?" -eq "0" ]
 then
 	echo "[INFO] Cssefclient package already installed. Removing for clean installation."
-	echo "y" | sudo pip uninstall cssefclient > /dev/null
+	sudo pip uninstall -y cssefclient > /dev/null
 fi
 
 # Install the pip package
-echo "y" | sudo pip install . > /dev/null
+sudo pip install -y . > /dev/null
 if [ "$?" -ne "0" ]
 then
 	>&2 echo "[ERROR] The pip package failed to install."

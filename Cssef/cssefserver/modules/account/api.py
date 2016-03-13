@@ -8,9 +8,10 @@ from cssefserver.framework import CssefCeleryApp
 from cssefserver.framework import dbPath
 from cssefserver.modules.account import Organization
 from cssefserver.modules.account import User
+from cssefserver.modules.account.utils import authorizeAccess
 
 @CssefCeleryApp.task(name = 'organizationAdd')
-def organizationAdd(**kwargs):
+def organizationAdd(auth, **kwargs):
 	"""Celery task to create a new organization.
 
 	Args:
@@ -20,6 +21,9 @@ def organizationAdd(**kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
+	authResult = authorizeAccess(auth)
+	if authResult is not None:
+		return authResult
 	try:
 		db = databaseConnection(dbPath)
 		organization = Organization.fromDict(db, kwargs)
@@ -30,7 +34,7 @@ def organizationAdd(**kwargs):
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'organizationDel')
-def organizationDel(pkid = None):
+def organizationDel(auth, pkid = None):
 	"""Celery task to delete an existing organization.
 
 	Args:
@@ -40,6 +44,9 @@ def organizationDel(pkid = None):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
+	authResult = authorizeAccess(auth)
+	if authResult is not None:
+		return authResult
 	try:
 		if not pkid:
 			raise Exception
@@ -48,7 +55,7 @@ def organizationDel(pkid = None):
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'organizationSet')
-def organizationSet(pkid = None, **kwargs):
+def organizationSet(auth, pkid = None, **kwargs):
 	"""Celery task to edit an existing organization.
 
 	Args:
@@ -59,6 +66,9 @@ def organizationSet(pkid = None, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
+	authResult = authorizeAccess(auth)
+	if authResult is not None:
+		return authResult
 	try:
 		if not pkid:
 			raise Exception
@@ -67,7 +77,7 @@ def organizationSet(pkid = None, **kwargs):
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'organizationGet')
-def organizationGet(**kwargs):
+def organizationGet(auth, **kwargs):
 	"""Celery task to get one or more existing organization.
 
 	Args:
@@ -77,13 +87,16 @@ def organizationGet(**kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
+	authResult = authorizeAccess(auth)
+	if authResult is not None:
+		return authResult
 	try:
 		return modelGet(Organization, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'userAdd')
-def userAdd(organization = None, **kwargs):
+def userAdd(auth, organization = None, **kwargs):
 	"""Celery task to create a new user.
 
 	Args:
@@ -94,6 +107,9 @@ def userAdd(organization = None, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
+	authResult = authorizeAccess(auth)
+	if authResult is not None:
+		return authResult
 	try:
 		db = databaseConnection(dbPath)
 		kwargs['organization'] = organization
@@ -105,7 +121,7 @@ def userAdd(organization = None, **kwargs):
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'userDel')
-def userDel(pkid = None):
+def userDel(auth, pkid = None):
 	"""Celery task to delete an existing user.
 
 	Args:
@@ -115,6 +131,9 @@ def userDel(pkid = None):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
+	authResult = authorizeAccess(auth)
+	if authResult is not None:
+		return authResult
 	try:
 		if not pkid:
 			raise Exception
@@ -123,7 +142,7 @@ def userDel(pkid = None):
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'userSet')
-def userSet(pkid = None, **kwargs):
+def userSet(auth, pkid = None, **kwargs):
 	"""Celery task to edit an existing user.
 
 	Args:
@@ -134,6 +153,9 @@ def userSet(pkid = None, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
+	authResult = authorizeAccess(auth)
+	if authResult is not None:
+		return authResult
 	try:
 		if not pkid:
 			raise Exception
@@ -142,7 +164,7 @@ def userSet(pkid = None, **kwargs):
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'userGet')
-def userGet(**kwargs):
+def userGet(auth, **kwargs):
 	"""Celery task to get one or more existing users.
 
 	Args:
@@ -152,6 +174,9 @@ def userGet(**kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
+	authResult = authorizeAccess(auth)
+	if authResult is not None:
+		return authResult
 	try:
 		return modelGet(User, **kwargs)
 	except Exception as e:

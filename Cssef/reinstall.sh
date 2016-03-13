@@ -36,4 +36,4 @@ cssefd start
 cssef-cli organization add --name=Administrators --maxMembers=10
 
 # And now our new test admin user!
-cssef-cli user add --organization=1 --name=Admin --password=admin
+cssef-cli user add --organization=1 --name=Admin --username=admin --password=admin
