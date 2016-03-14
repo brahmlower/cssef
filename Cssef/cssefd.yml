@@ -13,10 +13,10 @@ celery-stderr: /var/log/cssef/cssef_celery_stderr.log
 celery-stdout: /var/log/cssef/cssef_celery_stdout.log
 
 # Celery configs
-rpc-username: cssefd-user
+rpc-username: cssefd
 rpc-password: cssefd-pass
 rpc-host: localhost
 
-amqp-username: cssefd-user
+amqp-username: cssefd
 amqp-password: cssefd-pass
 amqp-host: localhost

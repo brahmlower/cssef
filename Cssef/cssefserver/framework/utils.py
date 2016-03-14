@@ -4,7 +4,6 @@ import traceback
 import bcrypt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from cssefserver.framework import dbPath
 from cssefserver.framework.models import Base
 
 class CssefObjectDoesNotExist(Exception):
@@ -24,11 +23,14 @@ class Configuration(object):
 	underscores so that the attribute can be set.
 	"""
 	def __init__(self):
+		print "Making config object!"
 		# Super global configs
 		self.globalConfigPath = "/etc/cssef/cssefd.yml"
 		self.admin_token = ""
-		self.database_path = ""
 		self.pidfile = ""
+		# SQLAlchemy configurations
+		self.database_table_prefix = "cssef_"
+		self.database_path = None
 		# General configurations
 		self.verbose = False
 		# Default values for the rabbitmq configuration
@@ -48,7 +50,7 @@ class Configuration(object):
 
 	@property
 	def rpc_url(self):
-		return  "rpc://%s:%s@%s//" % (self.rpc_username, self.rpc_password, self.rpc_host)
+		return "rpc://%s:%s@%s//" % (self.rpc_username, self.rpc_password, self.rpc_host)
 
 	@property
 	def amqp_url(self):

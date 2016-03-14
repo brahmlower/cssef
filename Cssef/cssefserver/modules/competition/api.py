@@ -1,12 +1,11 @@
-from cssefserver.framework.utils import Configuration
-#from cssefserver.framework.utils import databaseConnection
+from cssefserver.framework import CssefCeleryApp
+from cssefserver.framework import DatabaseConnection
+from cssefserver.framework import config
 from cssefserver.framework.utils import handleException
 from cssefserver.framework.utils import getEmptyReturnDict
 from cssefserver.framework.utils import modelDel
 from cssefserver.framework.utils import modelSet
 from cssefserver.framework.utils import modelGet
-from cssefserver.framework import CssefCeleryApp
-#from cssefserver.framework import dbPath
 from cssefserver.modules.account import Organization
 from cssefserver.modules.competition import Competition
 from cssefserver.modules.competition import Team
@@ -23,17 +22,13 @@ from cssefserver.modules.account.utils import authorizeAccess
 # ==================================================
 @CssefCeleryApp.task(name = 'competitionAdd')
 def competitionAdd(auth, organization = None, **kwargs):
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not organization:
 			raise Exception
-		#db = databaseConnection(dbPath)
-		organization = Organization.fromDatabase(db, organization)
+		organization = Organization.fromDatabase(DatabaseConnection, organization)
 		competition = organization.createCompetition(kwargs)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(competition.asDict())
@@ -43,10 +38,10 @@ def competitionAdd(auth, organization = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionDel')
 def competitionDel(auth, pkid = None):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelDel(Competition, pkid)
@@ -55,10 +50,10 @@ def competitionDel(auth, pkid = None):
 
 @CssefCeleryApp.task(name = 'competitionSet')
 def competitionSet(auth, pkid = None, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelSet(Competition, pkid, **kwargs)
@@ -67,27 +62,24 @@ def competitionSet(auth, pkid = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionGet')
 def competitionGet(auth, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		return modelGet(Competition, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
 @CssefCeleryApp.task(name = 'competitionStart')
 def competitionStart(auth, pkid = None):
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		#db = databaseConnection(dbPath)
-		competition = Competition.fromDatabase(db, pkid)
+		competition = Competition.fromDatabase(DatabaseConnection, pkid)
 		if not competition.autoStart:
 			raise Exception
 		competition.start()
@@ -99,20 +91,16 @@ def competitionStart(auth, pkid = None):
 # ==================================================
 @CssefCeleryApp.task(name = 'competitionTeamAdd')
 def competitionTeamAdd(auth, competition = None, **kwargs):
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not competition:
 			raise Exception
-		#db = databaseConnection(dbPath)
-		competitionObj = Competition.fromDatabase(db, competition)
+		competitionObj = Competition.fromDatabase(DatabaseConnection, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
-		team = Team.fromDict(db, tmpDict)
+		team = Team.fromDict(DatabaseConnection, tmpDict)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(team.asDict())
 		return returnDict
@@ -121,10 +109,10 @@ def competitionTeamAdd(auth, competition = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionTeamDel')
 def competitionTeamDel(auth, pkid = None):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelDel(Team, pkid)
@@ -133,10 +121,10 @@ def competitionTeamDel(auth, pkid = None):
 
 @CssefCeleryApp.task(name = 'competitionTeamSet')
 def competitionTeamSet(auth, pkid = None, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelSet(Team, pkid, **kwargs)
@@ -145,10 +133,10 @@ def competitionTeamSet(auth, pkid = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionTeamGet')
 def competitionTeamGet(auth, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		return modelGet(Team, **kwargs)
 	except Exception as e:
 		return handleException(e)
@@ -158,20 +146,16 @@ def competitionTeamGet(auth, **kwargs):
 # ==================================================
 @CssefCeleryApp.task(name = 'competitionScoreAdd')
 def competitionScoreAdd(auth, competition = None, **kwargs):
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not competition:
 			raise Exception
-		#db = databaseConnection(dbPath)
-		competitionObj = Competition.fromDatabase(db, competition)
+		competitionObj = Competition.fromDatabase(DatabaseConnection, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
-		score = Score.fromDict(db, tmpDict)
+		score = Score.fromDict(DatabaseConnection, tmpDict)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(score.asDict())
 		return returnDict
@@ -180,10 +164,10 @@ def competitionScoreAdd(auth, competition = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionScoreDel')
 def competitionScoreDel(auth, pkid = None):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelDel(Score, pkid)
@@ -192,10 +176,10 @@ def competitionScoreDel(auth, pkid = None):
 
 @CssefCeleryApp.task(name = 'competitionScoreSet')
 def competitionScoreSet(auth, pkid = None, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelSet(Score, pkid, **kwargs)
@@ -204,10 +188,10 @@ def competitionScoreSet(auth, pkid = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionScoreGet')
 def competitionScoreGet(auth, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		return modelGet(Score, **kwargs)
 	except Exception as e:
 		return handleException(e)
@@ -217,20 +201,16 @@ def competitionScoreGet(auth, **kwargs):
 # ==================================================
 @CssefCeleryApp.task(name = 'competitionInjectAdd')
 def competitionInjectAdd(auth, competition = None, **kwargs):
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not competition:
 			raise Exception
-		#db = databaseConnection(dbPath)
-		competitionObj = Competition.fromDatabase(db, competition)
+		competitionObj = Competition.fromDatabase(DatabaseConnection, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
-		inject = Inject.fromDict(db, tmpDict)
+		inject = Inject.fromDict(DatabaseConnection, tmpDict)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(inject.asDict())
 		return returnDict
@@ -239,10 +219,10 @@ def competitionInjectAdd(auth, competition = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionInjectDel')
 def competitionInjectDel(auth, pkid = None):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelDel(Inject, pkid)
@@ -251,10 +231,10 @@ def competitionInjectDel(auth, pkid = None):
 
 @CssefCeleryApp.task(name = 'competitionInjectSet')
 def competitionInjectSet(auth, pkid = None, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelSet(Inject, pkid, **kwargs)
@@ -263,10 +243,10 @@ def competitionInjectSet(auth, pkid = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionInjectGet')
 def competitionInjectGet(auth, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		return modelGet(Inject, **kwargs)
 	except Exception as e:
 		return handleException(e)
@@ -276,20 +256,16 @@ def competitionInjectGet(auth, **kwargs):
 # ==================================================
 @CssefCeleryApp.task(name = 'competitionInjectResponseAdd')
 def competitionInjectResponseAdd(auth, competition = None, **kwargs):
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not competition:
 			raise Exception
-		#db = databaseConnection(dbPath)
-		competitionObj = Competition.fromDatabase(db, competition)
+		competitionObj = Competition.fromDatabase(DatabaseConnection, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
-		injectResponse = InjectResponse.fromDict(db, tmpDict)
+		injectResponse = InjectResponse.fromDict(DatabaseConnection, tmpDict)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(injectResponse.asDict())
 		return returnDict
@@ -298,10 +274,10 @@ def competitionInjectResponseAdd(auth, competition = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionInjectResponseDel')
 def competitionInjectResponseDel(auth, pkid = None):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelDel(InjectResponse, pkid)
@@ -310,10 +286,10 @@ def competitionInjectResponseDel(auth, pkid = None):
 
 @CssefCeleryApp.task(name = 'competitionInjectResponseSet')
 def competitionInjectResponseSet(auth, pkid = None, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelSet(InjectResponse, pkid, **kwargs)
@@ -322,10 +298,10 @@ def competitionInjectResponseSet(auth, pkid = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionInjectResponseGet')
 def competitionInjectResponseGet(auth, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		return modelGet(InjectResponse, **kwargs)
 	except Exception as e:
 		return handleException(e)
@@ -335,20 +311,17 @@ def competitionInjectResponseGet(auth, **kwargs):
 # ==================================================
 @CssefCeleryApp.task(name = 'competitionIncidentAdd')
 def competitionIncidentAdd(auth, competition = None, **kwargs):
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not competition:
 			raise Exception
 		#db = databaseConnection(dbPath)
-		competitionObj = Competition.fromDatabase(db, competition)
+		competitionObj = Competition.fromDatabase(DatabaseConnection, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
-		incident = Incident.fromDict(db, tmpDict)
+		incident = Incident.fromDict(DatabaseConnection, tmpDict)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(incident.asDict())
 		return returnDict
@@ -357,10 +330,10 @@ def competitionIncidentAdd(auth, competition = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionIncidentDel')
 def competitionIncidentDel(auth, pkid = None):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelDel(Incident, pkid)
@@ -369,10 +342,10 @@ def competitionIncidentDel(auth, pkid = None):
 
 @CssefCeleryApp.task(name = 'competitionIncidentSet')
 def competitionIncidentSet(auth, pkid = None, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelSet(Incident, pkid, **kwargs)
@@ -381,10 +354,10 @@ def competitionIncidentSet(auth, pkid = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionIncidentGet')
 def competitionIncidentGet(auth, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		return modelGet(Incident, **kwargs)
 	except Exception as e:
 		return handleException(e)
@@ -394,20 +367,16 @@ def competitionIncidentGet(auth, **kwargs):
 # ==================================================
 @CssefCeleryApp.task(name = 'competitionIncidentResponseAdd')
 def competitionIncidentResponseAdd(auth, competition = None, **kwargs):
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not competition:
 			raise Exception
-		#db = databaseConnection(dbPath)
-		competitionObj = Competition.fromDatabase(db, competition)
+		competitionObj = Competition.fromDatabase(DatabaseConnection, competition)
 		tmpDict = kwargs
 		tmpDict['competition'] = competitionObj.getId()
-		incidentResponse = IncidentResponse.fromDict(db, tmpDict)
+		incidentResponse = IncidentResponse.fromDict(DatabaseConnection, tmpDict)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(incidentResponse.asDict())
 		return returnDict
@@ -416,10 +385,10 @@ def competitionIncidentResponseAdd(auth, competition = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionIncidentResponseDel')
 def competitionIncidentResponseDel(auth, pkid = None):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelDel(IncidentResponse, pkid)
@@ -428,10 +397,10 @@ def competitionIncidentResponseDel(auth, pkid = None):
 
 @CssefCeleryApp.task(name = 'competitionIncidentResponseSet')
 def competitionIncidentResponseSet(auth, pkid = None, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelSet(IncidentResponse, pkid, **kwargs)
@@ -440,10 +409,10 @@ def competitionIncidentResponseSet(auth, pkid = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionIncidentResponseGet')
 def compeititonIncidentResponseGet(auth, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		return modelGet(IncidentResponse, **kwargs)
 	except Exception as e:
 		return handleException(e)
@@ -454,15 +423,11 @@ def compeititonIncidentResponseGet(auth, **kwargs):
 # ==================================================
 @CssefCeleryApp.task(name = 'competitionScoringEngineAdd')
 def competitionScoringEngineAdd(auth, **kwargs):
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
-		#db = databaseConnection(dbPath)
-		scoringEngine = ScoringEngine.fromDict(db, kwargs)
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
+		scoringEngine = ScoringEngine.fromDict(DatabaseConnection, kwargs)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(scoringEngine.asDict())
 		return returnDict
@@ -471,10 +436,10 @@ def competitionScoringEngineAdd(auth, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionScoringEngineDel')
 def competitionScoringEngineDel(auth, pkid = None):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelDel(ScoringEngine, pkid)
@@ -483,10 +448,10 @@ def competitionScoringEngineDel(auth, pkid = None):
 
 @CssefCeleryApp.task(name = 'competitionScoringEngineSet')
 def competitionScoringEngineSet(auth, pkid = None, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelSet(ScoringEngine, pkid, **kwargs)
@@ -495,10 +460,10 @@ def competitionScoringEngineSet(auth, pkid = None, **kwargs):
 
 @CssefCeleryApp.task(name = 'competitionScoringEngineGet')
 def competitionScoringEngineGet(auth, **kwargs):
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		return modelGet(ScoringEngine, **kwargs)
 	except Exception as e:
 		return handleException(e)

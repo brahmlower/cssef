@@ -1,4 +1,6 @@
 from cssefserver.framework import CssefCeleryApp
+from cssefserver.framework import DatabaseConnection
+from cssefserver.framework import config
 from cssefserver.framework.utils import Configuration
 from cssefserver.framework.utils import handleException
 from cssefserver.framework.utils import getEmptyReturnDict
@@ -20,14 +22,11 @@ def organizationAdd(auth, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	authResult = authorizeAccess(auth, config)
-	if authResult is not None:
-		return authResult
 	try:
-		organization = Organization.fromDict(db, kwargs)
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
+		organization = Organization.fromDict(DatabaseConnection, kwargs)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(organization.asDict())
 		return returnDict
@@ -45,12 +44,10 @@ def organizationDel(auth, pkid = None):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	authResult = authorizeAccess(auth)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelDel(Organization, pkid)
@@ -69,12 +66,10 @@ def organizationSet(auth, pkid = None, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	authResult = authorizeAccess(auth, config)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelSet(Organization, pkid, **kwargs)
@@ -92,12 +87,10 @@ def organizationGet(auth, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	authResult = authorizeAccess(auth, config)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		return modelGet(Organization, **kwargs)
 	except Exception as e:
 		return handleException(e)
@@ -114,15 +107,12 @@ def userAdd(auth, organization = None, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	authResult = authorizeAccess(auth, config)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		kwargs['organization'] = organization
-		user = User.fromDict(db, kwargs)
+		user = User.fromDict(DatabaseConnection, kwargs)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(user.asDict())
 		return returnDict
@@ -140,12 +130,10 @@ def userDel(auth, pkid = None):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	authResult = authorizeAccess(auth, config)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelDel(User, pkid)
@@ -164,12 +152,10 @@ def userSet(auth, pkid = None, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	authResult = authorizeAccess(auth, config)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		if not pkid:
 			raise Exception
 		return modelSet(User, pkid, **kwargs)
@@ -187,12 +173,10 @@ def userGet(auth, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	authResult = authorizeAccess(auth, config)
-	if authResult is not None:
-		return authResult
 	try:
+		authResult = authorizeAccess(auth, config)
+		if authResult is not None:
+			return authResult
 		return modelGet(User, **kwargs)
 	except Exception as e:
 		return handleException(e)

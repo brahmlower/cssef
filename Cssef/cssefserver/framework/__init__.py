@@ -1,10 +1,7 @@
 from celery import Celery
-# # Todo: pull the backend url from the config file instead of hardcoding
-CssefCeleryApp = Celery(
-	'api',
-	backend='rpc://cssefd:cssefd-pass@localhost//',
-	broker='amqp://cssefd:cssefd-pass@localhost//',
-)
+from utils import Configuration
 
-# Todo: pull the sqlite database path from the config file instead of hardcoding
-dbPath = '/home/sk4ly/Documents/cssef/Cssef/db.sqlite3'
+config = Configuration()
+config.loadConfigFile(config.globalConfigPath)
+DatabaseConnection = config.establishDatabaseConnection()
+CssefCeleryApp = Celery('api', backend = config.rpc_url, broker = config.amqp_url)

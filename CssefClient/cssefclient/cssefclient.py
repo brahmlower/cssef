@@ -2,6 +2,7 @@ import os
 import sys
 import stat
 from time import sleep
+from getpass import getpass
 import yaml
 from celery import Celery
 
@@ -252,6 +253,12 @@ class Login(CeleryEndpoint):
 					enabled. Set 'token_auth_enabled: True' in your \
 					configuration."
 			return None
+		if not kwargs.get('username'):
+			kwargs['username'] = self.config.username
+		if not kwargs.get('organization'):
+			kwargs['organization'] = self.config.organization
+		if not kwargs.get('password'):
+			kwargs['password'] = getpass()
 		# Attempt to log in
 		returnDict = super(Login, self).execute(**kwargs)
 		if returnDict['value'] != 0:
