@@ -1,11 +1,10 @@
-from cssefserver.framework.utils import databaseConnection
+from cssefserver.framework import CssefCeleryApp
+from cssefserver.framework.utils import Configuration
 from cssefserver.framework.utils import handleException
 from cssefserver.framework.utils import getEmptyReturnDict
 from cssefserver.framework.utils import modelDel
 from cssefserver.framework.utils import modelSet
 from cssefserver.framework.utils import modelGet
-from cssefserver.framework import CssefCeleryApp
-from cssefserver.framework import dbPath
 from cssefserver.modules.account import Organization
 from cssefserver.modules.account import User
 from cssefserver.modules.account.utils import authorizeAccess
@@ -21,11 +20,13 @@ def organizationAdd(auth, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	authResult = authorizeAccess(auth)
+	config = Configuration()
+	config.loadConfigFile(config.globalConfigPath)
+	db = config.establishDatabaseConnection()
+	authResult = authorizeAccess(auth, config)
 	if authResult is not None:
 		return authResult
 	try:
-		db = databaseConnection(dbPath)
 		organization = Organization.fromDict(db, kwargs)
 		returnDict = getEmptyReturnDict()
 		returnDict['content'].append(organization.asDict())
@@ -44,6 +45,8 @@ def organizationDel(auth, pkid = None):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
+	config = Configuration()
+	config.loadConfigFile(config.globalConfigPath)
 	authResult = authorizeAccess(auth)
 	if authResult is not None:
 		return authResult
@@ -66,7 +69,9 @@ def organizationSet(auth, pkid = None, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	authResult = authorizeAccess(auth)
+	config = Configuration()
+	config.loadConfigFile(config.globalConfigPath)
+	authResult = authorizeAccess(auth, config)
 	if authResult is not None:
 		return authResult
 	try:
@@ -87,7 +92,9 @@ def organizationGet(auth, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	authResult = authorizeAccess(auth)
+	config = Configuration()
+	config.loadConfigFile(config.globalConfigPath)
+	authResult = authorizeAccess(auth, config)
 	if authResult is not None:
 		return authResult
 	try:
@@ -107,11 +114,13 @@ def userAdd(auth, organization = None, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	authResult = authorizeAccess(auth)
+	config = Configuration()
+	config.loadConfigFile(config.globalConfigPath)
+	db = config.establishDatabaseConnection()
+	authResult = authorizeAccess(auth, config)
 	if authResult is not None:
 		return authResult
 	try:
-		db = databaseConnection(dbPath)
 		kwargs['organization'] = organization
 		user = User.fromDict(db, kwargs)
 		returnDict = getEmptyReturnDict()
@@ -131,7 +140,9 @@ def userDel(auth, pkid = None):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	authResult = authorizeAccess(auth)
+	config = Configuration()
+	config.loadConfigFile(config.globalConfigPath)
+	authResult = authorizeAccess(auth, config)
 	if authResult is not None:
 		return authResult
 	try:
@@ -153,7 +164,9 @@ def userSet(auth, pkid = None, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	authResult = authorizeAccess(auth)
+	config = Configuration()
+	config.loadConfigFile(config.globalConfigPath)
+	authResult = authorizeAccess(auth, config)
 	if authResult is not None:
 		return authResult
 	try:
@@ -174,7 +187,9 @@ def userGet(auth, **kwargs):
 		A returnDict dictionary containing the results of the API call. See
 		getEmptyReturnDict for more information.
 	"""
-	authResult = authorizeAccess(auth)
+	config = Configuration()
+	config.loadConfigFile(config.globalConfigPath)
+	authResult = authorizeAccess(auth, config)
 	if authResult is not None:
 		return authResult
 	try:

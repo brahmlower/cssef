@@ -1,3 +1,5 @@
+import os
+import yaml
 import traceback
 import bcrypt
 from sqlalchemy import create_engine
@@ -13,45 +15,109 @@ class CssefObjectDoesNotExist(Exception):
 	def __str__(self):
 		return repr(self.message)
 
-# class PasswordHash(object):
-# 	"""
-# 	This code pulled from http://variable-scope.com/posts/storing-and-verifying-passwords-with-sqlalchemy
-# 	There are a couple minor changes to it, but most credit goes Elmer de Looff - Thank you!
-# 	"""
-# 	def __init__(self, hash_):
-# 		"""Instantiates a PasswordHash object based on a provided string representing a bcrypt hash.
+class Configuration(object):
+	"""Contains and loads server configuration values
 
-# 		Args:
-# 			hash_ (str): The hash string to build the object off of.
+	There is one attribute for each configuration that can be set.
+	Configurations can be loaded from a file or dictionary. When loading
+	configurations, any hyphens wihtin key values will be converted to
+	underscores so that the attribute can be set.
+	"""
+	def __init__(self):
+		# Super global configs
+		self.globalConfigPath = "/etc/cssef/cssefd.yml"
+		self.admin_token = ""
+		self.database_path = ""
+		self.pidfile = ""
+		# General configurations
+		self.verbose = False
+		# Default values for the rabbitmq configuration
+		self.rpc_username = "cssefd"
+		self.rpc_password = "cssefd-pass"
+		self.rpc_host = "localhost"
+		self.amqp_username = "cssefd"
+		self.amqp_password = "cssefd-pass"
+		self.amqp_host = "localhost"
+		# Logging configurations
+		self.cssef_loglevel = ""
+		self.cssef_stderr = ""
+		self.cssef_stdout = ""
+		self.celery_loglevel = ""
+		self.celery_stderr = ""
+		self.celery_stdout = ""
 
-# 		Raises:
-# 			Assertion Error: If `hash_` is not of length 60.
+	@property
+	def rpc_url(self):
+		return  "rpc://%s:%s@%s//" % (self.rpc_username, self.rpc_password, self.rpc_host)
 
-# 			Assertion Error: If `hash_` does not contain three '$'.
-# 		"""
-# 		assert len(hash_) == 60, 'bcrypt hash should be 60 chars.'
-# 		assert hash_.count('$'), 'bcrypt hash should have 3x "$".'
-# 		self.hash = str(hash_)
-# 		self.rounds = int(self.hash.split('$')[2])
+	@property
+	def amqp_url(self):
+		return "amqp://%s:%s@%s//" % (self.amqp_username, self.amqp_password, self.amqp_host)
 
-# 	def __eq__(self, candidate):
-# 		"""Hashes the candidate string and compares it to the stored hash."""
-# 		if isinstance(candidate, basestring):
-# 			if isinstance(candidate, unicode):
-# 				candidate = candidate.encode('utf8')
-# 			return bcrypt.hashpw(candidate, self.hash) == self.hash
-# 		return False
+	def loadConfigFile(self, configPath):
+		"""Load configuration from a file
 
-# 	def __repr__(self):
-# 		"""Simple object representation."""
-# 		return self.hash
+		This will read a yaml configuration file. The yaml file is converted
+		to a dictionary object, which is just passed to `loadConfigDict`.
 
-# 	@classmethod
-# 	def new(cls, password, rounds):
-# 		"""Creates a PasswordHash from the given password."""
-# 		if isinstance(password, unicode):
-# 			password = password.encode('utf8')
-# 		return cls(bcrypt.hashpw(password, bcrypt.gensalt(rounds)))
+		Args:
+			configPath (str): A filepath to the yaml config file
+
+		Returns:
+			None
+		"""
+		configDict = yaml.load(open(configPath, 'r'))
+		self.loadConfigDict(configDict)
+
+	def loadConfigDict(self, configDict):
+		"""Load configurations from a dictionary
+
+		This will convert strings with hyphens (-) to underscores (_) that way
+		attributes can be added. Underscores are not used in the config files
+		because I think they look ugly. That's my only reasoning - deal with
+		it. Any key within the dictionary that is not an attribute of the
+		class will be ignored (this will be logged).
+
+		Args:
+			configDict (dict): A dictionary containing configurations and
+				values
+
+		Returns:
+			None
+		"""
+		for i in configDict:
+			if hasattr(self, i.replace('-','_')):
+				# Set the attribute
+				setting = i.replace('-','_')
+				value = configDict[i]
+				setattr(self, setting, value)
+				if self.verbose:
+					print "[LOGGING] Configuration '%s' set to '%s'." % (i, value)
+			elif type(configDict[i]) == dict:
+				# This is a dictionary and may contain additional values
+				self.loadConfigDict(configDict[i])
+			else:
+				# We don't care about it. Just skip it!
+				if self.verbose:
+					print "[LOGGING] Ignoring invalid setting '%s'." % i
+
+	def establishApiConnection(self):
+		"""Establishes a connection to the celery server
+
+		This sets the attribute `apiConn` to an open connection to the Celery
+		server, based on the settings. This connection can be provided to a
+		`CeleryEndpoint` to execute a task
+		"""
+		queueName = 'api' # We're going to have to improve this some day
+		self.apiConn = Celery(queueName, backend = self.rpc_url, broker = self.amqp_url)
+
+	def establishDatabaseConnection(self):
+		'Returns a database session for the specified database'
+		dbEngine = create_engine('sqlite:///' + self.database_path)
+		Base.metadata.create_all(dbEngine)
+		Base.metadata.bind = dbEngine
+		DBSession = sessionmaker(bind = dbEngine)
+		return DBSession()
 
 class ModelWrapper(object):
 	""" The base class for wrapping SQLAlchemy model objects
@@ -133,27 +199,25 @@ def returnError(errorName, *args):
 	if errorName == 'multiple_users_found':
 		returnDict['value'] = 1
 		returnDict['message'] = ["Multiple users returned by search:", args]
-		return returnDict
+	elif errorName == 'no_user_provided':
+		returnDict['value'] = 1
+		returnDict['message'] = ["No username provided."]
+	elif errorName == 'no_organization_provided':
+		returnDict['value'] = 1
+		returnDict['message'] = ["No organization provided."]
 	elif errorName == 'user_not_found':
 		returnDict['value'] = 1
 		returnDict['message'] = ["Unable to find user object."]
-		return returnDict
 	elif errorName == 'user_auth_failed':
 		returnDict['value'] = 1
 		returnDict['message'] = ["Authentication failed."]
-		return returnDict
 	elif errorName == 'user_permission_denied':
 		returnDict['value'] = 1
 		returnDict['message'] = ["Permission is denied."]
-		return returnDict
-
-def databaseConnection(sqliteFilepath):
-	'Returns a database session for the specified database'
-	dbEngine = create_engine('sqlite:///' + sqliteFilepath)
-	Base.metadata.create_all(dbEngine)
-	Base.metadata.bind = dbEngine
-	DBSession = sessionmaker(bind = dbEngine)
-	return DBSession()
+	else:
+		returnDict['value'] = 1
+		returnDict['message'] = ["General undefined error."]
+	return returnDict
 
 def handleException(e):
 	# todo
@@ -171,7 +235,9 @@ def getEmptyReturnDict():
 	}
 
 def modelDel(cls, pkid):
-	db = databaseConnection(dbPath)
+	config = Configuration()
+	config.loadConfigFile(config.globalConfigPath)
+	db = config.establishDatabaseConnection()
 	if pkid == "*":
 		# todo: implement a wildcard
 		returnDict = getEmptyReturnDict()
@@ -209,7 +275,9 @@ def modelDel(cls, pkid):
 	return getEmptyReturnDict()
 
 def modelSet(cls, pkid, **kwargs):
-	db = databaseConnection(dbPath)
+	config = Configuration()
+	config.loadConfigFile(config.globalConfigPath)
+	db = config.establishDatabaseConnection()
 	modelObj = cls.fromDatabase(db, pkid)
 	modelObj.edit(**kwargs)
 	returnDict = getEmptyReturnDict()
@@ -217,7 +285,9 @@ def modelSet(cls, pkid, **kwargs):
 	return returnDict
 
 def modelGet(cls, **kwargs):
-	db = databaseConnection(dbPath)
+	config = Configuration()
+	config.loadConfigFile(config.globalConfigPath)
+	db = config.establishDatabaseConnection()
 	modelObjs = cls.search(db, **kwargs)
 	returnDict = getEmptyReturnDict()
 	for i in modelObjs:

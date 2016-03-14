@@ -6,7 +6,7 @@ setup(
 	name = "cssefserver",
 
 	# Version number:
-	version = "0.0.5",
+	version = "0.0.6",
 
 	# Application author details:
 	author = "Brahm Lower",
@@ -24,7 +24,7 @@ setup(
 	],
 
 	data_files = [
-		('/etc/cssef/', ['cssefd.conf']),
+		('/etc/cssef/', ['cssefd.yml']),
 		('/var/log/cssef/', [])
 	],
 

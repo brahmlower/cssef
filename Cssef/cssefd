@@ -3,7 +3,6 @@ from __future__ import absolute_import
 import logging
 import time
 import atexit
-import ConfigParser
 import sys
 import os
 import os.path
@@ -11,6 +10,7 @@ from signal import SIGTERM
 from time import sleep
 from celery.bin import worker
 from cssefserver.framework.api import CssefCeleryApp
+from cssefserver.framework.utils import Configuration
 
 class Daemon(object):
 	"""
@@ -147,52 +147,32 @@ class Daemon(object):
 
 class CssefDaemon(Daemon):
 	def __init__(self, configFile):
-		self.config = Configuration(configFile)
+		self.config = Configuration()
+		self.config.loadConfigFile(self.config.globalConfigPath)
 		logger, handler = configureLogger(self.config)
 		super(CssefDaemon, self).__init__(
-			self.config.rawConfig.get('default', 'pidfile'),
-			stderr = self.config.rawConfig.get('logging', 'cssef_stderr'),
-			stdout = self.config.rawConfig.get('logging', 'cssef_stdout'))
+			self.config.pidfile, stderr = self.config.cssef_stderr, stdout = self.config.cssef_stdout)
 		self.celeryWorker = None
 
 	def run(self):
 		celeryOptions = {
 			'concurrency': 1,
-			'broker': self.config.amqpUrl,
-			'backend': self.config.rpcUrl,
-			'loglevel': self.config.rawConfig.get('logging', 'celery_loglevel'),
-			'logfile': self.config.rawConfig.get('logging', 'celery_stdout'),
+			'broker': self.config.amqp_url,
+			'backend': self.config.rpc_url,
+			'loglevel': self.config.celery_loglevel,
+			'logfile': self.config.celery_stdout,
 			'traceback': True
 		}
 		atexit.register(self.stop)
 		self.celeryWorker = worker.worker(app = CssefCeleryApp)
 		self.celeryWorker.run(**celeryOptions)
 
-class Configuration(object):
-	def __init__(self, configFilePath):
-		self.rawConfig = ConfigParser.ConfigParser()
-		self.rawConfig.read(configFilePath)
-
-	@property
-	def amqpUrl(self):
-		username = self.rawConfig.get('celery', 'amqp_username')
-		password = self.rawConfig.get('celery', 'amqp_password')
-		host = self.rawConfig.get('celery', 'amqp_host')
-		return 'amqp://%s:%s@%s//' % (username, password, host)
-
-	@property
-	def rpcUrl(self):
-		username = self.rawConfig.get('celery', 'rpc_username')
-		password = self.rawConfig.get('celery', 'rpc_password')
-		host = self.rawConfig.get('celery', 'rpc_host')
-		return 'rpc://%s:%s@%s//' % (username, password, host)
-
 def makeLogFiles(config):
 	files = [
-		config.rawConfig.get('logging', 'cssef_stderr'),
-		config.rawConfig.get('logging', 'cssef_stdout'),
-		config.rawConfig.get('logging', 'celery_stderr'),
-		config.rawConfig.get('logging', 'celery_stdout')]
+		config.cssef_stderr,
+		config.cssef_stdout,
+		config.celery_stderr,
+		config.celery_stdout]
 
 	# Now create the log files within that directory
 	for i in files:
@@ -211,7 +191,7 @@ def configureLogger(config):
 	logger = logging.getLogger("CssefDaemonLog")
 	logger.setLevel(logging.DEBUG)
 	formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-	handler = logging.FileHandler(config.rawConfig.get('logging', 'cssef_stdout'))
+	handler = logging.FileHandler(config.cssef_stdout)
 	handler.setFormatter(formatter)
 	logger.addHandler(handler)
 	return logger, handler

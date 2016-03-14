@@ -27,13 +27,13 @@ sudo chmod go+w /var/log/cssef
 # Change the config file to store the pid file in /tmp/ rather than
 # /var/run/. This is for the same reason we changed permissions on
 # the log file directory (we're not running with any elevated permissions)
-sudo sed -i 's|/var/run/|/tmp/|' /etc/cssef/cssefd.conf
+sudo sed -i 's|/var/run/|/tmp/|' /etc/cssef/cssefd.yml
 
 # Now restart the server
 cssefd start
 
 # Add an organization to add our user to.
-cssef-cli organization add --name=Administrators --maxMembers=10
+cssef-cli --admin-token abcdefg organization add --name=Administrators --maxMembers=10
 
 # And now our new test admin user!
-cssef-cli user add --organization=1 --name=Admin --username=admin --password=admin
+cssef-cli --admin-token abcdefg user add --organization=1 --name=Admin --username=admin --password=admin

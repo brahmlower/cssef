@@ -157,6 +157,35 @@ class ParseInput(object):
 			self.commandArgs[keyword] = value
 			index += 1
 
+	def prepareAuthDict(self, config):
+		tmpDict = {}
+		# If the admin token was provided, add that to the auth dict and then return since we don't need anything else.
+		if "admin-token" in self.options:
+			tmpDict["admin-token"] = self.options.pop("admin-token")
+			self.commandArgs['auth'] = tmpDict
+			return True
+		# Add the username to the auth Dict
+		if not config.username:
+			print "No username was provided."
+			return False
+		tmpDict["username"] = config.username
+		# Add the organization to the auth Dict
+		if not config.organization:
+			print "No organization was provided."
+			return False
+		tmpDict["organization"] = config.organization
+		# If a password is provided, we want to use that instead of the token
+		if config.password:
+			tmpDict["password"] = config.password
+		elif config.token_auth_enabled and config.token:
+			tmpDict["token"] = config.token
+		else:
+			# Both values failed
+			print "Neither password nor token were provided."
+			return False
+		self.commandArgs['auth'] = tmpDict
+		return True
+
 class Command(object):
 	"""
 	Todo: This can very likely be merged in with CeleryEndpoint.
@@ -232,10 +261,11 @@ if __name__ == "__main__":
 	config.loadConfigFile(config.configPath)
 	config.loadConfigDict(cliInput.options)
 	# Load token
-	if config.token_auth_enabled and config.loadTokenFile():
-		print "Token load was successful."
-	else:
-		print "Failed to load token. Must provide username & password."
+	if config.token_auth_enabled and not config.loadTokenFile():
+		print "Failed to load token from file."
+	# We need authentication set up now
+	if not cliInput.prepareAuthDict(config):
+		print "Failed to meet authentication requirements. Not using authentication."
 	# Establish rabbitmq connection
 	config.establishApiConnection()
 	# Load the available endpoints
@@ -243,10 +273,6 @@ if __name__ == "__main__":
 	commandMenu.loadFromServer()
 	# Get the command, instantiate it, then call it
 	# This is super temporary - I just want to get all of the server side stuff fixed first
-	cliInput.commandArgs['auth'] = { 
-		'username':'admin',
-		'password':'admin',
-		'organization':1}
 	command = commandMenu.getCommand(cliInput.command)
 	output = command(**cliInput.commandArgs)
 	# Now display the output

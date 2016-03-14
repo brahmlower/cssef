@@ -208,6 +208,9 @@ class User(ModelWrapper):
 	@classmethod
 	def fromDict(cls, db, kwDict):
 		org = Organization.fromDatabase(db, pkid = kwDict['organization'])
+		if not org:
+			print "Failed to get organization with pkid '%s'" % kwDict['organization']
+			raise ValueError
 		if org.model.numMembers >= org.maxMembers:
 			raise MaxMembersReached(org.maxMembers)
 		# Copied right from ModelWrapper.fromDict

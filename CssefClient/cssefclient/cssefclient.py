@@ -25,6 +25,7 @@ class Configuration(object):
 		self.configPath = self.userDataDir + "cssef.yml"
 		# General configurations
 		self.verbose = False
+		self.organization = None
 		self.username = None
 		self.password = None
 		# Default values for the client configuration
@@ -36,7 +37,7 @@ class Configuration(object):
 		self.amqp_host = "localhost"
 		# Token configurations
 		self.token_auth_enabled = True
-		self.token = ''
+		self.token = None
 		self.token_file = self.userDataDir + "token"
 		self.token_repoll_enabled = False
 		# Endpoint caching
@@ -256,6 +257,7 @@ class Login(CeleryEndpoint):
 		if returnDict['value'] != 0:
 			return returnDict
 		# Save the returned token
+		os.chmod(self.config.token_file, stat.S_IRUSR | stat.S_IWUSR)
 		open(self.config.token_file, 'w').write(returnDict['content'][0])
 		returnDict['content'] = ["Authentication was successful."]
 		return returnDict

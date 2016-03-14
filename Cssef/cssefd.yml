@@ -1,0 +1,22 @@
+# Genaric configs
+pidfile: /var/run/cssefd.pid
+admin-token: abcdefg
+database-path: /home/sk4ly/Documents/cssef/Cssef/db.sqlite3
+
+# Loggin configs
+cssef-loglevel: DEBUG
+cssef-stderr: /var/log/cssef/cssef_stderr.log
+cssef-stdout: /var/log/cssef/cssef_stdout.log
+
+celery-loglevel: DEBUG
+celery-stderr: /var/log/cssef/cssef_celery_stderr.log
+celery-stdout: /var/log/cssef/cssef_celery_stdout.log
+
+# Celery configs
+rpc-username: cssefd-user
+rpc-password: cssefd-pass
+rpc-host: localhost
+
+amqp-username: cssefd-user
+amqp-password: cssefd-pass
+amqp-host: localhost
