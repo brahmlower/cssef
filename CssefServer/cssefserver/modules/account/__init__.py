@@ -1,8 +1,6 @@
 import time
 import tokenlib
-#from cssefserver.framework.utils import PasswordHash
 from cssefserver.framework.utils import ModelWrapper
-from cssefserver.modules.competition import Competition
 from cssefserver.modules.account.models import User as UserModel
 from cssefserver.modules.account.models import Organization as OrganizationModel
 from cssefserver.modules.account.utils import PasswordHash
@@ -504,18 +502,18 @@ class Organization(ModelWrapper):
 	def getNumCompetitions(self):
 		return self.model.setNumCompetitions
 
-	def setNumCompetitions(self):
-		self.model.numCompetitions = Competition.count(self.db, organization = self.getId())
-		self.db.commit()
+	# def setNumCompetitions(self):
+	# 	self.model.numCompetitions = Competition.count(self.db, organization = self.getId())
+	# 	self.db.commit()
 
-	def getCompetitions(self, **kwargs):
-		return Competition.search(Competition, organization = self.getId(), **kwargs)
+	# def getCompetitions(self, **kwargs):
+	# 	return Competition.search(Competition, organization = self.getId(), **kwargs)
 
 	def getMembers(self, **kwargs):
 		return User.search(User, organization = self.getId(), **kwargs)
 
-	def getCompetition(self, **kwargs):
-		return Competition(**kwargs)
+	# def getCompetition(self, **kwargs):
+	# 	return Competition(**kwargs)
 
 	def getMember(self, **kwargs):
 		"""Gets a specific member that belongs to the organization
@@ -534,28 +532,28 @@ class Organization(ModelWrapper):
 		"""
 		return User(**kwargs)
 
-	def createCompetition(self, kwDict):
-		"""Creates a new competition that is automatically added to the organization
+	# def createCompetition(self, kwDict):
+	# 	"""Creates a new competition that is automatically added to the organization
 
-		Crates a competition through Organization.createMember() ensures that
-		organization restrictions are checked and updated during the
-		competition creation process.
+	# 	Crates a competition through Organization.createMember() ensures that
+	# 	organization restrictions are checked and updated during the
+	# 	competition creation process.
 
-		Args:
-			kwDict (dict): A dictionary containing keywords that will be
-				passed to Competition.fromDict().
+	# 	Args:
+	# 		kwDict (dict): A dictionary containing keywords that will be
+	# 			passed to Competition.fromDict().
 
-		Returns:
-			User: Returns the competition that is created if successful. None
-			if competition creation fails.
+	# 	Returns:
+	# 		User: Returns the competition that is created if successful. None
+	# 		if competition creation fails.
 
-		Raises:
-			MaxCompetitionsReached: If the organization already has the
-			maximum number of competitions.
-		"""
-		if self.model.numCompetitions >= self.maxCompetitions:
-			raise MaxCompetitionsReached(self.maxCompetitions)
-		kwDict['organization'] = self.getId()
-		newCompetition = Competition.fromDict(self.db, kwDict)
-		self.setNumCompetitions()
-		return newCompetition
+	# 	Raises:
+	# 		MaxCompetitionsReached: If the organization already has the
+	# 		maximum number of competitions.
+	# 	"""
+	# 	if self.model.numCompetitions >= self.maxCompetitions:
+	# 		raise MaxCompetitionsReached(self.maxCompetitions)
+	# 	kwDict['organization'] = self.getId()
+	# 	newCompetition = Competition.fromDict(self.db, kwDict)
+	# 	self.setNumCompetitions()
+	# 	return newCompetition

@@ -7,7 +7,7 @@ cssefd stop
 rm db.sqlite3
 
 # Uninstall the CSSEF server package
-sudo pip uninstall -y cssefserver
+sudo pip uninstall -y cssef-server
 
 # Now reinstall the CSSEF server package
 sudo pip install .

@@ -5,6 +5,7 @@ import bcrypt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from cssefserver.framework.models import Base
+from sqlalchemy.ext.declarative import declarative_base
 
 class CssefObjectDoesNotExist(Exception):
 	'An exception for when the requested object does not exist - not needed I think'
@@ -23,7 +24,6 @@ class Configuration(object):
 	underscores so that the attribute can be set.
 	"""
 	def __init__(self):
-		print "Making config object!"
 		# Super global configs
 		self.globalConfigPath = "/etc/cssef/cssefd.yml"
 		self.admin_token = ""

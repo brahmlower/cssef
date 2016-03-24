@@ -7,6 +7,8 @@ from cssefserver.framework.utils import modelDel
 from cssefserver.framework.utils import modelSet
 from cssefserver.framework.utils import modelGet
 from cssefserver.modules.account import Organization
+from cssefserver.modules.account.utils import authorizeAccess
+
 from cssefserver.modules.competition import Competition
 from cssefserver.modules.competition import Team
 from cssefserver.modules.competition import Score
@@ -15,7 +17,23 @@ from cssefserver.modules.competition import InjectResponse
 from cssefserver.modules.competition import Incident
 from cssefserver.modules.competition import IncidentResponse
 from cssefserver.modules.competition import ScoringEngine
-from cssefserver.modules.account.utils import authorizeAccess
+
+@task()
+def startScoringCompetition(competition):
+	# This function is only called if scoring is enabled for the competition
+	print 'starting the scheduled competition'
+	thread = Thread(target = competition.startScoring, args = ())
+	thread.start()
+	thread.join()
+	print "thread finished...exiting"
+
+@receiver(post_save, sender = Competition)
+def scheduleCompetitionStart(sender, **kwargs):
+	if sender.autoStart:
+		deltaUntilStart = sender.datetimeStart - timezone.now()
+		secondsUntilStart = int(deltaUntilStart.seconds)
+		result = startScoringCompetition.apply_async((sender,), countdown = secondsUntilStart)
+		print 'finished scheduling the competition'
 
 # ==================================================
 # Competition Endpoints

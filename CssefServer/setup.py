@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
 	# Application name:
-	name = "cssefserver",
+	name = "cssef-server",
 
 	# Version number:
 	version = "0.0.6",

@@ -2,7 +2,7 @@ from setuptools import setup
 from cssefclient import cssefclient 
 setup(
 	# Application name:
-	name = "cssefclient",
+	name = "cssef-client",
 	
 	# Version number:
 	version = cssefclient.version,

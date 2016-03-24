@@ -6,7 +6,6 @@ from cssefserver.framework.utils import Configuration
 from cssefserver.modules.account import User
 from cssefserver.modules.account.api import organizationEndpointsDict as organizationEndpoints
 from cssefserver.modules.account.api import userEndpointsDict as userEndpoints
-from cssefserver.modules.competition.api import endpointsDict as competitionEndpoints
 
 @CssefCeleryApp.task(name = 'availableEndpoints')
 def availableEndpoints():
@@ -21,8 +20,7 @@ def availableEndpoints():
 	returnDict['content'] = [
 		endpointsDict,
 		userEndpoints,
-		organizationEndpoints,
-		competitionEndpoints
+		organizationEndpoints
 	]
 	return returnDict
 
@@ -35,10 +33,7 @@ def login(username, password, organization, auth = None):
 		content keyword will be a list containing the key for the session if
 		the credentials were correct. Content will be empty if the credentials
 		were incorrect, and value will be non-zero.
-		"""
-	# config = Configuration()
-	# config.loadConfigFile(config.globalConfigPath)
-	# db = config.establishDatabaseConnection()
+	"""
 	user = User.search(DatabaseConnection, username = username, organization = organization)
 	token = user[0].authenticatePassword(password)
 	returnDict = getEmptyReturnDict()

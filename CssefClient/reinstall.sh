@@ -1,3 +1,3 @@
 #!/bin/bash
-sudo pip uninstall -y cssefclient
+sudo pip uninstall -y cssef-client
 sudo pip install .
