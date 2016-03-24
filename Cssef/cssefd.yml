@@ -1,6 +1,6 @@
 # Genaric configs
 pidfile: /var/run/cssefd.pid
-admin-token: abcdefg
+admin-token: 
 database-path: /home/sk4ly/Documents/cssef/Cssef/db.sqlite3
 
 # Loggin configs
