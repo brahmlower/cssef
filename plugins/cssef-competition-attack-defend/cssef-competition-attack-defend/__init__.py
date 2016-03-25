@@ -1,12 +1,16 @@
 from cssefserver.framework.utils import ModelWrapper
-from cssefserver.modules.competition.models import Competition as CompetitionModel
-from cssefserver.modules.competition.models import Team as TeamModel
-from cssefserver.modules.competition.models import Score as ScoreModel
-from cssefserver.modules.competition.models import Inject as InjectModel
-from cssefserver.modules.competition.models import InjectResponse as InjectResponseModel
-from cssefserver.modules.competition.models import Incident as IncidentModel
-from cssefserver.modules.competition.models import IncidentResponse as IncidentResponseModel
-from cssefserver.modules.competition.models import ScoringEngine as ScoringEngineModel
+from cssefserver.modules.account import Organization
+from cssefserver.modules.account.errors import MaxCompetitionsReached
+from models import Competition as CompetitionModel
+from models import Team as TeamModel
+from models import Score as ScoreModel
+from models import Inject as InjectModel
+from models import InjectResponse as InjectResponseModel
+from models import Incident as IncidentModel
+from models import IncidentResponse as IncidentResponseModel
+from models import ScoringEngine as ScoringEngineModel
+from models import Plugin as PluginModel
+from models import Service as ServiceModel
 
 class Plugin(ModelWrapper):
 	modelObject = PluginModel
@@ -298,6 +302,27 @@ class Competition(ModelWrapper):
 		# Only site admins & organization admins should be able to change this
 		self.model.scoringEngine = value
 		self.db.commit()
+
+	@classmethod
+	def fromDict(cls, db, kwDict):
+		org = Organization.fromDatabase(db, pkid = kwDict['organization'])
+		if not org:
+			print "Failed to get organization with pkid '%s'" % kwDict['organization']
+			raise ValueError
+		# Competition limiting is disabled for now since I'm not entirely sure
+		# how it will be implemented with the new plugin arrangement
+		#if org.model.numCompetitions >= org.maxCompetitions:
+		#	raise MaxCompetitionsReached(org.maxCompetitions)
+		# Copied right from ModelWrapper.fromDict
+		modelObjectInst = cls.modelObject()
+		clsInst = cls(db, modelObjectInst)
+		for i in kwDict:
+			if i in clsInst.fields:
+				setattr(clsInst, i, kwDict[i])
+		db.add(clsInst.model)
+		db.commit()
+		#org.setNumCompetitions()
+		return clsInst
 
 	def check(self):
 		# Todo:

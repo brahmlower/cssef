@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from cssefserver.framework import CssefCeleryApp
 from cssefserver.framework import DatabaseConnection
+from cssefserver.framework import plugins
 from cssefserver.framework.utils import getEmptyReturnDict
 from cssefserver.framework.utils import Configuration
 from cssefserver.modules.account import User
@@ -22,6 +23,8 @@ def availableEndpoints():
 		userEndpoints,
 		organizationEndpoints
 	]
+	for plugin in plugins:
+		returnDict['content'].append(plugin.tasks.endpointsDict)
 	return returnDict
 
 @CssefCeleryApp.task(name = 'login')

@@ -4,7 +4,8 @@
 cssefd stop
 
 # Wipe the database
-rm db.sqlite3
+# This is the path that's set by default now in the config file
+rm /tmp/db.sqlite3
 
 # Uninstall the CSSEF server package
 sudo pip uninstall -y cssef-server

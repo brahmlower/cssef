@@ -111,9 +111,9 @@ class Configuration(object):
 		"""
 		# Make sure the file exists
 		if not os.path.isfile(self.token_file):
-			sys.stderr.write("[WARNING] Token file not found. Cannot use \
-				token authentication.")
+			sys.stderr.write("[WARNING] Token file not found. Cannot use token authentication.\n")
 			sys.stderr.flush()
+			return False
 		# Now make sure that only we have access to it
 		filePermissions = os.stat(self.token_file).st_mode
 		permissionsDenied = [stat.S_IRGRP, stat.S_IWGRP, stat.S_IXGRP,
@@ -264,6 +264,9 @@ class Login(CeleryEndpoint):
 		if returnDict['value'] != 0:
 			return returnDict
 		# Save the returned token
+		if not os.path.exists(self.config.token_file):
+			# The file doesn't exist yet, make it
+			open(self.config.token_file, 'a').close()
 		os.chmod(self.config.token_file, stat.S_IRUSR | stat.S_IWUSR)
 		open(self.config.token_file, 'w').write(returnDict['content'][0])
 		returnDict['content'] = ["Authentication was successful."]

@@ -232,7 +232,8 @@ class CommandOutput(object):
 
 	def display(self):
 		if self.value != 0:
-			sys.stderr.write("The server encountered an error:\n")
+			sys.stderr.write("An error was encountered:\n")
+			print self.message
 			sys.stderr.write("\n".join(self.message)+"\n")
 			sys.exit(self.value)
 		if self.tableHeaders:

@@ -8,13 +8,13 @@ from sqlalchemy.orm import relationship
 from cssefserver.framework.models import Base
 from cssefserver.framework.models import tablePrefix
 
-class Plugin(Model):
+class Plugin(Base):
 	__tablename__ = tablePrefix + 'plugin'
 	pkid			= Column(Integer, primary_key = True)
 	name			= Column(String(20))
 	description		= Column(String(256))
 
-class Service(Model):
+class Service(Base):
 	__tablename__ = tablePrefix + 'service'
 	pkid			= Column(Integer, primary_key = True)
 	competition		= Column(Integer, ForeignKey(tablePrefix + 'competition.pkid'))
@@ -129,9 +129,9 @@ class IncidentResponse(Base):
 	subject		= Column(String(100))
 	content		= Column(String(1000))
 
-# class ScoringEngine(Base):
-# 	__tablename__ = tablePrefix + 'scoringengine'
-# 	pkid		= Column(Integer, primary_key = True)
-# 	name		= Column(String(256))
-# 	packageName	= Column(String(256))
-# 	enabled		= Column(Boolean, default = True)
+class ScoringEngine(Base):
+	__tablename__ = tablePrefix + 'scoringengine'
+	pkid		= Column(Integer, primary_key = True)
+	name		= Column(String(256))
+	packageName	= Column(String(256))
+	enabled		= Column(Boolean, default = True)

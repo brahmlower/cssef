@@ -47,6 +47,8 @@ class Configuration(object):
 		self.celery_loglevel = ""
 		self.celery_stderr = ""
 		self.celery_stdout = ""
+		# Plugin configurations
+		self.installed_plugins = []
 
 	@property
 	def rpc_url(self):
@@ -200,7 +202,7 @@ def returnError(errorName, *args):
 	returnDict = getEmptyReturnDict()
 	if errorName == 'multiple_users_found':
 		returnDict['value'] = 1
-		returnDict['message'] = ["Multiple users returned by search:", args]
+		returnDict['message'] = ["Multiple users returned by search:"]
 	elif errorName == 'no_user_provided':
 		returnDict['value'] = 1
 		returnDict['message'] = ["No username provided."]

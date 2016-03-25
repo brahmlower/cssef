@@ -20,3 +20,7 @@ rpc-host: localhost
 amqp-username: cssefd
 amqp-password: cssefd-pass
 amqp-host: localhost
+
+# Installed plugins
+installed-plugins:
+- cssef-competition-attack-defend
