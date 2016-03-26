@@ -8,6 +8,11 @@ from sqlalchemy.orm import relationship
 from cssefserver.framework.models import Base
 from cssefserver.framework.models import tablePrefix
 
+# class OrganizationSettings(Base):
+# 	__tablename__ = tablePrefix + 'organizationsettings'
+# 	pkid = Column(Integer, ForeignKey(tablePrefix + 'organization.pkid'), primary_key = True)
+# 	maxCompetitions
+
 class Plugin(Base):
 	__tablename__ = tablePrefix + 'plugin'
 	pkid			= Column(Integer, primary_key = True)

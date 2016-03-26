@@ -2,6 +2,7 @@
 pidfile: /var/run/cssefd.pid
 admin-token: 
 database-path: /tmp/db.sqlite3
+database-table-prefix: "cssef"
 
 # Loggin configs
 cssef-loglevel: DEBUG
@@ -23,4 +24,4 @@ amqp-host: localhost
 
 # Installed plugins
 installed-plugins:
-- cssef-competition-attack-defend
+#- cssef-competition-attack-defend

@@ -1,19 +1,9 @@
 import os
 import yaml
 import traceback
-import bcrypt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from cssefserver.framework.models import Base
-from sqlalchemy.ext.declarative import declarative_base
-
-class CssefObjectDoesNotExist(Exception):
-	'An exception for when the requested object does not exist - not needed I think'
-	def __init__(self, message):
-		self.message = message
-
-	def __str__(self):
-		return repr(self.message)
+from cssefserver.models import DbBase
 
 class Configuration(object):
 	"""Contains and loads server configuration values
@@ -105,23 +95,31 @@ class Configuration(object):
 				if self.verbose:
 					print "[LOGGING] Ignoring invalid setting '%s'." % i
 
-	def establishApiConnection(self):
-		"""Establishes a connection to the celery server
+	# def establishApiConnection(self):
+	# 	"""Establishes a connection to the celery server
 
-		This sets the attribute `apiConn` to an open connection to the Celery
-		server, based on the settings. This connection can be provided to a
-		`CeleryEndpoint` to execute a task
-		"""
-		queueName = 'api' # We're going to have to improve this some day
-		self.apiConn = Celery(queueName, backend = self.rpc_url, broker = self.amqp_url)
+	# 	This sets the attribute `apiConn` to an open connection to the Celery
+	# 	server, based on the settings. This connection can be provided to a
+	# 	`CeleryEndpoint` to execute a task
+	# 	"""
+	# 	queueName = 'api' # We're going to have to improve this some day
+	# 	self.apiConn = Celery(queueName, backend = self.rpc_url, broker = self.amqp_url)
 
 	def establishDatabaseConnection(self):
 		'Returns a database session for the specified database'
 		dbEngine = create_engine('sqlite:///' + self.database_path)
-		Base.metadata.create_all(dbEngine)
-		Base.metadata.bind = dbEngine
+		DbBase.metadata.create_all(dbEngine)
+		DbBase.metadata.bind = dbEngine
 		DBSession = sessionmaker(bind = dbEngine)
 		return DBSession()
+
+class CssefObjectDoesNotExist(Exception):
+	'An exception for when the requested object does not exist - not needed I think'
+	def __init__(self, message):
+		self.message = message
+
+	def __str__(self):
+		return repr(self.message)
 
 class ModelWrapper(object):
 	""" The base class for wrapping SQLAlchemy model objects
@@ -237,63 +235,3 @@ def getEmptyReturnDict():
 		'message': 'Success',
 		'content': []
 	}
-
-def modelDel(cls, pkid):
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	if pkid == "*":
-		# todo: implement a wildcard
-		returnDict = getEmptyReturnDict()
-		returnDict['value'] = 1
-		returnDict['message'] = ["Wildcards are not implemented yet."]
-		return returnDict
-	elif type(pkid) == str and "-" in pkid:
-		x = pkid.split("-")
-		if len(x) == 2:
-			try:
-				for pkid in range(int(x[0]), int(x[1])+1):
-					modelObj = cls.fromDatabase(db, pkid)
-					if modelObj:
-						modelObj.delete()
-			except ValueError:
-				# One of the ranges provided could not be cast as an integer. Return error.
-				returnDict = getEmptyReturnDict()
-				returnDict['value'] = 1
-				returnDict['message'] = ["Range value could not be cast to integer. Expected integer range like 1-4. Got '%s' instead." % pkid]
-				return returnDict
-		else:
-			print x
-			returnDict = getEmptyReturnDict()
-			returnDict['value'] = 1
-			returnDict['message'] = ["Expected integer range like 1-4. Got '%s' instead." % pkid]
-			return returnDict
-	elif type(pkid) == int:
-		modelObj = cls.fromDatabase(db, pkid)
-		modelObj.delete()
-	else:
-		# We don't know what the hell we were given. Disregard it and thow an error :(
-		returnDict = getEmptyReturnDict()
-		returnDict['value'] = 1
-		returnDict['message'] = ["Expected integer value (5) or range (2-7). Got '%s' of type %s instead." % (str(pkid), str(type(pkid)))]
-	return getEmptyReturnDict()
-
-def modelSet(cls, pkid, **kwargs):
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	modelObj = cls.fromDatabase(db, pkid)
-	modelObj.edit(**kwargs)
-	returnDict = getEmptyReturnDict()
-	returnDict['content'].append(modelObj.asDict())
-	return returnDict
-
-def modelGet(cls, **kwargs):
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	db = config.establishDatabaseConnection()
-	modelObjs = cls.search(db, **kwargs)
-	returnDict = getEmptyReturnDict()
-	for i in modelObjs:
-		returnDict['content'].append(i.asDict())
-	return returnDict

@@ -1,12 +1,11 @@
 from __future__ import absolute_import
-from cssefserver.framework import CssefCeleryApp
-from cssefserver.framework import DatabaseConnection
-from cssefserver.framework import plugins
-from cssefserver.framework.utils import getEmptyReturnDict
-from cssefserver.framework.utils import Configuration
-from cssefserver.modules.account import User
-from cssefserver.modules.account.api import organizationEndpointsDict as organizationEndpoints
-from cssefserver.modules.account.api import userEndpointsDict as userEndpoints
+from cssefserver import CssefCeleryApp
+from cssefserver import DatabaseConnection
+from cssefserver import plugins
+from cssefserver.utils import getEmptyReturnDict
+from cssefserver.account import User
+from cssefserver.account.tasks import organizationEndpointsDict as organizationEndpoints
+from cssefserver.account.tasks import userEndpointsDict as userEndpoints
 
 @CssefCeleryApp.task(name = 'availableEndpoints')
 def availableEndpoints():

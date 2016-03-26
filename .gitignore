@@ -2,7 +2,3 @@
 *.pid
 .DS_Store
 db.sqlite3
-
-CssefClient/dist
-CssefClient/build
-CssefClient/CssefClient.egg-info
