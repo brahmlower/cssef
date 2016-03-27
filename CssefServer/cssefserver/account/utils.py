@@ -1,7 +1,6 @@
 import bcrypt
-from cssefserver.framework.utils import Configuration
-from cssefserver.framework.utils import returnError
-import cssefserver.modules.account
+from cssefserver.utils import returnError
+import cssefserver.account
 
 class PasswordHash(object):
 	"""
@@ -43,8 +42,7 @@ class PasswordHash(object):
 			password = password.encode('utf8')
 		return cls(bcrypt.hashpw(password, bcrypt.gensalt(rounds)))
 
-def authorizeAccess(authDict, config):
-	db = config.establishDatabaseConnection()
+def authorizeAccess(dbConn, authDict, config):
 	# Check if we're doing user authentication, or admin token auth.
 	if 'admin-token' in authDict:
 		# Just check that the auth key matches that of the authkey in the server config file
@@ -61,7 +59,7 @@ def authorizeAccess(authDict, config):
 	if not authDict.get('organization', None):
 		print "[AUTH WARNING] No organization was provided."
 		return returnError('no_organization_provided')
-	userList = cssefserver.modules.account.User.search(db, username = authDict['username'], organization = authDict['organization'])
+	userList = cssefserver.account.api.User.search(dbConn, username = authDict['username'], organization = authDict['organization'])
 	if len(userList) < 1:
 		# No matching user was found
 		return returnError('user_not_found')

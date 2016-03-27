@@ -24,4 +24,4 @@ amqp-host: localhost
 
 # Installed plugins
 installed-plugins:
-#- cssef-competition-attack-defend
+- cssef-competition-attack-defend

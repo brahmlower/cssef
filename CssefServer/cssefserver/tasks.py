@@ -3,7 +3,7 @@ from cssefserver import CssefCeleryApp
 from cssefserver import DatabaseConnection
 from cssefserver import plugins
 from cssefserver.utils import getEmptyReturnDict
-from cssefserver.account import User
+from cssefserver.account.api import User
 from cssefserver.account.tasks import organizationEndpointsDict as organizationEndpoints
 from cssefserver.account.tasks import userEndpointsDict as userEndpoints
 

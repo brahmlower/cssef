@@ -1,9 +1,6 @@
 import os
 import yaml
 import traceback
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from cssefserver.models import DbBase
 
 class Configuration(object):
 	"""Contains and loads server configuration values
@@ -94,24 +91,6 @@ class Configuration(object):
 				# We don't care about it. Just skip it!
 				if self.verbose:
 					print "[LOGGING] Ignoring invalid setting '%s'." % i
-
-	# def establishApiConnection(self):
-	# 	"""Establishes a connection to the celery server
-
-	# 	This sets the attribute `apiConn` to an open connection to the Celery
-	# 	server, based on the settings. This connection can be provided to a
-	# 	`CeleryEndpoint` to execute a task
-	# 	"""
-	# 	queueName = 'api' # We're going to have to improve this some day
-	# 	self.apiConn = Celery(queueName, backend = self.rpc_url, broker = self.amqp_url)
-
-	def establishDatabaseConnection(self):
-		'Returns a database session for the specified database'
-		dbEngine = create_engine('sqlite:///' + self.database_path)
-		DbBase.metadata.create_all(dbEngine)
-		DbBase.metadata.bind = dbEngine
-		DBSession = sessionmaker(bind = dbEngine)
-		return DBSession()
 
 class CssefObjectDoesNotExist(Exception):
 	'An exception for when the requested object does not exist - not needed I think'

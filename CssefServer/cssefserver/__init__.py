@@ -1,17 +1,27 @@
 from celery import Celery
 from utils import Configuration
+from models import establishDatabaseConnection
 
-# Build the initial configuration
+# We need to build the configuration object before importing a few objects,
+# since they rely on it VERY heavily
 config = Configuration()
 config.loadConfigFile(config.globalConfigPath)
 
+from modelbase import Base
+from cssefserver.account import models
+
+# Import the listed available plugins
+if config.installed_plugins:
+	for moduleName in config.installed_plugins:
+		__import__("%s.models" % moduleName)
+
 # Establish a database connection to use
-DatabaseConnection = config.establishDatabaseConnection()
+DatabaseConnection = establishDatabaseConnection()
 
 # Build a list of available endpoints
 celeryTasks = []
-celeryTasks.append('cssefserver.framework.api')
-celeryTasks.append('cssefserver.modules.account.api')
+celeryTasks.append('cssefserver.tasks')
+celeryTasks.append('cssefserver.account.tasks')
 
 plugins = []
 

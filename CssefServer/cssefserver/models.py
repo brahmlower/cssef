@@ -1,20 +1,11 @@
-from sqlalchemy.ext.declarative import declarative_base
-from cssefserver import config
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+import cssefserver
 
-class Base(object):
-	@declared_attr
-	def __tablename__(cls):
-		tablePrefix = config.database_table_prefix
-		modulePrefix = "test"
-		moduleName = self.__class__.__name__.lower()
-		self.__tablename__ = "%s_%s_%s" % (tablePrefix, modulePrefix, moduleName)
-
-DbBase = declarative_base(cls=Base)
-
-class Model(DbBase):
-	__tablename__ = ''
-	def __init__(self):
-		tablePrefix = config.database_table_prefix
-		modulePrefix = "test"
-		moduleName = self.__class__.__name__.lower()
-		self.__tablename__ = "%s_%s_%s" % (tablePrefix, modulePrefix, moduleName)
+def establishDatabaseConnection():
+	'Returns a database session for the specified database'
+	dbEngine = create_engine('sqlite:///' + cssefserver.config.database_path)
+	cssefserver.modelbase.Base.metadata.create_all(dbEngine)
+	cssefserver.modelbase.Base.metadata.bind = dbEngine
+	DBSession = sessionmaker(bind = dbEngine)
+	return DBSession()

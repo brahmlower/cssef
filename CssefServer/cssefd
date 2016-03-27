@@ -9,8 +9,8 @@ import os.path
 from signal import SIGTERM
 from time import sleep
 from celery.bin import worker
-from cssefserver.framework.api import CssefCeleryApp
-from cssefserver.framework.utils import Configuration
+from cssefserver import CssefCeleryApp
+from cssefserver.utils import Configuration
 
 class Daemon(object):
 	"""

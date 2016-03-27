@@ -6,8 +6,8 @@ from cssefserver.utils import getEmptyReturnDict
 from cssefserver.taskutils import modelDel
 from cssefserver.taskutils import modelSet
 from cssefserver.taskutils import modelGet
-from cssefserver.account import Organization
-from cssefserver.account import User
+from cssefserver.account.api import Organization
+from cssefserver.account.api import User
 from cssefserver.account.utils import authorizeAccess
 
 @CssefCeleryApp.task(name = 'organizationAdd')
@@ -22,7 +22,7 @@ def organizationAdd(auth, **kwargs):
 		getEmptyReturnDict for more information.
 	"""
 	try:
-		authResult = authorizeAccess(auth, config)
+		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
 		organization = Organization.fromDict(DatabaseConnection, kwargs)
@@ -44,7 +44,7 @@ def organizationDel(auth, pkid = None):
 		getEmptyReturnDict for more information.
 	"""
 	try:
-		authResult = authorizeAccess(auth, config)
+		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
 		if not pkid:
@@ -66,7 +66,7 @@ def organizationSet(auth, pkid = None, **kwargs):
 		getEmptyReturnDict for more information.
 	"""
 	try:
-		authResult = authorizeAccess(auth, config)
+		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
 		if not pkid:
@@ -87,7 +87,7 @@ def organizationGet(auth, **kwargs):
 		getEmptyReturnDict for more information.
 	"""
 	try:
-		authResult = authorizeAccess(auth, config)
+		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
 		return modelGet(Organization, **kwargs)
@@ -107,7 +107,7 @@ def userAdd(auth, organization = None, **kwargs):
 		getEmptyReturnDict for more information.
 	"""
 	try:
-		authResult = authorizeAccess(auth, config)
+		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
 		kwargs['organization'] = organization
@@ -130,7 +130,7 @@ def userDel(auth, pkid = None):
 		getEmptyReturnDict for more information.
 	"""
 	try:
-		authResult = authorizeAccess(auth, config)
+		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
 		if not pkid:
@@ -152,7 +152,7 @@ def userSet(auth, pkid = None, **kwargs):
 		getEmptyReturnDict for more information.
 	"""
 	try:
-		authResult = authorizeAccess(auth, config)
+		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
 		if not pkid:
@@ -173,7 +173,7 @@ def userGet(auth, **kwargs):
 		getEmptyReturnDict for more information.
 	"""
 	try:
-		authResult = authorizeAccess(auth, config)
+		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
 		return modelGet(User, **kwargs)

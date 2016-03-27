@@ -3,16 +3,12 @@ from sqlalchemy import String
 from sqlalchemy import Integer
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
-from sqlalchemy import ForeignKey
-#from cssefserver.framework.models import Base
-#from cssefserver.framework.models import tablePrefix
-from cssefserver.models import Model
+from cssefserver.modelbase import Base
+from cssefserver.modelutils import getForeignKey
 
-class Organization(Model):
+class Organization(Base):
 	"""This is a base User SQLAlchemy model.
 	"""
-	#__tablename__ = tablePrefix + 'organization'
-	pkid			= Column(Integer, primary_key = True)
 	deletable		= Column(Boolean, default = True)
 	canAddUsers		= Column(Boolean, default = True)
 	canDeleteUsers	= Column(Boolean, default = True)
@@ -25,16 +21,11 @@ class Organization(Model):
 	maxCompetitions	= Column(Integer)
 	numMembers		= Column(Integer)
 	numCompetitions	= Column(Integer)
-	def __init__(self):
-		super(Organization, self).__init__()
-		print self.__tablename__
 
-class User(Model):
+class User(Base):
 	"""This is a base User SQLAlchemy model.
 	"""
-	#__tablename__ = tablePrefix + 'user'
-	pkid			= Column(Integer, primary_key = True)
-	organization	= Column(Integer, ForeignKey(tablePrefix + 'organization.pkid'))
+	organization	= Column(Integer, getForeignKey(Organization))
 	last_login		= Column(DateTime)
 	name			= Column(String(20))
 	username		= Column(String(20))
