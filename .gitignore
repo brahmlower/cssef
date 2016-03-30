@@ -2,3 +2,5 @@
 *.pid
 .DS_Store
 db.sqlite3
+docs/build/
+docs/source/autodoc
