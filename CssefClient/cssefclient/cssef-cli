@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import ast
 import sys
-from prettytable import PrettyTable
 from cssefclient.cssefclient import *
 
 class Menu(object):
@@ -16,11 +15,11 @@ class Menu(object):
 		if self.config.verbose:
 			print "[LOGGING] Loading available endpoints from server."
 		result = AvailableEndpoints(self.config).execute()
-		if result['value'] != 0:
+		if result.value != 0:
 			sys.stderr.write("[ERROR] Failed to get available endpoints\n.")
 			sys.stderr.flush()
 			sys.exit()
-		self.availableEndpoints = result['content']
+		self.availableEndpoints = result.content
 		if self.config.verbose:
 			print "[LOGGING] Finished loading available endpoints."
 		self.construct()
@@ -52,15 +51,24 @@ class Menu(object):
 
 	def buildMenuBranch(self, currentMenu, menuList, endpointContent):
 		if len(menuList) == 1:
-			# This means endpointContent is a dictionary that defines an endpoint
-			currentMenu[menuList[0]] = CeleryEndpoint.fromDict(self.config, endpointContent)
+			# This means endpointContent is a dictionary that defines a celery
+			# endpoint. We now instantiate the endpoint from that dictionary
+			currentMenu[menuList[0]] = CeleryEndpoint.fromDict(
+				self.config,
+				endpointContent)
 			return currentMenu
 		else:
 			try:
-				currentMenu[menuList[0]] = self.buildMenuBranch(currentMenu[menuList[0]], menuList[1:], endpointContent)
+				currentMenu[menuList[0]] = self.buildMenuBranch(
+					currentMenu[menuList[0]],
+					menuList[1:],
+					endpointContent)
 			except KeyError:
 				currentMenu[menuList[0]] = {}
-				currentMenu[menuList[0]] = self.buildMenuBranch(currentMenu[menuList[0]], menuList[1:], endpointContent)
+				currentMenu[menuList[0]] = self.buildMenuBranch(
+					currentMenu[menuList[0]],
+					menuList[1:],
+					endpointContent)
 			return currentMenu
 
 	def walkDictPath(self, d, l):
@@ -100,7 +108,7 @@ class Menu(object):
 			Command: Instantiated command class, which can be called to
 				ececute the celery task
 		"""
-		return Command(self.walkDictPath(self.menuDict, commandList))
+		return self.walkDictPath(self.menuDict, commandList)
 
 class ParseInput(object):
 	def __init__(self):
@@ -152,14 +160,19 @@ class ParseInput(object):
 			else:
 				# The value is in the next argument
 				keyword = argument
-				value = self.remainingArgs[index + 1]
+				try:
+					value = self.remainingArgs[index + 1]
+				except IndexError:
+					# There is no next error. Complain and quit
+					sys.exit("Expected value in for argument, but got none.")
 				index += 1
 			self.commandArgs[keyword] = value
 			index += 1
 
 	def prepareAuthDict(self, config):
 		tmpDict = {}
-		# If the admin token was provided, add that to the auth dict and then return since we don't need anything else.
+		# If the admin token was provided, add that to the auth dict and then
+		# return since we don't need anything else.
 		if "admin-token" in self.options:
 			tmpDict["admin-token"] = self.options.pop("admin-token")
 			self.commandArgs['auth'] = tmpDict
@@ -185,69 +198,6 @@ class ParseInput(object):
 			return False
 		self.commandArgs['auth'] = tmpDict
 		return True
-
-class Command(object):
-	"""
-	Todo: This can very likely be merged in with CeleryEndpoint.
-	"""
-	def __init__(self, endpoint):
-		self.endpoint = endpoint
-
-	def __call__(self, **kwargs):
-		"""Wraps endpoint execution
-
-		This the point of this is just to catch any unhandled server
-		exceptions.
-
-		Args:
-			endpoint (Endpoint):
-			arguments (dict): Keyword dictionary of arguments to pass to
-				`endpoint.execute`.
-
-		Returns:
-			dict: returnDict with values filled in.
-		"""
-		try:
-			outputDict = self.endpoint.execute(**kwargs)
-		except Exception as e:
-			outputDict = {"value": -1, "message": [str(e)], "content": []}
-		return CommandOutput(**outputDict)
-
-class CommandOutput(object):
-	def __init__(self, value, message, content):
-		self.value = value
-		self.message = message
-		# Cast the content to a list 
-		if type(content) == list:
-			self.content = content
-		elif type(content) == str:
-			self.content = [content]
-		else:
-			raise ValueError
-		# Get the keys of the content if it's a dict
-		if len(self.content) > 0 and type(self.content[0]) == dict:
-			self.tableHeaders = self.content[0].keys()
-		else:
-			self.tableHeaders = None
-
-	def display(self):
-		if self.value != 0:
-			sys.stderr.write("An error was encountered:\n")
-			print self.message
-			sys.stderr.write("\n".join(self.message)+"\n")
-			sys.exit(self.value)
-		if self.tableHeaders:
-			# Its a dictionary list, make a table and print it
-			outputTable = PrettyTable(self.tableHeaders)
-			outputTable.padding_width = 1
-			for i in self.content:
-				outputTable.add_row(i.values())
-			print outputTable
-		else:
-			# It's just a list of strings, print each one
-			# TODO: Maybe I just shouldn't support this...
-			for i in self.content:
-				print i
 
 if __name__ == "__main__":
 	"""
@@ -275,6 +225,6 @@ if __name__ == "__main__":
 	# Get the command, instantiate it, then call it
 	# This is super temporary - I just want to get all of the server side stuff fixed first
 	command = commandMenu.getCommand(cliInput.command)
-	output = command(**cliInput.commandArgs)
+	output = command.execute(**cliInput.commandArgs)
 	# Now display the output
 	output.display()

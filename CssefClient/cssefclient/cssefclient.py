@@ -5,6 +5,7 @@ from time import sleep
 from getpass import getpass
 import yaml
 from celery import Celery
+from prettytable import PrettyTable
 
 versionMajor = '0'
 versionMinor = '0'
@@ -144,18 +145,41 @@ class Configuration(object):
 		amqpUrl = "amqp://%s:%s@%s//" % (self.amqp_username, self.amqp_password, self.amqp_host)
 		self.apiConn = Celery(queueName, backend = rpcUrl, broker = amqpUrl)
 
-class Argument(object):
-	def __init__(self, displayName, name = None, keyword = False, optional = False):
-		self.displayName = displayName
-		if not name:
-			self.name = self.displayName.lower()
+class CommandOutput(object):
+	def __init__(self, value, message, content):
+		self.value = value
+		self.message = message
+		# Cast the content to a list 
+		if type(content) == list:
+			self.content = content
+		elif type(content) == str:
+			self.content = [content]
 		else:
-			self.name = name
-		self.keyword = keyword
-		self.optional = optional
+			raise ValueError
+		# Get the keys of the content if it's a dict
+		if len(self.content) > 0 and type(self.content[0]) == dict:
+			self.tableHeaders = self.content[0].keys()
+		else:
+			self.tableHeaders = None
 
-	def helpFormat(self, *args, **kwargs):
-		return '--%s' % self.name
+	def display(self):
+		if self.value != 0:
+			sys.stderr.write("An error was encountered:\n")
+			print self.message
+			sys.stderr.write("\n".join(self.message)+"\n")
+			sys.exit(self.value)
+		if self.tableHeaders:
+			# Its a dictionary list, make a table and print it
+			outputTable = PrettyTable(self.tableHeaders)
+			outputTable.padding_width = 1
+			for i in self.content:
+				outputTable.add_row(i.values())
+			print outputTable
+		else:
+			# It's just a list of strings, print each one
+			# TODO: Maybe I just shouldn't support this...
+			for i in self.content:
+				print i
 
 class CeleryEndpoint(object):
 	"""Base class to represent a celery task on the server.
@@ -209,13 +233,17 @@ class CeleryEndpoint(object):
 				server.
 
 		Returns:
-			The task data is returned as it's provided. Cssef tasks should
-			always return a standard dictionary object. TODO: Maybe force some
-			checking here to cast anything that does not comply into that
-			dictionary.
+			CommandOutput: The task data is cast to a CommandOutput object if
+			the task completed successfully. If the task experiences an
+			unhandled error, it is caught and a CommandOutput object is
+			created with values describing the encountered exception.
 		"""
-		task = self.config.apiConn.send_task(self.celeryName, args = args, kwargs = kwargs)
-		return task.get()
+		try:
+			task = self.config.apiConn.send_task(self.celeryName,
+				args = args,kwargs = kwargs)
+			return CommandOutput(**(task.get()))
+		except Exception as e:
+			return CommandOutput(value = -1, content = [], message = [str(e)])
 
 ############################################
 # General endpoints
@@ -261,15 +289,15 @@ class Login(CeleryEndpoint):
 			kwargs['password'] = getpass()
 		# Attempt to log in
 		returnDict = super(Login, self).execute(**kwargs)
-		if returnDict['value'] != 0:
+		if returnDict.value != 0:
 			return returnDict
 		# Save the returned token
 		if not os.path.exists(self.config.token_file):
 			# The file doesn't exist yet, make it
 			open(self.config.token_file, 'a').close()
 		os.chmod(self.config.token_file, stat.S_IRUSR | stat.S_IWUSR)
-		open(self.config.token_file, 'w').write(returnDict['content'][0])
-		returnDict['content'] = ["Authentication was successful."]
+		open(self.config.token_file, 'w').write(returnDict.content[0])
+		returnDict.content = ["Authentication was successful."]
 		return returnDict
 
 class Logout(CeleryEndpoint):

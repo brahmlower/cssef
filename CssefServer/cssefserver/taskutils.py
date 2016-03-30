@@ -1,4 +1,5 @@
 from cssefserver import DatabaseConnection
+from cssefserver.utils import getEmptyReturnDict
 
 def modelDel(cls, pkid):
 	if pkid == "*":

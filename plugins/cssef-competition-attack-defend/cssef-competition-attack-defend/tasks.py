@@ -97,7 +97,6 @@ def competitionStart(auth, pkid = None):
 			return authResult
 		if not pkid:
 			raise Exception
-		#db = databaseConnection(dbPath)
 		competition = Competition.fromDatabase(DatabaseConnection, pkid)
 		if not competition.autoStart:
 			raise Exception
