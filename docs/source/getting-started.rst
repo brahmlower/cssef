@@ -1,7 +1,7 @@
 Getting Started
 ===============
 
-There are 3 primary components to framework.
+This short guide will walk through the process of setting up a basic installation of the CSSEF server. This includes installing and configuring the dependancies, and verifying that the client is able to communicate properly with the server.
 
 Server Installation
 -------------------
@@ -20,7 +20,7 @@ Configure the rabbitmq server
 Install the CSSEF server
 ::
 	user@debian:~$ git clone https://github.com/bplower/cssef.git
-	cd cssef/CssefServer
+	user@debian:~$ cd cssef/CssefServer
 	user@debian:~/cssef/CssefServer$ sudo pip install .
 
 Verify the installation was successful

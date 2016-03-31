@@ -10,16 +10,20 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   :caption: User Documentation
+   :caption: Overview
+   introduction
+   getting-started
 
-   user-getting_started
-   user-setup_server
-   user-setup_client
+.. toctree::
+   :maxdepth: 2
+   :caption: Configuration
+   server
+   client
+   web-client
 
 .. toctree::
    :maxdepth: 3
    :caption: Developer Documentation
-
    autodoc/cssefserver/cssefserver
    autodoc/cssefclient/cssefclient
 
