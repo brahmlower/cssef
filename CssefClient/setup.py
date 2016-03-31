@@ -1,11 +1,11 @@
 from setuptools import setup
-from cssefclient import cssefclient 
+
 setup(
 	# Application name:
 	name = "cssef-client",
 	
 	# Version number:
-	version = cssefclient.version,
+	version = "0.0.3",
 
 	# Application author details:
 	author = "Brahm Lower",

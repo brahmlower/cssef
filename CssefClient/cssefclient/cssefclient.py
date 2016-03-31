@@ -7,11 +7,6 @@ import yaml
 from celery import Celery
 from prettytable import PrettyTable
 
-versionMajor = '0'
-versionMinor = '0'
-versionPatch = '3'
-version = ".".join([versionMajor, versionMinor, versionPatch])
-
 class Configuration(object):
 	"""Contains and loads configuration values
 
