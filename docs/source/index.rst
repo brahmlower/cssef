@@ -6,17 +6,17 @@
 Welcome to Cssef's documentation!
 =================================
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
    :caption: Overview
+
    introduction
    getting-started
 
 .. toctree::
    :maxdepth: 2
    :caption: Configuration
+
    server
    client
    web-client
@@ -24,6 +24,7 @@ Contents:
 .. toctree::
    :maxdepth: 3
    :caption: Developer Documentation
+
    autodoc/cssefserver/cssefserver
    autodoc/cssefclient/cssefclient
 

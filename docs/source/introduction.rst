@@ -34,7 +34,7 @@ The web client is meant to be an easy and painless tool for interacting with the
 
 Web API
 ~~~~~~~
-..note::
-	Work on the web API has been halted until the server and client have reached a decently stable state.
+.. note::
+	Work on the web API has stopped until the server and client have reached a decently stable state.
 
 The web API is intended to be provided in situations where one may want to provide a proxy to the cssef server for another frontend application that cannot itself have the client application installed on it. Eventually, the CSSEF client will be able to consume endpoints provided by the web API.
