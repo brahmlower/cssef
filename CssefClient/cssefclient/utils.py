@@ -96,9 +96,15 @@ class CeleryEndpoint(object):
 			unhandled error, it is caught and a CommandOutput object is
 			created with values describing the encountered exception.
 		"""
-		# try:
-		self.task = self.config.apiConn.send_task(self.celeryName,
-			args = args, kwargs = kwargs, expires=10)
-		return CommandOutput(**(self.task.get()))
-		# except Exception as e:
-		# 	return CommandOutput(value = -1, content = [], message = [str(e)])
+		try:
+			# This is a hint at a larger issue- If I don't cast this to an
+			# integer, it is passed to send_task() and get() as a string
+			# rather than an expected integer. This means all values read
+			# from the configuration object are strings, which may be
+			# problematic if a value MUST be an integer.
+			task_timeout = int(self.config.task_timeout)
+			self.task = self.config.apiConn.send_task(self.celeryName,
+				args = args, kwargs = kwargs, expires = task_timeout)
+			return CommandOutput(**(self.task.get(timeout = task_timeout)))
+		except Exception as e:
+			return CommandOutput(value = -1, content = [], message = [str(e)])

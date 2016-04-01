@@ -22,6 +22,7 @@ class Configuration(object):
 		self.organization = None
 		self.username = None
 		self.password = None
+		self.task_timeout = 5
 		# Default values for the client configuration
 		self.rpc_username = "cssefd"
 		self.rpc_password = "cssefd-pass"
