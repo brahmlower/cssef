@@ -19,11 +19,11 @@ setup(
 
 	# Scripts:
 	scripts = [
-		'cssefclient/cssef-cli'
+		'cssef-cli'
 	],
 
 	data_files = [
-		('/etc/cssef/', ['cssefclient/cssef.conf'],)
+		('/etc/cssef/', ['cssef.conf'],)
 	],
 
 	# Description:

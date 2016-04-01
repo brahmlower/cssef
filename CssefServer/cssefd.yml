@@ -2,7 +2,7 @@
 pidfile: /var/run/cssefd.pid
 admin-token: 
 database-path: /tmp/db.sqlite3
-database-table-prefix: "cssef"
+database-table-prefix: cssef
 
 # Loggin configs
 cssef-loglevel: DEBUG

@@ -1,7 +1,11 @@
 #!/usr/bin/python
 import ast
 import sys
-from cssefclient.cssefclient import *
+from cssefclient import Configuration
+from cssefclient.utils import CeleryEndpoint
+from cssefclient.tasks import AvailableEndpoints
+from cssefclient.tasks import Login
+from cssefclient.tasks import Logout
 
 class Menu(object):
 	def __init__(self, config):
@@ -16,7 +20,10 @@ class Menu(object):
 			print "[LOGGING] Loading available endpoints from server."
 		result = AvailableEndpoints(self.config).execute()
 		if result.value != 0:
-			sys.stderr.write("[ERROR] Failed to get available endpoints\n.")
+			# If this happens, we should eventually fail over to using the local cache
+			errorMessage = "[ERROR] Server error while getting available endpoints.\n"
+			errorMessage += "\n".join(result.message)
+			sys.stderr.write("%s\n" % errorMessage)
 			sys.stderr.flush()
 			sys.exit()
 		self.availableEndpoints = result.content
@@ -199,24 +206,38 @@ class ParseInput(object):
 		self.commandArgs['auth'] = tmpDict
 		return True
 
-if __name__ == "__main__":
-	"""
-	Usage:
-	cssef-cli [OPTIONS] [COMMAND] [ARGUMENTS]
-	"""
-	# Parse the command line arguments
-	cliInput = ParseInput()
-	# Load the various configuration files
+def signal_handler(signal, frame):
+		# User is cancelling task
+		print "Exiting, please wait for tasks to be cancelled."
+		command.revoke()
+		sys.exit(1)
+
+def buildConfiguration(cliInput):
+	# Load the various configuration sources
 	config = Configuration()
 	config.loadConfigFile(config.globalConfigPath)
 	config.loadConfigFile(config.configPath)
 	config.loadConfigDict(cliInput.options)
 	# Load token
 	if config.token_auth_enabled and not config.loadTokenFile():
+		# This means token authentication is enabled, but we failed to load
+		# the token from the file
 		print "Failed to load token from file."
 	# We need authentication set up now
 	if not cliInput.prepareAuthDict(config):
-		print "Failed to meet authentication requirements. Not using authentication."
+		print "Failed to meet minimum authentication requirements. Not using authentication."
+	return config
+
+if __name__ == "__main__":
+	"""
+	Usage:
+	cssef-cli [OPTIONS] [COMMAND] [ARGUMENTS]
+	"""
+	# Rigster the signal handler before anything else
+	#signal.signal(signal.SIGINT, signal_handler)
+	# Parse the command line arguments
+	cliInput = ParseInput()
+	config = buildConfiguration(cliInput)
 	# Establish rabbitmq connection
 	config.establishApiConnection()
 	# Load the available endpoints

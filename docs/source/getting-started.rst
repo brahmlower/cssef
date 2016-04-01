@@ -3,31 +3,9 @@ Getting Started
 
 This short guide will walk through the process of setting up a basic installation of the CSSEF server. This includes installing and configuring the dependancies, and verifying that the client is able to communicate properly with the server.
 
-Server Installation
--------------------
-The server requires python, pip, rabbitmq, and celery. 
-
-Install the prerequisets
-::
-	user@debian:~$ sudo apt-get install -y git python-pip python-dev rabbitmq-server
-
-Configure the rabbitmq server
-::
-	user@debian:~$ sudo rabbitmqctl add_user cssefd-user cssefd-pass
-	user@debian:~$ sudo rabbitmqctl set_user_tags cssefd-user administrator
-	user@debian:~$ sudo rabbitmqctl set_permissions ".*" ".*" ".*"
-
-Install the CSSEF server
-::
-	user@debian:~$ git clone https://github.com/bplower/cssef.git
-	user@debian:~$ cd cssef/CssefServer
-	user@debian:~/cssef/CssefServer$ sudo pip install .
-
-Verify the installation was successful
-::
-	user@debian:~/cssef/CssefServer$ cssefd start
-	user@debian:~/cssef/CssefServer$ cssefd status
-	Running with pid 26351
+.. include:: server.rst
+	:start-after: .. _server-server_installation:
+	:end-before: .. _server-server_configuration:
 
 Client Installation
 -------------------

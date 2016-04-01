@@ -37,13 +37,34 @@ def login(username, password, organization, auth = None):
 		were incorrect, and value will be non-zero.
 	"""
 	user = User.search(DatabaseConnection, username = username, organization = organization)
+	if len(user) != 1:
+		if len(user) > 1:
+			# This isn't how loggins is done, but I'll get it fixed with I improve logging
+			print "There were too many users returned."
+			print "Number of users: %d" % len(user)
+			print "Provided username: %s" % username
+			print "Provided organization: %s" % organization
+		elif len(user) < 1:
+			print "There were fewer than 1 users returned."
+			print "Number of users: %d" % len(user)
+			print "Provided username: %s" % username
+			print "Provided organization: %s" % organization
+		# Now return a genaric login failure message to the client.
+		# TODO: Should I maybe describe the error a little more to the user, that way
+		# they're aware that some actually bad has happened?
+		return clientFailedLoginOutput()
 	token = user[0].authenticatePassword(password)
 	returnDict = getEmptyReturnDict()
 	if not token:
-		returnDict['message'] = ["Incorrect username or password."]
-		returnDict['value'] = 1
+		return clientFailedLoginOutput()
 	else:
 		returnDict['content'] = [token]
+	return returnDict
+
+def clientFailedLoginOutput():
+	returnDict = getEmptyReturnDict()
+	returnDict['message'] = ["Incorrect username or password."]
+	returnDict['value'] = 1
 	return returnDict
 
 endpointsDict = {

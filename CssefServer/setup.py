@@ -1,5 +1,4 @@
 from setuptools import setup
-from setuptools import find_packages
 
 setup(
 	# Application name:
@@ -13,7 +12,7 @@ setup(
 	author_email = "bplower@gmail.com",
 
 	# Packages:
-	packages = find_packages(),
+	packages = ["cssefserver"],
 
 	# Details:
 	url = "http://github.com/bplower/cssef/",
