@@ -12,7 +12,7 @@ setup(
 	author_email = "bplower@gmail.com",
 
 	# Packages:
-	packages = ["cssefserver"],
+	packages = ["cssefserver", "cssefserver.account"],
 
 	# Details:
 	url = "http://github.com/bplower/cssef/",

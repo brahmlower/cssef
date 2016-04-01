@@ -1,4 +1,6 @@
+import os
 import sys
+import stat
 from prettytable import PrettyTable
 from time import sleep
 
@@ -22,9 +24,9 @@ class CommandOutput(object):
 	def display(self):
 		if self.value != 0:
 			sys.stderr.write("An error was encountered:\n")
-			print self.message
 			sys.stderr.write("\n".join(self.message)+"\n")
-			sys.exit(self.value)
+			# # TODO: I really don't think this function should be exiting...
+			# sys.exit(self.value)
 		if self.tableHeaders:
 			# Its a dictionary list, make a table and print it
 			outputTable = PrettyTable(self.tableHeaders)
@@ -37,6 +39,9 @@ class CommandOutput(object):
 			# TODO: Maybe I just shouldn't support this...
 			for i in self.content:
 				print i
+
+	def exitWithValue(self):
+		sys.exit(self.value)
 
 class CeleryEndpoint(object):
 	"""Base class to represent a celery task on the server.
@@ -108,3 +113,11 @@ class CeleryEndpoint(object):
 			return CommandOutput(**(self.task.get(timeout = task_timeout)))
 		except Exception as e:
 			return CommandOutput(value = -1, content = [], message = [str(e)])
+
+def saveAuthToken(tokenFilePath, token):
+	# Save the returned token
+	if not os.path.exists(tokenFilePath):
+		# The file doesn't exist yet, make it
+		open(tokenFilePath, 'a').close()
+	os.chmod(tokenFilePath, stat.S_IRUSR | stat.S_IWUSR)
+	open(tokenFilePath, 'w').write(token)

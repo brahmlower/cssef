@@ -20,6 +20,7 @@ class Configuration(object):
 		self.database_path = None
 		# General configurations
 		self.verbose = False
+		self.auth_failover = True
 		# Default values for the rabbitmq configuration
 		self.rpc_username = "cssefd"
 		self.rpc_password = "cssefd-pass"

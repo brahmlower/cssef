@@ -26,6 +26,21 @@ def availableEndpoints():
 		returnDict['content'].append(plugin.tasks.endpointsDict)
 	return returnDict
 
+@CssefCeleryApp.task(name = 'renewToken')
+def renewToken(username, organization, token):
+	"""Celery task to get a new auth token
+	"""
+	userResults = User.search(DatabaseConnection, username = username, organization = organization)
+	if len(userResults) != 1:
+		return clientFailedLoginOutput()
+	user = userResults[0]
+	if not user.authenticateToken(token):
+		# If the token is already expired, then authentication has failed.
+		return clientFailedLoginOutput()
+	returnDict = getEmptyReturnDict()
+	returnDict['content'] = [user.getNewToken()]
+	return returnDict
+
 @CssefCeleryApp.task(name = 'login')
 def login(username, password, organization, auth = None):
 	"""Celery task to login.
@@ -36,30 +51,34 @@ def login(username, password, organization, auth = None):
 		the credentials were correct. Content will be empty if the credentials
 		were incorrect, and value will be non-zero.
 	"""
-	user = User.search(DatabaseConnection, username = username, organization = organization)
-	if len(user) != 1:
-		if len(user) > 1:
-			# This isn't how loggins is done, but I'll get it fixed with I improve logging
-			print "There were too many users returned."
-			print "Number of users: %d" % len(user)
-			print "Provided username: %s" % username
-			print "Provided organization: %s" % organization
-		elif len(user) < 1:
-			print "There were fewer than 1 users returned."
-			print "Number of users: %d" % len(user)
-			print "Provided username: %s" % username
-			print "Provided organization: %s" % organization
+	userResults = User.search(DatabaseConnection, username = username, organization = organization)
+	if len(userResults) != 1:
+		logBadUserSearchResults(userResults, username, organization)
 		# Now return a genaric login failure message to the client.
 		# TODO: Should I maybe describe the error a little more to the user, that way
 		# they're aware that some actually bad has happened?
 		return clientFailedLoginOutput()
-	token = user[0].authenticatePassword(password)
-	returnDict = getEmptyReturnDict()
-	if not token:
+	# Try to verify the provided credentials
+	user = userResults[0]
+	if not user.authenticatePassword(password):
+		# Authentication has failed
 		return clientFailedLoginOutput()
-	else:
-		returnDict['content'] = [token]
+	# The user is authenticated. Generate a key for them
+	returnDict = getEmptyReturnDict()
+	returnDict['content'] = [user.getNewToken()]
 	return returnDict
+
+def logBadUserSearchResults(numResults, username, organization):
+	# This isn't how logging is done, but I'll get it fixed with I improve logging
+	if numResults > 1:
+		print "There were too many users returned"
+	elif numResults < 1:
+		print "There were fewer than 1 users returned."
+	else:
+		print "Num results was neither 1, >1, <1. You should NEVER see this message."
+	print "Number of users: %d" % len(numResults)
+	print "Provided username: %s" % username
+	print "Provided organization: %s" % organization
 
 def clientFailedLoginOutput():
 	returnDict = getEmptyReturnDict()

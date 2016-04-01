@@ -227,16 +227,35 @@ class User(ModelWrapper):
 		return True
 
 	def authenticate(self, authDict):
-		print authDict.keys()
+		"""Attempt to authenticate with whatever information was provided
+
+		The authdict may contain a token or key. Check if either is present
+		and attempt to authenticate with that. It will attempt to authenticate
+		with the token first. If that fails and autentication failover is not
+		enabled, the function will just return. If authentication failover is
+		enabled and the password is provided, it will try to authenticate
+		with that. If no valid form of authentication is provided,
+		authentication will fail.
+
+		Args:
+			authDict (dict): A dictionary with a password or token in it.
+
+		Returns:
+			bool: True if the passwords match, false if not.
+		"""
 		if 'token' in authDict.keys():
 			# Do token authentication
-			return self.authenticateToken(authDict['token'])
+			if not self.authenticateToken(authDict['token']):
+				# Token was provided, but was invalid.
+				if not self.config.auth_failover:
+					# Authentication failover is disabled.
+					return False
 		elif 'password' in authDict.keys():
 			# Do password authentication
-			return self.authenticatePassword(authDict['password'], returnToken = False)
+			return self.authenticatePassword(authDict['password'])
 		else:
 			# Cannot authenticate!
-			print "There was no password or token!"
+			print "Neither a password nor auth token were provided!"
 			return False
 
 	def authenticateToken(self, token):
@@ -262,7 +281,7 @@ class User(ModelWrapper):
 		tk = tokenlib.parse_token(token, secret = secretSalt, now = time.time())
 		return tk['id'] == self.getId() and tk['username'] == self.username and tk['organization'] == self.organization
 
-	def authenticatePassword(self, password, returnToken = True):
+	def authenticatePassword(self, password):#, returnToken = True):
 		"""Check if the provided plaintext password is valid for this user.
 
 		This will check that the provided password matches the users password.
@@ -275,19 +294,14 @@ class User(ModelWrapper):
 			password (str): Plaintext password candidate
 
 		Returns:
-			str: When the password is password correct, a new token to
-				validate further requests is returned. Returns none if
-				password is incorrect.
+			bool: True if the passwords match, false if not.
 		"""
-		if self.password == password:
-			if not returnToken:
-				return True
-			else:
-				tokenDict = {"id": self.getId(), "username": self.username, "organization": self.organization}
-				token = tokenlib.make_token(tokenDict, secret = secretSalt)
-				return token
-		else:
-			return None
+		return self.password == password
+
+	def getNewToken(self):
+		tokenDict = {"id": self.getId(), "username": self.username, "organization": self.organization}
+		token = tokenlib.make_token(tokenDict, secret = secretSalt)
+		return token
 
 class Organization(ModelWrapper):
 	modelObject = OrganizationModel

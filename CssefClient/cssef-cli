@@ -6,6 +6,7 @@ from cssefclient.utils import CeleryEndpoint
 from cssefclient.tasks import AvailableEndpoints
 from cssefclient.tasks import Login
 from cssefclient.tasks import Logout
+from cssefclient.tasks import RenewToken
 
 class Menu(object):
 	def __init__(self, config):
@@ -206,12 +207,6 @@ class ParseInput(object):
 		self.commandArgs['auth'] = tmpDict
 		return True
 
-def signal_handler(signal, frame):
-		# User is cancelling task
-		print "Exiting, please wait for tasks to be cancelled."
-		command.revoke()
-		sys.exit(1)
-
 def buildConfiguration(cliInput):
 	# Load the various configuration sources
 	config = Configuration()
@@ -228,13 +223,19 @@ def buildConfiguration(cliInput):
 		print "Failed to meet minimum authentication requirements. Not using authentication."
 	return config
 
+def processTokenRenewal(config):
+	# Attempt to renew the auth token
+	output = RenewToken(config).execute()
+	if output.value != 0:
+		print "[WARNING] Failed to renew auth token."
+		if config.verbose:
+			output.display()	
+
 if __name__ == "__main__":
 	"""
 	Usage:
 	cssef-cli [OPTIONS] [COMMAND] [ARGUMENTS]
 	"""
-	# Rigster the signal handler before anything else
-	#signal.signal(signal.SIGINT, signal_handler)
 	# Parse the command line arguments
 	cliInput = ParseInput()
 	config = buildConfiguration(cliInput)
@@ -243,9 +244,14 @@ if __name__ == "__main__":
 	# Load the available endpoints
 	commandMenu = Menu(config)
 	commandMenu.loadFromServer()
+
+	# Attempt to renew the auth token
+	processTokenRenewal(config)
+
 	# Get the command, instantiate it, then call it
 	# This is super temporary - I just want to get all of the server side stuff fixed first
 	command = commandMenu.getCommand(cliInput.command)
 	output = command.execute(**cliInput.commandArgs)
 	# Now display the output
 	output.display()
+	output.exitWithValue()

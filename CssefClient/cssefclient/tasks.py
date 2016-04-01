@@ -1,7 +1,6 @@
-import os
-import stat
 from getpass import getpass
 from cssefclient.utils import CeleryEndpoint
+from cssefclient.utils import saveAuthToken
 
 class AvailableEndpoints(CeleryEndpoint):
 	def __init__(self, config):
@@ -21,6 +20,29 @@ class AvailableEndpoints(CeleryEndpoint):
 		self.config = config
 		self.celeryName = 'availableEndpoints'
 		self.args = []
+
+class RenewToken(CeleryEndpoint):
+	def __init__(self, config):
+		self.config = config
+		self.celeryName = 'renewToken'
+
+	def execute(self, **kwargs):
+		# Populate the arguments to pass to the login
+		# Here we only need the username and the token
+		if not kwargs.get('username'):
+			kwargs['username'] = self.config.username
+		if not kwargs.get('organization'):
+			kwargs['organization'] = self.config.organization
+		if not kwargs.get('token'):
+			kwargs['token'] = self.config.token
+		# Attempt to log in
+		returnDict = super(RenewToken, self).execute(**kwargs)
+		if returnDict.value != 0:
+			return returnDict
+		token = returnDict.content[0]
+		saveAuthToken(self.config.token_file, token)
+		returnDict.content = ["Token rewnewal was successful."]
+		return returnDict
 
 class Login(CeleryEndpoint):
 	def __init__(self, config):
@@ -47,11 +69,8 @@ class Login(CeleryEndpoint):
 		if returnDict.value != 0:
 			return returnDict
 		# Save the returned token
-		if not os.path.exists(self.config.token_file):
-			# The file doesn't exist yet, make it
-			open(self.config.token_file, 'a').close()
-		os.chmod(self.config.token_file, stat.S_IRUSR | stat.S_IWUSR)
-		open(self.config.token_file, 'w').write(returnDict.content[0])
+		token = returnDict.content[0]
+		saveAuthToken(self.config.token_file, token)
 		returnDict.content = ["Authentication was successful."]
 		return returnDict
 
