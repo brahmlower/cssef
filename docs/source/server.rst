@@ -31,7 +31,9 @@ Verify the installation was successful
 Server Configuration
 --------------------
 
-Configurations can be loaded from several different sources, where values loaded later will overwrite previously set values. The order configuration values are loaded is as follows:
+Configurations can be loaded from several different sources, where values
+loaded later will overwrite previously set values. The order configuration
+values are loaded is as follows:
 
 1. Default (hard coded)
 2. Global config file
@@ -40,14 +42,22 @@ Configurations can be loaded from several different sources, where values loaded
 
 Please consider the following example:
 
-	`The default client cache time for available endpoints is 24 hours, but is overwritten to a value of 12 hours in the global config file. However, you are troublshooting something related to plugins, so you've started the daemon with the cache time value set to 0 meaning the cache will be refreshed on each client request.`
+	`The default client cache time for available endpoints is 24 hours, but
+	is overwritten to a value of 12 hours in the global config file. However,
+	you are troublshooting something related to plugins, so you've started the
+	daemon with the cache time value set to 0 meaning the cache will be
+	refreshed on each client request.`
 
-The value of the client cache time was overwritten twice in this example: once by the global configuration, and once by the value provided on the command line. Any configuration option may be set through any of the configuration sources (excluding the default configs for obvious reasons).
+The value of the client cache time was overwritten twice in this example:
+once by the global configuration, and once by the value provided on the
+command line. Any configuration option may be set through any of the
+configuration sources (excluding the default configs for obvious reasons).
 
 Available Options
 ~~~~~~~~~~~~~~~~~~~~~
 pidfile
-	This is a string value representing the absolute path to store the pid file at.
+	This is a string value representing the absolute path to store the pid
+	file at.
 
 	Default: ``/var/run/cssefd.pid``
 
@@ -61,7 +71,11 @@ pidfile
 		user@debian ~$ cssefd start --pidfile /custom-dir/cssef.pid
 
 admin-token
-	This should only be used for initial setup, but may be used in the event you are locked out of administrator accounts. The client may provide the token to authorize requests by completely bypassing username and password checks. If you are not actively using this, the value should be left blank, meaning admin-token auth is disabled.
+	This should only be used for initial setup, but may be used in the event
+	you are locked out of administrator accounts. The client may provide the
+	token to authorize requests by completely bypassing username and password
+	checks. If you are not actively using this, the value should be left
+	blank, meaning admin-token auth is disabled.
 
 	Default:
 
@@ -75,7 +89,8 @@ admin-token
 		user@debian ~$ cssefd start --admin-token abc123def456
 
 database-path
-	While using sqlite as the backend database, this option will be for the absolute path to store the database file at.
+	While using sqlite as the backend database, this option will be for the
+	absolute path to store the database file at.
 
 	Default: ``/var/opt/cssef/db.sqlite3``
 
@@ -89,7 +104,9 @@ database-path
 		user@debian ~$ cssefd start --database-path /mnt/ramdisk/cssef/db.sqlite3
 
 database-table-prefix
-	This value will be the prefix for every table in the database. Depending on your database backend, this may not be as important. The default will result in tables that look similar to "cssef_users".
+	This value will be the prefix for every table in the database. Depending
+	on your database backend, this may not be as important. The default will
+	result in tables that look similar to "cssef_users".
 
 	Default: ``cssef``
 
@@ -103,7 +120,8 @@ database-table-prefix
 		user@debian ~$ cssefd start --database-table-prefix cssef-prod
 
 logging
-	I've completely skipped the logging values because they're all basically useless right now...
+	I've completely skipped the logging values because they're all basically
+	useless right now...
 
 rpc-username
 	This is the username to authenticate to the RPC service with.
@@ -115,11 +133,18 @@ rpc-host
 	The address for the host that is hosting the RPC service.
 
 amqp-username
+	This is the username to authenticate to the AMQP service with.
+
 amqp-password
+	This is the password to use while authenticating to the AMQP server.
+
 amqp-host
+	The address for the host that is hosting the AMQP service.
 
 installed-plugins
-	This is a list of plugins that conform to the CSSEF plugin model that should be imported. Those plugins must already be installed, and the entries in this list must be the names of the modules.
+	This is a list of plugins that conform to the CSSEF plugin model that
+	should be imported. Those plugins must already be installed, and the
+	entries in this list must be the names of the modules.
 
 	Default:
 
