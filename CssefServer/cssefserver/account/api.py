@@ -245,11 +245,12 @@ class User(ModelWrapper):
 		"""
 		if 'token' in authDict.keys():
 			# Do token authentication
-			if not self.authenticateToken(authDict['token']):
-				# Token was provided, but was invalid.
-				if not self.config.auth_failover:
-					# Authentication failover is disabled.
-					return False
+			if self.authenticateToken(authDict['token']):
+				return True
+			# Token was provided, but was invalid.
+			if not self.config.auth_failover:
+				# Authentication failover is disabled.
+				return False
 		elif 'password' in authDict.keys():
 			# Do password authentication
 			return self.authenticatePassword(authDict['password'])
@@ -281,7 +282,7 @@ class User(ModelWrapper):
 		tk = tokenlib.parse_token(token, secret = secretSalt, now = time.time())
 		return tk['id'] == self.getId() and tk['username'] == self.username and tk['organization'] == self.organization
 
-	def authenticatePassword(self, password):#, returnToken = True):
+	def authenticatePassword(self, password):
 		"""Check if the provided plaintext password is valid for this user.
 
 		This will check that the provided password matches the users password.

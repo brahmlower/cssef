@@ -1,0 +1,6 @@
+rpc-username: cssefd
+rpc-password: cssefd-pass
+rpc-host: localhost
+amqp-username: cssefd
+amqp-password: cssefd-pass
+amqp-host: localhost

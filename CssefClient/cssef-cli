@@ -1,6 +1,8 @@
 #!/usr/bin/python
+import os
 import ast
 import sys
+import time
 from cssefclient import Configuration
 from cssefclient.utils import CeleryEndpoint
 from cssefclient.tasks import AvailableEndpoints
@@ -13,6 +15,25 @@ class Menu(object):
 		self.config = config
 		self.availableEndpoints = None
 		self.menuDict = {}
+
+	def load(self):
+		# consider forced sources first
+		if config.force_endpoint_cache:
+			return self.loadFromFile()
+		if config.force_endpoint_server or not config.endpoint_cache_enabled:
+			return self.loadFromServer()
+		# Get the time since the cache file was modified
+		try:
+			cacheLastModTime = os.stat(config.endpoint_cache_file).st_mtime
+		except OSError:
+			print "Failed to load cache from file: %s" % config.endpoint_cache_file
+			return self.loadFromServer()
+		timeDelta = time.time() - cacheLastModTime
+		# If it has been longer since the cache was updated than is
+		# configured, then we need to load from server
+		if timeDelta >= config.raw_endpoint_cache_time:
+			return self.loadFromServer()
+		return self.loadFromFile()
 
 	def loadFromServer(self):
 		"""Retrieves the available endpoints from the server.
@@ -28,20 +49,25 @@ class Menu(object):
 			sys.stderr.flush()
 			sys.exit()
 		self.availableEndpoints = result.content
-		if self.config.verbose:
-			print "[LOGGING] Finished loading available endpoints."
 		self.construct()
 
-	def loadFromFile(self, path):
+	def loadFromFile(self, path = None):
 		"""Retrieves the available endpoints from the cache
 		"""
+		if not path:
+			path = self.config.endpoint_cache_file
 		if self.config.verbose:
 			print "[LOGGING] Loading available endpoints from cache."
-		fileContent = open(self.config.endpoint_cache_file, 'r').read()
+		fileContent = open(path, 'r').read()
 		self.availableEndpoints = ast.literal_eval(fileContent)
-		if self.config.verbose:
-			print "[LOGGING] Finished loading available endpoints."
 		self.construct()
+
+	def cacheEndpoints(self, path = None):
+		if not path:
+			path = self.config.endpoint_cache_file
+		wfile = open(path, 'w')
+		wfile.write(str(self.availableEndpoints))
+		wfile.close()
 
 	def construct(self):
 		# Build dynamic celery endpoints
@@ -229,7 +255,9 @@ def processTokenRenewal(config):
 	if output.value != 0:
 		print "[WARNING] Failed to renew auth token."
 		if config.verbose:
-			output.display()	
+			output.display()
+	elif config.verbose:
+		print "[LOGGING] Auth token renewal was successful."	
 
 if __name__ == "__main__":
 	"""
@@ -243,10 +271,15 @@ if __name__ == "__main__":
 	config.establishApiConnection()
 	# Load the available endpoints
 	commandMenu = Menu(config)
-	commandMenu.loadFromServer()
-
-	# Attempt to renew the auth token
-	processTokenRenewal(config)
+	commandMenu.load()
+	# Cache the endpoints if necessary
+	if config.endpoint_cache_enabled:
+		commandMenu.cacheEndpoints()
+	# Attempt to renew the auth token permitted
+	if config.token_auth_enabled and config.token_renewal_enabled:
+		processTokenRenewal(config)
+	else:
+		print "[LOGGING] Skipping auth token renewal."
 
 	# Get the command, instantiate it, then call it
 	# This is super temporary - I just want to get all of the server side stuff fixed first

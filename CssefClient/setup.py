@@ -23,7 +23,7 @@ setup(
 	],
 
 	data_files = [
-		('/etc/cssef/', ['cssef.conf'],)
+		('/etc/cssef/', ['cssef.yml'],)
 	],
 
 	# Description:

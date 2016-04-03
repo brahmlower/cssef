@@ -34,17 +34,46 @@ class Configuration(object):
 		self.token_auth_enabled = True
 		self.token = None
 		self.token_file = self.userDataDir + "token"
-		self.token_repoll_enabled = False
+		self.token_renewal_enabled = True
 		# Endpoint caching
 		self.endpoint_cache_enabled = True
+		self.force_endpoint_cache = False
+		self.force_endpoint_server = False
 		self.endpoint_cache_file = self.userDataDir + "endpoint-cache"
-		self.endpoint_cache_timeout = '12h'
+		self.raw_endpoint_cache_time = '12h'
 		# dksl;afjdksl;fjdkls;afjdk;sa (this was frustration)
 		self.apiConn = None
 
 		# Ensure user data directory exists
 		if not os.path.exists(self.userDataDir):
 			os.makedirs(self.userDataDir)
+
+	@property
+	def endpoint_cache_time(self):
+		return raw_endpoint_cache_time
+
+	@endpoint_cache_time.setter
+	def endpoint_cache_time(self, value):
+		try:
+			self.raw_endpoint_cache_time = int(value)
+		except ValueError:
+			pass
+		self.raw_endpoint_cache_time = parseTimeNotation(value)
+
+	def parseTimeNotation(value):
+		valueNotationList = [
+			{"value": 1, "alias": ["s","second","seconds"]},
+			{"value": 60, "alias": ["m","minute","minutes"]},
+			{"value": 3600, "alias": ["h","hour","hours"]},
+			{"value": 86400, "alias": ["d","day","days"]}]
+		strings = filter(None, re.split('(\d+)', value))
+		timeValue = strings[0]
+		timeMetric = strings[1]
+		for i in valueNotationList:
+			if timeMetric in i['alias']:
+				return i['value'] * timeValue
+		# Reaching this point means the metric is not a known alias
+		raise ValueError
 
 	@property
 	def rpc_url(self):
@@ -85,11 +114,21 @@ class Configuration(object):
 		Returns:
 			None
 		"""
+		# We want to make sure verbose is set first if it's provided
+		if "verbose" in configDict:
+			setattr(self, "verbose", bool(configDict.pop("verbose")))
+			if self.verbose:
+				print "[LOGGING] Configuration 'verbose' set to 'True'."
 		for i in configDict:
 			if hasattr(self, i.replace('-','_')):
 				# Set the attribute
 				setting = i.replace('-','_')
 				value = configDict[i]
+				# This is a hacky way of handling booleans: Check if the value is a string
+				# and if the string is either 'true' or 'false'. If so, we're probably trying
+				# to set a boolean, so we cast it to a boolean
+				if type(value) is str and value.lower() in ['true', 'false']:
+					value = value.lower() == 'true'
 				setattr(self, setting, value)
 				if self.verbose:
 					print "[LOGGING] Configuration '%s' set to '%s'." % (i, value)
@@ -98,8 +137,8 @@ class Configuration(object):
 				self.loadConfigDict(configDict[i])
 			else:
 				# We don't care about it. Just skip it!
-				if self.verbose:
-					print "[LOGGING] Ignoring invalid setting '%s'." % i
+				# if self.verbose:
+				print "[WARNING] Ignoring invalid setting '%s'." % i
 
 	def loadTokenFile(self):
 		"""Load token from a file
