@@ -22,6 +22,7 @@ class Configuration(object):
 		self.verbose = False
 		self.auth_failover = True
 		# Default values for the rabbitmq configuration
+		self.celery_queue = "api" #TODO: Is 'queue' the right name for this?
 		self.rpc_username = "cssefd"
 		self.rpc_password = "cssefd-pass"
 		self.rpc_host = "localhost"
@@ -45,6 +46,17 @@ class Configuration(object):
 	@property
 	def amqp_url(self):
 		return "amqp://%s:%s@%s//" % (self.amqp_username, self.amqp_password, self.amqp_host)
+
+	def getCeleryOptions(self):
+		celeryOptions = {
+			'concurrency': 1,
+			'broker': self.amqp_url,
+			'backend': self.rpc_url,
+			'loglevel': self.celery_loglevel,
+			'logfile': self.celery_stdout,
+			'traceback': True
+		}
+		return celeryOptions
 
 	def loadConfigFile(self, configPath):
 		"""Load configuration from a file

@@ -1,5 +1,5 @@
 # Genaric configs
-pidfile: /var/run/cssefd.pid
+pidfile: /tmp/cssefd.pid
 admin-token: 
 database-path: /tmp/db.sqlite3
 database-table-prefix: cssef

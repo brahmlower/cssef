@@ -18,13 +18,13 @@ class AvailableEndpoints(CeleryEndpoint):
 			args (list): The required arguments while calling the celery task
 		"""
 		self.config = config
-		self.celeryName = 'availableEndpoints'
+		self.celeryName = 'AvailableEndpoints'
 		self.args = []
 
 class RenewToken(CeleryEndpoint):
 	def __init__(self, config):
 		self.config = config
-		self.celeryName = 'renewToken'
+		self.celeryName = 'RenewToken'
 
 	def execute(self, **kwargs):
 		# Populate the arguments to pass to the login
@@ -47,7 +47,7 @@ class RenewToken(CeleryEndpoint):
 class Login(CeleryEndpoint):
 	def __init__(self, config):
 		self.config = config
-		self.celeryName = 'login'
+		self.celeryName = 'Login'
 		self.args = []
 
 	def execute(self, **kwargs):

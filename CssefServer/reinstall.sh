@@ -8,10 +8,10 @@ cssefd stop
 rm /tmp/db.sqlite3
 
 # Uninstall the CSSEF server package
-sudo pip uninstall -y cssef-server
+sudo pip uninstall -q -y cssef-server
 
 # Now reinstall the CSSEF server package
-sudo pip install .
+sudo pip install -q .
 if [ "$?" -ne "0" ]
 then
 	>&2 echo "[ERROR] The pip package failed to install."
@@ -38,7 +38,7 @@ sudo sed -i "s|admin-token:|admin-token: $admintoken|" /etc/cssef/cssefd.yml
 cssefd start
 
 # Add an organization to add our user to.
-cssef-cli --admin-token $admintoken organization add --name=Administrators --maxMembers=10
+cssef-cli --verbose True --admin-token $admintoken --force-endpoint-server True organization add --name=Administrators --maxMembers=10
 
 # And now our new test admin user!
-cssef-cli --admin-token $admintoken user add --organization=1 --name=Admin --username=admin --password=admin
+cssef-cli --verbose True --admin-token $admintoken --force-endpoint-server user add --organization=1 --name=Admin --username=admin --password=admin
