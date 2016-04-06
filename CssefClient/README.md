@@ -1,8 +1,7 @@
 # CSSEF Client
+All documentation is hosted by Read the Docs. Installation and configuration documentation can be found [here](http://cssef.readthedocs.org/en/latest/client.html).
 
-For installation and configuration documentation at [read the docs](http://cssef.readthedocs.org/en/latest/client.html).
-
-For developer documentation, please see the developer section of read the docs. You can find client reference documentation here (link soon to come- autodocs soon to come).
+Developer documentation is still a work in progress. Bug me about it if you want it finished faster.
 
 <!----
 The CSSEF Client can be intalled through setup.py a pip local installation. Building and installing via pip is suggested as it makes upgrading/removing the package easier.
