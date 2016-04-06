@@ -27,12 +27,9 @@ setup(
 	],
 
 	# Description:
-	description = "A CSSEF client to interact with CSSEF servers via Celery.",
+	description = "A CSSEF client to interact with CSSEF servers via rpc.",
 	long_description = open("README.md").read(),
 
 	# Dependant packages
-	install_requires = [
-		"prettytable",
-		"celery",
-	],
+	install_requires = ["prettytable", "jsonrpcclient"],
 )

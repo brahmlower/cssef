@@ -1,4 +1,3 @@
-#from cssefserver import DatabaseConnection
 from cssefserver.utils import getEmptyReturnDict
 
 def logBadUserSearchResults(numResults, username, organization):

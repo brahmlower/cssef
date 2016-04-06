@@ -43,56 +43,55 @@ class CommandOutput(object):
 	def exitWithValue(self):
 		sys.exit(self.value)
 
-class CeleryEndpoint(object):
-	"""Base class to represent a celery task on the server.
+class RPCEndpoint(object):
+	"""Base class to represent an endpoint task on the server.
 	 
 	This class gets subclassed by other classes to define a specific
 	task on the cssef server.
 	"""
-	def __init__(self, config, celeryName, args):
+	def __init__(self, config, endpointName, args):
 		"""
 		Args:
 			config (Configuration): The current configuration to use
-			celeryName (str): The task name as defined by the celery server
+			endpointName (str): The task name as defined by the rpc server
 			args (list): Arguments that are available to the task
 
 		Attributes:
 			config (Configuration): The current configuration to use
-			celeryName (str): The task name as defined by the celery server
+			endpointName (str): The task name as defined by the rpc server
 			args (list): Arguments that are available to the task
 		"""
 		self.config = config
-		self.celeryName = celeryName
+		self.endpointName = endpointName
 		self.args = args
 		self.task = None
 
 	@classmethod
 	def fromDict(cls, config, inputDict):
-		"""Creates a CeleryEndpoint object from a dictionary
+		"""Creates a RPCEndpoint object from a dictionary
 
 		Args:
 			config (Configuration): The current configuration to use
 			inputDict (dict): Dictionary containing necessary values to define
-				the celery endpoint
+				the rpc endpoint
 
 		Returns:
-			An instance of CeleryEndpoint that has been filled with the
+			An instance of RPCEndpoint that has been filled with the
 			information defined in the provided dictionary is returned.
 
 		Example:
 			<todo>
 		"""
 		args = []
-		instance = cls(config, inputDict['celeryName'], args)
+		instance = cls(config, inputDict['endpointName'], args)
 		instance.name = inputDict['name']
 		return instance
 
-	def execute(self, *args, **kwargs):
-		"""Calls the celery task on the remote server
+	def execute(self, **kwargs):
+		"""Calls the rpc endpoint on the remote server
 
 		Args:
-			*args: Arguments to pass to the celery task on the server.
-			**kwargs: Keyword arguments to pass to the celery task on the
+			**kwargs: Keyword arguments to pass to the rpc endpoint on the
 				server.
 
 		Returns:
@@ -101,16 +100,19 @@ class CeleryEndpoint(object):
 			unhandled error, it is caught and a CommandOutput object is
 			created with values describing the encountered exception.
 		"""
+		print "[LOGGING] Calling rpc with name '%s'."  % self.endpointName
 		try:
 			# This is a hint at a larger issue- If I don't cast this to an
 			# integer, it is passed to send_task() and get() as a string
 			# rather than an expected integer. This means all values read
 			# from the configuration object are strings, which may be
 			# problematic if a value MUST be an integer.
-			task_timeout = int(self.config.task_timeout)
-			self.task = self.config.apiConn.send_task(self.celeryName,
-				args = args, kwargs = kwargs, expires = task_timeout)
-			return CommandOutput(**(self.task.get(timeout = task_timeout)))
+			#task_timeout = int(self.config.task_timeout)
+			#self.task = self.config.apiConn.send_task(self.endpointName,
+			#	args = args, kwargs = kwargs, expires = task_timeout)
+			#result = self.task.get(timeout = task_timeout)
+			result = self.config.serverConnection.request(self.endpointName, **kwargs)
+			return CommandOutput(**result)
 		except Exception as e:
 			return CommandOutput(value = -1, content = [], message = [str(e)])
 

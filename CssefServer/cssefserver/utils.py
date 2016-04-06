@@ -1,6 +1,7 @@
 import os
 import yaml
 import traceback
+import logging
 
 class Configuration(object):
 	"""Contains and loads server configuration values
@@ -21,14 +22,6 @@ class Configuration(object):
 		# General configurations
 		self.verbose = False
 		self.auth_failover = True
-		# Default values for the rabbitmq configuration
-		self.celery_queue = "api" #TODO: Is 'queue' the right name for this?
-		self.rpc_username = "cssefd"
-		self.rpc_password = "cssefd-pass"
-		self.rpc_host = "localhost"
-		self.amqp_username = "cssefd"
-		self.amqp_password = "cssefd-pass"
-		self.amqp_host = "localhost"
 		# Logging configurations
 		self.cssef_loglevel = ""
 		self.cssef_stderr = ""
@@ -38,25 +31,6 @@ class Configuration(object):
 		self.celery_stdout = ""
 		# Plugin configurations
 		self.installed_plugins = []
-
-	@property
-	def rpc_url(self):
-		return "rpc://%s:%s@%s//" % (self.rpc_username, self.rpc_password, self.rpc_host)
-
-	@property
-	def amqp_url(self):
-		return "amqp://%s:%s@%s//" % (self.amqp_username, self.amqp_password, self.amqp_host)
-
-	def getCeleryOptions(self):
-		celeryOptions = {
-			'concurrency': 1,
-			'broker': self.amqp_url,
-			'backend': self.rpc_url,
-			'loglevel': self.celery_loglevel,
-			'logfile': self.celery_stdout,
-			'traceback': True
-		}
-		return celeryOptions
 
 	def loadConfigFile(self, configPath):
 		"""Load configuration from a file
@@ -113,6 +87,31 @@ class CssefObjectDoesNotExist(Exception):
 	def __str__(self):
 		return repr(self.message)
 
+class CssefRPCEndpoint(object):
+	takesKwargs = True
+	onRequestArgs = []
+	def __init__(self, config, databaseConnection):
+		self.config = config
+		self.databaseConnection = databaseConnection
+
+	def __call__(self, **kwargs):
+		argsList = []
+		# This builds the list of arguments we were told are expected
+		# by the overloaded onRequest() method
+		for i in self.onRequestArgs:
+			if i in kwargs:
+				argsList.append(kwargs.get(i))
+		for i in self.onRequestArgs:
+			kwargs.pop(i)
+		print kwargs
+		if self.takesKwargs:
+			return self.onRequest(*argsList, **kwargs)
+		else:
+			return self.onRequest(*argsList)
+
+	def onRequest(self, *args, **kwargs):
+		pass
+
 class ModelWrapper(object):
 	""" The base class for wrapping SQLAlchemy model objects
 
@@ -154,8 +153,8 @@ class ModelWrapper(object):
 				tmpDict[i] = getattr(self, i)
 			except AttributeError:
 				# The field is not an attribute of the subclassed model wrapper
-				# We'll try to find it in the classes modesl
-				tmpDict[i] = getattr(self.mode, i)
+				# We'll try to find it in the classes model
+				tmpDict[i] = getattr(self.model, i)
 		return tmpDict
 
 	@classmethod

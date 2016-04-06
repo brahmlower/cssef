@@ -114,7 +114,8 @@ class User(ModelWrapper):
 				>>>
 
 		"""
-		return PasswordHash(self.model.password)
+		#return PasswordHash(self.model.password)
+		return self.model.password
 
 	@password.setter
 	def password(self, value):
@@ -279,7 +280,10 @@ class User(ModelWrapper):
 		Example:
 			<todo>
 		"""
-		tk = tokenlib.parse_token(token, secret = secretSalt, now = time.time())
+		try:
+			tk = tokenlib.parse_token(token, secret = secretSalt, now = time.time())
+		except tokenlib.errors.MalformedTokenError:
+			return False
 		return tk['id'] == self.getId() and tk['username'] == self.username and tk['organization'] == self.organization
 
 	def authenticatePassword(self, password):
@@ -297,7 +301,7 @@ class User(ModelWrapper):
 		Returns:
 			bool: True if the passwords match, false if not.
 		"""
-		return self.password == password
+		return PasswordHash(self.password) == password
 
 	def getNewToken(self):
 		tokenDict = {"id": self.getId(), "username": self.username, "organization": self.organization}

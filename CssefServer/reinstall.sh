@@ -41,4 +41,4 @@ cssefd start
 cssef-cli --verbose True --admin-token $admintoken --force-endpoint-server True organization add --name=Administrators --maxMembers=10
 
 # And now our new test admin user!
-cssef-cli --verbose True --admin-token $admintoken --force-endpoint-server user add --organization=1 --name=Admin --username=admin --password=admin
+cssef-cli --verbose True --admin-token $admintoken --force-endpoint-server True user add --organization=1 --name=Admin --username=admin --password=admin

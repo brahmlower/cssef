@@ -2,7 +2,7 @@ import os
 import sys
 import stat
 import yaml
-from celery import Celery
+from jsonrpcclient.http_server import HTTPServer
 
 class Configuration(object):
 	"""Contains and loads configuration values
@@ -17,19 +17,24 @@ class Configuration(object):
 		self.globalConfigPath = "/etc/cssef/cssef.yml"
 		self.userDataDir = os.path.expanduser("~/.cssef/")
 		self.configPath = self.userDataDir + "cssef.yml"
+		self.serverConnection = None
 		# General configurations
 		self.verbose = False
 		self.organization = None
 		self.username = None
 		self.password = None
 		self.task_timeout = 5
+		self.admin_token = None
 		# Default values for the client configuration
-		self.rpc_username = "cssefd"
-		self.rpc_password = "cssefd-pass"
-		self.rpc_host = "localhost"
-		self.amqp_username = "cssefd"
-		self.amqp_password = "cssefd-pass"
-		self.amqp_host = "localhost"
+		# self.rpc_username = "cssefd"
+		# self.rpc_password = "cssefd-pass"
+		# self.rpc_host = "localhost"
+		# self.amqp_username = "cssefd"
+		# self.amqp_password = "cssefd-pass"
+		# self.amqp_host = "localhost"
+		self.rpc_hostname = "localhost"
+		self.rpc_port = "5000"
+		self.rpc_base_uri = "/"
 		# Token configurations
 		self.token_auth_enabled = True
 		self.token = None
@@ -41,12 +46,20 @@ class Configuration(object):
 		self.force_endpoint_server = False
 		self.endpoint_cache_file = self.userDataDir + "endpoint-cache"
 		self.raw_endpoint_cache_time = '12h'
-		# dksl;afjdksl;fjdkls;afjdk;sa (this was frustration)
-		self.apiConn = None
+
 
 		# Ensure user data directory exists
 		if not os.path.exists(self.userDataDir):
 			os.makedirs(self.userDataDir)
+
+	@property
+	def server_url(self):
+		return "http://%s:%s%s" % (self.rpc_hostname, self.rpc_port, self.rpc_base_uri)
+
+	@server_url.setter
+	def server_url(self, value):
+		# TODO: Finish implementing this :)
+		pass
 
 	@property
 	def endpoint_cache_time(self):
@@ -96,7 +109,8 @@ class Configuration(object):
 			None
 		"""
 		configDict = yaml.load(open(configPath, 'r'))
-		self.loadConfigDict(configDict)
+		if configDict:
+			self.loadConfigDict(configDict)
 
 	def loadConfigDict(self, configDict):
 		"""Load configurations from a dictionary
@@ -180,5 +194,6 @@ class Configuration(object):
 		server, based on the settings. This connection can be provided to a
 		`CeleryEndpoint` to execute a task
 		"""
-		queueName = 'api' # We're going to have to improve this some day
-		self.apiConn = Celery(queueName, backend = self.rpc_url, broker = self.amqp_url)
+		#queueName = 'api' # We're going to have to improve this some day
+		#self.apiConn = Celery(queueName, backend = self.rpc_url, broker = self.amqp_url)
+		self.serverConnection = HTTPServer(self.server_url)

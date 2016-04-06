@@ -1,8 +1,8 @@
 from getpass import getpass
-from cssefclient.utils import CeleryEndpoint
+from cssefclient.utils import RPCEndpoint
 from cssefclient.utils import saveAuthToken
 
-class AvailableEndpoints(CeleryEndpoint):
+class AvailableEndpoints(RPCEndpoint):
 	def __init__(self, config):
 		"""Instiantiates a new instance of AvailableEndpoints.
  
@@ -14,17 +14,17 @@ class AvailableEndpoints(CeleryEndpoint):
 
 		Attributes:
 			config (Configuration): The current configuration to use
-			celeryName (str): The task name to call through Celery
-			args (list): The required arguments while calling the celery task
+			endpointName (str): The rpc endpoint name
+			args (list): The required arguments while calling the rpc endpoint
 		"""
 		self.config = config
-		self.celeryName = 'AvailableEndpoints'
+		self.endpointName = 'AvailableEndpoints'
 		self.args = []
 
-class RenewToken(CeleryEndpoint):
+class RenewToken(RPCEndpoint):
 	def __init__(self, config):
 		self.config = config
-		self.celeryName = 'RenewToken'
+		self.endpointName = 'RenewToken'
 
 	def execute(self, **kwargs):
 		# Populate the arguments to pass to the login
@@ -44,10 +44,10 @@ class RenewToken(CeleryEndpoint):
 		returnDict.content = ["Token rewnewal was successful."]
 		return returnDict
 
-class Login(CeleryEndpoint):
+class Login(RPCEndpoint):
 	def __init__(self, config):
 		self.config = config
-		self.celeryName = 'Login'
+		self.endpointName = 'Login'
 		self.args = []
 
 	def execute(self, **kwargs):
@@ -74,9 +74,9 @@ class Login(CeleryEndpoint):
 		returnDict.content = ["Authentication was successful."]
 		return returnDict
 
-class Logout(CeleryEndpoint):
+class Logout(RPCEndpoint):
 	def __init__(self, config):
-		self.celeryName = 'logout'
+		self.endpointName = 'logout'
 		self.args = []
 		self.config = config
 
