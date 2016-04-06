@@ -1,6 +1,11 @@
 # CSSEF Client
 
-The CSSEF Client can be intalled through setup.py or a pip local installation. Building and installing via pip is suggested as it makes upgrading/removing the package easier.
+For installation and configuration documentation at [read the docs](http://cssef.readthedocs.org/en/latest/client.html).
+
+For developer documentation, please see the developer section of read the docs. You can find client reference documentation here (link soon to come- autodocs soon to come).
+
+<!----
+The CSSEF Client can be intalled through setup.py a pip local installation. Building and installing via pip is suggested as it makes upgrading/removing the package easier.
 
 ## Installing
 Manually install the package.
@@ -40,3 +45,4 @@ user@host:~$ cd ~/cssef/cssefclient
 user@host:~/cssef/cssefclient$ nosetests tests
 user@host:~/cssef/cssefclient$ tests/tests_cssef-cli.bash
 ```
+---->
