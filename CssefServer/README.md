@@ -1,5 +1,11 @@
 # CSSEF Server
 
+All documentation is hosted by Read the Docs.
+Installation and configuration documentation can be found [here](http://cssef.readthedocs.org/en/latest/server.html)
+
+Developer documentation is still a work in progress. Bug me about it if you want it finished faster.
+
+<!----
 ## Installation and Setup
 ### Rabbitmq
 Install the server and make sure it is enabled and running
@@ -56,3 +62,4 @@ user@host:~$ ssefd start
 user@host:~$ cssefd status
 Running with pid 11231
 ```
+---->
