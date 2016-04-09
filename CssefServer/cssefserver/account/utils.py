@@ -1,6 +1,6 @@
 import bcrypt
-from cssefserver.utils import returnError
 import cssefserver.account
+from cssefserver import errors
 
 class PasswordHash(object):
 	"""
@@ -55,22 +55,22 @@ def authorizeAccess(dbConn, authDict, config):
 	# Importing for this got pretty ugly... :(
 	if not authDict.get('username', None):
 		print "[AUTH WARNING] No username provided."
-		return returnError('no_user_provided')
+		raise errors.NoUsernameProvided
 	if not authDict.get('organization', None):
 		print "[AUTH WARNING] No organization was provided."
-		return returnError('no_organization_provided')
+		raise errors.NoOrganizationProvided
 	userList = cssefserver.account.api.User.search(dbConn, username = authDict['username'], organization = authDict['organization'])
 	if len(userList) < 1:
 		# No matching user was found
-		return returnError('user_not_found')
+		raise errors.NonexistentUser
 	if len(userList) > 1:
 		# There are multiple users. This is extremely bad
-		return returnError('multiple_users_found')
+		raise errors.AuthFindsMultipleUsers
 	user = userList[0]
 	# Authenticate the user
 	if not user.authenticate(authDict):
-		return returnError('user_auth_failed')
+		raise errors.IncorrectCredentials
 	# Authorize the user
 	if not user.authorized(authDict, 'organization'):
-		return returnError('user_permission_denied')
+		raise errors.PermissionDenied
 	return None

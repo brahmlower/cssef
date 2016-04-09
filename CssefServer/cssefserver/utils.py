@@ -2,6 +2,12 @@ import os
 import yaml
 import traceback
 import logging
+# Database related imports
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from .modelbase import Base
+from .errors import CssefException
+from .errors import IncorrectCredentials
 
 class Configuration(object):
 	"""Contains and loads server configuration values
@@ -104,10 +110,19 @@ class CssefRPCEndpoint(object):
 		for i in self.onRequestArgs:
 			kwargs.pop(i)
 		print kwargs
-		if self.takesKwargs:
-			return self.onRequest(*argsList, **kwargs)
-		else:
-			return self.onRequest(*argsList)
+		# Now call the onRequest method that actually handles the request.
+		# Here we're determining if we should pass it kwargs or not (the
+		# subclass tells us yes or no). This is surrounded by a catch
+		# to handle various errors that may crop up
+		try:
+			if self.takesKwargs:
+				return self.onRequest(*argsList, **kwargs)
+			else:
+				return self.onRequest(*argsList)
+		except CssefException as e:
+			return e.asReturnDict()
+		except Exception as e:
+			return handleException(e)
 
 	def onRequest(self, *args, **kwargs):
 		pass
@@ -187,30 +202,21 @@ class ModelWrapper(object):
 		db.commit()
 		return clsInst
 
-def returnError(errorName, *args):
-	returnDict = getEmptyReturnDict()
-	if errorName == 'multiple_users_found':
-		returnDict['value'] = 1
-		returnDict['message'] = ["Multiple users returned by search:"]
-	elif errorName == 'no_user_provided':
-		returnDict['value'] = 1
-		returnDict['message'] = ["No username provided."]
-	elif errorName == 'no_organization_provided':
-		returnDict['value'] = 1
-		returnDict['message'] = ["No organization provided."]
-	elif errorName == 'user_not_found':
-		returnDict['value'] = 1
-		returnDict['message'] = ["Unable to find user object."]
-	elif errorName == 'user_auth_failed':
-		returnDict['value'] = 1
-		returnDict['message'] = ["Authentication failed."]
-	elif errorName == 'user_permission_denied':
-		returnDict['value'] = 1
-		returnDict['message'] = ["Permission is denied."]
-	else:
-		returnDict['value'] = 1
-		returnDict['message'] = ["General undefined error."]
-	return returnDict
+def createDatabaseConnection(config):
+	"""Returns a database session for the specified database"""
+	# We're importing the plugin models to make sure they get synced
+	# when the database is instantiated. I don't think this is the
+	# best place for this though
+	if config.installed_plugins:
+		for moduleName in config.installed_plugins:
+			__import__("%s.models" % moduleName)
+
+	# Now actually create the database instantiation
+	databaseEngine = create_engine('sqlite:///' + config.database_path)
+	Base.metadata.create_all(databaseEngine)
+	Base.metadata.bind = databaseEngine
+	DatabaseSession = sessionmaker(bind = databaseEngine)
+	return DatabaseSession()
 
 def handleException(e):
 	# todo

@@ -1,9 +1,6 @@
 import os
 import os.path
 import logging
-# Database related imports
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 # RPC Server related imports
 from flask import Flask
 from flask import request
@@ -11,8 +8,8 @@ from flask import Response
 from jsonrpcserver import dispatch
 from jsonrpcserver import Methods
 # Local imports
-from .modelbase import Base
 from .utils import Configuration
+from .utils import createDatabaseConnection
 from .account import tasks as accountTasks
 import tasks as baseTasks
 
@@ -49,31 +46,32 @@ class CssefServer(object):
 			(accountTasks.UserSet, 'userSet'),
 			(accountTasks.UserGet, 'userGet')]
 		for reference, name in endpointList:
+			# I'm creating and storing an instance of every since endpoint...
 			self.rpcMethods.add_method(reference(self.config, self.databaseConnection), name)
 
 	def prepareLogging(self):
 		# I don't really know what's going on here. Making an issue to fix this later
 		logger, handler = configureLogger(self.config)
 
-	def createDatabaseConnection(self):
-		"""Returns a database session for the specified database"""
-		# We're importing the plugin models to make sure they get synced
-		# when the database is instantiated. I don't think this is the
-		# best place for this though
-		if self.config.installed_plugins:
-			for moduleName in self.config.installed_plugins:
-				__import__("%s.models" % moduleName)
+	# def createDatabaseConnection(self):
+	# 	"""Returns a database session for the specified database"""
+	# 	# We're importing the plugin models to make sure they get synced
+	# 	# when the database is instantiated. I don't think this is the
+	# 	# best place for this though
+	# 	if self.config.installed_plugins:
+	# 		for moduleName in self.config.installed_plugins:
+	# 			__import__("%s.models" % moduleName)
 
-		# Now actually create the database instantiation
-		databaseEngine = create_engine('sqlite:///' + self.config.database_path)
-		Base.metadata.create_all(databaseEngine)
-		Base.metadata.bind = databaseEngine
-		DatabaseSession = sessionmaker(bind = databaseEngine)
-		self.databaseConnection = DatabaseSession()
-		return self.databaseConnection
+	# 	# Now actually create the database instantiation
+	# 	databaseEngine = create_engine('sqlite:///' + self.config.database_path)
+	# 	Base.metadata.create_all(databaseEngine)
+	# 	Base.metadata.bind = databaseEngine
+	# 	DatabaseSession = sessionmaker(bind = databaseEngine)
+	# 	self.databaseConnection = DatabaseSession()
+	# 	return self.databaseConnection
 
 	def start(self):
-		self.createDatabaseConnection()
+		self.databaseConnection = createDatabaseConnection(self.config)
 		self.loadRpcEndpoints()
 		self.flaskApp = Flask(__name__)
 		self.flaskApp.add_url_rule('/', 'index', self.index, methods = ['POST'])

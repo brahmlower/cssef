@@ -136,7 +136,6 @@ class User(ModelWrapper):
 		ph = PasswordHash.new(value, rounds)
 		self.model.password = ph.hash
 		self.db.commit()
-		#return ph.hash # Commented out because returning a value might be really weird since this is a @property...
 
 	@property
 	def description(self):
@@ -249,9 +248,9 @@ class User(ModelWrapper):
 			if self.authenticateToken(authDict['token']):
 				return True
 			# Token was provided, but was invalid.
-			if not self.config.auth_failover:
-				# Authentication failover is disabled.
-				return False
+			# if not self.config.auth_failover:
+			# 	# Authentication failover is disabled.
+			# 	return False
 		elif 'password' in authDict.keys():
 			# Do password authentication
 			return self.authenticatePassword(authDict['password'])
