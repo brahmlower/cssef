@@ -85,14 +85,6 @@ class Configuration(object):
 				if self.verbose:
 					print "[LOGGING] Ignoring invalid setting '%s'." % i
 
-class CssefObjectDoesNotExist(Exception):
-	'An exception for when the requested object does not exist - not needed I think'
-	def __init__(self, message):
-		self.message = message
-
-	def __str__(self):
-		return repr(self.message)
-
 class CssefRPCEndpoint(object):
 	takesKwargs = True
 	onRequestArgs = []
@@ -105,10 +97,15 @@ class CssefRPCEndpoint(object):
 		# This builds the list of arguments we were told are expected
 		# by the overloaded onRequest() method
 		for i in self.onRequestArgs:
-			if i in kwargs:
-				argsList.append(kwargs.get(i))
+			argsList.append(kwargs.get(i))
 		for i in self.onRequestArgs:
-			kwargs.pop(i)
+			try:
+				kwargs.pop(i)
+			except KeyError:
+				x = getEmptyReturnDict()
+				x['value'] = 1
+				x['message'] = "Missing required argument '%s'." % i
+				return x
 		print kwargs
 		# Now call the onRequest method that actually handles the request.
 		# Here we're determining if we should pass it kwargs or not (the
@@ -126,6 +123,14 @@ class CssefRPCEndpoint(object):
 
 	def onRequest(self, *args, **kwargs):
 		pass
+
+class CssefObjectDoesNotExist(Exception):
+	'An exception for when the requested object does not exist - not needed I think'
+	def __init__(self, message):
+		self.message = message
+
+	def __str__(self):
+		return repr(self.message)
 
 class ModelWrapper(object):
 	""" The base class for wrapping SQLAlchemy model objects

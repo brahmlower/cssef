@@ -1,14 +1,14 @@
 from cssefserver.utils import getEmptyReturnDict
 
-def logBadUserSearchResults(numResults, username, organization):
+def logBadUserSearchResults(results, username, organization):
 	# This isn't how logging is done, but I'll get it fixed with I improve logging
-	if numResults > 1:
+	if len(results) > 1:
 		print "There were too many users returned"
-	elif numResults < 1:
-		print "There were fewer than 1 users returned."
+	elif len(results) < 1:
+		print "There was fewer than 1 user returned."
 	else:
 		print "Num results was neither 1, >1, <1. You should NEVER see this message."
-	print "Number of users: %d" % len(numResults)
+	print "Number of users: %d" % len(results)
 	print "Provided username: %s" % username
 	print "Provided organization: %s" % organization
 
