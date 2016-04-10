@@ -31,5 +31,5 @@ setup(
 	long_description = open("README.md").read(),
 
 	# Dependant packages
-	install_requires = ["prettytable", "jsonrpcclient"],
+	install_requires = ["prettytable", "jsonrpcclient", "PyYAML"],
 )

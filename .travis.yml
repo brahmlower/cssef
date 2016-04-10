@@ -5,12 +5,13 @@ notifications:
 language: python
 python:
   -  "2.7"
-env:
-  - DJANGO_VERSION=1.8.0
+
+git:
+  depth: 1
 # command to install dependencies
 install:
-  - pip install -q Django==$DJANGO_VERSION
-  - pip install -q djangorestframework==3.1.1
+  - pip install CssefClient/.
+  - pip install CssefServer/.
   - pip install nose
 script:
   - nosetests --tests=CssefServer

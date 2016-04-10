@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import stat
 import yaml
@@ -26,12 +27,6 @@ class Configuration(object):
 		self.task_timeout = 5
 		self.admin_token = None
 		# Default values for the client configuration
-		# self.rpc_username = "cssefd"
-		# self.rpc_password = "cssefd-pass"
-		# self.rpc_host = "localhost"
-		# self.amqp_username = "cssefd"
-		# self.amqp_password = "cssefd-pass"
-		# self.amqp_host = "localhost"
 		self.rpc_hostname = "localhost"
 		self.rpc_port = "5000"
 		self.rpc_base_uri = "/"
@@ -46,7 +41,6 @@ class Configuration(object):
 		self.force_endpoint_server = False
 		self.endpoint_cache_file = self.userDataDir + "endpoint-cache"
 		self.raw_endpoint_cache_time = '12h'
-
 
 		# Ensure user data directory exists
 		if not os.path.exists(self.userDataDir):
@@ -63,7 +57,7 @@ class Configuration(object):
 
 	@property
 	def endpoint_cache_time(self):
-		return raw_endpoint_cache_time
+		return self.raw_endpoint_cache_time
 
 	@endpoint_cache_time.setter
 	def endpoint_cache_time(self, value):
@@ -71,14 +65,14 @@ class Configuration(object):
 			self.raw_endpoint_cache_time = int(value)
 		except ValueError:
 			pass
-		self.raw_endpoint_cache_time = parseTimeNotation(value)
+		self.raw_endpoint_cache_time = self.parseTimeNotation(value)
 
-	def parseTimeNotation(value):
+	def parseTimeNotation(self, value):
 		valueNotationList = [
-			{"value": 1, "alias": ["s","second","seconds"]},
-			{"value": 60, "alias": ["m","minute","minutes"]},
-			{"value": 3600, "alias": ["h","hour","hours"]},
-			{"value": 86400, "alias": ["d","day","days"]}]
+                    {"value": 1, "alias": ["s", "second", "seconds"]},
+                    {"value": 60, "alias": ["m", "minute", "minutes"]},
+                    {"value": 3600, "alias": ["h", "hour", "hours"]},
+                    {"value": 86400, "alias": ["d", "day", "days"]}]
 		strings = filter(None, re.split('(\d+)', value))
 		timeValue = strings[0]
 		timeMetric = strings[1]
@@ -87,14 +81,6 @@ class Configuration(object):
 				return i['value'] * timeValue
 		# Reaching this point means the metric is not a known alias
 		raise ValueError
-
-	@property
-	def rpc_url(self):
-		return "rpc://%s:%s@%s//" % (self.rpc_username, self.rpc_password, self.rpc_host)
-
-	@property
-	def amqp_url(self):
-		return "amqp://%s:%s@%s//" % (self.amqp_username, self.amqp_password, self.amqp_host)
 
 	def loadConfigFile(self, configPath):
 		"""Load configuration from a file
@@ -134,9 +120,9 @@ class Configuration(object):
 			if self.verbose:
 				print "[LOGGING] Configuration 'verbose' set to 'True'."
 		for i in configDict:
-			if hasattr(self, i.replace('-','_')):
+			if hasattr(self, i.replace('-', '_')):
 				# Set the attribute
-				setting = i.replace('-','_')
+				setting = i.replace('-', '_')
 				value = configDict[i]
 				# This is a hacky way of handling booleans: Check if the value is a string
 				# and if the string is either 'true' or 'false'. If so, we're probably trying
@@ -172,7 +158,7 @@ class Configuration(object):
 		# Now make sure that only we have access to it
 		filePermissions = os.stat(self.token_file).st_mode
 		permissionsDenied = [stat.S_IRGRP, stat.S_IWGRP, stat.S_IXGRP,
-			stat.S_IROTH, stat.S_IWOTH, stat.S_IXOTH]
+                        stat.S_IROTH, stat.S_IWOTH, stat.S_IXOTH]
 		for i in permissionsDenied:
 			if bool(filePermissions & i):
 				sys.stderr.write("Token file may not have any permissions for group or other.\n")
@@ -194,6 +180,4 @@ class Configuration(object):
 		server, based on the settings. This connection can be provided to a
 		`CeleryEndpoint` to execute a task
 		"""
-		#queueName = 'api' # We're going to have to improve this some day
-		#self.apiConn = Celery(queueName, backend = self.rpc_url, broker = self.amqp_url)
 		self.serverConnection = HTTPServer(self.server_url)

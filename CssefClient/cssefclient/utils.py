@@ -2,13 +2,12 @@ import os
 import sys
 import stat
 from prettytable import PrettyTable
-from time import sleep
 
 class CommandOutput(object):
 	def __init__(self, value, message, content):
 		self.value = value
 		self.message = message
-		# Cast the content to a list 
+		# Cast the content to a list
 		if type(content) == list:
 			self.content = content
 		elif type(content) == str:
@@ -25,8 +24,6 @@ class CommandOutput(object):
 		if self.value != 0:
 			sys.stderr.write("An error was encountered:\n")
 			sys.stderr.write("\n".join(self.message)+"\n")
-			# # TODO: I really don't think this function should be exiting...
-			# sys.exit(self.value)
 		if self.tableHeaders:
 			# Its a dictionary list, make a table and print it
 			outputTable = PrettyTable(self.tableHeaders)
@@ -45,7 +42,7 @@ class CommandOutput(object):
 
 class RPCEndpoint(object):
 	"""Base class to represent an endpoint task on the server.
-	 
+
 	This class gets subclassed by other classes to define a specific
 	task on the cssef server.
 	"""
@@ -114,7 +111,7 @@ class RPCEndpoint(object):
 			result = self.config.serverConnection.request(self.endpointName, **kwargs)
 			return CommandOutput(**result)
 		except Exception as e:
-			return CommandOutput(value = -1, content = [], message = [str(e)])
+			return CommandOutput(value=-1, content=[], message=[str(e)])
 
 def saveAuthToken(tokenFilePath, token):
 	# Save the returned token

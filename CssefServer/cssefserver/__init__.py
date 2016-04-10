@@ -112,7 +112,7 @@ def configureLogger(config):
 	return logger, handler
 
 # Import plugins
-def importPlugins():
+def importPlugins(config):
 	pluginList = []
 	if config.installed_plugins:
 		for moduleName in config.installed_plugins:

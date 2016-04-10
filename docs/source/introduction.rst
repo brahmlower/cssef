@@ -38,20 +38,24 @@ Server
 ~~~~~~
 This is where the bulk of the framework lives. The server provides facilities
 to host various types of security related competitions. Those facilities are
-consumed by additional modules that use them to build some form of
-competitions. This means you can host a capture the flag competition right
-next to a CCDC-like competition. The server communicates with the other
-clients via rabbitmq, and uses sqlalchemy for databasing. It is a standalone
-service and can operate without any other parts of the project beinginstalled.
-For additional information, see the cssefserver documentation.
+consumed by plugins that use then to build some form of competition. This
+means you can host a capture the flag competition and a CCDC-like competition
+on the same service. The server communicates with the other clients via HTTP
+RPC calls, and uses sqlalchemy for databasing. For additional information, see
+the `server documentation`_.
+
+.. _server documentation: server.rst
 
 Client
 ~~~~~~
 The client package provides endpoints for client applications (in the event
 you want to write your own), as well as a command line tool. If you plan to
-install the web client, this package will be required beforehand. For more
-information on using the command line utility, see the cssef-cli
-documentation.
+install the web client, this package will be a required depenancy. See the
+`client documentation`_ for more information, or the `command line`_
+documentation for cli reference.
+
+.. _client documentation: client.rst
+.. _command line: cli.rst
 
 Web Client
 ~~~~~~~~~~

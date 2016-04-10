@@ -223,7 +223,7 @@ class User(ModelWrapper):
 		return clsInst
 
 	def authorized(self, authDict, group):
-		# Testing right now
+		# TODO: This is related to RBAC implementation
 		return True
 
 	def authenticate(self, authDict):

@@ -19,14 +19,13 @@ Welcome to Cssef's documentation!
 
    server
    client
-   web-client
 
 .. toctree::
    :maxdepth: 3
    :caption: Developer Documentation
 
-   autodoc/cssefserver/cssefserver
-   autodoc/cssefclient/cssefclient
+   autodoc/cssefserver/modules
+   autodoc/cssefclient/modules
 
 Indices and tables
 ==================

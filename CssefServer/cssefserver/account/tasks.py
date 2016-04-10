@@ -65,7 +65,7 @@ class OrganizationSet(CssefRPCEndpoint):
 			A returnDict dictionary containing the results of the API call. See
 			getEmptyReturnDict for more information.
 		"""
-		authResult = authorizeAccess(DatabaseConnection, auth, self.config)
+		authResult = authorizeAccess(self.databaseConnection, auth, self.config)
 		if authResult is not None:
 			return authResult
 		if not pkid:

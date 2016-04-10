@@ -1,33 +1,39 @@
 Server Installation and Configuration
-==============================
+=====================================
 .. _server-server_installation:
+
 Server Installation
 -------------------
 The server requires python, pip, rabbitmq, and celery.
 
 Install the prerequisets
 ::
+
 	user@debian:~$ sudo apt-get install -y git python-pip python-dev rabbitmq-server
 
 Configure the rabbitmq server
 ::
+
 	user@debian:~$ sudo rabbitmqctl add_user cssefd-user cssefd-pass
 	user@debian:~$ sudo rabbitmqctl set_user_tags cssefd-user administrator
 	user@debian:~$ sudo rabbitmqctl set_permissions ".*" ".*" ".*"
 
 Install the CSSEF server
 ::
+
 	user@debian:~$ git clone https://github.com/bplower/cssef.git
 	user@debian:~$ cd cssef/CssefServer
 	user@debian:~/cssef/CssefServer$ sudo pip install .
 
 Verify the installation was successful
 ::
+
 	user@debian:~/cssef/CssefServer$ cssefd start
 	user@debian:~/cssef/CssefServer$ cssefd status
 	Running with pid 26351
 
 .. _server-server_configuration:
+
 Server Configuration
 --------------------
 
@@ -54,7 +60,7 @@ command line. Any configuration option may be set through any of the
 configuration sources (excluding the default configs for obvious reasons).
 
 Available Options
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 pidfile
 	This is a string value representing the absolute path to store the pid
 	file at.
@@ -63,11 +69,13 @@ pidfile
 
 	Example config file
 	::
+
 		# Setting a custom location for the pid file
 		pidfile: /custom-dir/cssef.pid
 
 	Example command line
 	::
+
 		user@debian ~$ cssefd start --pidfile /custom-dir/cssef.pid
 
 admin-token
@@ -81,11 +89,13 @@ admin-token
 
 	Example config file
 	::
+
 		# Setting a weak admin token for initial setup
 		admin-token: abc123def456
 
 	Example command line
 	::
+
 		user@debian ~$ cssefd start --admin-token abc123def456
 
 database-path
@@ -96,11 +106,13 @@ database-path
 
 	Example config file
 	::
+
 		# Save database on ramdisk for performance testing
 		database-path: /mnt/ramdisk/cssef/db.sqlite3
 
 	Example command line
 	::
+
 		user@debian ~$ cssefd start --database-path /mnt/ramdisk/cssef/db.sqlite3
 
 database-table-prefix
@@ -112,11 +124,13 @@ database-table-prefix
 
 	Example config file
 	::
+
 		# Table prefix for production cssef installation
 		database-table-prefix: cssef-prod
 
 	Example command line
 	::
+
 		user@debian ~$ cssefd start --database-table-prefix cssef-prod
 
 logging
@@ -150,6 +164,7 @@ installed-plugins
 
 	Example config file
 	::
+
 		# Include the default CCDC like competition and CTF competition
 		installed-plugins:
 		- cssef-ccdc
@@ -157,4 +172,5 @@ installed-plugins
 
 	Example command line
 	::
+
 		user@debian ~$ cssefd start --installed-plugins cssef-ccdc,cssef-ctf

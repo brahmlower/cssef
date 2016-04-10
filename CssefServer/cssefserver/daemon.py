@@ -2,6 +2,7 @@ from __future__ import absolute_import
 import logging
 import atexit
 import sys
+import abc
 import os
 import os.path
 from signal import SIGTERM
@@ -139,6 +140,10 @@ class BaseDaemon(object):
 		except IOError:
 			print "Daemon not running."
 			sys.exit(1)
+
+	@abc.abstractmethod
+	def run(self):
+		pass
 
 class CssefDaemon(BaseDaemon):
 	def __init__(self):

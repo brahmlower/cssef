@@ -1,4 +1,5 @@
 import os
+import abc
 import yaml
 import traceback
 import logging
@@ -121,6 +122,7 @@ class CssefRPCEndpoint(object):
 		except Exception as e:
 			return handleException(e)
 
+	@abc.abstractmethod
 	def onRequest(self, *args, **kwargs):
 		pass
 

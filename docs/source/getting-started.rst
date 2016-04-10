@@ -17,7 +17,7 @@ properly with the server.
 Admin Configuration
 -------------------
 Initially, there are no users or organization, so we will have to make them
-by using an administrator token. Set the 'admintoken' in the server
+by using an administrator token. Set the ``admin-token`` in the server
 configuration field to a secure passphrase to use for the initial
 configuration. Note that this will be provided in plain text several times,
 but will be revoked after the configuration is complete.
@@ -27,6 +27,7 @@ We're changing the configuration file via sed, however you may use the text
 editor of your choice. Afterward, restart the server to apply the
 configuration changes.
 ::
+
 	user@debian:~$ admintoken=`openssl rand -hex 16`
 	user@debian:~$ sudo sed -i "s|admin-token:|admin-token: $admintoken|" /etc/cssef/cssefd.yml
 	user@debian:~$ cssefd restart
@@ -35,6 +36,7 @@ We can now provide the admintoken while executing commands. This will allow
 us to bypass authentication checks and limits. First create an administrator
 organization for the admin account to exist within.
 ::
+
 	user@debian:~$ cssef-cli --admin-token $admintoken organization add --name=Administrators --maxMembers=10
 	+------------+-------------+----------------+------+----+-----------------+-----------------------+----------------+--------------------+-------------+-----------+
 	| maxMembers | description |      name      | url  | id | maxCompetitions | canDeleteCompetitions | canDeleteUsers | canAddCompetitions | canAddUsers | deletable |
@@ -44,6 +46,7 @@ organization for the admin account to exist within.
 
 And now, create an administrator user to use.
 ::
+
 	user@debian:~$ cssef-cli --admin-token $admintoken user add --organization=1 --name=Admin --username=admin --password=admin
 	+----------+-------------+--------------+--------------------------------------------------------------+----+-------+
 	| username | description | organization |                           password                           | id |  name |
@@ -54,6 +57,7 @@ And now, create an administrator user to use.
 Disable admintoken access by removing the admin token from the server
 configuration file.
 ::
+
 	user@debian:~$ sudo sed -i "s|admin-token:*|admin-token:|" /etc/cssef/cssefd.yml
 	user@debian:~$ cssefd restart
 
@@ -63,6 +67,7 @@ use of the admin-token, so it will continue to attempt to authenticate the
 user as normal. Since we haven't provided a valid username or password, access
 is not granted.
 ::
+
 	user@debian:~$ cssef-cli --admin-token $admintoken user get
 	An error was encountered:
 	No username provided.
@@ -72,12 +77,14 @@ not specifying the password, so we are prompted for it. Since the
 authentication is successful, we received an authentication token, which will
 be automatically provided by the client in future requests.
 ::
+
 	user@debian:~$ cssef-cli login --username admin
 	Password: 
 	Authentication was successful.
 
 Now that we've been authenticated, we can list the available users.
 ::
+
 	user@debian:~$ cssef-cli user get
 	+----------+-------------+--------------+--------------------------------------------------------------+----+-------+
 	| username | description | organization |                           password                           | id |  name |

@@ -33,9 +33,11 @@ setup(
 
 	# Dependant packages:
 	install_requires = [
+		"bcrypt",
 		"sqlalchemy",
 		"tokenlib",
 		"jsonrpcserver",
-		"flask"
+		"flask",
+		"PyYAML"
 	],
 )

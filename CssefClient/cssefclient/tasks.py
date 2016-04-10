@@ -5,10 +5,10 @@ from cssefclient.utils import saveAuthToken
 class AvailableEndpoints(RPCEndpoint):
 	def __init__(self, config):
 		"""Instiantiates a new instance of AvailableEndpoints.
- 
+
 		This is hardcoded because this task/endpoint will be available on all
 		configurations of the server.
-		
+
 		Args:
 			config (Configuration): The current configuration to use
 
@@ -53,7 +53,7 @@ class Login(RPCEndpoint):
 	def execute(self, **kwargs):
 		if not self.config.token_auth_enabled:
 			# Bail if token authentication is disabled
-			if config.verbose:
+			if self.config.verbose:
 				print "[ERROR] Logging in requires that token authentication be \
 					enabled. Set 'token_auth_enabled: True' in your \
 					configuration."

@@ -1,27 +1,31 @@
 Client Installation and Configuration
-==============================
+=====================================
 .. _client-client_installation:
+
 Client Installation
 -------------------
 The client requires python and pip.
 
 If you don't have the repo cloned yet, clone it.
 ::
+
 	user@debian:~$ git clone https://github.com/bplower/cssef.git
 
-Move to the client package directory and install it via pip.
+Move to the client package directory and install it via pip. The required pip dependancies are ``prettytable`` and ``jsonrpcclient``.
 ::
+
 	user@debian:~$ cd cssef/CssefClient
 	user@debian:~/cssef/CssefClient$ sudo pip install .
 
 .. _client-client_configuration:
+
 Client Configuration
 --------------------
 
 A bunch of words go here.
 
 Available Options
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 verbose
 	This is by default false, but when set to true, will allow additional
@@ -31,11 +35,13 @@ verbose
 
 	Example config file
 	::
+
 		# I want to know EXACTLY what the client is doing all the time!
 		verbose: True
 
 	Example command line
 	::
+
 		user@debian ~$ cssef-cli --verbose organization get
 
 organization
@@ -47,11 +53,13 @@ organization
 
 	Example config file
 	::
+
 		# Setting the organization so that we don't have to provide it each time we authenticate
 		organization: 1
 
 	Example command line
 	::
+
 		user@debian ~$ cssef-cli --organization 1 organization get
 
 username
@@ -61,11 +69,13 @@ username
 
 	Example config file:
 	::
+
 		# I'm getting sick of reintroducing myself all the time
 		username: admin
 
 	Example command line
 	::
+
 		user@debian ~$ cssef-cli --username admin organization get
 
 password
@@ -74,20 +84,23 @@ password
 	credentials), you will be prompted for your password. This is exemplified
 	in the command line examples section. 
 
-	.. warning:: It is an extremely bad idea to leave your password in plain 
-	text in a file. Please don't set this in a configuration file.
+	.. warning::
+		It is an extremely bad idea to leave your password in plain text in a
+		file. Please don't set this in a configuration file.
 
 	Default:
 
 	Example config file:
 	::
+
 		# I make very bad decisions in life. This is one of them.
 		password: mypassword
 
 	Example command line
 	::
-		user@debian ~$ cssef-cli --password mypassword organization get
 
+		user@debian ~$ cssef-cli --password mypassword organization get
+		...
 		user@debian ~$ cssef-cli organization get
 		Password:
 
@@ -99,11 +112,13 @@ task-timeout
 
 	Example config file
 	::
+
 		# My server is super fast so I should never have to wait.
 		task-timeout: 1
 
 	Example command line
 	::
+
 		user@debian ~$ cssef-cli --task-timeout 30 organization get
 
 rpc-username
@@ -133,11 +148,13 @@ token-auth-enabled
 
 	Example config file
 	::
+
 		# I was once bullied by tokens in school, so I don't want them on my client at all. This will disable token authentication.
 		token-auth-enabled: False
 
 	Example command line
 	::
+
 		user@debian ~$ cssef-cli --token-auth-enabled false organization get
 
 token
@@ -160,11 +177,13 @@ token-file
 
 	Example config file
 	::
+
 		# I don't like file names less than two words in length. Renaming the token file
 		token-file: ~/.cssef/auth-token-file
 
 	Example command line
 	::
+
 		user@debian ~$ cssef-cli --token-file ~/.cssef/tmp-token login
 
 token-renewal-enabled
@@ -186,11 +205,13 @@ endpoint-cache-enabled
 
 	Example config file
 	::
+
 		# I'm a bleeding edge kind of guy- I have to make sure I have the updated list as soon as it's availble, therefore I've disabled endpoint caching.
 		endpoint-cache-enabled: False
 
 	Example command line
 	::
+
 		user@debian ~$ cssef-cli --endpoint-cache-enabled False organization get
 
 force-endpoint-cache
@@ -203,11 +224,13 @@ force-endpoint-cache
 
 	Example config file
 	::
+
 		# I will only ever be using the core endpoints, which I already have cached, so I don't want to check updated endpoint EVER.
 		force-endpoint-cache: True
 
 	Example command line
 	::
+
 		user@debian ~$ cssef-cli --force-endpoint-cache True organization get
 
 force-endpoint-server
@@ -220,11 +243,13 @@ force-endpoint-server
 
 	Example config file
 	::
+
 		# I'm not a rationable human, so I want endpoint caching enabled, but I never want to use my cached copy of the data.
 		force-enpoint-server: True
 
 	Example command line
 	::
+
 		user@debian ~$ cssef-cli --force-endpoint-server True organization get
 
 endpoint-cache-file
@@ -234,11 +259,13 @@ endpoint-cache-file
 
 	Example config file
 	::
+
 		# I have a super secret hiding place for special data like this
 		endpoint-cache-file: /dev/null
 
 	Example command line
 	::
+
 		user@debian ~$ cssef-cli --endpoint-cache-file ~/.caches/cssef_endpoint-cache organization get
 
 endpoint-cache-time
@@ -261,9 +288,11 @@ endpoint-cache-time
 
 	Example config file
 	::
+
 		# My server is pretty fluid, and gets new/different plugins quite often, and I want to be sure I get those updates in a reasonable amount of time.
 		endpoint-cache-time: 5minutes
 
 	Example command line
 	::
+
 		user@debian ~$ cssef-cli --endpoint-cache-time 5s organization get
