@@ -22,9 +22,9 @@ setup(
 		'cssef-cli'
 	],
 
-	data_files = [
-		('/etc/cssef/', ['cssef.yml'],)
-	],
+	#data_files = [
+	#	('/etc/cssef/', ['cssef.yml'],)
+	#],
 
 	# Description:
 	description = "A CSSEF client to interact with CSSEF servers via rpc.",
