@@ -22,10 +22,10 @@ setup(
 		"cssefd"
 	],
 
-	data_files = [
-		('/etc/cssef/', ['cssefd.yml']),
-		('/var/log/cssef/', [])
-	],
+	#data_files = [
+	#	('/etc/cssef/', ['cssefd.yml']),
+	#	('/var/log/cssef/', [])
+	#],
 
 	# Description:
 	description = "The CSSEF server.",

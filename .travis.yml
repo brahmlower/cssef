@@ -10,6 +10,7 @@ git:
   depth: 1
 # command to install dependencies
 install:
+  - apt-get update
   - pip install CssefClient/.
   - pip install CssefServer/.
   - pip install nose
