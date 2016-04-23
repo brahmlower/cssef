@@ -51,7 +51,11 @@ class Configuration(object):
 		Returns:
 			None
 		"""
-		configDict = yaml.load(open(configPath, 'r'))
+		try:
+			configDict = yaml.load(open(configPath, 'r'))
+		except IOError:
+			print "[WARNING] Failed to load config file at '%s'." % configPath
+			return
 		self.loadConfigDict(configDict)
 
 	def loadConfigDict(self, configDict):

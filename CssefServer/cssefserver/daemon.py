@@ -149,9 +149,10 @@ class CssefDaemon(BaseDaemon):
 	def __init__(self):
 		self.server = CssefServer()
 		super(CssefDaemon, self).__init__(
-			self.server.config.pidfile,
-			stderr = self.server.config.cssef_stderr,
-			stdout = self.server.config.cssef_stdout)
+			self.server.config.pidfile)
+			#self.server.config.pidfile,
+			#stderr = self.server.config.cssef_stderr,
+			#stdout = self.server.config.cssef_stdout)
 
 	def run(self):
 		atexit.register(self.stop)

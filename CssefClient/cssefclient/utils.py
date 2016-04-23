@@ -97,7 +97,8 @@ class RPCEndpoint(object):
 			unhandled error, it is caught and a CommandOutput object is
 			created with values describing the encountered exception.
 		"""
-		print "[LOGGING] Calling rpc with name '%s'."  % self.endpointName
+		if self.config.verbose:
+			print "[LOGGING] Calling rpc with name '%s'."  % self.endpointName
 		try:
 			# This is a hint at a larger issue- If I don't cast this to an
 			# integer, it is passed to send_task() and get() as a string

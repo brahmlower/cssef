@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Stop the server in case it's already running
-cssefd stop
+sudo cssefd stop
 
 # Wipe the database
 # This is the path that's set by default now in the config file
-rm /tmp/db.sqlite3
+sudo rm -f /tmp/db.sqlite3
 
 # Uninstall the CSSEF server package
 sudo pip uninstall -q -y cssef-server
@@ -35,7 +35,7 @@ admintoken=`openssl rand -hex 16`
 sudo sed -i "s|admin-token:|admin-token: $admintoken|" /etc/cssef/cssefd.yml
 
 # Now restart the server
-cssefd start
+sudo cssefd start
 
 # Add an organization to add our user to.
 cssef-cli --verbose True --admin-token $admintoken --force-endpoint-server True organization add --name=Administrators --maxMembers=10
