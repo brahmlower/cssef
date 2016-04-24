@@ -1,89 +1,19 @@
 #!/usr/bin/python
 import os
-import ast
 import sys
-import time
-import traceback
-from cssefclient import Configuration
-from cssefclient.utils import CommandOutput
+import cssefclient
+from prettytable import PrettyTable
 from cssefclient.utils import RPCEndpoint
 from cssefclient.tasks import AvailableEndpoints
 from cssefclient.tasks import Login
 from cssefclient.tasks import Logout
-from cssefclient.tasks import RenewToken
-
-class CssefException(Exception):
-	def asReturnDict(self):
-		return {'value': self.value, 'message': self.message, 'content': []}
-
-class NonExistantCommand(CssefException):
-	value = -5
-	message = message=["Invalid command."]
+from cssefclient.errors import NonExistantCommand
 
 class Menu(object):
-	def __init__(self, config):
+	def __init__(self, config, endpoints):
 		self.config = config
-		self.availableEndpoints = None
+		self.availableEndpoints = endpoints
 		self.menuDict = {}
-
-	def load(self):
-		# consider forced sources first
-		if config.force_endpoint_cache:
-			return self.loadFromFile()
-		if config.force_endpoint_server or not config.endpoint_cache_enabled:
-			return self.loadFromServer()
-		# Get the time since the cache file was modified
-		try:
-			cacheLastModTime = os.stat(config.endpoint_cache_file).st_mtime
-		except OSError:
-			print "Failed to load cache from file: %s" % config.endpoint_cache_file
-			return self.loadFromServer()
-		timeDelta = time.time() - cacheLastModTime
-		# If it has been longer since the cache was updated than is
-		# configured, then we need to load from server
-		if timeDelta >= config.raw_endpoint_cache_time:
-			return self.loadFromServer()
-		return self.loadFromFile()
-
-	def loadFromServer(self):
-		"""Retrieves the available endpoints from the server.
-		"""
-		if self.config.verbose:
-			print "[LOGGING] Loading available endpoints from server."
-		result = AvailableEndpoints(self.config).execute()
-		if result.value != 0:
-			# If this happens, we should eventually fail over to using the local cache
-			errorMessage = "[ERROR] Server error while getting available endpoints.\n"
-			errorMessage += "\n".join(result.message)
-			sys.stderr.write("%s\n" % errorMessage)
-			sys.stderr.flush()
-			sys.exit()
-		self.availableEndpoints = result.content
-		self.construct()
-
-	def loadFromFile(self, path = None):
-		"""Retrieves the available endpoints from the cache
-		"""
-		if not path:
-			path = self.config.endpoint_cache_file
-		if self.config.verbose:
-			print "[LOGGING] Loading available endpoints from cache."
-		fileContent = open(path, 'r').read()
-		try:
-			self.availableEndpoints = ast.literal_eval(fileContent)
-		except Exception, err:
-			print "[ERROR] Failed to load available endpoints from cache. Try using `--force-endpoint-server True`"
-			if self.config.verbose:
-				traceback.print_exc()
-
-		self.construct()
-
-	def cacheEndpoints(self, path = None):
-		if not path:
-			path = self.config.endpoint_cache_file
-		wfile = open(path, 'w')
-		wfile.write(str(self.availableEndpoints))
-		wfile.close()
 
 	def construct(self):
 		# Build dynamic rpc endpoints
@@ -158,7 +88,7 @@ class Menu(object):
 
 		Returns:
 			Command: Instantiated command class, which can be called to
-				ececute the rpc endpoint
+				execute the rpc endpoint
 		"""
 		# print "Walking path:"
 		# print commandList
@@ -170,8 +100,8 @@ class Menu(object):
 		return command
 
 class ParseInput(object):
-	def __init__(self):
-		self.remainingArgs = sys.argv[1:]
+	def __init__(self, inputList):
+		self.remainingArgs = inputList
 		self.options = {}
 		self.command = []
 		self.commandArgs = {}
@@ -258,61 +188,78 @@ class ParseInput(object):
 		self.commandArgs['auth'] = tmpDict
 		return True
 
-def buildConfiguration(cliInput):
-	# Load the various configuration sources
-	config = Configuration()
-	config.loadConfigFile(config.globalConfigPath)
-	config.loadConfigFile(config.configPath)
-	config.loadConfigDict(cliInput.options)
-	# Load token
-	if config.token_auth_enabled and not config.loadTokenFile():
-		# This means token authentication is enabled, but we failed to load
-		# the token from the file
-		print "Failed to load token from file."
-	# We need authentication set up now
-	if not cliInput.prepareAuthDict(config):
-		print "Failed to meet minimum authentication requirements. Not using authentication."
-	return config
-
-def processTokenRenewal(config):
-	# Attempt to renew the auth token
-	output = RenewToken(config).execute()
+def printOutput(output):
 	if output.value != 0:
-		print "[WARNING] Failed to renew auth token."
-		if config.verbose:
-			output.display()
-	elif config.verbose:
-		print "[LOGGING] Auth token renewal was successful."
+		sys.stderr.write("An error was encountered:\n")
+		sys.stderr.write("\n".join(output.message)+"\n")
+	if output.tableHeaders:
+		# Its a dictionary list, make a table and print it
+		outputTable = PrettyTable(output.tableHeaders)
+		outputTable.padding_width = 1
+		for i in output.content:
+			outputTable.add_row(i.values())
+		print outputTable
+	else:
+		# It's just a list of strings, print each one
+		# TODO: Maybe I just shouldn't support this...
+		for i in output.content:
+			print i
+
+# if __name__ == "__main__":
+# 	"""
+# 	Usage:
+# 	cssef-cli [OPTIONS] [COMMAND] [ARGUMENTS]
+# 	"""
+# 	# Parse the command line arguments
+# 	cliInput = ParseInput()
+# 	config = buildConfiguration(cliInput)
+# 	# Establish rabbitmq connection
+# 	config.establishApiConnection()
+# 	# Load the available endpoints
+# 	commandMenu = Menu(config)
+# 	commandMenu.load()
+# 	# Cache the endpoints if necessary
+# 	if config.endpoint_cache_enabled:
+# 		commandMenu.cacheEndpoints()
+# 	# Attempt to renew the auth token permitted
+# 	if config.token_auth_enabled and config.token_renewal_enabled and not config.admin_token:
+# 		processTokenRenewal(config)
+# 	else:
+# 		print "[LOGGING] Skipping auth token renewal."
+
+# 	# Get the command, instantiate it, then call it
+# 	# This is super temporary - I just want to get all of the server side stuff fixed first
+# 	try:
+# 		command = commandMenu.getCommand(cliInput.command)
+# 		output = command.execute(**cliInput.commandArgs)
+# 	except NonExistantCommand as e:
+# 		output = CommandOutput(**e.asReturnDict())
+# 	# Now display the output
+# 	output.display()
+# 	output.exitWithValue()
 
 if __name__ == "__main__":
-	"""
-	Usage:
-	cssef-cli [OPTIONS] [COMMAND] [ARGUMENTS]
-	"""
-	# Parse the command line arguments
-	cliInput = ParseInput()
-	config = buildConfiguration(cliInput)
-	# Establish rabbitmq connection
-	config.establishApiConnection()
-	# Load the available endpoints
-	commandMenu = Menu(config)
-	commandMenu.load()
-	# Cache the endpoints if necessary
-	if config.endpoint_cache_enabled:
-		commandMenu.cacheEndpoints()
-	# Attempt to renew the auth token permitted
-	if config.token_auth_enabled and config.token_renewal_enabled and not config.admin_token:
-		processTokenRenewal(config)
-	else:
-		print "[LOGGING] Skipping auth token renewal."
+	# # Ensure user data directory exists
+	# if not os.path.exists(self.userDataDir):
+	# 	os.makedirs(self.userDataDir)
 
-	# Get the command, instantiate it, then call it
-	# This is super temporary - I just want to get all of the server side stuff fixed first
-	try:
-		command = commandMenu.getCommand(cliInput.command)
-		output = command.execute(**cliInput.commandArgs)
-	except NonExistantCommand as e:
-		output = CommandOutput(**e.asReturnDict())
-	# Now display the output
-	output.display()
-	output.exitWithValue()
+	# Set up and configure the client
+	userInput = ParseInput(sys.argv[1:])
+	client = cssefclient.CssefClient()
+	client.config.loadConfigFile('/etc/cssef/cssef.yml')
+	client.config.loadConfigFile('~/.cssef/cssef.yml')
+	client.config.loadConfigDict(userInput.options)
+
+	# Make connection to server, load endpoints, authenticate
+	client.connect()
+	endpoints = client.loadEndpoints()
+	client.loadToken()
+
+	# Call command and handle return
+	commandMenu = Menu(client.config, endpoints)
+	commandMenu.construct()
+
+	command = commandMenu.getCommand(userInput.command)
+	output = client.callEndpoint(command, userInput.commandArgs)
+	printOutput(output)
+	sys.exit(output.value)

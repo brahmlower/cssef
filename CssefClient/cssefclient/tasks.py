@@ -1,6 +1,6 @@
 from getpass import getpass
 from cssefclient.utils import RPCEndpoint
-from cssefclient.utils import saveAuthToken
+from cssefclient.utils import saveTokenFile
 
 class AvailableEndpoints(RPCEndpoint):
 	def __init__(self, config):
@@ -40,7 +40,7 @@ class RenewToken(RPCEndpoint):
 		if returnDict.value != 0:
 			return returnDict
 		token = returnDict.content[0]
-		saveAuthToken(self.config.token_file, token)
+		saveTokenFile(self.config.token_file, token)
 		returnDict.content = ["Token rewnewal was successful."]
 		return returnDict
 
@@ -70,7 +70,7 @@ class Login(RPCEndpoint):
 			return returnDict
 		# Save the returned token
 		token = returnDict.content[0]
-		saveAuthToken(self.config.token_file, token)
+		saveTokenFile(self.config.token_file, token)
 		returnDict.content = ["Authentication was successful."]
 		return returnDict
 

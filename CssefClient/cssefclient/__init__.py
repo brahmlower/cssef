@@ -1,9 +1,49 @@
 import os
 import re
+import ast
 import sys
-import stat
 import yaml
+import time
 from jsonrpcclient.http_server import HTTPServer
+from cssefclient.tasks import RenewToken
+from cssefclient.tasks import AvailableEndpoints
+from cssefclient.utils import parseTimeNotation
+from cssefclient.utils import loadTokenFile
+
+class CssefClient(object):
+	def __init__(self):
+		self.config = Configuration()
+		self.endpoints = None
+		self.server = None
+
+	def connect(self):
+		"""Establishes a connection to the celery server
+
+		This sets the attribute `apiConn` to an open connection to the Celery
+		server, based on the settings. This connection can be provided to a
+		`CeleryEndpoint` to execute a task
+		"""
+		self.server = HTTPServer(self.config.server_url)
+
+	def loadEndpoints(self):
+		endpoint_loader = EndpointsLoader(self.config)
+		endpoint_loader.determineSource()
+		self.endpoints = endpoint_loader.load()
+
+	def loadToken(self):
+		# If we're not supposed to do this, then dont do it
+		if not self.config.token_auth_enabled:
+			return False
+		# Read the token from the file
+		token = loadTokenFile(self.config.token_file)
+		if token:
+			self.config.token = token
+		# Renew the token if it's enabled
+		if self.config.token_renewal_enabled:
+			return RenewToken(self.config).execute()
+
+	def callEndpoint(self, command, args):
+		"CALLING THE ENDPOINT NOW"
 
 class Configuration(object):
 	"""Contains and loads configuration values
@@ -40,20 +80,11 @@ class Configuration(object):
 		self.force_endpoint_cache = False
 		self.force_endpoint_server = False
 		self.endpoint_cache_file = self.userDataDir + "endpoint-cache"
-		self.raw_endpoint_cache_time = '12h'
-
-		# Ensure user data directory exists
-		if not os.path.exists(self.userDataDir):
-			os.makedirs(self.userDataDir)
+		self.raw_endpoint_cache_time = '3600'
 
 	@property
 	def server_url(self):
 		return "http://%s:%s%s" % (self.rpc_hostname, self.rpc_port, self.rpc_base_uri)
-
-	@server_url.setter
-	def server_url(self, value):
-		# TODO: Finish implementing this :)
-		pass
 
 	@property
 	def endpoint_cache_time(self):
@@ -65,22 +96,8 @@ class Configuration(object):
 			self.raw_endpoint_cache_time = int(value)
 		except ValueError:
 			pass
-		self.raw_endpoint_cache_time = self.parseTimeNotation(value)
+		self.raw_endpoint_cache_time = parseTimeNotation(value)
 
-	def parseTimeNotation(self, value):
-		valueNotationList = [
-                    {"value": 1, "alias": ["s", "second", "seconds"]},
-                    {"value": 60, "alias": ["m", "minute", "minutes"]},
-                    {"value": 3600, "alias": ["h", "hour", "hours"]},
-                    {"value": 86400, "alias": ["d", "day", "days"]}]
-		strings = filter(None, re.split('(\d+)', value))
-		timeValue = strings[0]
-		timeMetric = strings[1]
-		for i in valueNotationList:
-			if timeMetric in i['alias']:
-				return i['value'] * timeValue
-		# Reaching this point means the metric is not a known alias
-		raise ValueError
 
 	def loadConfigFile(self, configPath):
 		"""Load configuration from a file
@@ -144,44 +161,79 @@ class Configuration(object):
 				# if self.verbose:
 				print "[WARNING] Ignoring invalid setting '%s'." % i
 
-	def loadTokenFile(self):
-		"""Load token from a file
+class EndpointsLoader(object):
+	def __init__(self, config):
+		self.config = config
+		self.endpoints = None
+		self.fromCache = False
 
-		This will try to load the token from the token cache file. If
-		successful, it will save the token it finds in the `token` attribute
-		for use while sending requests to the server.
-
-		Returns:
-			bool: True if token was successfully loaded, otherwise False.
-		"""
-		# Make sure the file exists
-		if not os.path.isfile(self.token_file):
-			sys.stderr.write("[WARNING] Token file not found. Cannot use token authentication.\n")
-			sys.stderr.flush()
-			return False
-		# Now make sure that only we have access to it
-		filePermissions = os.stat(self.token_file).st_mode
-		permissionsDenied = [stat.S_IRGRP, stat.S_IWGRP, stat.S_IXGRP,
-                        stat.S_IROTH, stat.S_IWOTH, stat.S_IXOTH]
-		for i in permissionsDenied:
-			if bool(filePermissions & i):
-				sys.stderr.write("Token file may not have any permissions for group or other.\n")
-				sys.stderr.flush()
-				return False
-		# Now actually read in the file
-		token = open(self.token_file, 'r').read()
-		if len(token) > 0:
-			self.token = token
-			return True
+	def load(self):
+		if self.fromCache:
+			output = self.loadFromFile()
+			if not output:
+				# Raise an error since we failed to load the endpoints
+				raise Exception
+			self.endpoints = output.content
 		else:
-			if self.verbose:
-				print "[LOGGING] Token file empty. Cannot use token authentication."
+			output = self.loadFromServer()
+			if not output:
+				# Raise an error since we failed to load the endpoints
+				raise Exception
+			self.endpoints = output.content
+			self.updateCache()
+		return self.endpoints
 
-	def establishApiConnection(self):
-		"""Establishes a connection to the celery server
+	def determineSource(self):
+		# Are we even caching?
+		if not self.config.endpoint_cache_enabled:
+			self.fromCache = False
+			return
+		# consider forced sources first
+		if self.config.force_endpoint_cache:
+			self.fromCache = True
+			return
+		if self.config.force_endpoint_server:
+			self.fromCache = False
+			return
+		# Endpoint caching is enabled, but the source hasn't been forced
+		# so we need to figure out if we should pull from the cache or not
+		try:
+			cacheLastModTime = os.stat(self.config.endpoint_cache_file).st_mtime
+		except OSError:
+			# Failed to read from the file, load from server
+			print "Failed to read cache file: %s" % self.config.endpoint_cache_file
+			# TODO: Libraries shouldn't print! (I thought this was a library, not a printing press! :P)
+			self.fromCache = False
+			return
+		timeDelta = time.time() - cacheLastModTime
+		# If it has been longer since the cache was updated than is
+		# configured, then we need to load from server
+		if timeDelta >= self.config.raw_endpoint_cache_time:
+			self.fromCache = False
+		self.fromCache = True
 
-		This sets the attribute `apiConn` to an open connection to the Celery
-		server, based on the settings. This connection can be provided to a
-		`CeleryEndpoint` to execute a task
+	def loadFromServer(self):
+		"""Retrieves the available endpoints from the server.
 		"""
-		self.serverConnection = HTTPServer(self.server_url)
+		output = AvailableEndpoints(self.config).execute()
+		return output
+
+	def loadFromFile(self):
+		"""Retrieves the available endpoints from the cache
+		"""
+		fileContent = open(self.config.endpoint_cache_file, 'r').read()
+		# This will throw an error if the content of file cannot be literally
+		# evaluated. This is good for here, but should be caught in the
+		# cli tool
+		self.endpoints = ast.literal_eval(fileContent)
+
+	def updateCache(self):
+		"""Writes the received endpoints to the cache file
+		"""
+		if not self.endpoints:
+			# The endpoints are not actually endpoints. Don't write over
+			# possibly valid endpoints already in the cache
+			return
+		wfile = open(self.config.endpoint_cache_file, 'w')
+		wfile.write(str(self.endpoints))
+		wfile.close()
