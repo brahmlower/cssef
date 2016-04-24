@@ -3,9 +3,9 @@ from cssefserver import DatabaseConnection
 from cssefserver import config
 from cssefserver.utils import handleException
 from cssefserver.utils import getEmptyReturnDict
-from cssefserver.taskutils import modelDel
-from cssefserver.taskutils import modelSet
-from cssefserver.taskutils import modelGet
+from cssefserver.taskutils import model_del
+from cssefserver.taskutils import model_set
+from cssefserver.taskutils import model_get
 from cssefserver.account.api import Organization
 from cssefserver.account.utils import authorizeAccess
 
@@ -63,7 +63,7 @@ def competitionDel(auth, pkid = None):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelDel(Competition, pkid)
+		return model_del(Competition, pkid)
 	except Exception as e:
 		return handleException(e)
 
@@ -75,7 +75,7 @@ def competitionSet(auth, pkid = None, **kwargs):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelSet(Competition, pkid, **kwargs)
+		return model_set(Competition, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -85,7 +85,7 @@ def competitionGet(auth, **kwargs):
 		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
-		return modelGet(Competition, **kwargs)
+		return model_get(Competition, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -133,7 +133,7 @@ def competitionTeamDel(auth, pkid = None):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelDel(Team, pkid)
+		return model_del(Team, pkid)
 	except Exception as e:
 		return handleException(e)
 
@@ -145,7 +145,7 @@ def competitionTeamSet(auth, pkid = None, **kwargs):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelSet(Team, pkid, **kwargs)
+		return model_set(Team, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -155,7 +155,7 @@ def competitionTeamGet(auth, **kwargs):
 		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
-		return modelGet(Team, **kwargs)
+		return model_get(Team, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -188,7 +188,7 @@ def competitionScoreDel(auth, pkid = None):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelDel(Score, pkid)
+		return model_del(Score, pkid)
 	except Exception as e:
 		return handleException(e)
 
@@ -200,7 +200,7 @@ def competitionScoreSet(auth, pkid = None, **kwargs):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelSet(Score, pkid, **kwargs)
+		return model_set(Score, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -210,7 +210,7 @@ def competitionScoreGet(auth, **kwargs):
 		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
-		return modelGet(Score, **kwargs)
+		return model_get(Score, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -243,7 +243,7 @@ def competitionInjectDel(auth, pkid = None):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelDel(Inject, pkid)
+		return model_del(Inject, pkid)
 	except Exception as e:
 		return handleException(e)
 
@@ -255,7 +255,7 @@ def competitionInjectSet(auth, pkid = None, **kwargs):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelSet(Inject, pkid, **kwargs)
+		return model_set(Inject, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -265,7 +265,7 @@ def competitionInjectGet(auth, **kwargs):
 		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
-		return modelGet(Inject, **kwargs)
+		return model_get(Inject, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -298,7 +298,7 @@ def competitionInjectResponseDel(auth, pkid = None):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelDel(InjectResponse, pkid)
+		return model_del(InjectResponse, pkid)
 	except Exception as e:
 		return handleException(e)
 
@@ -310,7 +310,7 @@ def competitionInjectResponseSet(auth, pkid = None, **kwargs):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelSet(InjectResponse, pkid, **kwargs)
+		return model_set(InjectResponse, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -320,7 +320,7 @@ def competitionInjectResponseGet(auth, **kwargs):
 		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
-		return modelGet(InjectResponse, **kwargs)
+		return model_get(InjectResponse, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -354,7 +354,7 @@ def competitionIncidentDel(auth, pkid = None):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelDel(Incident, pkid)
+		return model_del(Incident, pkid)
 	except Exception as e:
 		return handleException(e)
 
@@ -366,7 +366,7 @@ def competitionIncidentSet(auth, pkid = None, **kwargs):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelSet(Incident, pkid, **kwargs)
+		return model_set(Incident, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -376,7 +376,7 @@ def competitionIncidentGet(auth, **kwargs):
 		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
-		return modelGet(Incident, **kwargs)
+		return model_get(Incident, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -409,7 +409,7 @@ def competitionIncidentResponseDel(auth, pkid = None):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelDel(IncidentResponse, pkid)
+		return model_del(IncidentResponse, pkid)
 	except Exception as e:
 		return handleException(e)
 
@@ -421,7 +421,7 @@ def competitionIncidentResponseSet(auth, pkid = None, **kwargs):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelSet(IncidentResponse, pkid, **kwargs)
+		return model_set(IncidentResponse, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -431,7 +431,7 @@ def compeititonIncidentResponseGet(auth, **kwargs):
 		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
-		return modelGet(IncidentResponse, **kwargs)
+		return model_get(IncidentResponse, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -460,7 +460,7 @@ def competitionScoringEngineDel(auth, pkid = None):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelDel(ScoringEngine, pkid)
+		return model_del(ScoringEngine, pkid)
 	except Exception as e:
 		return handleException(e)
 
@@ -472,7 +472,7 @@ def competitionScoringEngineSet(auth, pkid = None, **kwargs):
 			return authResult
 		if not pkid:
 			raise Exception
-		return modelSet(ScoringEngine, pkid, **kwargs)
+		return model_set(ScoringEngine, pkid, **kwargs)
 	except Exception as e:
 		return handleException(e)
 
@@ -482,7 +482,7 @@ def competitionScoringEngineGet(auth, **kwargs):
 		authResult = authorizeAccess(DatabaseConnection, auth, config)
 		if authResult is not None:
 			return authResult
-		return modelGet(ScoringEngine, **kwargs)
+		return model_get(ScoringEngine, **kwargs)
 	except Exception as e:
 		return handleException(e)
 

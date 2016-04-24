@@ -3,8 +3,8 @@ from sqlalchemy import String
 from sqlalchemy import Integer
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
-from cssefserver.modelbase import Base
-from cssefserver.modelutils import getForeignKey
+from cssefserver.modelbase import BASE as Base
+from cssefserver.modelutils import get_foreign_key
 
 class Organization(Base):
     """This is a base User SQLAlchemy model.
@@ -25,7 +25,7 @@ class Organization(Base):
 class User(Base):
     """This is a base User SQLAlchemy model.
     """
-    organization = Column(Integer, getForeignKey(Organization))
+    organization = Column(Integer, get_foreign_key(Organization))
     last_login = Column(DateTime)
     name = Column(String(20))
     username = Column(String(20))

@@ -8,52 +8,52 @@ from flask import Response
 from jsonrpcserver import dispatch
 from jsonrpcserver import Methods
 # Local imports
-from .utils import Configuration
-from .utils import createDatabaseConnection
-from .account import tasks as accountTasks
-import tasks as baseTasks
+from cssefserver.utils import Configuration
+from cssefserver.utils import create_database_connection
+from cssefserver.account import tasks as account_tasks
+from cssefserver import tasks as base_tasks
 
 class CssefServer(object):
     def __init__(self):
         self.config = Configuration()
         # TODO: Idealy we would load configs from multiple source,
         # but we'll add that functionality later on...
-        self.config.loadConfigFile(self.config.globalConfigPath)
+        self.config.load_config_file(self.config.global_config_path)
 
         # THIS IS SUPER TEMPORARY!
-        self.prepareLogging()
-        
+        self.prepare_logging()
+
         # This is the database connection
-        self.databaseConnection = None
+        self.database_connection = None
 
         # Methods object to pass to the dispatcher when a request is handled
-        self.rpcMethods = Methods()
+        self.rpc_methods = Methods()
 
         # The flask instance that handles incoming networking requests
-        self.flaskApp = None
+        self.flask_app = None
 
-    def loadRpcEndpoints(self):
-        endpointList = [
-            (baseTasks.AvailableEndpoints, 'AvailableEndpoints'),
-            (baseTasks.RenewToken, 'RenewToken'),
-            (baseTasks.Login, 'Login'),
-            (accountTasks.OrganizationAdd, 'organizationAdd'),
-            (accountTasks.OrganizationDel, 'organizationDel'),
-            (accountTasks.OrganizationSet, 'organizationSet'),
-            (accountTasks.OrganizationGet, 'organizationGet'),
-            (accountTasks.UserAdd, 'userAdd'),
-            (accountTasks.UserDel, 'userDel'),
-            (accountTasks.UserSet, 'userSet'),
-            (accountTasks.UserGet, 'userGet')]
-        for reference, name in endpointList:
+    def load_rpc_endpoints(self):
+        endpoint_list = [
+            (base_tasks.AvailableEndpoints, 'AvailableEndpoints'),
+            (base_tasks.RenewToken, 'RenewToken'),
+            (base_tasks.Login, 'Login'),
+            (account_tasks.OrganizationAdd, 'organizationAdd'),
+            (account_tasks.OrganizationDel, 'organizationDel'),
+            (account_tasks.OrganizationSet, 'organizationSet'),
+            (account_tasks.OrganizationGet, 'organizationGet'),
+            (account_tasks.UserAdd, 'userAdd'),
+            (account_tasks.UserDel, 'userDel'),
+            (account_tasks.UserSet, 'userSet'),
+            (account_tasks.UserGet, 'userGet')]
+        for reference, name in endpoint_list:
             # I'm creating and storing an instance of every since endpoint...
-            self.rpcMethods.add_method(reference(self.config, self.databaseConnection), name)
+            self.rpc_methods.add_method(reference(self.config, self.database_connection), name)
 
-    def prepareLogging(self):
+    def prepare_logging(self):
         pass
         # # I don't really know what's going on here. Making an issue to fix this later
         # # Make sure the files exist first
-        # makeLogFiles(self.config)
+        # make_log_files(self.config)
         # # Set up the loggers (kinda... i suck at this)
         # logger = logging.getLogger("CssefDaemonLog")
         # logger.setLevel(logging.DEBUG)
@@ -64,23 +64,23 @@ class CssefServer(object):
         # 	logger.addHandler(handler)
 
     def start(self):
-        self.databaseConnection = createDatabaseConnection(self.config)
-        self.loadRpcEndpoints()
-        self.flaskApp = Flask(__name__)
-        self.flaskApp.add_url_rule('/', 'index', self.index, methods = ['POST'])
+        self.database_connection = create_database_connection(self.config)
+        self.load_rpc_endpoints()
+        self.flask_app = Flask(__name__)
+        self.flask_app.add_url_rule('/', 'index', self.index, methods=['POST'])
         # This next line can throw a permissions error:
         # IOError: [Errno 13] Permission denied: '/var/log/cssef/error.log'
         # This should be caught and handleds, and possibly reported to the daemon?
-        logging.basicConfig(filename='/var/log/cssef/error.log',level=logging.DEBUG)
-        self.flaskApp.run(debug = False)
+        logging.basicConfig(filename='/var/log/cssef/error.log', level=logging.DEBUG)
+        self.flask_app.run(debug=False)
 
     # This function shouldn't live here forever
     def index(self):
-        r = dispatch(self.rpcMethods, request.get_data().decode('utf-8'))
-        return Response(str(r), r.http_status, mimetype = 'application/json')
+        rpc_resp = dispatch(self.rpc_methods, request.get_data().decode('utf-8'))
+        return Response(str(rpc_resp), rpc_resp.http_status, mimetype='application/json')
 
 # Dumpy old logging methods
-def makeLogFiles(config):
+def make_log_files(config):
     # Now create the log files within that directory
     files = [config.cssef_stderr, config.cssef_stdout]
     for i in files:
@@ -95,9 +95,9 @@ def makeLogFiles(config):
             open(i, 'a').close()
 
 # Import plugins
-def importPlugins(config):
-    pluginList = []
+def import_plugins(config):
+    plugin_list = []
     if config.installed_plugins:
-        for moduleName in config.installed_plugins:
-            pluginList.append(__import__(moduleName))
-    return pluginList
+        for module_name in config.installed_plugins:
+            plugin_list.append(__import__(module_name))
+    return plugin_list

@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-import logging
+#import logging
 import atexit
 import sys
 import abc
@@ -11,7 +11,7 @@ from cssefserver import CssefServer
 
 class BaseDaemon(object):
     """A generic daemon class.
-    
+
     Usage: subclass the Daemon class and override the run() method
     """
     def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
@@ -22,48 +22,48 @@ class BaseDaemon(object):
 
     def daemonize(self):
         """
-        do the UNIX double-fork magic, see Stevens' "Advanced 
+        do the UNIX double-fork magic, see Stevens' "Advanced
         Programming in the UNIX Environment" for details (ISBN 0201563177)
         http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
         """
-        try: 
-            pid = os.fork() 
+        try:
+            pid = os.fork()
             if pid > 0:
                 # exit first parent
-                sys.exit(0) 
-        except OSError, e: 
-            sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
+                sys.exit(0)
+        except OSError, err:
+            sys.stderr.write("fork #1 failed: %d (%s)\n" % (err.errno, err.strerror))
             sys.exit(1)
 
         # decouple from parent environment
-        os.chdir("/") 
-        os.setsid() 
-        os.umask(0) 
+        os.chdir("/")
+        os.setsid()
+        os.umask(0)
 
         # do second fork
-        try: 
-            pid = os.fork() 
+        try:
+            pid = os.fork()
             if pid > 0:
                 # exit from second parent
-                sys.exit(0) 
-        except OSError, e: 
-            sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
-            sys.exit(1) 
+                sys.exit(0)
+        except OSError, err:
+            sys.stderr.write("fork #2 failed: %d (%s)\n" % (err.errno, err.strerror))
+            sys.exit(1)
 
         # redirect standard file descriptors
         sys.stdout.flush()
         sys.stderr.flush()
-        si = file(self.stdin, 'r')
-        so = file(self.stdout, 'a+')
-        se = file(self.stderr, 'a+', 0)
-        os.dup2(si.fileno(), sys.stdin.fileno())
-        os.dup2(so.fileno(), sys.stdout.fileno())
-        os.dup2(se.fileno(), sys.stderr.fileno())
+        stdinfile = file(self.stdin, 'r')
+        stdoutfile = file(self.stdout, 'a+')
+        stderrfile = file(self.stderr, 'a+', 0)
+        os.dup2(stdinfile.fileno(), sys.stdin.fileno())
+        os.dup2(stdoutfile.fileno(), sys.stdout.fileno())
+        os.dup2(stderrfile.fileno(), sys.stderr.fileno())
 
         # write pidfile
         atexit.register(self.delpid)
         pid = str(os.getpid())
-        file(self.pidfile,'w+').write("%s" % pid)
+        file(self.pidfile, 'w+').write("%s" % pid)
 
     def delpid(self):
         os.remove(self.pidfile)
@@ -74,9 +74,9 @@ class BaseDaemon(object):
         """
         # Check for a pidfile to see if the daemon already runs
         try:
-            pf = file(self.pidfile,'r')
-            pid = int(pf.read().strip())
-            pf.close()
+            pidfile_inst = file(self.pidfile, 'r')
+            pid = int(pidfile_inst.read().strip())
+            pidfile_inst.close()
         except IOError:
             pid = None
 
@@ -95,9 +95,9 @@ class BaseDaemon(object):
         """
         # Get the pid from the pidfile
         try:
-            pf = file(self.pidfile,'r')
-            pid = int(pf.read().strip())
-            pf.close()
+            pidfile_inst = file(self.pidfile, 'r')
+            pid = int(pidfile_inst.read().strip())
+            pidfile_inst.close()
         except IOError:
             pid = None
 

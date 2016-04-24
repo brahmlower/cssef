@@ -1,14 +1,11 @@
-import os
 import abc
-import yaml
 import traceback
-import logging
+import yaml
 # Database related imports
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from .modelbase import Base
-from .errors import CssefException
-from .errors import IncorrectCredentials
+from cssefserver.modelbase import BASE as Base
+from cssefserver.errors import CssefException
 
 class Configuration(object):
     """Contains and loads server configuration values
@@ -20,7 +17,7 @@ class Configuration(object):
     """
     def __init__(self):
         # Super global configs
-        self.globalConfigPath = "/etc/cssef/cssefd.yml"
+        self.global_config_path = "/etc/cssef/cssefd.yml"
         self.admin_token = ""
         self.pidfile = ""
         # SQLAlchemy configurations
@@ -39,26 +36,26 @@ class Configuration(object):
         # Plugin configurations
         self.installed_plugins = []
 
-    def loadConfigFile(self, configPath):
+    def load_config_file(self, config_path):
         """Load configuration from a file
 
         This will read a yaml configuration file. The yaml file is converted
         to a dictionary object, which is just passed to `loadConfigDict`.
 
         Args:
-            configPath (str): A filepath to the yaml config file
+            config_path (str): A filepath to the yaml config file
 
         Returns:
             None
         """
         try:
-            configDict = yaml.load(open(configPath, 'r'))
+            config_dict = yaml.load(open(config_path, 'r'))
         except IOError:
-            print "[WARNING] Failed to load config file at '%s'." % configPath
+            print "[WARNING] Failed to load config file at '%s'." % config_path
             return
-        self.loadConfigDict(configDict)
+        self.load_config_dict(config_dict)
 
-    def loadConfigDict(self, configDict):
+    def load_config_dict(self, config_dict):
         """Load configurations from a dictionary
 
         This will convert strings with hyphens (-) to underscores (_) that way
@@ -74,17 +71,17 @@ class Configuration(object):
         Returns:
             None
         """
-        for i in configDict:
-            if hasattr(self, i.replace('-','_')):
+        for i in config_dict:
+            if hasattr(self, i.replace('-', '_')):
                 # Set the attribute
-                setting = i.replace('-','_')
-                value = configDict[i]
+                setting = i.replace('-', '_')
+                value = config_dict[i]
                 setattr(self, setting, value)
                 if self.verbose:
                     print "[LOGGING] Configuration '%s' set to '%s'." % (i, value)
-            elif type(configDict[i]) == dict:
+            elif isinstance(config_dict[i]) == dict:
                 # This is a dictionary and may contain additional values
-                self.loadConfigDict(configDict[i])
+                self.load_config_dict(config_dict[i])
             else:
                 # We don't care about it. Just skip it!
                 if self.verbose:
@@ -93,41 +90,40 @@ class Configuration(object):
 class CssefRPCEndpoint(object):
     takesKwargs = True
     onRequestArgs = []
-    def __init__(self, config, databaseConnection):
+    def __init__(self, config, database_connection):
         self.config = config
-        self.databaseConnection = databaseConnection
+        self.database_connection = database_connection
 
     def __call__(self, **kwargs):
-        argsList = []
+        args_list = []
         # This builds the list of arguments we were told are expected
-        # by the overloaded onRequest() method
+        # by the overloaded on_request() method
         for i in self.onRequestArgs:
-            argsList.append(kwargs.get(i))
+            args_list.append(kwargs.get(i))
         for i in self.onRequestArgs:
             try:
                 kwargs.pop(i)
             except KeyError:
-                x = getEmptyReturnDict()
-                x['value'] = 1
-                x['message'] = "Missing required argument '%s'." % i
-                return x
-        print kwargs
-        # Now call the onRequest method that actually handles the request.
+                return_dict = get_empty_return_dict()
+                return_dict['value'] = 1
+                return_dict['message'] = "Missing required argument '%s'." % i
+                return return_dict
+        # Now call the on_request method that actually handles the request.
         # Here we're determining if we should pass it kwargs or not (the
         # subclass tells us yes or no). This is surrounded by a catch
         # to handle various errors that may crop up
         try:
             if self.takesKwargs:
-                return self.onRequest(*argsList, **kwargs)
+                return self.on_request(*args_list, **kwargs)
             else:
-                return self.onRequest(*argsList)
-        except CssefException as e:
-            return e.asReturnDict()
-        except Exception as e:
-            return handleException(e)
+                return self.on_request(*args_list)
+        except CssefException as err:
+            return err.as_return_dict()
+        except Exception as err:
+            return handle_exception(err)
 
     @abc.abstractmethod
-    def onRequest(self, *args, **kwargs):
+    def on_request(self, *args, **kwargs):
         pass
 
 class CssefObjectDoesNotExist(Exception):
@@ -145,6 +141,7 @@ class ModelWrapper(object):
     in a clean manner. This should be subclassed by any other objects that
     will need to wrap a SQLAlchemy model object.
     """
+    __metaclass__ = abc.ABCMeta
     class ObjectDoesNotExist(CssefObjectDoesNotExist):
         def __init__(self, message):
             self.message = message
@@ -152,14 +149,14 @@ class ModelWrapper(object):
         def __str__(self):
             return repr(self.message)
 
-    modelObject = None
-    fields = None
+    model_object = None
+    fields = []
 
-    def __init__(self, db, model):
-        self.db = db
+    def __init__(self, db_conn, model):
+        self.db_conn = db_conn
         self.model = model
 
-    def getId(self):
+    def get_id(self):
         return self.model.pkid
 
     def edit(self, **kwargs):
@@ -168,76 +165,79 @@ class ModelWrapper(object):
                 setattr(self, i, kwargs[i])
 
     def delete(self):
-        self.db.delete(self.model)
-        self.db.commit()
+        self.db_conn.delete(self.model)
+        self.db_conn.commit()
 
-    def asDict(self):
-        tmpDict = {}
-        tmpDict['id'] = self.getId()
+    def as_dict(self):
+        tmp_dict = {}
+        tmp_dict['id'] = self.get_id()
         for i in self.fields:
             try:
-                tmpDict[i] = getattr(self, i)
+                tmp_dict[i] = getattr(self, i)
             except AttributeError:
                 # The field is not an attribute of the subclassed model wrapper
                 # We'll try to find it in the classes model
-                tmpDict[i] = getattr(self.model, i)
-        return tmpDict
+                tmp_dict[i] = getattr(self.model, i)
+        return tmp_dict
 
     @classmethod
-    def count(cls, db, **kwargs):
-        return db.query(cls.modelObject).filter_by(**kwargs).count()
+    def count(cls, db_conn, **kwargs):
+        return db_conn.query(cls.model_object).filter_by(**kwargs).count()
 
     @classmethod
-    def search(cls, db, **kwargs):
-        modelObjectList = db.query(cls.modelObject).filter_by(**kwargs)
-        clsList = []
-        for i in modelObjectList:
-            clsList.append(cls(db, i))
-        return clsList
+    def search(cls, db_conn, **kwargs):
+        model_object_list = db_conn.query(cls.model_object).filter_by(**kwargs)
+        cls_list = []
+        for i in model_object_list:
+            cls_list.append(cls(db_conn, i))
+        return cls_list
 
     @classmethod
-    def fromDatabase(cls, db, pkid):
+    def from_database(cls, db_conn, pkid):
         try:
-            return cls.search(db, pkid = pkid)[0]
+            return cls.search(db_conn, pkid=pkid)[0]
         except IndexError:
             return None
 
     @classmethod
-    def fromDict(cls, db, kwDict):
-        modelObjectInst = cls.modelObject()
-        clsInst = cls(db, modelObjectInst)
-        for i in kwDict:
-            if i in clsInst.fields:
-                setattr(clsInst, i, kwDict[i])
-        db.add(clsInst.model)
-        db.commit()
-        return clsInst
+    def from_dict(cls, db_conn, kw_dict):
+        model_object_inst = cls.model_object() #pylint: disable=not-callable
+        cls_inst = cls(db_conn, model_object_inst)
+        for i in kw_dict:
+            if i in cls_inst.fields:
+                setattr(cls_inst, i, kw_dict[i])
+        db_conn.add(cls_inst.model)
+        db_conn.commit()
+        return cls_inst
 
-def createDatabaseConnection(config):
+def create_database_connection(config):
     """Returns a database session for the specified database"""
     # We're importing the plugin models to make sure they get synced
     # when the database is instantiated. I don't think this is the
     # best place for this though
     if config.installed_plugins:
-        for moduleName in config.installed_plugins:
-            __import__("%s.models" % moduleName)
+        for module_name in config.installed_plugins:
+            try:
+                __import__("%s.models" % module_name)
+            except:
+                print "Failed to load module: '%s'" % module_name
 
     # Now actually create the database instantiation
-    databaseEngine = create_engine('sqlite:///' + config.database_path)
-    Base.metadata.create_all(databaseEngine)
-    Base.metadata.bind = databaseEngine
-    DatabaseSession = sessionmaker(bind = databaseEngine)
-    return DatabaseSession()
+    database_engine = create_engine('sqlite:///' + config.database_path)
+    Base.metadata.create_all(database_engine)
+    Base.metadata.bind = database_engine
+    database_session = sessionmaker(bind=database_engine)
+    return database_session()
 
-def handleException(e):
+def handle_exception(err):
     # todo
     # log the full stacktrace!
-    returnDict = getEmptyReturnDict()
-    returnDict['value'] = 1
-    returnDict['message'] = traceback.format_exc().splitlines()
-    return returnDict
+    return_dict = get_empty_return_dict()
+    return_dict['value'] = 1
+    return_dict['message'] = traceback.format_exc().splitlines()
+    return return_dict
 
-def getEmptyReturnDict():
+def get_empty_return_dict():
     return {
         'value': 0,
         'message': 'Success',

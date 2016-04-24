@@ -4,10 +4,10 @@ from cssefserver.utils import ModelWrapper
 from cssefserver.account.models import User as UserModel
 from cssefserver.account.models import Organization as OrganizationModel
 from cssefserver.account.utils import PasswordHash
-from cssefserver.account.errors import *
+from cssefserver.account.errors import MaxMembersReached
 
 # THIS IS HARDCODED, WHICH IS BAD
-secretSalt = "Gv1Z5EYyCJzNuc6hEbj5fd+E2P4+iNFw"
+SECRET_SALT = "Gv1Z5EYyCJzNuc6hEbj5fd+E2P4+iNFw"
 
 class User(ModelWrapper):
     """Defines a basic User object.
@@ -16,12 +16,12 @@ class User(ModelWrapper):
     model.
 
     Attributes:
-        modelObject (UserModel): Defines the model the object is associated
+        model_object (UserModel): Defines the model the object is associated
             with
         fields (list): Lists the fields within the associated model to present
             to the client
     """
-    modelObject = UserModel
+    model_object = UserModel
     fields = [
         'name',
         'username',
@@ -56,7 +56,7 @@ class User(ModelWrapper):
             <todo>
         """
         self.model.name = value
-        self.db.commit()
+        self.db_conn.commit()
 
     @property
     def username(self):
@@ -88,7 +88,7 @@ class User(ModelWrapper):
             <todo>
         """
         self.model.username = value
-        self.db.commit()
+        self.db_conn.commit()
 
     @property
     def password(self):
@@ -133,9 +133,9 @@ class User(ModelWrapper):
             <todo>
         """
         rounds = 10
-        ph = PasswordHash.new(value, rounds)
-        self.model.password = ph.hash
-        self.db.commit()
+        pass_hash = PasswordHash.new(value, rounds)
+        self.model.password = pass_hash.hash
+        self.db_conn.commit()
 
     @property
     def description(self):
@@ -164,7 +164,7 @@ class User(ModelWrapper):
             <todo>
         """
         self.model.description = value
-        self.db.commit()
+        self.db_conn.commit()
 
     @property
     def organization(self):
@@ -201,32 +201,32 @@ class User(ModelWrapper):
             <todo>
         """
         self.model.organization = value
-        self.db.commit()
+        self.db_conn.commit()
 
     @classmethod
-    def fromDict(cls, db, kwDict):
-        org = Organization.fromDatabase(db, pkid = kwDict['organization'])
+    def from_dict(cls, db_conn, kw_dict):
+        org = Organization.from_database(db_conn, pkid=kw_dict['organization'])
         if not org:
-            print "Failed to get organization with pkid '%s'" % kwDict['organization']
+            print "Failed to get organization with pkid '%s'" % kw_dict['organization']
             raise ValueError
         if org.model.numMembers >= org.maxMembers:
             raise MaxMembersReached(org.maxMembers)
-        # Copied right from ModelWrapper.fromDict
-        modelObjectInst = cls.modelObject()
-        clsInst = cls(db, modelObjectInst)
-        for i in kwDict:
-            if i in clsInst.fields:
-                setattr(clsInst, i, kwDict[i])
-        db.add(clsInst.model)
-        db.commit()
+        # Copied right from ModelWrapper.from_dict
+        model_object_inst = cls.model_object()
+        cls_inst = cls(db_conn, model_object_inst)
+        for i in kw_dict:
+            if i in cls_inst.fields:
+                setattr(cls_inst, i, kw_dict[i])
+        db_conn.add(cls_inst.model)
+        db_conn.commit()
         org.setNumMembers()
-        return clsInst
+        return cls_inst
 
-    def authorized(self, authDict, group):
+    def authorized(self, auth_dict, group):
         # TODO: This is related to RBAC implementation
         return True
 
-    def authenticate(self, authDict):
+    def authenticate(self, auth_dict):
         """Attempt to authenticate with whatever information was provided
 
         The authdict may contain a token or key. Check if either is present
@@ -238,28 +238,28 @@ class User(ModelWrapper):
         authentication will fail.
 
         Args:
-            authDict (dict): A dictionary with a password or token in it.
+            auth_dict (dict): A dictionary with a password or token in it.
 
         Returns:
             bool: True if the passwords match, false if not.
         """
-        if 'token' in authDict.keys():
+        if 'token' in auth_dict.keys():
             # Do token authentication
-            if self.authenticateToken(authDict['token']):
+            if self.authenticate_token(auth_dict['token']):
                 return True
             # Token was provided, but was invalid.
             # if not self.config.auth_failover:
             #     # Authentication failover is disabled.
             #     return False
-        elif 'password' in authDict.keys():
+        elif 'password' in auth_dict.keys():
             # Do password authentication
-            return self.authenticatePassword(authDict['password'])
+            return self.authenticate_password(auth_dict['password'])
         else:
             # Cannot authenticate!
             print "Neither a password nor auth token were provided!"
             return False
 
-    def authenticateToken(self, token):
+    def authenticate_token(self, token):
         """Check if the provided token is valid for this user.
 
         This abstracts the process setting the new value in the database. This
@@ -280,12 +280,14 @@ class User(ModelWrapper):
             <todo>
         """
         try:
-            tk = tokenlib.parse_token(token, secret = secretSalt, now = time.time())
+            parsed_token = tokenlib.parse_token(token, secret=SECRET_SALT, now=time.time())
         except tokenlib.errors.MalformedTokenError:
             return False
-        return tk['id'] == self.getId() and tk['username'] == self.username and tk['organization'] == self.organization
+        return parsed_token['id'] == self.get_id() and \
+            parsed_token['username'] == self.username and \
+            parsed_token['organization'] == self.organization
 
-    def authenticatePassword(self, password):
+    def authenticate_password(self, password):
         """Check if the provided plaintext password is valid for this user.
 
         This will check that the provided password matches the users password.
@@ -302,13 +304,13 @@ class User(ModelWrapper):
         """
         return PasswordHash(self.password) == password
 
-    def getNewToken(self):
-        tokenDict = {"id": self.getId(), "username": self.username, "organization": self.organization}
-        token = tokenlib.make_token(tokenDict, secret = secretSalt)
+    def get_new_token(self):
+        token_dict = {"id": self.get_id(), "username": self.username, "organization": self.organization}
+        token = tokenlib.make_token(token_dict, secret=SECRET_SALT)
         return token
 
 class Organization(ModelWrapper):
-    modelObject = OrganizationModel
+    model_object = OrganizationModel
     fields = [
         'name',
         'url',
@@ -320,21 +322,21 @@ class Organization(ModelWrapper):
         'canAddCompetitions',
         'canDeleteCompetitions']
 
-    def asDict(self):
+    def as_dict(self):
         """Provides a dictionary representation of the Organization
 
         Builds and returns a dictionary representing the values in the
-        Organizations `fields` attribute. Organization.asDict() includes the
+        Organizations `fields` attribute. Organization.as_dict() includes the
         readonly attribute `deletable`.
 
         Returns:
             dict: A dictionary that represents the same values in the object.
         """
-        tmpDict = super(Organization, self).asDict()
-        tmpDict['deletable'] = self.isDeletable()
-        return tmpDict
+        tmp_dict = super(Organization, self).as_dict()
+        tmp_dict['deletable'] = self.is_deletable()
+        return tmp_dict
 
-    def isDeletable(self):
+    def is_deletable(self):
         """Checks if the organization can be deleted.
 
         Return:
@@ -344,7 +346,7 @@ class Organization(ModelWrapper):
         return self.model.deletable
 
     @property
-    def canAddUsers(self):
+    def can_add_users(self):
         """If the organization can add their own users
 
         This wraps the `canAddUsers` attribute of the associated model.
@@ -354,13 +356,13 @@ class Organization(ModelWrapper):
         """
         return self.model.canAddUsers
 
-    @canAddUsers.setter
-    def canAddUsers(self, value):
+    @can_add_users.setter
+    def can_add_users(self, value):
         self.model.canAddUsers = value
-        self.db.commit()
+        self.db_conn.commit()
 
     @property
-    def canDeleteUsers(self):
+    def can_delete_users(self):
         """If the organization can delete their own users.
 
         This wraps the `canDeleteUsers` attribute of the associated model.
@@ -371,13 +373,13 @@ class Organization(ModelWrapper):
         """
         return self.model.canDeleteUsers
 
-    @canDeleteUsers.setter
-    def canDeleteUsers(self, value):
+    @can_delete_users.setter
+    def can_delete_users(self, value):
         self.model.canDeleteUsers = value
-        self.db.commit()
+        self.db_conn.commit()
 
     @property
-    def canAddCompetitions(self):
+    def can_add_competitions(self):
         """If the organization can add their own competitions
 
         This wraps the `canAddCompetitions` attribute of the associated model.
@@ -388,16 +390,16 @@ class Organization(ModelWrapper):
         """
         return self.model.canAddCompetitions
 
-    @canAddCompetitions.setter
-    def canAddCompetitions(self, value):
+    @can_add_competitions.setter
+    def can_add_competitions(self, value):
         self.model.canAddCompetitions = value
-        self.db.commit()
+        self.db_conn.commit()
 
     @property
-    def canDeleteCompetitions(self):
+    def can_delete_competitions(self):
         """If the organization can delete their own competitions.
 
-        This wraps the `canDeleteCompetitions` attribute of the associated model.
+        This wraps the `can_delete_competitions` attribute of the associated model.
 
         Returns:
             str: True if the organization can delete its own competitions,
@@ -405,10 +407,10 @@ class Organization(ModelWrapper):
         """
         return self.model.canDeleteCompetitions
 
-    @canDeleteCompetitions.setter
-    def canDeleteCompetitions(self, value):
+    @can_delete_competitions.setter
+    def can_delete_competitions(self, value):
         self.model.canDeleteCompetitions = value
-        self.db.commit()
+        self.db_conn.commit()
 
     @property
     def name(self):
@@ -424,7 +426,7 @@ class Organization(ModelWrapper):
     @name.setter
     def name(self, value):
         self.model.name = value
-        self.db.commit()
+        self.db_conn.commit()
 
     @property
     def url(self):
@@ -438,9 +440,9 @@ class Organization(ModelWrapper):
         return self.model.url
 
     @url.setter
-    def url(self,value):
+    def url(self, value):
         self.model.url = value
-        self.db.commit()
+        self.db_conn.commit()
 
     @property
     def description(self):
@@ -456,45 +458,45 @@ class Organization(ModelWrapper):
     @description.setter
     def description(self, value):
         self.model.description = value
-        self.db.commit()
+        self.db_conn.commit()
 
     @property
-    def maxMembers(self):
+    def max_members(self):
         """Mamimum number of members of the organization can have.
 
-        Integer value representing the maximum number of members the 
+        Integer value representing the maximum number of members the
         organization may have.This wraps the `maxMembers` attribute of the
-        associated model. 
+        associated model.
 
         Returns:
             int:
         """
         return self.model.maxMembers
 
-    @maxMembers.setter
-    def maxMembers(self, value):
+    @max_members.setter
+    def max_members(self, value):
         self.model.maxMembers = value
-        self.db.commit()
+        self.db_conn.commit()
 
     @property
-    def maxCompetitions(self):
+    def max_competitions(self):
         """Mamimum number of competitions of the organization can have.
 
-        Integer value representing the maximum number of members the 
+        Integer value representing the maximum number of members the
         organization may have.This wraps the `maxCompetitions` attribute of
-        the associated model. 
+        the associated model.
 
         Returns:
             int:
         """
         return self.model.maxCompetitions
 
-    @maxCompetitions.setter
-    def maxCompetitions(self, value):
+    @max_competitions.setter
+    def max_competitions(self, value):
         self.model.maxCompetitions = value
-        self.db.commit()
+        self.db_conn.commit()
 
-    def getNumMembers(self):
+    def get_num_members(self):
         """Gets the current number of competitions belonging to the organization
 
         This gets the "cached" count of the current number of competitions
@@ -505,7 +507,7 @@ class Organization(ModelWrapper):
         """
         return self.model.numMembers
 
-    def setNumMembers(self):
+    def set_num_members(self):
         """Gets the current number of members in the organization
 
         This gets the "cached" count of the current number of users that are
@@ -514,31 +516,31 @@ class Organization(ModelWrapper):
         Returns:
             int: The number of users that are part of the oragnizaiton
         """
-        self.model.numMembers = User.count(self.db, organization = self.getId())
-        self.db.commit()
+        self.model.numMembers = User.count(self.db_conn, organization=self.get_id())
+        self.db_conn.commit()
 
-    def getNumCompetitions(self):
+    def get_num_competitions(self):
         return self.model.setNumCompetitions
 
     # def setNumCompetitions(self):
-    #     self.model.numCompetitions = Competition.count(self.db, organization = self.getId())
+    #     self.model.numCompetitions = Competition.count(self.db, organization = self.get_id())
     #     self.db.commit()
 
     # def getCompetitions(self, **kwargs):
-    #     return Competition.search(Competition, organization = self.getId(), **kwargs)
+    #     return Competition.search(Competition, organization = self.get_id(), **kwargs)
 
-    def getMembers(self, **kwargs):
-        return User.search(User, organization = self.getId(), **kwargs)
+    def get_members(self, **kwargs):
+        return User.search(User, organization=self.get_id(), **kwargs)
 
     # def getCompetition(self, **kwargs):
     #     return Competition(**kwargs)
 
-    def getMember(self, **kwargs):
+    def get_member(self, **kwargs):
         """Gets a specific member that belongs to the organization
 
         This will retrieve a specific user that belongs to the organization.
 
-        TODO: This function is supposed to add `organization = self.getId()`
+        TODO: This function is supposed to add `organization = self.get_id()`
         to the keywords that are used to select the user from the database,
         but it does not.
 
@@ -550,7 +552,7 @@ class Organization(ModelWrapper):
         """
         return User(**kwargs)
 
-    # def createCompetition(self, kwDict):
+    # def createCompetition(self, kw_dict):
     #     """Creates a new competition that is automatically added to the organization
 
     #     Crates a competition through Organization.createMember() ensures that
@@ -558,8 +560,8 @@ class Organization(ModelWrapper):
     #     competition creation process.
 
     #     Args:
-    #         kwDict (dict): A dictionary containing keywords that will be
-    #             passed to Competition.fromDict().
+    #         kw_dict (dict): A dictionary containing keywords that will be
+    #             passed to Competition.from_dict().
 
     #     Returns:
     #         User: Returns the competition that is created if successful. None
@@ -571,7 +573,7 @@ class Organization(ModelWrapper):
     #     """
     #     if self.model.numCompetitions >= self.maxCompetitions:
     #         raise MaxCompetitionsReached(self.maxCompetitions)
-    #     kwDict['organization'] = self.getId()
-    #     newCompetition = Competition.fromDict(self.db, kwDict)
+    #     kw_dict['organization'] = self.get_id()
+    #     newCompetition = Competition.from_dict(self.db, kw_dict)
     #     self.setNumCompetitions()
     #     return newCompetition

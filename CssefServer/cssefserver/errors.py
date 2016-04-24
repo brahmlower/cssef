@@ -1,5 +1,7 @@
 class CssefException(Exception):
-    def asReturnDict(self):
+    value = None
+    message = None
+    def as_return_dict(self):
         return {'value': self.value, 'message': self.message, 'content': []}
 
 # Authentication Errors:

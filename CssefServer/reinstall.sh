@@ -1,5 +1,25 @@
 #!/bin/bash
 
+# Lint the project before breaking down the running environment
+PYLINT=`which pylint`
+if [ 0 -eq $? ]; then
+	$PYLINT cssefserver/ 2>/dev/null | grep "E:"
+	if [ 0 -eq $? ]; then
+		echo ""
+		echo "There were errors while linting 'cssefserver'! Pip install aborted."
+		exit
+	fi
+
+	$PYLINT cssefd 2>/dev/null | grep "E:"
+	if [ 0 -eq $? ]; then
+		echo ""
+		echo "There were errors while linting 'cssefd'! Pip install aborted."
+		exit
+	fi
+else
+	echo "Pylint couldn't be found. Linting was skipped. Please consider installing pylint. :)"
+fi
+
 # Stop the server in case it's already running
 sudo cssefd stop
 

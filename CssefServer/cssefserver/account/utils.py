@@ -4,8 +4,10 @@ from cssefserver import errors
 
 class PasswordHash(object):
     """
-    This code pulled from http://variable-scope.com/posts/storing-and-verifying-passwords-with-sqlalchemy
-    There are a couple minor changes to it, but most credit goes Elmer de Looff - Thank you!
+    This code pulled from
+    http://variable-scope.com/posts/storing-and-verifying-passwords-with-sqlalchemy
+    There are a couple minor changes to it, but most credit goes
+    Elmer de Looff - Thank you!
     """
     def __init__(self, hash_):
         """Instantiates a PasswordHash object based on a provided string representing a bcrypt hash.
@@ -42,35 +44,36 @@ class PasswordHash(object):
             password = password.encode('utf8')
         return cls(bcrypt.hashpw(password, bcrypt.gensalt(rounds)))
 
-def authorizeAccess(dbConn, authDict, config):
+def authorize_access(db_conn, auth_dict, config):
     # Check if we're doing user authentication, or admin token auth.
-    if 'admin-token' in authDict:
+    if 'admin-token' in auth_dict:
         # Just check that the auth key matches that of the authkey in the server config file
-        if config.admin_token == authDict['admin-token']:
+        if config.admin_token == auth_dict['admin-token']:
             # Auth key matched!
             print "[AUTH INFO] Provided auth-token was correct."
-            return None
+            return False
         else:
             print "[AUTH WARNING] Provided auth-token was incorrect."
     # Importing for this got pretty ugly... :(
-    if not authDict.get('username', None):
+    if not auth_dict.get('username', None):
         print "[AUTH WARNING] No username provided."
         raise errors.NoUsernameProvided
-    if not authDict.get('organization', None):
+    if not auth_dict.get('organization', None):
         print "[AUTH WARNING] No organization was provided."
         raise errors.NoOrganizationProvided
-    userList = cssefserver.account.api.User.search(dbConn, username = authDict['username'], organization = authDict['organization'])
-    if len(userList) < 1:
+    user_list = cssefserver.account.api.User.search(db_conn, \
+        username=auth_dict['username'], organization=auth_dict['organization'])
+    if len(user_list) < 1:
         # No matching user was found
         raise errors.NonexistentUser
-    if len(userList) > 1:
+    if len(user_list) > 1:
         # There are multiple users. This is extremely bad
         raise errors.AuthFindsMultipleUsers
-    user = userList[0]
+    user = user_list[0]
     # Authenticate the user
-    if not user.authenticate(authDict):
+    if not user.authenticate(auth_dict):
         raise errors.IncorrectCredentials
     # Authorize the user
-    if not user.authorized(authDict, 'organization'):
+    if not user.authorized(auth_dict, 'organization'):
         raise errors.PermissionDenied
-    return None
+    return False

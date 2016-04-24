@@ -23,7 +23,7 @@ setup(
     ],
 
     data_files = [
-        ('/etc/cssef/', ['cssefd.yml']),
+        ('/etc/cssef/', ['cssefd.yml', 'userEndpointsDict.json', 'organizationEndpointsDict.json']),
     #    ('/var/log/cssef/', [])
     ],
 

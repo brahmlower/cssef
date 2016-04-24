@@ -1,60 +1,57 @@
-from cssefserver.utils import handleException
-from cssefserver.utils import getEmptyReturnDict
+from cssefserver.utils import get_empty_return_dict
 from cssefserver.utils import CssefRPCEndpoint
-from cssefserver.taskutils import modelDel
-from cssefserver.taskutils import modelSet
-from cssefserver.taskutils import modelGet
-from cssefserver.errors import CssefException
-from .api import Organization
-from .api import User
-from .utils import authorizeAccess
-import logging
+from cssefserver.taskutils import model_del
+from cssefserver.taskutils import model_set
+from cssefserver.taskutils import model_get
+from cssefserver.account.api import Organization
+from cssefserver.account.api import User
+from cssefserver.account.utils import authorize_access
 
 class OrganizationAdd(CssefRPCEndpoint):
     takesKwargs = True
     onRequestArgs = ['auth']
-    def onRequest(self, auth, **kwargs):
+    def on_request(self, auth, **kwargs):
         """Celery task to create a new organization.
 
         Args:
-            **kwargs: Keyword arguments to be passed onto User.fromDict()
+            **kwargs: Keyword arguments to be passed onto User.from_dict()
 
         Returns:
-            A returnDict dictionary containing the results of the API call. See
-            getEmptyReturnDict for more information.
+            A return_dict dictionary containing the results of the API call. See
+            get_empty_return_dict for more information.
         """
-        authResult = authorizeAccess(self.databaseConnection, auth, self.config)
-        if authResult is not None:
-            return authResult
-        organization = Organization.fromDict(self.databaseConnection, kwargs)
-        returnDict = getEmptyReturnDict()
-        returnDict['content'].append(organization.asDict())
-        return returnDict
+        auth_result = authorize_access(self.database_connection, auth, self.config)
+        if auth_result:
+            return auth_result
+        organization = Organization.from_dict(self.database_connection, kwargs)
+        return_dict = get_empty_return_dict()
+        return_dict['content'].append(organization.as_dict())
+        return return_dict
 
 class OrganizationDel(CssefRPCEndpoint):
     takesKwargs = False
     onRequestArgs = ['auth', 'pkid']
-    def onRequest(self, auth, pkid):
+    def on_request(self, auth, pkid):
         """Celery task to delete an existing organization.
 
         Args:
             pkid (int): The ID of the organization to delete
 
         Returns:
-            A returnDict dictionary containing the results of the API call. See
-            getEmptyReturnDict for more information.
+            A return_dict dictionary containing the results of the API call. See
+            get_empty_return_dict for more information.
         """
-        authResult = authorizeAccess(self.databaseConnection, auth, self.config)
-        if authResult is not None:
-            return authResult
+        auth_result = authorize_access(self.database_connection, auth, self.config)
+        if auth_result is not None:
+            return auth_result
         if not pkid:
             raise Exception
-        return modelDel(Organization, self.databaseConnection, pkid)
+        return model_del(Organization, self.database_connection, pkid)
 
 class OrganizationSet(CssefRPCEndpoint):
     takesKwargs = True
     onRequestArgs = ['auth', 'pkid']
-    def onRequest(self, auth, pkid, **kwargs):
+    def on_request(self, auth, pkid, **kwargs):
         """Celery task to edit an existing organization.
 
         Args:
@@ -62,81 +59,81 @@ class OrganizationSet(CssefRPCEndpoint):
             **kwargs: Keyword arguments for values to change in the organization
 
         Returns:
-            A returnDict dictionary containing the results of the API call. See
-            getEmptyReturnDict for more information.
+            A return_dict dictionary containing the results of the API call. See
+            get_empty_return_dict for more information.
         """
-        authResult = authorizeAccess(self.databaseConnection, auth, self.config)
-        if authResult is not None:
-            return authResult
+        auth_result = authorize_access(self.database_connection, auth, self.config)
+        if auth_result is not None:
+            return auth_result
         if not pkid:
             raise Exception
-        return modelSet(Organization, self.databaseConnection, pkid, **kwargs)
+        return model_set(Organization, self.database_connection, pkid, **kwargs)
 
 class OrganizationGet(CssefRPCEndpoint):
     takesKwargs = True
     onRequestArgs = ['auth']
-    def onRequest(self, auth, **kwargs):
+    def on_request(self, auth, **kwargs):
         """Celery task to get one or more existing organization.
 
         Args:
             **kwargs: Keyword arguments to filter organization by
 
         Returns:
-            A returnDict dictionary containing the results of the API call. See
-            getEmptyReturnDict for more information.
+            A return_dict dictionary containing the results of the API call. See
+            get_empty_return_dict for more information.
         """
-        authResult = authorizeAccess(self.databaseConnection, auth, self.config)
-        if authResult is not None:
-            return authResult
-        return modelGet(Organization, self.databaseConnection, **kwargs)
+        auth_result = authorize_access(self.database_connection, auth, self.config)
+        if auth_result is not None:
+            return auth_result
+        return model_get(Organization, self.database_connection, **kwargs)
 
 class UserAdd(CssefRPCEndpoint):
     takesKwargs = True
     onRequestArgs = ['auth']
-    def __call__(self, auth, **kwargs):
+    def on_request(self, auth, **kwargs):
         """Celery task to create a new user.
 
         Args:
             organization (int): The ID of the organization the user belongs to
-            **kwargs: Keyword arguments to be passed onto User.fromDict()
+            **kwargs: Keyword arguments to be passed onto User.from_dict()
 
         Returns:
-            A returnDict dictionary containing the results of the API call. See
-            getEmptyReturnDict for more information.
+            A return_dict dictionary containing the results of the API call. See
+            get_empty_return_dict for more information.
         """
-        authResult = authorizeAccess(self.databaseConnection, auth, self.config)
-        if authResult is not None:
-            return authResult
+        auth_result = authorize_access(self.database_connection, auth, self.config)
+        if auth_result is not None:
+            return auth_result
         #kwargs['organization'] = organization
-        user = User.fromDict(self.databaseConnection, kwargs)
-        returnDict = getEmptyReturnDict()
-        returnDict['content'].append(user.asDict())
-        return returnDict
+        user = User.from_dict(self.database_connection, kwargs)
+        return_dict = get_empty_return_dict()
+        return_dict['content'].append(user.as_dict())
+        return return_dict
 
 class UserDel(CssefRPCEndpoint):
     takesKwargs = False
     onRequestArgs = ['auth', 'pkid']
-    def onRequest(self, auth, pkid):
+    def on_request(self, auth, pkid):
         """Celery task to delete an existing user.
 
         Args:
             pkid (int): The ID of the user to delete
 
         Returns:
-            A returnDict dictionary containing the results of the API call. See
-            getEmptyReturnDict for more information.
+            A return_dict dictionary containing the results of the API call. See
+            get_empty_return_dict for more information.
         """
-        authResult = authorizeAccess(self.databaseConnection, auth, self.config)
-        if authResult is not None:
-            return authResult
+        auth_result = authorize_access(self.database_connection, auth, self.config)
+        if auth_result is not None:
+            return auth_result
         if not pkid:
             raise Exception
-        return modelDel(User, self.databaseConnection, pkid)
+        return model_del(User, self.database_connection, pkid)
 
 class UserSet(CssefRPCEndpoint):
     takesKwargs = True
     onRequestArgs = ['auth', 'pkid']
-    def onRequest(self, auth, pkid, **kwargs):
+    def on_request(self, auth, pkid, **kwargs):
         """Celery task to edit an existing user.
 
         Args:
@@ -144,254 +141,30 @@ class UserSet(CssefRPCEndpoint):
             **kwargs: Keyword arguments for values to change in the user
 
         Returns:
-            A returnDict dictionary containing the results of the API call. See
-            getEmptyReturnDict for more information.
+            A return_dict dictionary containing the results of the API call. See
+            get_empty_return_dict for more information.
         """
-        authResult = authorizeAccess(self.databaseConnection, auth, self.config)
-        if authResult is not None:
-            return authResult
+        auth_result = authorize_access(self.database_connection, auth, self.config)
+        if auth_result is not None:
+            return auth_result
         if not pkid:
             raise Exception
-        return modelSet(User, self.databaseConnection, pkid, **kwargs)
+        return model_set(User, self.database_connection, pkid, **kwargs)
 
 class UserGet(CssefRPCEndpoint):
     takesKwargs = True
     onRequestArgs = ['auth']
-    def onRequest(self, auth, **kwargs):
+    def on_request(self, auth, **kwargs):
         """Celery task to get one or more existing users.
 
         Args:
             **kwargs: Keyword arguments to filter users by
 
         Returns:
-            A returnDict dictionary containing the results of the API call. See
-            getEmptyReturnDict for more information.
+            A return_dict dictionary containing the results of the API call. See
+            get_empty_return_dict for more information.
         """
-        authResult = authorizeAccess(self.databaseConnection, auth, self.config)
-        if authResult is not None:
-            return authResult
-        return modelGet(User, self.databaseConnection, **kwargs)
-
-organizationEndpointsDict = {
-    "name": "Organizations",
-    "author": "",
-    "menuName": "organization",
-    "endpoints": [
-        {    "name": "Add Organization",
-            "endpointName": "organizationAdd",
-            "menu": ["add"],
-            "arguments": [
-                {    "name": "Name",
-                    "argument": "name",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "URL",
-                    "argument": "url",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "Description",
-                    "argument": "description",
-                    "keyword": True,
-                    "optional": True
-                },
-                {    "name": "Max Members",
-                    "argument": "maxMembers",
-                    "keyword": True,
-                    "optional": True
-                },
-                {    "name": "Max Competitions",
-                    "argument": "maxCompetitions",
-                    "keyword": True,
-                    "optional": True
-                }
-            ]
-        },
-        {    "name": "Delete Organization",
-            "endpointName": "organizationDel",
-            "menu": ["del"],
-            "arguments": [
-                {    "name": "Organization",
-                    "argument": "organization",
-                    "keyword": True,
-                    "optional": False
-                }
-            ]
-        },
-        {    "name": "Set Organization",
-            "endpointName": "organizationSet",
-            "menu": ["set"],
-            "arguments": [
-                {    "name": "Name",
-                    "argument": "name",
-                    "keyword": True,
-                    "optional": True
-                },
-                {    "name": "URL",
-                    "argument": "url",
-                    "keyword": True,
-                    "optional": True
-                },
-                {    "name": "Description",
-                    "argument": "description",
-                    "keyword": True,
-                    "optional": True
-                },
-                {    "name": "Max Members",
-                    "argument": "maxMembers",
-                    "keyword": True,
-                    "optional": True
-                },
-                {    "name": "Max Competitions",
-                    "argument": "maxCompetitions",
-                    "keyword": True,
-                    "optional": True
-                }
-            ]
-        },
-        {    "name": "Get Organization",
-            "endpointName": "organizationGet",
-            "menu": ["get"],
-            "arguments": [
-                {    "name": "Name",
-                    "argument": "name",
-                    "keyword": True,
-                    "optional": True
-                },
-                {    "name": "URL",
-                    "argument": "url",
-                    "keyword": True,
-                    "optional": True
-                },
-                {    "name": "Description",
-                    "argument": "description",
-                    "keyword": True,
-                    "optional": True
-                },
-                {    "name": "Max Members",
-                    "argument": "maxMembers",
-                    "keyword": True,
-                    "optional": True
-                },
-                {    "name": "Max Competitions",
-                    "argument": "maxCompetitions",
-                    "keyword": True,
-                    "optional": True
-                }
-            ]
-        }
-    ]
-}
-
-userEndpointsDict = {
-    "name": "Users",
-    "author": "",
-    "menuName": "user",
-    "endpoints": [
-        {    "name": "Add User",
-            "endpointName": "userAdd",
-            "menu": ["add"],
-            "arguments": [
-                {    "name": "Organization",
-                    "argument": "organization",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "Name",
-                    "argument": "name",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "Username",
-                    "argument": "username",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "Password",
-                    "argument": "password",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "Description",
-                    "argument": "description",
-                    "keyword": True,
-                    "optional": True
-                }
-            ]
-        },
-        {    "name": "Delete User",
-            "endpointName": "userDel",
-            "menu": ["del"],
-            "arguments": [
-                {    "name": "User",
-                    "argument": "user",
-                    "keyword": True,
-                    "optional": False
-                }
-            ]
-        },
-        {    "name": "Set User",
-            "endpointName": "userSet",
-            "menu": ["set"],
-            "arguments": [
-                {    "name": "Organization",
-                    "argument": "organization",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "Name",
-                    "argument": "name",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "Username",
-                    "argument": "username",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "Password",
-                    "argument": "password",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "Description",
-                    "argument": "description",
-                    "keyword": True,
-                    "optional": True
-                }
-            ]
-        },
-        {    "name": "Get User",
-            "endpointName": "userGet",
-            "menu": ["get"],
-            "arguments": [
-                {    "name": "Organization",
-                    "argument": "organization",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "Name",
-                    "argument": "name",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "Username",
-                    "argument": "username",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "Password",
-                    "argument": "password",
-                    "keyword": True,
-                    "optional": False
-                },
-                {    "name": "Description",
-                    "argument": "description",
-                    "keyword": True,
-                    "optional": True
-                }
-            ]
-        }
-    ]
-}
+        auth_result = authorize_access(self.database_connection, auth, self.config)
+        if auth_result is not None:
+            return auth_result
+        return model_get(User, self.database_connection, **kwargs)

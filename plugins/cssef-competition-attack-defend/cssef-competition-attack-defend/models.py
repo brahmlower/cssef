@@ -5,12 +5,12 @@ from sqlalchemy import Integer
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from cssefserver.modelbase import Base
-from cssefserver.modelutils import getForeignKey
+from cssefserver.modelbase import BASE as Base
+from cssefserver.modelutils import get_foreign_key
 from cssefserver.account.models import Organization
 
 class Competition(Base):
-	organization		= Column(Integer, getForeignKey(Organization))
+	organization		= Column(Integer, get_foreign_key(Organization))
 	#scoringEngine		= relationship('ScoringEngine')
 	teams				= relationship('Team')
 	scores				= relationship('Score')
@@ -44,7 +44,7 @@ class Competition(Base):
 	teamsViewIncidentResponseEnabled	= Column(Boolean)
 
 class Team(Base):
-	competition			= Column(Integer, getForeignKey(Competition))
+	competition			= Column(Integer, get_foreign_key(Competition))
 	scores				= relationship('Score')
 	last_login			= Column(DateTime)
 	name				= Column(String(30))
@@ -54,14 +54,14 @@ class Team(Base):
 	scoreConfigurations	= Column(String(1000))
 
 class Score(Base):
-	competition	= Column(Integer, getForeignKey(Competition))
-	team		= Column(Integer, getForeignKey(Team))
+	competition	= Column(Integer, get_foreign_key(Competition))
+	team		= Column(Integer, get_foreign_key(Team))
 	datetime	= Column(DateTime)
 	value		= Column(Integer)
 	message		= Column(String(100))
 
 class Inject(Base):
-	competition				= Column(Integer, getForeignKey(Competition))
+	competition				= Column(Integer, get_foreign_key(Competition))
 	title					= Column(String(50))
 	body					= Column(String(1000))
 	responses				= relationship('InjectResponse')
@@ -72,24 +72,24 @@ class Inject(Base):
 	datetimeResponseClose	= Column(DateTime, nullable = True, default = None)
 
 class InjectResponse(Base):
-	competition	= Column(Integer, getForeignKey(Competition))
-	team		= Column(Integer, getForeignKey(Team))
-	inject		= Column(Integer, getForeignKey(Inject))
+	competition	= Column(Integer, get_foreign_key(Competition))
+	team		= Column(Integer, get_foreign_key(Team))
+	inject		= Column(Integer, get_foreign_key(Inject))
 	datetime	= Column(DateTime)
 	content		= Column(String(20))
 
 class Incident(Base):
-	competition	= Column(Integer, getForeignKey(Competition))
-	team		= Column(Integer, getForeignKey(Team))
+	competition	= Column(Integer, get_foreign_key(Competition))
+	team		= Column(Integer, get_foreign_key(Team))
 	datetime	= Column(DateTime)
 	subject		= Column(String(100))
 	content		= Column(String(1000))
 
 class IncidentResponse(Base):
-	competition	= Column(Integer, getForeignKey(Competition))
-	team		= Column(Integer, getForeignKey(Team))
-	incident	= Column(Integer, getForeignKey(Incident))
-	#replyTo		= Column(Integer, getForeignKey(IncidentResponse))
+	competition	= Column(Integer, get_foreign_key(Competition))
+	team		= Column(Integer, get_foreign_key(Team))
+	incident	= Column(Integer, get_foreign_key(Incident))
+	#replyTo		= Column(Integer, get_foreign_key(IncidentResponse))
 	#replies		= relationship('IncidentResponse')
 	datetime	= Column(DateTime)
 	subject		= Column(String(100))
@@ -105,8 +105,8 @@ class Plugin(Base):
 	description		= Column(String(256))
 
 class Service(Base):
-	competition		= Column(Integer, getForeignKey(Competition))
-	plugin			= Column(Integer, getForeignKey(Plugin))
+	competition		= Column(Integer, get_foreign_key(Competition))
+	plugin			= Column(Integer, get_foreign_key(Plugin))
 	name			= Column(String(20))
 	description		= Column(String(256))
 	manualStart		= Column(Boolean, default = True)
