@@ -1,43 +1,43 @@
 from setuptools import setup
 
 setup(
-	# Application name:
-	name = "cssef-server",
+    # Application name:
+    name = "cssef-server",
 
-	# Version number:
-	version = "0.0.6",
+    # Version number:
+    version = "0.0.6",
 
-	# Application author details:
-	author = "Brahm Lower",
-	author_email = "bplower@gmail.com",
+    # Application author details:
+    author = "Brahm Lower",
+    author_email = "bplower@gmail.com",
 
-	# Packages:
-	packages = ["cssefserver", "cssefserver.account"],
+    # Packages:
+    packages = ["cssefserver", "cssefserver.account"],
 
-	# Details:
-	url = "http://github.com/bplower/cssef/",
+    # Details:
+    url = "http://github.com/bplower/cssef/",
 
-	# Scripts:
-	scripts = [
-		"cssefd"
-	],
+    # Scripts:
+    scripts = [
+        "cssefd"
+    ],
 
-	data_files = [
-		('/etc/cssef/', ['cssefd.yml']),
-	#	('/var/log/cssef/', [])
-	],
+    data_files = [
+        ('/etc/cssef/', ['cssefd.yml']),
+    #    ('/var/log/cssef/', [])
+    ],
 
-	# Description:
-	description = "The CSSEF server.",
-	long_description = open("README.md").read(),
+    # Description:
+    description = "The CSSEF server.",
+    long_description = open("README.md").read(),
 
-	# Dependant packages:
-	install_requires = [
-		"bcrypt",
-		"sqlalchemy",
-		"tokenlib",
-		"jsonrpcserver",
-		"flask",
-		"PyYAML"
-	],
+    # Dependant packages:
+    install_requires = [
+        "bcrypt",
+        "sqlalchemy",
+        "tokenlib",
+        "jsonrpcserver",
+        "flask",
+        "PyYAML"
+    ],
 )
