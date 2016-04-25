@@ -8,8 +8,6 @@ from django.forms import Select
 from django.forms import PasswordInput
 from django.forms import HiddenInput
 from WebInterface.utils import makeApiRequest
-from cssefclient.cssefclient import ServerEndpoints
-#from cssefclient.cssefclient.ServerEndpoints import organizationGet as ApiOrganizationGet
 
 class CreateOrganizationForm(Form):
 	name = CharField(

@@ -252,11 +252,11 @@ if __name__ == "__main__":
 
 	# Make connection to server, load endpoints, authenticate
 	client.connect()
-	endpoints = client.loadEndpoints()
+	client.loadEndpoints()
 	client.loadToken()
 
 	# Call command and handle return
-	commandMenu = Menu(client.config, endpoints)
+	commandMenu = Menu(client.config, client.endpoints)
 	commandMenu.construct()
 
 	command = commandMenu.getCommand(userInput.command)

@@ -1,30 +1,37 @@
 {% extends "sitePageTemplate.html" %}
 
-{% block authed_navbar_links %}
-<li class="active"><a href="/admin/">Admin Config</a></li>
-{% endblock %}
-
-{% block sidebar %}
-<div class="col-sm-3 col-md-2 sidebar">
-	<ul class="nav nav-sidebar">
-		<li id="sidebar_home">
-			<a href="/admin/home/">Home</a>
-		</li>
-		<li id="sidebar_siteconfigs">
-			<a href="/admin/siteconfigs">Site Configs</a>
-		</li>
-		<li class="nav-divider"><li>
-		<li style="padding-top: 10px; padding-left: 20px; padding-right: 20px, padding-bottom: 15px"> Modules </li>
-		<li id="sidebar_users">
-			<a href="/admin/users/">Users</a>
-		</li>
-		<li id="sidebar_organizations">
-			<a href="/admin/organizations/">Organizations</a>
-		</li>
-		<li id="sidebar_engines">
-			<a href="/admin/scoringengines/">Scoring Engines</a>
-		</li>
-
-	</ul>
-</div>
+{% block sidebarmenu %}
+<ul class="sidebar-menu">
+  <li class="header">MAIN NAVIGATION</li>
+  <li>
+    <a href="/admin/">
+      <i class="fa fa-home"></i> <span>Home</span>
+    </a>
+  </li>
+  <li>
+    <a href="/admin/siteconfig/">
+      <i class="fa fa-gear"></i> <span>Site Configs</span>
+    </a>
+  </li>
+  <li>
+    <a href="/admin/users">
+      <i class="fa fa-user"></i> <span>Users</span>
+    </a>
+  </li>
+  <li>
+    <a href="/admin/organizations">
+      <i class="fa fa-users"></i> <span>Organizations</span>
+    </a>
+  </li>
+  <li class="treeview">
+    <a href="/admin/plugins">
+      <i class="fa fa-puzzle-piece"></i> <span>Plugins</span>
+      <i class="fa fa-angle-left pull-right"></i>
+    </a>
+    <ul class="treeview-menu">
+      <li><a href="/admin/plugins/pluginname"><i class="fa fa-circle-o text-red"></i> CTF </a></li>
+      <li><a href="/admin/plugins/pluginname"><i class="fa fa-circle-o text-aqua"></i> CCDC </a></li>
+    </ul>
+  </li>
+</ul>
 {% endblock %}

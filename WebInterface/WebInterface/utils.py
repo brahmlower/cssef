@@ -1,15 +1,15 @@
 from django.shortcuts import render_to_response
-from cssefclient.cssefclient import Configuration
-from cssefclient.cssefclient import getConn as getCeleryConnection
-from cssefclient.cssefclient import ServerEndpoints
+from cssefclient import CssefClient
 
-config = Configuration('/etc/cssef/cssef.conf')
+client = CssefClient()
+client.config.loadConfigFile('/etc/cssef/cssef.yml')
+client.connect()
 
-def makeApiRequest(apiEndpointString, argsDict, apiConnection = getCeleryConnection(config)):
+def makeApiRequest(apiEndpointString, argsDict, apiConnection = client.config.serverConnection):
 	#print '[UTILS] Making api request to endpoint "%s" with arguments "%s"' % (apiEndpoint, argsDict)
 	#command = apiEndpoint(apiConnection)
 	#return command.execute(**argsDict)
-	x = ServerEndpoints(apiConnection)
+	x = ServerEndpoints()
 	return getattr(x, apiEndpointString).execute(**argsDict)
 
 def getContext(contextClass, pageTemplate, request, **kwargs):

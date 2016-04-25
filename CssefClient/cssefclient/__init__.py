@@ -14,7 +14,6 @@ class CssefClient(object):
 	def __init__(self):
 		self.config = Configuration()
 		self.endpoints = None
-		self.server = None
 
 	def connect(self):
 		"""Establishes a connection to the celery server
@@ -23,7 +22,7 @@ class CssefClient(object):
 		server, based on the settings. This connection can be provided to a
 		`CeleryEndpoint` to execute a task
 		"""
-		self.server = HTTPServer(self.config.server_url)
+		self.config.serverConnection = HTTPServer(self.config.server_url)
 
 	def loadEndpoints(self):
 		endpoint_loader = EndpointsLoader(self.config)
@@ -43,6 +42,8 @@ class CssefClient(object):
 			return RenewToken(self.config).execute()
 
 	def callEndpoint(self, command, args):
+		print command
+		print args
 		"CALLING THE ENDPOINT NOW"
 
 class Configuration(object):
@@ -115,7 +116,7 @@ class Configuration(object):
 			configDict = yaml.load(open(configPath, 'r'))
 		except IOError:
 			print "[WARNING] Failed to load config file at '%s'." % configPath
-			return
+			return None
 		if configDict:
 			self.loadConfigDict(configDict)
 
@@ -178,6 +179,8 @@ class EndpointsLoader(object):
 			output = self.loadFromServer()
 			if not output:
 				# Raise an error since we failed to load the endpoints
+				print output.value
+				print output.message
 				raise Exception
 			self.endpoints = output.content
 			self.updateCache()
