@@ -3,6 +3,7 @@ from cssefserver.utils import CssefRPCEndpoint
 from cssefserver.taskutils import model_del
 from cssefserver.taskutils import model_set
 from cssefserver.taskutils import model_get
+from cssefserver.errors import CssefException
 from cssefserver.account.api import Organization
 from cssefserver.account.api import User
 from cssefserver.account.utils import authorize_access
@@ -20,9 +21,10 @@ class OrganizationAdd(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        auth_result = authorize_access(self.database_connection, auth, self.config)
-        if auth_result:
-            return auth_result
+        try:
+            authorize_access(self.database_connection, auth, self.config)
+        except CssefException as err:
+            return err.as_return_dict()
         organization = Organization.from_dict(self.database_connection, kwargs)
         return_dict = get_empty_return_dict()
         return_dict['content'].append(organization.as_dict())
@@ -41,11 +43,10 @@ class OrganizationDel(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        auth_result = authorize_access(self.database_connection, auth, self.config)
-        if auth_result is not None:
-            return auth_result
-        if not pkid:
-            raise Exception
+        try:
+            authorize_access(self.database_connection, auth, self.config)
+        except CssefException as err:
+            return err.as_return_dict()
         return model_del(Organization, self.database_connection, pkid)
 
 class OrganizationSet(CssefRPCEndpoint):
@@ -62,11 +63,10 @@ class OrganizationSet(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        auth_result = authorize_access(self.database_connection, auth, self.config)
-        if auth_result is not None:
-            return auth_result
-        if not pkid:
-            raise Exception
+        try:
+            authorize_access(self.database_connection, auth, self.config)
+        except CssefException as err:
+            return err.as_return_dict()
         return model_set(Organization, self.database_connection, pkid, **kwargs)
 
 class OrganizationGet(CssefRPCEndpoint):
@@ -82,9 +82,10 @@ class OrganizationGet(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        auth_result = authorize_access(self.database_connection, auth, self.config)
-        if auth_result is not None:
-            return auth_result
+        try:
+            authorize_access(self.database_connection, auth, self.config)
+        except CssefException as err:
+            return err.as_return_dict()
         return model_get(Organization, self.database_connection, **kwargs)
 
 class UserAdd(CssefRPCEndpoint):
@@ -101,9 +102,10 @@ class UserAdd(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        auth_result = authorize_access(self.database_connection, auth, self.config)
-        if auth_result is not None:
-            return auth_result
+        try:
+            authorize_access(self.database_connection, auth, self.config)
+        except CssefException as err:
+            return err.as_return_dict()
         #kwargs['organization'] = organization
         user = User.from_dict(self.database_connection, kwargs)
         return_dict = get_empty_return_dict()
@@ -123,11 +125,10 @@ class UserDel(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        auth_result = authorize_access(self.database_connection, auth, self.config)
-        if auth_result is not None:
-            return auth_result
-        if not pkid:
-            raise Exception
+        try:
+            authorize_access(self.database_connection, auth, self.config)
+        except CssefException as err:
+            return err.as_return_dict()
         return model_del(User, self.database_connection, pkid)
 
 class UserSet(CssefRPCEndpoint):
@@ -144,11 +145,10 @@ class UserSet(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        auth_result = authorize_access(self.database_connection, auth, self.config)
-        if auth_result is not None:
-            return auth_result
-        if not pkid:
-            raise Exception
+        try:
+            authorize_access(self.database_connection, auth, self.config)
+        except CssefException as err:
+            return err.as_return_dict()
         return model_set(User, self.database_connection, pkid, **kwargs)
 
 class UserGet(CssefRPCEndpoint):
@@ -164,7 +164,8 @@ class UserGet(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        auth_result = authorize_access(self.database_connection, auth, self.config)
-        if auth_result is not None:
-            return auth_result
+        try:
+            authorize_access(self.database_connection, auth, self.config)
+        except CssefException as err:
+            return err.as_return_dict()
         return model_get(User, self.database_connection, **kwargs)

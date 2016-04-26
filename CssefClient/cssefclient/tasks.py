@@ -1,4 +1,3 @@
-from getpass import getpass
 from cssefclient.utils import RPCEndpoint
 from cssefclient.utils import saveTokenFile
 
@@ -27,16 +26,17 @@ class RenewToken(RPCEndpoint):
 		self.endpointName = 'RenewToken'
 
 	def execute(self, **kwargs):
-		# Populate the arguments to pass to the login
-		# Here we only need the username and the token
-		if not kwargs.get('username'):
-			kwargs['username'] = self.config.username
-		if not kwargs.get('organization'):
-			kwargs['organization'] = self.config.organization
-		if not kwargs.get('token'):
-			kwargs['token'] = self.config.token
+		print kwargs
+		# # Populate the arguments to pass to the login
+		# # Here we only need the username and the token
+		# if not kwargs.get('username'):
+		# 	kwargs['username'] = self.config.username
+		# if not kwargs.get('organization'):
+		# 	kwargs['organization'] = self.config.organization
+		# if not kwargs.get('token'):
+		# 	kwargs['token'] = self.config.token
 		# Attempt to log in
-		returnDict = super(RenewToken, self).execute(**kwargs)
+		returnDict = super(RenewToken, self).execute(**kwargs.get('auth'))
 		if returnDict.value != 0:
 			return returnDict
 		token = returnDict.content[0]
@@ -58,14 +58,8 @@ class Login(RPCEndpoint):
 					enabled. Set 'token_auth_enabled: True' in your \
 					configuration."
 			return None
-		if not kwargs.get('username'):
-			kwargs['username'] = self.config.username
-		if not kwargs.get('organization'):
-			kwargs['organization'] = self.config.organization
-		if not kwargs.get('password'):
-			kwargs['password'] = getpass()
 		# Attempt to log in
-		returnDict = super(Login, self).execute(**kwargs)
+		returnDict = super(Login, self).execute(**kwargs.get('auth'))
 		if returnDict.value != 0:
 			return returnDict
 		# Save the returned token

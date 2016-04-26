@@ -24,9 +24,12 @@ if [ 0 -ne $? ]; then
 fi
 
 # Test the server and client
-nosetests CssefClient
+echo "Running client tests"
+nosetests CssefClient/.
 CLIENTEXIT=$?
-nosetests CssefServer
+
+echo "Running server tests"
+nosetests CssefServer/.
 SERVEREXIT=$?
 
 # Set up the virtual environment

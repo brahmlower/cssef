@@ -53,10 +53,11 @@ def authorize_access(db_conn, auth_dict, config):
             print "[AUTH INFO] Provided auth-token was correct."
             return False
         else:
+            raise errors.AuthIncorrectAdminToken
             print "[AUTH WARNING] Provided auth-token was incorrect."
     # Importing for this got pretty ugly... :(
     if not auth_dict.get('username', None):
-        print "[AUTH WARNING] No username provided."
+        #print "[AUTH WARNING] No username provided."
         raise errors.NoUsernameProvided
     if not auth_dict.get('organization', None):
         print "[AUTH WARNING] No organization was provided."
@@ -76,4 +77,3 @@ def authorize_access(db_conn, auth_dict, config):
     # Authorize the user
     if not user.authorized(auth_dict, 'organization'):
         raise errors.PermissionDenied
-    return False

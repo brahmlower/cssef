@@ -30,9 +30,6 @@ class Configuration(object):
         self.cssef_loglevel = ""
         self.cssef_stderr = ""
         self.cssef_stdout = ""
-        self.celery_loglevel = ""
-        self.celery_stderr = ""
-        self.celery_stdout = ""
         # Plugin configurations
         self.installed_plugins = []
 
@@ -79,7 +76,7 @@ class Configuration(object):
                 setattr(self, setting, value)
                 if self.verbose:
                     print "[LOGGING] Configuration '%s' set to '%s'." % (i, value)
-            elif isinstance(config_dict[i]) == dict:
+            elif isinstance(config_dict[i], dict):
                 # This is a dictionary and may contain additional values
                 self.load_config_dict(config_dict[i])
             else:
@@ -106,7 +103,7 @@ class CssefRPCEndpoint(object):
             except KeyError:
                 return_dict = get_empty_return_dict()
                 return_dict['value'] = 1
-                return_dict['message'] = "Missing required argument '%s'." % i
+                return_dict['message'] = ["Missing required argument '%s'." % i]
                 return return_dict
         # Now call the on_request method that actually handles the request.
         # Here we're determining if we should pass it kwargs or not (the

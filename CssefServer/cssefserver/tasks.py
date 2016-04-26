@@ -44,11 +44,11 @@ class RenewToken(CssefRPCEndpoint):
         if len(user_results) != 1:
             return client_failed_login_output()
         user = user_results[0]
-        if not user.authenticateToken(token):
+        if not user.authenticate_token(token):
             # If the token is already expired, then authentication has failed.
             return client_failed_login_output()
         return_dict = get_empty_return_dict()
-        return_dict['content'] = [user.getNewToken()]
+        return_dict['content'] = [user.get_new_token()]
         return return_dict
 
 class Login(CssefRPCEndpoint):
@@ -75,13 +75,13 @@ class Login(CssefRPCEndpoint):
         user = user_results[0]
         # Try to verify the provided credentials
         logging.info('got user')
-        if not user.authenticatePassword(password):
+        if not user.authenticate_password(password):
             # Authentication has failed
             logging.info('user authentication failed')
             return client_failed_login_output()
         logging.info('user has been authenticated')
         # The user is authenticated. Generate a key for them
         return_dict = get_empty_return_dict()
-        return_dict['content'] = [user.getNewToken()]
+        return_dict['content'] = [user.get_new_token()]
         logging.info('got a new token')
         return return_dict

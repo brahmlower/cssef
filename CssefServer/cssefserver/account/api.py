@@ -209,8 +209,8 @@ class User(ModelWrapper):
         if not org:
             print "Failed to get organization with pkid '%s'" % kw_dict['organization']
             raise ValueError
-        if org.model.numMembers >= org.maxMembers:
-            raise MaxMembersReached(org.maxMembers)
+        if org.model.num_members >= org.max_members:
+            raise MaxMembersReached(org.max_members)
         # Copied right from ModelWrapper.from_dict
         model_object_inst = cls.model_object()
         cls_inst = cls(db_conn, model_object_inst)
@@ -219,7 +219,7 @@ class User(ModelWrapper):
                 setattr(cls_inst, i, kw_dict[i])
         db_conn.add(cls_inst.model)
         db_conn.commit()
-        org.setNumMembers()
+        org.set_num_members()
         return cls_inst
 
     def authorized(self, auth_dict, group):
@@ -315,12 +315,12 @@ class Organization(ModelWrapper):
         'name',
         'url',
         'description',
-        'maxMembers',
-        'maxCompetitions',
-        'canAddUsers',
-        'canDeleteUsers',
-        'canAddCompetitions',
-        'canDeleteCompetitions']
+        'max_members',
+        'max_competitions',
+        'can_add_users',
+        'can_delete_users',
+        'can_add_competitions',
+        'can_delete_competitions']
 
     def as_dict(self):
         """Provides a dictionary representation of the Organization
@@ -354,11 +354,11 @@ class Organization(ModelWrapper):
         Returns:
             bool: True if the organization can add its own users, false if not
         """
-        return self.model.canAddUsers
+        return self.model.can_add_users
 
     @can_add_users.setter
     def can_add_users(self, value):
-        self.model.canAddUsers = value
+        self.model.can_add_users = value
         self.db_conn.commit()
 
     @property
@@ -371,11 +371,11 @@ class Organization(ModelWrapper):
             str: True if the organization can delete its own users, false if
                 not
         """
-        return self.model.canDeleteUsers
+        return self.model.can_delete_users
 
     @can_delete_users.setter
     def can_delete_users(self, value):
-        self.model.canDeleteUsers = value
+        self.model.can_delete_users = value
         self.db_conn.commit()
 
     @property
@@ -388,11 +388,11 @@ class Organization(ModelWrapper):
             bool: True if the organization can add its own competitions, false
                 if not
         """
-        return self.model.canAddCompetitions
+        return self.model.can_add_competitions
 
     @can_add_competitions.setter
     def can_add_competitions(self, value):
-        self.model.canAddCompetitions = value
+        self.model.can_add_competitions = value
         self.db_conn.commit()
 
     @property
@@ -405,11 +405,11 @@ class Organization(ModelWrapper):
             str: True if the organization can delete its own competitions,
                 false if not
         """
-        return self.model.canDeleteCompetitions
+        return self.model.can_delete_competitions
 
     @can_delete_competitions.setter
     def can_delete_competitions(self, value):
-        self.model.canDeleteCompetitions = value
+        self.model.can_delete_competitions = value
         self.db_conn.commit()
 
     @property
@@ -471,11 +471,11 @@ class Organization(ModelWrapper):
         Returns:
             int:
         """
-        return self.model.maxMembers
+        return self.model.max_members
 
     @max_members.setter
     def max_members(self, value):
-        self.model.maxMembers = value
+        self.model.max_members = value
         self.db_conn.commit()
 
     @property
@@ -489,11 +489,11 @@ class Organization(ModelWrapper):
         Returns:
             int:
         """
-        return self.model.maxCompetitions
+        return self.model.max_competitions
 
     @max_competitions.setter
     def max_competitions(self, value):
-        self.model.maxCompetitions = value
+        self.model.max_competitions = value
         self.db_conn.commit()
 
     def get_num_members(self):
@@ -505,7 +505,7 @@ class Organization(ModelWrapper):
         Returns:
             int: The number of competitions that are part of the organization
         """
-        return self.model.numMembers
+        return self.model.num_members
 
     def set_num_members(self):
         """Gets the current number of members in the organization
@@ -516,11 +516,11 @@ class Organization(ModelWrapper):
         Returns:
             int: The number of users that are part of the oragnizaiton
         """
-        self.model.numMembers = User.count(self.db_conn, organization=self.get_id())
+        self.model.num_members = User.count(self.db_conn, organization=self.get_id())
         self.db_conn.commit()
 
     def get_num_competitions(self):
-        return self.model.setNumCompetitions
+        return self.model.set_num_competitions
 
     # def setNumCompetitions(self):
     #     self.model.numCompetitions = Competition.count(self.db, organization = self.get_id())
@@ -551,29 +551,3 @@ class Organization(ModelWrapper):
             User: A user that belongs to the organization
         """
         return User(**kwargs)
-
-    # def createCompetition(self, kw_dict):
-    #     """Creates a new competition that is automatically added to the organization
-
-    #     Crates a competition through Organization.createMember() ensures that
-    #     organization restrictions are checked and updated during the
-    #     competition creation process.
-
-    #     Args:
-    #         kw_dict (dict): A dictionary containing keywords that will be
-    #             passed to Competition.from_dict().
-
-    #     Returns:
-    #         User: Returns the competition that is created if successful. None
-    #         if competition creation fails.
-
-    #     Raises:
-    #         MaxCompetitionsReached: If the organization already has the
-    #         maximum number of competitions.
-    #     """
-    #     if self.model.numCompetitions >= self.maxCompetitions:
-    #         raise MaxCompetitionsReached(self.maxCompetitions)
-    #     kw_dict['organization'] = self.get_id()
-    #     newCompetition = Competition.from_dict(self.db, kw_dict)
-    #     self.setNumCompetitions()
-    #     return newCompetition

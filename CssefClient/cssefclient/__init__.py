@@ -29,7 +29,7 @@ class CssefClient(object):
 		endpoint_loader.determineSource()
 		self.endpoints = endpoint_loader.load()
 
-	def loadToken(self):
+	def loadToken(self, auth):
 		# If we're not supposed to do this, then dont do it
 		if not self.config.token_auth_enabled:
 			return False
@@ -37,14 +37,14 @@ class CssefClient(object):
 		token = loadTokenFile(self.config.token_file)
 		if token:
 			self.config.token = token
+		else:
+			print "[ERROR] Failed to load token"
 		# Renew the token if it's enabled
 		if self.config.token_renewal_enabled:
-			return RenewToken(self.config).execute()
+			return RenewToken(self.config).execute(auth = auth)
 
 	def callEndpoint(self, command, args):
-		print command
-		print args
-		"CALLING THE ENDPOINT NOW"
+		return command.execute(**args)
 
 class Configuration(object):
 	"""Contains and loads configuration values
@@ -61,12 +61,14 @@ class Configuration(object):
 		self.configPath = self.userDataDir + "cssef.yml"
 		self.serverConnection = None
 		# General configurations
+		self.auth = {}
 		self.verbose = False
 		self.organization = None
 		self.username = None
 		self.password = None
 		self.task_timeout = 5
 		self.admin_token = None
+		self.prompt_password = True
 		# Default values for the client configuration
 		self.rpc_hostname = "localhost"
 		self.rpc_port = "5000"
@@ -171,10 +173,10 @@ class EndpointsLoader(object):
 	def load(self):
 		if self.fromCache:
 			output = self.loadFromFile()
-			if not output:
-				# Raise an error since we failed to load the endpoints
-				raise Exception
-			self.endpoints = output.content
+			# TODO: We should eventually return an output object from
+			# loadFromFile. Then make sure that if it failed, we failover to
+			# loading from the server (maybe?)
+			#self.endpoints = output.content
 		else:
 			output = self.loadFromServer()
 			if not output:

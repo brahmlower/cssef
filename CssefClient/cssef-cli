@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import os
 import sys
+from getpass import getpass
 import cssefclient
 from prettytable import PrettyTable
 from cssefclient.utils import RPCEndpoint
@@ -144,11 +145,11 @@ class ParseInput(object):
 			argument = argument.strip('-')
 			if len(argument.split("=")) > 1:
 				# The value is in the same argument
-				keyword = argument.split('=')[0]
+				keyword = argument.split('=')[0].replace('-', '_')
 				value = argument.split('=')[1]
 			else:
 				# The value is in the next argument
-				keyword = argument
+				keyword = argument.replace('-', '_')
 				try:
 					value = self.remainingArgs[index + 1]
 				except IndexError:
@@ -158,37 +159,49 @@ class ParseInput(object):
 			self.commandArgs[keyword] = value
 			index += 1
 
-	def prepareAuthDict(self, config):
-		tmpDict = {}
-		# If the admin token was provided, add that to the auth dict and then
-		# return since we don't need anything else.
-		if "admin-token" in self.options:
-			tmpDict["admin-token"] = self.options.pop("admin-token")
-			self.commandArgs['auth'] = tmpDict
-			return True
-		# Add the username to the auth Dict
-		if not config.username:
-			print "No username was provided."
-			return False
-		tmpDict["username"] = config.username
-		# Add the organization to the auth Dict
-		if not config.organization:
-			print "No organization was provided."
-			return False
-		tmpDict["organization"] = config.organization
-		# If a password is provided, we want to use that instead of the token
-		if config.password:
-			tmpDict["password"] = config.password
-		elif config.token_auth_enabled and config.token:
-			tmpDict["token"] = config.token
+class AuthDict(object):
+	def __init__(self, config, parsed_input):
+		pass
+
+def buildAuthDict(parsed_input, config):
+	tmpDict = {}
+	# If the admin token was provided, add that to the auth dict and then
+	# return since we don't need anything else.
+	#if "admin-token" in parsed_input.options:
+	if config.admin_token:
+		#tmpDict["admin-token"] = parsed_input.options.pop("admin-token")
+		tmpDict["admin-token"] = config.admin_token
+		return tmpDict
+	# Add the username to the auth Dict
+	if not config.username:
+		print "No username was provided."
+		return None
+	tmpDict["username"] = config.username
+	# Add the organization to the auth Dict
+	if not config.organization:
+		print "No organization was provided."
+		return None
+	tmpDict["organization"] = config.organization
+	# If a password is provided, we want to use that instead of the token
+	if config.password:
+		tmpDict["password"] = config.password
+	elif config.token_auth_enabled and config.token:
+		tmpDict["token"] = config.token
+	else:
+		# If it's okay, prompt the user for a password
+		if config.prompt_password:
+			tmpDict["password"] = getpass()
 		else:
 			# Both values failed
 			print "Neither password nor token were provided."
-			return False
-		self.commandArgs['auth'] = tmpDict
-		return True
+			return None
+	return tmpDict
+
 
 def printOutput(output):
+	if not output:
+		sys.stderr.write("Return values was not in correct output format.")
+		sys.exit()
 	if output.value != 0:
 		sys.stderr.write("An error was encountered:\n")
 		sys.stderr.write("\n".join(output.message)+"\n")
@@ -205,39 +218,6 @@ def printOutput(output):
 		for i in output.content:
 			print i
 
-# if __name__ == "__main__":
-# 	"""
-# 	Usage:
-# 	cssef-cli [OPTIONS] [COMMAND] [ARGUMENTS]
-# 	"""
-# 	# Parse the command line arguments
-# 	cliInput = ParseInput()
-# 	config = buildConfiguration(cliInput)
-# 	# Establish rabbitmq connection
-# 	config.establishApiConnection()
-# 	# Load the available endpoints
-# 	commandMenu = Menu(config)
-# 	commandMenu.load()
-# 	# Cache the endpoints if necessary
-# 	if config.endpoint_cache_enabled:
-# 		commandMenu.cacheEndpoints()
-# 	# Attempt to renew the auth token permitted
-# 	if config.token_auth_enabled and config.token_renewal_enabled and not config.admin_token:
-# 		processTokenRenewal(config)
-# 	else:
-# 		print "[LOGGING] Skipping auth token renewal."
-
-# 	# Get the command, instantiate it, then call it
-# 	# This is super temporary - I just want to get all of the server side stuff fixed first
-# 	try:
-# 		command = commandMenu.getCommand(cliInput.command)
-# 		output = command.execute(**cliInput.commandArgs)
-# 	except NonExistantCommand as e:
-# 		output = CommandOutput(**e.asReturnDict())
-# 	# Now display the output
-# 	output.display()
-# 	output.exitWithValue()
-
 if __name__ == "__main__":
 	# # Ensure user data directory exists
 	# if not os.path.exists(self.userDataDir):
@@ -246,14 +226,20 @@ if __name__ == "__main__":
 	# Set up and configure the client
 	userInput = ParseInput(sys.argv[1:])
 	client = cssefclient.CssefClient()
-	client.config.loadConfigFile('/etc/cssef/cssef.yml')
-	client.config.loadConfigFile('~/.cssef/cssef.yml')
+	client.config.loadConfigFile(client.config.globalConfigPath)
+	client.config.loadConfigFile(client.config.configPath)
 	client.config.loadConfigDict(userInput.options)
+
+	# Prepare the auth dictionary
+	auth_dict = buildAuthDict(userInput, client.config)
+	if not auth_dict:
+		sys.exit()
+	userInput.commandArgs['auth'] = auth_dict
 
 	# Make connection to server, load endpoints, authenticate
 	client.connect()
 	client.loadEndpoints()
-	client.loadToken()
+	client.loadToken(auth = userInput.commandArgs['auth'])
 
 	# Call command and handle return
 	commandMenu = Menu(client.config, client.endpoints)

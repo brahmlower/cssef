@@ -38,3 +38,7 @@ class PermissionDenied(CssefException):
 class AuthFindsMultipleUsers(CssefException):
     value = 36
     message = ['Username + Organization returned multiple users.']
+
+class AuthIncorrectAdminToken(CssefException):
+    value = 37
+    message = ['Provided auth-token was incorrect.']

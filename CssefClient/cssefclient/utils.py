@@ -23,13 +23,20 @@ class CommandOutput(object):
 	def __nonzero__(self):
 		return 0 == self.value
 
+	def as_dict(self):
+		temp_dict = {}
+		temp_dict['value'] = self.value
+		temp_dict['message'] = self.message
+		temp_dict['content'] = self.content
+		return temp_dict
+
 class RPCEndpoint(object):
 	"""Base class to represent an endpoint task on the server.
 
 	This class gets subclassed by other classes to define a specific
 	task on the cssef server.
 	"""
-	def __init__(self, config, endpointName, args):
+	def __init__(self, config, endpointName, args = None):
 		"""
 		Args:
 			config (Configuration): The current configuration to use
@@ -93,7 +100,10 @@ class RPCEndpoint(object):
 			#	args = args, kwargs = kwargs, expires = task_timeout)
 			#result = self.task.get(timeout = task_timeout)
 			result = self.config.serverConnection.request(self.endpointName, **kwargs)
-			return CommandOutput(**result)
+			if result:
+				return CommandOutput(**result)
+			else:
+				return CommandOutput(value=-1, content=[], message=['Call to endpoint returned "None".'])
 		except Exception as e:
 			return CommandOutput(value=-1, content=[], message=[str(e)])
 

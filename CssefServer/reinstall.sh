@@ -58,7 +58,7 @@ sudo sed -i "s|admin-token:|admin-token: $admintoken|" /etc/cssef/cssefd.yml
 sudo cssefd start
 
 # Add an organization to add our user to.
-cssef-cli --verbose True --admin-token $admintoken --force-endpoint-server True organization add --name=Administrators --maxMembers=10
+cssef-cli --verbose True --admin-token $admintoken --token-renewal-enabled False --force-endpoint-server True organization add --name=Administrators --max-members 10
 
 # And now our new test admin user!
-cssef-cli --verbose True --admin-token $admintoken --force-endpoint-server True user add --organization=1 --name=Admin --username=admin --password=admin
+cssef-cli --verbose True --admin-token $admintoken --token-renewal-enabled False --force-endpoint-server True user add --organization=1 --name=Admin --username=admin --password=admin
