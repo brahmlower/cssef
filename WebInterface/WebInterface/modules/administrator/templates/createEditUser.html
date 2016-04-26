@@ -1,18 +1,19 @@
 {% extends "administrator/templates/pageTemplate.html" %}
 
-{% block sidebar_id %}sidebar_users{% endblock %}
-
 {% block page_content %}
-<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-	{% if returnValue != 0 %}
-		<pre>{{ errors }}</pre>
-	{% endif %}
+  <section class="content-header">
+    <h1>Edit User</h1>
+    <ol class="breadcrumb">
+      <li><a href="/"><i class="fa fa-home"></i> Site Home </a></li>
+      <li><a href="/admin/home"> Admin </a></li>
+      <li><a href="/admin/users"> Users </a></li>
+      <li class="active"><a href="/admin/siteconfigs"> Edit User </a></li>
+    </ol>
+  </section>
 
-	{% if action == "create" %}
-	<form action="/admin/users/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
-	{% else %}
+  <!-- Main content -->
+  <section class="content">
 	<form action="/admin/users/edit/{{ objectId }}/" method="post" class="form-horizontal" enctype="multipart/form-data">
-	{% endif %}
 		{% csrf_token %}
 
 		
@@ -37,5 +38,5 @@
 			<p id="form_messages"></p>
 		</div>
 	</form>
-</div>
+  </section><!-- /.content -->
 {% endblock %}

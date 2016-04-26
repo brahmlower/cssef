@@ -56,24 +56,59 @@
               <li class="dropdown notifications-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-bug"></i>
+                  {% if debug_error_count %}
+                  <span class="label label-danger">{{ debug_error_count }}</span>
+                  {% endif %}
                 </a>
                 <ul class="dropdown-menu">
                   <li class="header"> Debug Information </li>
                   <li>
                     <!-- inner menu: contains the actual data -->
                     <ul class="menu">
+                      {% for i in api_calls %}
                       <li>
-                        <a style="font-family: Menlo,Monaco,Consolas,'Courier New',monospace;">
-                          returnValue: {{ returnValue }}<br>
-                          errors: {{ errors }}<br>
-                          formData: {{ formData }}<br>
-                          apiData: {{ apiData }}<br>
+                        <a data-toggle="modal" data-target="#api_call-{{ forloop.counter0 }}">
+                          API Call {{ forloop.counter }}
+                          {% if i.value == 0 %}
+                          <small class="label pull-right bg-green"> Success </small>
+                          {% else %}
+                          <small class="label pull-right bg-red"> Error </small>
+                          {% endif %}
                         </a>
                       </li>
+                      {% endfor %}
                     </ul>
                   </li>
                 </ul>
               </li>
+{% for i in api_calls %}
+<!-- Modal -->
+<div class="modal fade" id="api_call-{{ forloop.counter0 }}" tabindex="-1" role="dialog" aria-labelledby="api_calllabel" style="display: none;" data-backdrop="">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="api_calllabel">Details for API Call {{ forloop.counter }}</h4>
+      </div>
+      <div class="modal-body">
+        <dl class="dl-horizontal" style="margin: 0px">
+          <dt>Return Value</dt>
+          <dd style="font-family: Menlo,Monaco,Consolas,'Courier New',monospace;">{{ i.value }}</dd>
+          <dt>Messages</dt>
+          <dd style="font-family: Menlo,Monaco,Consolas,'Courier New',monospace;">{{ i.messages }}</dd>
+          <dt>Content</dt>
+          <dd style="font-family: Menlo,Monaco,Consolas,'Courier New',monospace;">{{ i.content }}</dd>
+          <dt>Provided Data</dt>
+          <dd style="font-family: Menlo,Monaco,Consolas,'Courier New',monospace;">{{ i.formData }}</dd>
+        </dl>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
               {% endif %}
               <!-- Notifications: style can be found in dropdown.less -->
               <li class="dropdown notifications-menu">

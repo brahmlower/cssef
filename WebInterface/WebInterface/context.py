@@ -3,7 +3,10 @@ from django.template import RequestContext
 
 class BaseContext(object):
 	def __init__(self, request):
+		self.api_calls = []
+		self.forms = {}
 		self.debug = True
+		self.debug_error_count = 0
 		self.returnValue = 0
 		self.errors = []
 		self.apiData = None
@@ -22,6 +25,7 @@ class BaseContext(object):
 			return None
 
 	def translateApiReturn(self, output):
+		self.api_calls.append(output)
 		self.returnValue = output['value']
 		if type(output['message']) == list:
 			self.errors = "\n".join(output['message'])
@@ -30,10 +34,14 @@ class BaseContext(object):
 		self.apiData = output['content']
 
 	def getContext(self):
+		for i in self.api_calls:
+			if i['value'] != 0:
+				self.debug_error_count += 1
 		#print 'utils.getContext - start'
 		self.context.push({'debug': self.debug})
-		self.context.push({'returnValue': self.returnValue})
-		self.context.push({'errors': self.errors})
+		self.context.push({'debug_error_count': self.debug_error_count})
+		self.context.push({'api_calls': self.api_calls})
+		self.context.push({'forms': self.forms})
 		self.context.push({'apiData': self.apiData})
 		#print 'utils.getContext - end'
 		return self.context

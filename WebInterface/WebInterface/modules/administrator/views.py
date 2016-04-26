@@ -27,8 +27,8 @@ def listUsers(request):
 	return getContext(ListUserContext, pageTemplate, request)
 
 def createUser(request):
-	pageTemplate = templatePathPrefix + 'createEditUser.html'
-	return getContext(CreateUserContext, pageTemplate, request)
+	#pageTemplate = templatePathPrefix + 'createEditUser.html'
+	return getContext(CreateUserContext, '', request, redirect_url = '/admin/users')
 
 def editUser(request, userId):
 	pageTemplate = templatePathPrefix + 'createEditUser.html'

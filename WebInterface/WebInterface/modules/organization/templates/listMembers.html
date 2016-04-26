@@ -1,19 +1,22 @@
 {% extends "organization/templates/pageTemplate.html" %}
 
-{% block sidebar_id %}sidebar_members{% endblock %}
-
 {% block page_content %}
-<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-	<div class="jumbotron">
-		<h1>Organization Members</h1>
-		<p>This is a list of the members in the organization.</p>
-		<!-- using apiData|legth is somewhat hackish here. I should really be using organization.numMembers, but that doesn't fit well with the way organization object is serialized. Once I get that sorted out, this should be updated -->
-		<p>You have {{ apiData|length }} member(s) of a maximum of {{ organization.maxMembers }}.</p>
-		{% if organization.canAddUsers %}
-		<br>
-		<a class="btn btn-primary btn-lg" href="/competition/{{ organization.id }}/management/create/">Create User</a>
-		{% endif %}
-	</div>
+  <section class="content-header">
+    <h1>{{ organization.name }} - Members</h1>
+    <ol class="breadcrumb">
+      <li><a href="/"><i class="fa fa-home"></i> Site Home </a></li>
+      <li><a href="/admin/home">Admin</a></li>
+      <li class="active"><a href="/admin/siteconfigs"> Site Configs </a></li>
+    </ol>
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+	<!-- using apiData|legth is somewhat hackish here. I should really be using organization.numMembers, but that doesn't fit well with the way organization object is serialized. Once I get that sorted out, this should be updated -->
+	<p>This is a list of the members in the organization. You have {{ apiData|length }} member(s) of a maximum of {{ organization.max_members }}.</p>
+	{% if organization.can_add_users %}
+	<a class="btn btn-primary btn-sm" href="/competition/{{ organization.id }}/management/create/">Create User</a>
+	{% endif %}
 
 	{% if apiData %}
 	<table class="table">
@@ -33,7 +36,7 @@
 				<td>{{ i.username }}</td>
 				<td>
 					<a href="/organization/{{ organization.id }}/members/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
-					{% if organization.canDeleteUsers %}
+					{% if organization.can_delete_users %}
 					<a href="/organization/{{ organization.id }}/members/delete/{{ i.id }}/" class="btn-sm btn-danger">Delete</a>
 					{% endif %}
 				</td>
@@ -44,5 +47,5 @@
 	{% else %}
 	<p>No members have been created yet. Go ahead and make one!</p>
 	{% endif %}
-</div>
+  </section><!-- /.content -->
 {% endblock %}

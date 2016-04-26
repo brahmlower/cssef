@@ -127,11 +127,13 @@ class CreateUserContext(FormContext):
 		output = makeApiRequest('userAdd', self.formData)
 		self.translateApiReturn(output)
 
-class ListUserContext(FormContext):
+class ListUserContext(BaseContext):
 	def __init__(self, request):
 		super(ListUserContext, self).__init__(request)
-		self.action = self.CREATE
-		self.form = DeleteUserForm
+		self.forms = {
+			'form_delete': DeleteUserForm(),
+			'form_create': CreateUserForm()
+		}
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):

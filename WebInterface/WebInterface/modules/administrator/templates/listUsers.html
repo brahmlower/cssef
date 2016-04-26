@@ -1,7 +1,5 @@
 {% extends "administrator/templates/pageTemplate.html" %}
 
-{% block sidebar_id %}sidebar_users{% endblock %}
-
 {% block headers_js %}
 	<script >
 		function deleteUser(userid) {
@@ -12,15 +10,20 @@
 {% endblock %}
 
 {% block page_content %}
-<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-	<div class="jumbotron">
-		<h1>User List</h1>
-		<p>The following are currently available users. Here you can create, edit or delete users.</p>
-		<br>
-		<a class="btn btn-primary btn-lg" href="/admin/users/create/">New User</a>
-	</div>
+  <section class="content-header">
+    <h1>Users</h1>
+    <ol class="breadcrumb">
+      <li><a href="/"><i class="fa fa-home"></i> Site Home </a></li>
+      <li><a href="/admin/home"> Admin </a></li>
+      <li class="active"><a href="/admin/users"> Users </a></li>
+    </ol>
+  </section>
 
-	{% if apiData %}
+  <!-- Main content -->
+  <section class="content">
+    <p>The following are currently available users. Here you can create, edit or delete users.</p>
+    <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createusermodel">New User</a>
+    {% if apiData %}
 	<!-- Form for submitting account deletions -->
 	<form id="deleteuserform" action="/admin/users/delete">
 		{{ form }}
@@ -55,5 +58,37 @@
 	{% else %}
 	<p>No users have been created yet. Go ahead and make one!</p>
 	{% endif %}
+  </section><!-- /.content -->
 
+<!-- Modal -->
+<div class="modal fade" id="createusermodel" tabindex="-1" role="dialog" aria-labelledby="createusermodellable" style="display: none;" data-backdrop="">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createusermodellable">Create User</h4>
+      </div>
+      <form action="/admin/users/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+          <label for="{{ form.name.id_for_label }}">{{ forms.form_create.name.label }}</label>
+          <div>{{ forms.form_create.name }}</div>
+
+          <label for="{{ form.username.id_for_label }}">{{ forms.form_create.username.label }}</label>
+          <div>{{ forms.form_create.username }}<br></div>
+
+          <label for="{{ form.password.id_for_label }}">{{ forms.form_create.password.label }}</label>
+          <div>{{ forms.form_create.password }}<br></div>
+
+          <label for="{{ form.organization.id_for_label }}">{{ forms.form_create.organization.label }}</label>
+          <div>{{ forms.form_create.organization }}<br></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+          <button id="form_sub_button" type="submit" class="btn btn-primary"> Save </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}
