@@ -14,11 +14,14 @@ def makeApiRequest(apiEndpointString, args_dict, apiConnection = client.config.s
 	output = RPCEndpoint(client.config, apiEndpointString).execute(**args_dict)
 	return output.as_dict()
 
-def getContext(contextClass, pageTemplate, request, redirect_url = None, **kwargs):
+def getContext(contextClass, request, page_template = None, redirect_url = None, **kwargs):
 	context = contextClass(request, **kwargs)
 	context.processContext()
-	if not redirect_url:
-		return render_to_response(pageTemplate, context.getContext())
-	else:
+	if page_template and not redirect_url:
+		return render_to_response(page_template, context.getContext())
+	elif redirect_url and not page_template:
 		context.getContext()
 		return redirect(redirect_url)
+	else:
+		print "Neither a page_template nor redirect_url was provided."
+		raise Exception

@@ -13,7 +13,7 @@
   <!-- Main content -->
   <section class="content">
     <p>The following are currently available organizations. Here you can create, edit or delete organizations.</p>
-    <a class="btn btn-primary btn-sm" href="/admin/organizations/create/">New Organization</a>
+    <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createorgmodel">New Organization</a>
 
     {% if apiData %}
     <table class="table">
@@ -35,7 +35,7 @@
             <a href="/organization/{{ i.id }}/home/" class="btn-sm btn-success">Org Home</a>
             <a href="/admin/organizations/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
             {% if i.deletable %}
-            <a href="/admin/users/delete/{{ i.id }}/" class="btn-sm btn-danger">Delete</a>
+            <a href="/admin/organizations/delete/{{ i.id }}/" class="btn-sm btn-danger">Delete</a>
             {% endif %}
           </td>
         </tr>
@@ -45,6 +45,66 @@
     {% else %}
     <p>No organizations have been created yet. Go ahead and make one!</p>
     {% endif %}
-
   </section><!-- /.content -->
+
+<!-- Modal -->
+<div class="modal fade" id="createorgmodel" tabindex="-1" role="dialog" aria-labelledby="createorgmodellable" style="display: none;" data-backdrop="">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createorgmodellable"> Create Organization </h4>
+      </div>
+      <form action="/admin/organizations/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+          <!-- Name input section -->
+          {{ forms.form_create.name.errors }}
+          <label for="{{ forms.form_create.name.id_for_label }}">{{ forms.form_create.name.label }}</label>
+          <div>{{ forms.form_create.name }}</div>
+
+          <!-- URL input section -->
+          {{ forms.form_create.url.errors }}
+          <label for="{{ forms.form_create.url.id_for_label }}">{{ forms.form_create.url.label }}</label>
+          <div>{{ forms.form_create.url }}</div>
+
+          <!-- Description input section -->
+          {{ forms.form_create.description.errors }}
+          <label for="{{ forms.form_create.description.id_for_label }}">{{ forms.form_create.description.label }}</label>
+          <div>{{ forms.form_create.description }}</div>
+
+          <!-- Maximum Members input section -->
+          {{ forms.form_create.max_members.errors }}
+          <label for="{{ forms.form_create.max_members.id_for_label }}">{{ forms.form_create.max_members.label }}</label>
+          <div>{{ forms.form_create.max_members }}</div>
+
+          <!-- Maximum Competitions input section -->
+          {{ forms.form_create.max_competitions.errors }}
+          <label for="{{ forms.form_create.max_competitions.id_for_label }}">{{ forms.form_create.max_competitions.label }}</label>
+          <div>{{ forms.form_create.max_competitions }}</div>
+
+          <!--  input section -->
+          <label for="{{ forms.form_create.can_add_users.id_for_label }}">{{ forms.form_create.can_add_users.label }}</label>
+          <div>{{ forms.form_create.can_add_users }}</div>
+
+          <!--  input section -->
+          <label for="{{ forms.form_create.can_delete_users.id_for_label }}">{{ forms.form_create.can_delete_users.label }}</label>
+          <div>{{ forms.form_create.can_delete_users }}</div>
+
+          <!--  input section -->
+          <label for="{{ forms.form_create.can_add_competitions.id_for_label }}">{{ forms.form_create.can_add_competitions.label }}</label>
+          <div>{{ forms.form_create.can_add_competitions }}</div>
+
+          <!--  input section -->
+          <label for="{{ forms.form_create.can_delete_competitions.id_for_label }}">{{ forms.form_create.can_delete_competitions.label }}</label>
+          <div>{{ forms.form_create.can_delete_competitions }}</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+          <button id="form_sub_button" type="submit" class="btn btn-primary"> Save </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

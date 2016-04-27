@@ -25,35 +25,40 @@ class CreateOrganizationForm(Form):
 		widget = TextInput(attrs={'class':'form-control'}),
 		required = False
 	)
-	maxMembers = CharField(
+	max_members = CharField(
 		label = 'Maximum Members',
 		widget = NumberInput(attrs={'class': 'form-control'}),
 		required = False
 	)
-	maxCompetitions = CharField(
+	max_competitions = CharField(
 		label = 'Maximum Competitions',
 		widget = NumberInput(attrs={'class': 'form-control'}),
 		required = False
 	)
-	canAddUsers = BooleanField(
+	can_add_users = BooleanField(
 		label = 'Can Create Users',
 		initial = True,
 		required = False
 	)
-	canDeleteUsers = BooleanField(
+	can_delete_users = BooleanField(
 		label = 'Can Delete Users',
 		initial = True,
 		required = False
 	)
-	canAddCompetitions = BooleanField(
+	can_add_competitions = BooleanField(
 		label = 'Can Create Competitions',
 		initial = True,
 		required = False
 	)
-	canDeleteCompetitions = BooleanField(
+	can_delete_competitions = BooleanField(
 		label = 'Can Delete Competitions',
 		initial = True,
 		required = False
+	)
+
+class DeleteOrganizationForm(Form):
+	pkid = CharField(
+		widget = HiddenInput()
 	)
 
 def getOrganizationChoices():
@@ -87,6 +92,6 @@ class CreateUserForm(Form):
 	)
 
 class DeleteUserForm(Form):
-	user = CharField(
+	pkid = CharField(
 		widget = HiddenInput()
 	)

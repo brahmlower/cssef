@@ -13,52 +13,52 @@ templatePathPrefix = "administrator/templates/"
 
 def home(request):
 	pageTemplate = templatePathPrefix + "home.html"
-	return getContext(BaseContext, pageTemplate, request)
+	return getContext(BaseContext, request, page_template = pageTemplate)
 
 def siteConfig(request):
 	pageTemplate = templatePathPrefix + "siteConfigs.html"
-	return getContext(BaseContext, pageTemplate, request)
+	return getContext(BaseContext, request, page_template = pageTemplate)
 
 #####################################
 # User management pages
 #####################################
 def listUsers(request):
 	pageTemplate = templatePathPrefix + 'listUsers.html'
-	return getContext(ListUserContext, pageTemplate, request)
+	return getContext(ListUserContext, request, page_template = pageTemplate)
 
 def createUser(request):
-	#pageTemplate = templatePathPrefix + 'createEditUser.html'
-	return getContext(CreateUserContext, '', request, redirect_url = '/admin/users')
+	return getContext(CreateUserContext, request, redirect_url = '/admin/users')
 
 def editUser(request, userId):
 	pageTemplate = templatePathPrefix + 'createEditUser.html'
-	return getContext(EditUserContext, pageTemplate, request, pkid = userId)
+	return getContext(EditUserContext, request, page_template = pageTemplate, pkid = userId)
 
 def deleteUser(request):
-	pageTemplate = templatePathPrefix + 'pageTemplate.html'
-	return getContext(DeleteUserContext, pageTemplate, request)
+	return getContext(DeleteUserContext, request, redirect_url = '/admin/users')
 
 #####################################
 # Organization management pages
 #####################################
 def listOrganizations(request):
 	pageTemplate = templatePathPrefix + 'listOrganizations.html'
-	return getContext(ListOrganizationContext, pageTemplate, request)
+	return getContext(ListOrganizationContext, request, page_template = pageTemplate)
 
 def createOrganization(request):
-	pageTemplate = templatePathPrefix + 'createEditOrganization.html'
-	return getContext(CreateOrganizationContext, pageTemplate, request)
+	return getContext(CreateOrganizationContext, request, redirect_url = '/admin/organizations')
 
 def editOrganization(request, organizationId):
 	pageTemplate = templatePathPrefix + 'createEditOrganization.html'
-	return getContext(EditOrganizationContext, pageTemplate, request, pkid = organizationId)
+	return getContext(EditOrganizationContext, request, page_template = pageTemplate, pkid = organizationId)
+
+def deleteOrganization(request):
+	return getContext(DeleteOrganizationContext, request, redirect_url = '/admin/organizations')
 
 #####################################
 # Organization management pages
 #####################################
 def listScoringEngines(request):
 	pageTemplate = templatePathPrefix + 'listScoringEngines.html'
-	return getContext(ListScoringEnginesContext, pageTemplate, request)
+	return getContext(ListScoringEnginesContext, request, page_template = pageTemplate)
 
 def createScoringEngine(request):
 	pass

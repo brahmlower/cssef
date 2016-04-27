@@ -1,15 +1,21 @@
+"""
+Authentication Errors:
+Allotted error codes: 30 - 49
+30 - IncorrectCredentials
+31 - TokenDisallowed
+32 - TokenExpired
+33 - BadAuthSource
+
+General User Errors:
+Allotted error codes: 50 - 150
+50 - InvalidPkidValue
+"""
+
 class CssefException(Exception):
     value = None
     message = None
     def as_return_dict(self):
         return {'value': self.value, 'message': self.message, 'content': []}
-
-# Authentication Errors:
-# Allotted error codes: 30 - 50
-# 30 - IncorrectCredentials
-# 31 - TokenDisallowed
-# 32 - TokenExpired
-# 33 - BadAuthSource
 
 class IncorrectCredentials(CssefException):
     value = 30
@@ -42,3 +48,8 @@ class AuthFindsMultipleUsers(CssefException):
 class AuthIncorrectAdminToken(CssefException):
     value = 37
     message = ['Provided auth-token was incorrect.']
+
+
+class InvalidPkidValue(CssefException):
+    value = 50
+    message = ['Provided pkid was not valid.']

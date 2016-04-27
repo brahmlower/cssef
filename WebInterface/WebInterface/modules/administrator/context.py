@@ -2,6 +2,7 @@ from WebInterface.context import BaseContext
 from WebInterface.context import FormContext
 from WebInterface.utils import makeApiRequest
 from WebInterface.modules.administrator.forms import CreateOrganizationForm
+from WebInterface.modules.administrator.forms import DeleteOrganizationForm
 from WebInterface.modules.administrator.forms import CreateUserForm
 from WebInterface.modules.administrator.forms import DeleteUserForm
 
@@ -73,6 +74,10 @@ class CreateOrganizationContext(FormContext):
 class ListOrganizationContext(BaseContext):
 	def __init__(self, request):
 		super(ListOrganizationContext, self).__init__(request)
+		self.forms = {
+			'form_delete': DeleteOrganizationForm(),
+			'form_create': CreateOrganizationForm()
+		}
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
@@ -151,6 +156,7 @@ class DeleteUserContext(FormContext):
 		if not self.validateFormData():
 			return False
 		output = makeApiRequest('userDel', self.formData)
+		print output
 		self.translateApiReturn(output)
 
 ###################################################

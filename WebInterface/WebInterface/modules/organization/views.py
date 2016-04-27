@@ -26,12 +26,12 @@ templatePathPrefix = "organization/templates/"
 
 def home(request, organizationId):
 	pageTemplate = templatePathPrefix + 'home.html'
-	return getContext(OrganizationContext, pageTemplate, request, organizationId = organizationId)
+	return getContext(OrganizationContext, request, page_template = pageTemplate, organizationId = organizationId)
 
 def members(request, organizationId):
 	pageTemplate = templatePathPrefix + 'listMembers.html'
-	return getContext(ListMemberContext, pageTemplate, request, organizationId = organizationId)
+	return getContext(ListMemberContext, request, page_template = pageTemplate, organizationId = organizationId)
 
 def settings(request, organizationId):
 	pageTemplate = templatePathPrefix + 'settings.html'
-	return getContext(OrganizationSettingsContext, pageTemplate, request, organizationId = organizationId)
+	return getContext(OrganizationSettingsContext, request, page_template = pageTemplate, organizationId = organizationId)
