@@ -13,10 +13,10 @@ setup(
 	author_email = "bplower@gmail.com",
 
 	# License
-	license = "GPL-3.0"
+	license = "GPL-3.0",
 
 	# Packages:
-	packages = find_packages(),
+	packages = ['cssefcdc'],
 
 	# Details:
 	url = "http://github.com/bplower/cssef/",

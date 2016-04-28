@@ -212,12 +212,12 @@ def create_database_connection(config):
     # We're importing the plugin models to make sure they get synced
     # when the database is instantiated. I don't think this is the
     # best place for this though
-    if config.installed_plugins:
-        for module_name in config.installed_plugins:
-            try:
-                __import__("%s.models" % module_name)
-            except:
-                print "Failed to load module: '%s'" % module_name
+    # if config.installed_plugins:
+    #     for module_name in config.installed_plugins:
+    #         try:
+    #             __import__("%s.models" % module_name)
+    #         except:
+    #             print "Failed to load module: '%s'" % module_name
 
     # Now actually create the database instantiation
     database_engine = create_engine('sqlite:///' + config.database_path)

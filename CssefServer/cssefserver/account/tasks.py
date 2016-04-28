@@ -9,7 +9,6 @@ from cssefserver.account.api import User
 from cssefserver.account.utils import authorize_access
 
 class OrganizationAdd(CssefRPCEndpoint):
-    takesKwargs = True
     onRequestArgs = ['auth']
     def on_request(self, auth, **kwargs):
         """Celery task to create a new organization.
@@ -43,14 +42,10 @@ class OrganizationDel(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        try:
-            authorize_access(self.database_connection, auth, self.config)
-        except CssefException as err:
-            return err.as_return_dict()
+        authorize_access(self.database_connection, auth, self.config)
         return model_del(Organization, self.database_connection, pkid)
 
 class OrganizationSet(CssefRPCEndpoint):
-    takesKwargs = True
     onRequestArgs = ['auth', 'pkid']
     def on_request(self, auth, pkid, **kwargs):
         """Celery task to edit an existing organization.
@@ -63,14 +58,10 @@ class OrganizationSet(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        try:
-            authorize_access(self.database_connection, auth, self.config)
-        except CssefException as err:
-            return err.as_return_dict()
+        authorize_access(self.database_connection, auth, self.config)
         return model_set(Organization, self.database_connection, pkid, **kwargs)
 
 class OrganizationGet(CssefRPCEndpoint):
-    takesKwargs = True
     onRequestArgs = ['auth']
     def on_request(self, auth, **kwargs):
         """Celery task to get one or more existing organization.
@@ -82,14 +73,10 @@ class OrganizationGet(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        try:
-            authorize_access(self.database_connection, auth, self.config)
-        except CssefException as err:
-            return err.as_return_dict()
+        authorize_access(self.database_connection, auth, self.config)
         return model_get(Organization, self.database_connection, **kwargs)
 
 class UserAdd(CssefRPCEndpoint):
-    takesKwargs = True
     onRequestArgs = ['auth']
     def on_request(self, auth, **kwargs):
         """Celery task to create a new user.
@@ -125,14 +112,10 @@ class UserDel(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        try:
-            authorize_access(self.database_connection, auth, self.config)
-        except CssefException as err:
-            return err.as_return_dict()
+        authorize_access(self.database_connection, auth, self.config)
         return model_del(User, self.database_connection, pkid)
 
 class UserSet(CssefRPCEndpoint):
-    takesKwargs = True
     onRequestArgs = ['auth', 'pkid']
     def on_request(self, auth, pkid, **kwargs):
         """Celery task to edit an existing user.
@@ -145,14 +128,10 @@ class UserSet(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        try:
-            authorize_access(self.database_connection, auth, self.config)
-        except CssefException as err:
-            return err.as_return_dict()
+        authorize_access(self.database_connection, auth, self.config)
         return model_set(User, self.database_connection, pkid, **kwargs)
 
 class UserGet(CssefRPCEndpoint):
-    takesKwargs = True
     onRequestArgs = ['auth']
     def on_request(self, auth, **kwargs):
         """Celery task to get one or more existing users.
@@ -164,8 +143,5 @@ class UserGet(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        try:
-            authorize_access(self.database_connection, auth, self.config)
-        except CssefException as err:
-            return err.as_return_dict()
+        authorize_access(self.database_connection, auth, self.config)
         return model_get(User, self.database_connection, **kwargs)

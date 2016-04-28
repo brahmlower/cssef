@@ -3,7 +3,7 @@ from . import CssefTest
 from cssefserver.account import tasks
 
 class OrganizationAdd(CssefTest):
-	def test_onlyNameProvided(self):
+	def test_only_name_provided(self):
 		# Prepare the admin token
 		self.config.admin_token = "abc123"
 		# Instantiate the endpoint

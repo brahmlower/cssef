@@ -32,6 +32,14 @@ class CssefServer(object):
         # The flask instance that handles incoming networking requests
         self.flask_app = None
 
+    def load_plugins(self):
+        for module_name in self.config.installed_plugins:
+            try:
+                __import__(module_name)
+            except:
+                print "Failed to load module: '%s'" % module_name
+
+
     def load_rpc_endpoints(self):
         endpoint_list = [
             (base_tasks.AvailableEndpoints, 'AvailableEndpoints'),
@@ -65,6 +73,7 @@ class CssefServer(object):
 
     def start(self):
         self.database_connection = create_database_connection(self.config)
+        self.load_plugins()
         self.load_rpc_endpoints()
         self.flask_app = Flask(__name__)
         self.flask_app.add_url_rule('/', 'index', self.index, methods=['POST'])

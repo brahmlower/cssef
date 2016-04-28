@@ -63,7 +63,6 @@ class Login(CssefRPCEndpoint):
             the credentials were correct. Content will be empty if the credentials
             were incorrect, and value will be non-zero.
         """
-        logging.info('started login')
         user_results = User.search(self.database_connection, username=username, \
             organization=organization)
         if len(user_results) != 1:
@@ -74,14 +73,12 @@ class Login(CssefRPCEndpoint):
             return client_failed_login_output()
         user = user_results[0]
         # Try to verify the provided credentials
-        logging.info('got user')
         if not user.authenticate_password(password):
             # Authentication has failed
-            logging.info('user authentication failed')
+            logging.info("Failed authentication attempt for '%s' with organization '%s'." % (username, organization))
             return client_failed_login_output()
-        logging.info('user has been authenticated')
+        logging.info("Successful authentication for '%s' with organization '%s'." % (username, organization))
         # The user is authenticated. Generate a key for them
         return_dict = get_empty_return_dict()
         return_dict['content'] = [user.get_new_token()]
-        logging.info('got a new token')
         return return_dict

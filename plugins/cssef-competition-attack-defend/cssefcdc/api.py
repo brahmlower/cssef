@@ -1,19 +1,19 @@
 from cssefserver.utils import ModelWrapper
 from cssefserver.account.api import Organization
 from cssefserver.account.errors import MaxCompetitionsReached
-from models import Competition as CompetitionModel
-from models import Team as TeamModel
-from models import Score as ScoreModel
-from models import Inject as InjectModel
-from models import InjectResponse as InjectResponseModel
-from models import Incident as IncidentModel
-from models import IncidentResponse as IncidentResponseModel
-from models import ScoringEngine as ScoringEngineModel
-from models import Plugin as PluginModel
-from models import Service as ServiceModel
+from cssefcdc.models import Competition as CompetitionModel
+from cssefcdc.models import Team as TeamModel
+from cssefcdc.models import Score as ScoreModel
+from cssefcdc.models import Inject as InjectModel
+from cssefcdc.models import InjectResponse as InjectResponseModel
+from cssefcdc.models import Incident as IncidentModel
+from cssefcdc.models import IncidentResponse as IncidentResponseModel
+from cssefcdc.models import ScoringEngine as ScoringEngineModel
+from cssefcdc.models import Plugin as PluginModel
+from cssefcdc.models import Service as ServiceModel
 
 class Plugin(ModelWrapper):
-	modelObject = PluginModel
+	model_object = PluginModel
 	fields = [
 		'name',
 		'description'
@@ -49,7 +49,7 @@ class Plugin(ModelWrapper):
 			return self.getImportPath(self.getModuleName())
 
 class Service(ModelWrapper):
-	modelObject = ServiceModel
+	model_objectmodel_object = ServiceModel
 	fields = [
 		'name',
 		'description',
@@ -161,7 +161,7 @@ class Service(ModelWrapper):
 
 class ScoringEngine(ModelWrapper):
 	'Scoring Engine object to represent a scoring engine module available for use by competitions.'
-	modelObject = ScoringEngineModel
+	model_object = ScoringEngineModel
 	fields = [
 		'name',
 		'packageName',
@@ -193,7 +193,7 @@ class ScoringEngine(ModelWrapper):
 
 class Competition(ModelWrapper):
 	'Competition object for controling competition settings and operation'
-	modelObject = CompetitionModel
+	model_object = CompetitionModel
 	fields = [
 		'organization',
 		'name',
@@ -336,7 +336,7 @@ class Competition(ModelWrapper):
 
 class Team(ModelWrapper):
 	'Team object for controling team settings'
-	modelObject = TeamModel
+	model_object = TeamModel
 	fields = [
 		'username',
 		'name',
@@ -406,7 +406,7 @@ class Team(ModelWrapper):
 
 class Score(ModelWrapper):
 	'Score object for controlling score settings'
-	modelObject = ScoreModel
+	model_object = ScoreModel
 	fields = [
 		'datetime',
 		'value',
@@ -441,7 +441,7 @@ class Score(ModelWrapper):
 
 class Inject(ModelWrapper):
 	'Inject object for controling inject settings'
-	modelObject = InjectModel
+	model_object = InjectModel
 	fields = [
 		'requireResponse',
 		'manualDelivery',
@@ -543,7 +543,7 @@ class Inject(ModelWrapper):
 
 class InjectResponse(ModelWrapper):
 	'Inject Response object for controling inject response settings'
-	modelObject = InjectResponseModel
+	model_object = InjectResponseModel
 	fields = [
 		'datetime',
 		'content']
@@ -568,7 +568,7 @@ class InjectResponse(ModelWrapper):
 
 class Incident(ModelWrapper):
 	'Incident object for controlling incident settings'
-	modelObject = IncidentModel
+	model_object = IncidentModel
 	fields = [
 		'datetime',
 		'subject',
@@ -603,7 +603,7 @@ class Incident(ModelWrapper):
 
 class IncidentResponse(ModelWrapper):
 	'Incident Response object for controlling incident response settings'
-	modelObject = IncidentResponseModel
+	model_object = IncidentResponseModel
 	fields = [
 		'replyTo',
 		'datetime',
