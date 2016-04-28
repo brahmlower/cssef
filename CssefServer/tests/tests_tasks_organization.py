@@ -7,7 +7,7 @@ class OrganizationAdd(CssefTest):
 		# Prepare the admin token
 		self.config.admin_token = "abc123"
 		# Instantiate the endpoint
-		endpoint = tasks.OrganizationAdd(self.config, self.dbConn)
+		endpoint = tasks.OrganizationAdd(self.config, self.db_connection)
 		# Call the endpoint as if it's been requested through flask
 		authDict = {'admin-token': self.config.admin_token}
 		orgDict = {'name': 'Test Org'}

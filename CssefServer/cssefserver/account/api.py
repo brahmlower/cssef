@@ -540,14 +540,11 @@ class Organization(ModelWrapper):
 
         This will retrieve a specific user that belongs to the organization.
 
-        TODO: This function is supposed to add `organization = self.get_id()`
-        to the keywords that are used to select the user from the database,
-        but it does not.
-
         Args:
             **kwargs: Keyword arguments that define the user to match.
 
         Returns:
             User: A user that belongs to the organization
         """
+        kwargs['organization'] = self.get_id()
         return User(**kwargs)
