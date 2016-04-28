@@ -1,3 +1,5 @@
+from datetime import datetime
+import ipaddr
 from cssefserver.utils import ModelWrapper
 from cssefserver.account.api import Organization
 from cssefserver.account.errors import MaxCompetitionsReached
@@ -26,7 +28,7 @@ class Plugin(ModelWrapper):
 	@name.setter
 	def name(self, value):
 		self.model.name = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def description(self):
@@ -35,7 +37,7 @@ class Plugin(ModelWrapper):
 	@description.setter
 	def description(self, value):
 		self.model.description = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	def getModuleName(self):
 		#return Document.objects.get(servicemodule = self.servicemodule).filename.split(".")[0]
@@ -69,7 +71,7 @@ class Service(ModelWrapper):
 	@name.setter
 	def name(self, value):
 		self.model.name = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def description(self):
@@ -78,7 +80,7 @@ class Service(ModelWrapper):
 	@description.setter
 	def description(self, value):
 		self.model.description = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def manualStart(self):
@@ -87,7 +89,7 @@ class Service(ModelWrapper):
 	@manualStart.setter
 	def manualStart(self, value):
 		self.model.manualStart = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def datetimeStart(self):
@@ -96,7 +98,7 @@ class Service(ModelWrapper):
 	@datetimeStart.setter
 	def datetimeStart(self, value):
 		self.model.datetimeStart = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def datetimeFinish(self):
@@ -105,7 +107,7 @@ class Service(ModelWrapper):
 	@datetimeFinish.setter
 	def datetimeFinish(self, value):
 		self.model.datetimeFinish = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def points(self):
@@ -114,7 +116,7 @@ class Service(ModelWrapper):
 	@points.setter
 	def points(self, value):
 		self.model.points = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def machineIp(self):
@@ -123,7 +125,7 @@ class Service(ModelWrapper):
 	@machineIp.setter
 	def machineIp(self, value):
 		self.model.machineIp = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def machineFqdn(self):
@@ -132,7 +134,7 @@ class Service(ModelWrapper):
 	@machineFqdn.setter
 	def machineFqdn(self, value):
 		self.model.machineFqdn = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def defaultPort(self):
@@ -141,16 +143,17 @@ class Service(ModelWrapper):
 	@defaultPort.setter
 	def defaultPort(self, value):
 		self.model.defaultPort = value
-		self.db.commit()
+		self.db_conn.commit()
 
-	def score(self, team):
-		instance = self.loadPlugin()
-		scoreInstance = instance.score(team)
-		scoreInstance.datetime = timezone.now()
-		scoreInstance.teamId = team.teamId
-		scoreInstance.serviceId = self.serviceId
-		scoreInstance.competitionId = self.competitionId
-		return score_obj
+	# I commented this out because it relied on the loadPlugin being there. Haven't bothered to migrated that quite yet :)
+	# def score(self, team):
+	# 	instance = self.loadPlugin()
+	# 	score_inst = instance.score(team)
+	# 	score_inst.datetime = datetime.now()
+	# 	score_inst.teamId = team.teamId
+	# 	score_inst.serviceId = self.serviceId
+	# 	score_inst.competitionId = self.competitionId
+	# 	return score_inst
 
 	# def loadPlugin(self):
 	# 	#moduleName = Document.objects.get(servicemodule = self.servicemodule).filename.split(".")[0]
@@ -175,7 +178,7 @@ class ScoringEngine(ModelWrapper):
 	@name.setter
 	def name(self, value):
 		self.model.name = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def enabled(self):
@@ -184,7 +187,7 @@ class ScoringEngine(ModelWrapper):
 	@enabled.setter
 	def enabled(self, value):
 		self.model.enabled = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def packageName(self):
@@ -213,7 +216,7 @@ class Competition(ModelWrapper):
 		# Todo:
 		# Only site admins should be able to change this
 		self.model.organization = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def name(self):
@@ -224,7 +227,7 @@ class Competition(ModelWrapper):
 		# Todo:
 		# Only site admins & organization admins should be able to change this
 		self.model.name = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def url(self):
@@ -235,7 +238,7 @@ class Competition(ModelWrapper):
 		# Todo:
 		# Only site admins should be able to change this
 		self.model.url = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def description(self):
@@ -246,7 +249,7 @@ class Competition(ModelWrapper):
 		# Todo:
 		# Only site admins & organization admins should be able to change this
 		self.model.description = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def datetimeDisplay(self):
@@ -257,7 +260,7 @@ class Competition(ModelWrapper):
 		# Todo:
 		# Only site admins & organization admins should be able to change this
 		self.model.datetimeDisplay = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def datetimeStart(self):
@@ -268,7 +271,7 @@ class Competition(ModelWrapper):
 		# Todo:
 		# Only site admins & organization admins should be able to change this
 		self.model.datetimeStart = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def datetimeFinish(self):
@@ -279,7 +282,7 @@ class Competition(ModelWrapper):
 		# Todo:
 		# Only site admins & organization admins should be able to change this
 		self.model.datetimeFinish = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def autoStart(self):
@@ -290,7 +293,7 @@ class Competition(ModelWrapper):
 		# Todo:
 		# Only site admins & organization admins should be able to change this
 		self.model.autoStart = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def scoringEngine(self):
@@ -301,26 +304,26 @@ class Competition(ModelWrapper):
 		# Todo:
 		# Only site admins & organization admins should be able to change this
 		self.model.scoringEngine = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@classmethod
-	def fromDict(cls, db, kwDict):
-		org = Organization.fromDatabase(db, pkid = kwDict['organization'])
+	def fromDict(cls, db_conn, kw_dict):
+		org = Organization.from_database(db_conn, pkid = kw_dict['organization'])
 		if not org:
-			print "Failed to get organization with pkid '%s'" % kwDict['organization']
+			print "Failed to get organization with pkid '%s'" % kw_dict['organization']
 			raise ValueError
 		# Competition limiting is disabled for now since I'm not entirely sure
 		# how it will be implemented with the new plugin arrangement
 		#if org.model.numCompetitions >= org.maxCompetitions:
 		#	raise MaxCompetitionsReached(org.maxCompetitions)
 		# Copied right from ModelWrapper.fromDict
-		modelObjectInst = cls.modelObject()
-		clsInst = cls(db, modelObjectInst)
-		for i in kwDict:
+		model_object_inst = cls.model_object()
+		clsInst = cls(db_conn, model_object_inst)
+		for i in kw_dict:
 			if i in clsInst.fields:
-				setattr(clsInst, i, kwDict[i])
-		db.add(clsInst.model)
-		db.commit()
+				setattr(clsInst, i, kw_dict[i])
+		db_conn.add(clsInst.model)
+		db_conn.commit()
 		#org.setNumCompetitions()
 		return clsInst
 
@@ -351,7 +354,7 @@ class Team(ModelWrapper):
 	@username.setter
 	def username(self, value):
 		self.model.username = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def name(self):
@@ -360,7 +363,7 @@ class Team(ModelWrapper):
 	@name.setter
 	def name(self, value):
 		self.model.name = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def password(self):
@@ -369,7 +372,7 @@ class Team(ModelWrapper):
 	@password.setter
 	def password(self, value):
 		self.model.password = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def networkCidr(self):
@@ -379,7 +382,7 @@ class Team(ModelWrapper):
 	def networkCidr(self, value):
 		x = ipaddr.IPNetwork(value)
 		self.model.networkCidr = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def scoreConfigurations(self):
@@ -389,19 +392,19 @@ class Team(ModelWrapper):
 	def scoreConfigurations(self, value):
 		# This function will also need to change as I improve the way
 		# score configurations are interacted with....
-		self.model.scoreConfigurations = scoreConfigurations
-		self.db.commit()		
+		self.model.scoreConfigurations = value
+		self.db_conn.commit()		
 
 	def getScores(self, **kwargs):
-		return Scores.search(team = self.model, **kwargs)
+		return Score.search(team = self.model, **kwargs)
 
-	def getIncidents(self):
+	def getIncidents(self, **kwargs):
 		return Incident.search(team = self.model, **kwargs)
 
-	def getIncidentResponses(self):
+	def getIncidentResponses(self, **kwargs):
 		return IncidentResponse.search(self.model, **kwargs)
 
-	def getInjectResponses(self):
+	def getInjectResponses(self, **kwargs):
 		return InjectResponse.search(self.model, **kwargs)
 
 class Score(ModelWrapper):
@@ -419,7 +422,7 @@ class Score(ModelWrapper):
 	@datetime.setter
 	def datetime(self, value):
 		self.model.datetime = datetime
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def value(self):
@@ -428,7 +431,7 @@ class Score(ModelWrapper):
 	@value.setter
 	def value(self, value):
 		self.model.value = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def message(self):
@@ -437,7 +440,7 @@ class Score(ModelWrapper):
 	@message.setter
 	def message(self, value):
 		self.model.message = value
-		self.db.commit()
+		self.db_conn.commit()
 
 class Inject(ModelWrapper):
 	'Inject object for controling inject settings'
@@ -458,7 +461,7 @@ class Inject(ModelWrapper):
 	@requireResponse.setter
 	def requireResponse(self, value):
 		self.model.requireResponse = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	# Manual Delivery modules
 	@property
@@ -468,7 +471,7 @@ class Inject(ModelWrapper):
 	@manualDelivery.setter
 	def manualDelivery(self, value):
 		self.model.manualDelivery = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	# Datetime Delivery modules
 	@property
@@ -478,7 +481,7 @@ class Inject(ModelWrapper):
 	@datetimeDelivery.setter
 	def datetimeDelivery(self, value):
 		self.model.datetimeDelivery = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	# Datetime Response Due modules
 	@property
@@ -488,7 +491,7 @@ class Inject(ModelWrapper):
 	@datetimeResponseDue.setter
 	def datetimeResponseDue(self, value):
 		self.model.datetimeResponseDue = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	# Datetime Response Close modules
 	@property
@@ -498,7 +501,7 @@ class Inject(ModelWrapper):
 	@datetimeResponseClose.setter
 	def datetimeResponseClose(self, value):
 		self.model.datetimeResponseClose = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	# Title modules
 	@property
@@ -508,7 +511,7 @@ class Inject(ModelWrapper):
 	@title.setter
 	def title(self, value):
 		self.model.title = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	# Body modules
 	@property
@@ -518,28 +521,28 @@ class Inject(ModelWrapper):
 	@body.setter
 	def body(self, value):
 		self.model.body = value
-		self.db.commit()
+		self.db_conn.commit()
 
-	# Document modules
-	def addDocument(self, fileObj, contentType, filePath, filename, **kwargs):
-		# What do I do with the file object....?
-		Document(
-			kwargs,
-			inject = self.model,
-			contentType = contentType,
-			filePath = filePath,
-			filename = filename)
+	# # Document modules
+	# def addDocument(self, fileObj, contentType, filePath, filename, **kwargs):
+	# 	# What do I do with the file object....?
+	# 	Document(
+	# 		kwargs,
+	# 		inject = self.model,
+	# 		contentType = contentType,
+	# 		filePath = filePath,
+	# 		filename = filename)
 
-	def getDocuments(self):
-		return Document.search(inject = self.model)
+	# def getDocuments(self):
+	# 	return Document.search(inject = self.model)
 
-	def delDocument(self, documentObj):
-		documentObj.delete()
-		del documentObj
+	# def delDocument(self, documentObj):
+	# 	documentObj.delete()
+	# 	del documentObj
 
 	# Inject Response module
 	def getResponses(self):
-		return InjectResponse.search(inject = self.model)
+		return InjectResponse.search(self.db_conn, inject = self.model)
 
 class InjectResponse(ModelWrapper):
 	'Inject Response object for controling inject response settings'
@@ -555,7 +558,7 @@ class InjectResponse(ModelWrapper):
 	@datetime.setter
 	def datetime(self, value):
 		self.model.datetime = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def content(self):
@@ -564,7 +567,7 @@ class InjectResponse(ModelWrapper):
 	@content.setter
 	def content(self, value):
 		self.model.content = value
-		self.db.commit()
+		self.db_conn.commit()
 
 class Incident(ModelWrapper):
 	'Incident object for controlling incident settings'
@@ -581,7 +584,7 @@ class Incident(ModelWrapper):
 	@datetime.setter
 	def datetime(self, value):
 		self.model.datetime = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def subject(self):
@@ -590,7 +593,7 @@ class Incident(ModelWrapper):
 	@subject.setter
 	def subject(self, value):
 		self.model.subject = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def content(self):
@@ -599,7 +602,7 @@ class Incident(ModelWrapper):
 	@content.setter
 	def content(self, value):
 		self.model.content = value
-		self.db.commit()
+		self.db_conn.commit()
 
 class IncidentResponse(ModelWrapper):
 	'Incident Response object for controlling incident response settings'
@@ -617,7 +620,7 @@ class IncidentResponse(ModelWrapper):
 	@replyTo.setter
 	def replyTo(self, value):
 		self.model.replyTo
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def datetime(self):
@@ -626,7 +629,7 @@ class IncidentResponse(ModelWrapper):
 	@datetime.setter
 	def datetime(self, value):
 		self.model.replyTo
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def subject(self):
@@ -635,7 +638,7 @@ class IncidentResponse(ModelWrapper):
 	@subject.setter
 	def subject(self, value):
 		self.model.subject = value
-		self.db.commit()
+		self.db_conn.commit()
 
 	@property
 	def content(self):
@@ -644,4 +647,4 @@ class IncidentResponse(ModelWrapper):
 	@content.setter
 	def content(self, value):
 		self.model.content = value
-		self.db.commit()
+		self.db_conn.commit()

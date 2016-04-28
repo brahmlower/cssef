@@ -24,4 +24,4 @@ celery-stdout: /var/log/cssef/cssef_celery_stdout.log
 
 # Installed plugins
 installed-plugins:
-- cssef-competition-attack-defend
+- cssefcdc.CyberDefenseCompetitions

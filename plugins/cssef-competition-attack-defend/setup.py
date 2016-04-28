@@ -30,5 +30,5 @@ setup(
 	long_description = open("README.md").read(),
 
 	# Dependant packages:
-	install_requires = ["cssef-server"],
+	install_requires = ["ipaddr", "cssef-server"],
 )

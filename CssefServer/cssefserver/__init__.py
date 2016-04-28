@@ -32,15 +32,23 @@ class CssefServer(object):
         # The flask instance that handles incoming networking requests
         self.flask_app = None
 
-    def load_plugins(self):
-        for module_name in self.config.installed_plugins:
-            try:
-                __import__(module_name)
-            except:
-                print "Failed to load module: '%s'" % module_name
+        # The list of plugins we will be running with
+        self.plugins = []
 
+    def load_plugins(self):
+        for module_string in self.config.installed_plugins:
+            try:
+                module_name = module_string.split(".")[0]
+                module_class = module_string.split(".")[1]
+                module = __import__(module_name)
+                plugin_class_ref = getattr(module, module_class)
+                plugin_class_inst = plugin_class_ref(self.config)
+                self.plugins.append(plugin_class_inst)
+            except:
+                logging.info("Failed to load module: '%s'" % module_name)
 
     def load_rpc_endpoints(self):
+        # Hardcode list of endpoints from within the framework 
         endpoint_list = [
             (base_tasks.AvailableEndpoints, 'AvailableEndpoints'),
             (base_tasks.RenewToken, 'RenewToken'),
@@ -53,9 +61,16 @@ class CssefServer(object):
             (account_tasks.UserDel, 'userDel'),
             (account_tasks.UserSet, 'userSet'),
             (account_tasks.UserGet, 'userGet')]
+        # Now append endpoints from the various plugins to the list of rpc endpoints
+        # The plugin endpoints should probably be checked, since this portion will be
+        # introducing possible bad list data. maybe we can catch errors if they're
+        # thrown and then relanch with the vanilla endpoints.
+        for plugin in self.plugins:
+                endpoint_list += plugin.endpoint_list
         for reference, name in endpoint_list:
-            # I'm creating and storing an instance of every since endpoint...
-            self.rpc_methods.add_method(reference(self.config, self.database_connection), name)
+            # I'm creating and storing an instance of every single endpoint...
+            instance = reference(self.config, self.database_connection)
+            self.rpc_methods.add_method(instance, name)
 
     def prepare_logging(self):
         pass
