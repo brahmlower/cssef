@@ -1,188 +1,183 @@
 #!/usr/bin/python
-import os
 import sys
 from getpass import getpass
-import cssefclient
 from prettytable import PrettyTable
+import cssefclient
 from cssefclient.utils import RPCEndpoint
-from cssefclient.tasks import AvailableEndpoints
-from cssefclient.tasks import Login
-from cssefclient.tasks import Logout
 from cssefclient.errors import NonExistantCommand
 
 class Menu(object):
-	def __init__(self, config, source_list):
-		self.config = config
-		self.source_list = source_list
-		self.menuDict = {}
+    def __init__(self, config, source_list):
+        self.config = config
+        self.source_list = source_list
+        self.menu_dict = {}
 
-	def construct(self):
-		# Start by looping over the endpoint sources
-		for source in self.source_list:
-			for endpoint in source['endpoints']:
-				self.menuDict[endpoint['menu_path']] = RPCEndpoint(self.config, endpoint['rpc_name'])
+    def construct(self):
+        # Start by looping over the endpoint sources
+        for source in self.source_list:
+            for endpoint in source['endpoints']:
+                self.menu_dict[endpoint['menu_path']] = \
+                RPCEndpoint(self.config, endpoint['rpc_name'])
 
-	def getCommand(self, commandList):
-		"""Gets the selected command from the menu dictionary
+    def get_command(self, command_list):
+        """Gets the selected command from the menu dictionary
 
-		This uses the walkDictPath method to retrieve the selected rpc
-		endpoint based on the list of values in commandList.
+        This converts the command_list to a string and then looks it up in the
+        menu_dict to find the command instance.
 
-		Args:
-			commandList (list): List of menu names to traverse
+        Args:
+            command_list (list): List of menu names to traverse
 
-		Returns:
-			Command: Instantiated command class, which can be called to
-				execute the rpc endpoint
-		"""
-		menu_path = ".".join(commandList)
-		try:
-			return self.menuDict[menu_path]
-		except KeyError:
-			raise NonExistantCommand
+        Returns:
+            Command: Instantiated command class, which can be called to
+                execute the rpc endpoint
+        """
+        menu_path = ".".join(command_list)
+        try:
+            return self.menu_dict[menu_path]
+        except KeyError:
+            raise NonExistantCommand
 
 class ParseInput(object):
-	def __init__(self, inputList):
-		self.remainingArgs = inputList
-		self.options = {}
-		self.command = []
-		self.commandArgs = {}
-		self.parseInput()
+    def __init__(self, input_list):
+        self.remaining_args = input_list
+        self.options = {}
+        self.command = []
+        self.command_args = {}
+        self.parse_input()
 
-	def parseInput(self):
-		self.parseOptions()
-		self.parseCommand()
-		self.parseCommandArgs()
+    def parse_input(self):
+        self.parse_options()
+        self.parse_command()
+        self.parse_command_args()
 
-	def parseOptions(self):
-		index = 0
-		while index < len(self.remainingArgs) and self.remainingArgs[index][0] == '-':
-			argument = self.remainingArgs[index]
-			argument = argument.strip('-')
-			if len(argument.split("=")) > 1:
-				# The value is in the same argument
-				keyword = argument.split('=')[0]
-				value = argument.split('=')[1]
-			else:
-				# The value is in the next argument
-				keyword = argument
-				value = self.remainingArgs[index + 1]
-				index += 1
-			self.options[keyword] = value
-			index += 1
-		self.remainingArgs = self.remainingArgs[index:]
+    def parse_options(self):
+        index = 0
+        while index < len(self.remaining_args) and self.remaining_args[index][0] == '-':
+            argument = self.remaining_args[index]
+            argument = argument.strip('-')
+            if len(argument.split("=")) > 1:
+                # The value is in the same argument
+                keyword = argument.split('=')[0]
+                value = argument.split('=')[1]
+            else:
+                # The value is in the next argument
+                keyword = argument
+                value = self.remaining_args[index + 1]
+                index += 1
+            self.options[keyword] = value
+            index += 1
+        self.remaining_args = self.remaining_args[index:]
 
-	def parseCommand(self):
-		index = 0
-		while index < len(self.remainingArgs) and self.remainingArgs[index][0] != '-':
-			self.command.append(self.remainingArgs[index])
-			index += 1
-		self.remainingArgs = self.remainingArgs[index:]
+    def parse_command(self):
+        index = 0
+        while index < len(self.remaining_args) and self.remaining_args[index][0] != '-':
+            self.command.append(self.remaining_args[index])
+            index += 1
+        self.remaining_args = self.remaining_args[index:]
 
-	def parseCommandArgs(self):
-		index = 0
-		while index < len(self.remainingArgs) and self.remainingArgs[index][0] == '-':
-			argument = self.remainingArgs[index]
-			argument = argument.strip('-')
-			if len(argument.split("=")) > 1:
-				# The value is in the same argument
-				keyword = argument.split('=')[0].replace('-', '_')
-				value = argument.split('=')[1]
-			else:
-				# The value is in the next argument
-				keyword = argument.replace('-', '_')
-				try:
-					value = self.remainingArgs[index + 1]
-				except IndexError:
-					# There is no next error. Complain and quit
-					sys.exit("Expected value in for argument, but got none.")
-				index += 1
-			self.commandArgs[keyword] = value
-			index += 1
+    def parse_command_args(self):
+        index = 0
+        while index < len(self.remaining_args) and self.remaining_args[index][0] == '-':
+            argument = self.remaining_args[index]
+            argument = argument.strip('-')
+            if len(argument.split("=")) > 1:
+                # The value is in the same argument
+                keyword = argument.split('=')[0].replace('-', '_')
+                value = argument.split('=')[1]
+            else:
+                # The value is in the next argument
+                keyword = argument.replace('-', '_')
+                try:
+                    value = self.remaining_args[index + 1]
+                except IndexError:
+                    # There is no next error. Complain and quit
+                    sys.exit("Expected value in for argument, but got none.")
+                index += 1
+            self.command_args[keyword] = value
+            index += 1
 
 class AuthDict(object):
-	def __init__(self, config, parsed_input):
-		pass
+    def __init__(self, config, parsed_input):
+        pass
 
-def buildAuthDict(parsed_input, config):
-	tmpDict = {}
-	# If the admin token was provided, add that to the auth dict and then
-	# return since we don't need anything else.
-	#if "admin-token" in parsed_input.options:
-	if config.admin_token:
-		#tmpDict["admin-token"] = parsed_input.options.pop("admin-token")
-		tmpDict["admin-token"] = config.admin_token
-		return tmpDict
-	# Add the username to the auth Dict
-	if not config.username:
-		print "No username was provided."
-		return None
-	tmpDict["username"] = config.username
-	# Add the organization to the auth Dict
-	if not config.organization:
-		print "No organization was provided."
-		return None
-	tmpDict["organization"] = config.organization
-	# If a password is provided, we want to use that instead of the token
-	if config.password:
-		tmpDict["password"] = config.password
-	elif config.token_auth_enabled and config.token:
-		tmpDict["token"] = config.token
-	else:
-		# If it's okay, prompt the user for a password
-		if config.prompt_password:
-			tmpDict["password"] = getpass()
-		else:
-			# Both values failed
-			print "Neither password nor token were provided."
-			return None
-	return tmpDict
+def build_auth_dict(config):
+    tmp_dict = {}
+    # If the admin token was provided, add that to the auth dict and then
+    # return since we don't need anything else.
+    if config.admin_token:
+        tmp_dict["admin-token"] = config.admin_token
+        return tmp_dict
+    # Add the username to the auth Dict
+    if not config.username:
+        print "No username was provided."
+        return None
+    tmp_dict["username"] = config.username
+    # Add the organization to the auth Dict
+    if not config.organization:
+        print "No organization was provided."
+        return None
+    tmp_dict["organization"] = config.organization
+    # If a password is provided, we want to use that instead of the token
+    if config.password:
+        tmp_dict["password"] = config.password
+    elif config.token_auth_enabled and config.token:
+        tmp_dict["token"] = config.token
+    else:
+        # If it's okay, prompt the user for a password
+        if config.prompt_password:
+            tmp_dict["password"] = getpass()
+        else:
+            # Both values failed
+            print "Neither password nor token were provided."
+            return None
+    return tmp_dict
 
-def printOutput(output):
-	if output.value != 0:
-		sys.stderr.write("The server is reporting the following error:\n")
-		sys.stderr.write("\n".join(output.message)+"\n")
-	if output.tableHeaders:
-		# Its a dictionary list, make a table and print it
-		outputTable = PrettyTable(output.tableHeaders)
-		outputTable.padding_width = 1
-		for i in output.content:
-			outputTable.add_row(i.values())
-		print outputTable
-	else:
-		# It's just a list of strings, print each one
-		# TODO: Maybe I just shouldn't support this...
-		for i in output.content:
-			print i
+def print_output(output):
+    if output.value != 0:
+        sys.stderr.write("The server is reporting the following error:\n")
+        sys.stderr.write("\n".join(output.message)+"\n")
+    if output.table_headers:
+        # Its a dictionary list, make a table and print it
+        output_table = PrettyTable(output.table_headers)
+        output_table.padding_width = 1
+        for i in output.content:
+            output_table.add_row(i.values())
+        print output_table
+    else:
+        # It's just a list of strings, print each one
+        # TODO: Maybe I just shouldn't support this...
+        for i in output.content:
+            print i
 
 if __name__ == "__main__":
-	# # Ensure user data directory exists
-	# if not os.path.exists(self.userDataDir):
-	# 	os.makedirs(self.userDataDir)
+    # # Ensure user data directory exists
+    # if not os.path.exists(self.userDataDir):
+    #     os.makedirs(self.userDataDir)
 
-	# Set up and configure the client
-	userInput = ParseInput(sys.argv[1:])
-	client = cssefclient.CssefClient()
-	client.config.loadConfigFile(client.config.globalConfigPath)
-	client.config.loadConfigFile(client.config.configPath)
-	client.config.loadConfigDict(userInput.options)
+    # Set up and configure the client
+    user_input = ParseInput(sys.argv[1:])
+    client = cssefclient.CssefClient()
+    client.config.load_config_file(client.config.global_config_path)
+    client.config.load_config_file(client.config.config_path)
+    client.config.load_config_dict(user_input.options)
 
-	# Prepare the auth dictionary
-	auth_dict = buildAuthDict(userInput, client.config)
-	if not auth_dict:
-		sys.exit()
-	userInput.commandArgs['auth'] = auth_dict
+    # Prepare the auth dictionary
+    auth_dict = build_auth_dict(client.config)
+    if not auth_dict:
+        sys.exit()
+    user_input.command_args['auth'] = auth_dict
 
-	# Make connection to server, load endpoints, authenticate
-	client.connect()
-	client.loadEndpoints()
-	client.loadToken(auth = userInput.commandArgs['auth'])
+    # Make connection to server, load endpoints, authenticate
+    client.connect()
+    client.load_endpoints()
+    client.load_token(auth=user_input.command_args['auth'])
 
-	# Call command and handle return
-	commandMenu = Menu(client.config, client.endpoints)
-	commandMenu.construct()
+    # Call command and handle return
+    commandMenu = Menu(client.config, client.endpoints)
+    commandMenu.construct()
 
-	command = commandMenu.getCommand(userInput.command)
-	output = client.callEndpoint(command, userInput.commandArgs)
-	printOutput(output)
-	sys.exit(output.value)
+    command = commandMenu.get_command(user_input.command)
+    output_obj = client.call_endpoint(command, user_input.command_args)
+    print_output(output_obj)
+    sys.exit(output_obj.value)
