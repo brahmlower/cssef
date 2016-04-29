@@ -8,6 +8,9 @@ from cssefserver.taskutils import log_bad_user_search_results
 from cssefserver.taskutils import client_failed_login_output
 
 class AvailableEndpoints(CssefRPCEndpoint):
+    name = "Available Endpoints"
+    rpc_name = "availableendpoints"
+    menu_path = None
     def on_request(self, *args):
         """Celery task to get all available celery endpoints.
 
@@ -16,24 +19,23 @@ class AvailableEndpoints(CssefRPCEndpoint):
             content is a list of dictionaries containing information about the
             available endpoints.
         """
-        # This is another temporary solution to an awful problem
-        user_endpoint_file_content = open('/etc/cssef/userEndpointsDict.json', 'r').read()
-        org_endpoint_file_content = open('/etc/cssef/organizationEndpointsDict.json', 'r').read()
-        user_endpoints_dict = ast.literal_eval(user_endpoint_file_content)
-        organization_endpoints_dict = ast.literal_eval(org_endpoint_file_content)
-
+        # # This is another temporary solution to an awful problem
+        # user_endpoint_file_content = open('/etc/cssef/userEndpointsDict.json', 'r').read()
+        # org_endpoint_file_content = open('/etc/cssef/organizationEndpointsDict.json', 'r').read()
+        # user_endpoints_dict = ast.literal_eval(user_endpoint_file_content)
+        # organization_endpoints_dict = ast.literal_eval(org_endpoint_file_content)
 
         return_dict = get_empty_return_dict()
-        return_dict['content'] = [
-            user_endpoints_dict,
-            organization_endpoints_dict
-        ]
+        return_dict['content'] = self.config.endpoint_sources
         # Having this commented out will not present plugin endpoints to clients
         # for plugin in plugins:
         #   return_dict['content'].append(plugin.tasks.endpointsDict)
         return return_dict
 
 class RenewToken(CssefRPCEndpoint):
+    name = "Renew Token"
+    rpc_name = "renewtoken"
+    menu_path = "renewtoken"
     takesKwargs = False
     onRequestArgs = ['username', 'organization', 'token']
     def on_request(self, username, organization, token):
@@ -52,6 +54,9 @@ class RenewToken(CssefRPCEndpoint):
         return return_dict
 
 class Login(CssefRPCEndpoint):
+    name = "Login"
+    rpc_name = "login"
+    menu_path = "login"
     takesKwargs = False
     onRequestArgs = ['username', 'organization', 'password']
     def on_request(self, username, organization, password):
@@ -82,3 +87,14 @@ class Login(CssefRPCEndpoint):
         return_dict = get_empty_return_dict()
         return_dict['content'] = [user.get_new_token()]
         return return_dict
+
+def endpoint_source():
+    source_dict = {}
+    source_dict['name'] = 'base'
+    endpoints = []
+    # Now add the endpoints to the endpoint_list
+    endpoints.append(AvailableEndpoints.info_dict())
+    endpoints.append(RenewToken.info_dict())
+    endpoints.append(Login.info_dict())
+    source_dict['endpoints'] = endpoints
+    return source_dict

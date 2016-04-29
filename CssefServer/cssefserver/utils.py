@@ -32,6 +32,7 @@ class Configuration(object):
         self.cssef_stdout = ""
         # Plugin configurations
         self.installed_plugins = []
+        self.endpoint_sources = []
 
     def load_config_file(self, config_path):
         """Load configuration from a file
@@ -85,6 +86,9 @@ class Configuration(object):
                     print "[LOGGING] Ignoring invalid setting '%s'." % i
 
 class CssefRPCEndpoint(object):
+    name = None
+    rpc_name = None
+    menu_path = None
     takesKwargs = True
     onRequestArgs = []
     def __init__(self, config, database_connection):
@@ -118,6 +122,15 @@ class CssefRPCEndpoint(object):
             return err.as_return_dict()
         except Exception as err:
             return handle_exception(err)
+
+    @classmethod
+    def info_dict(cls):
+        tmp_dict = {}
+        tmp_dict['name'] = cls.name
+        tmp_dict['rpc_name'] = cls.rpc_name
+        tmp_dict['menu_path'] = cls.menu_path
+        tmp_dict['reference'] = cls
+        return tmp_dict
 
     @abc.abstractmethod
     def on_request(self, *args, **kwargs):

@@ -9,6 +9,9 @@ from cssefserver.account.api import User
 from cssefserver.account.utils import authorize_access
 
 class OrganizationAdd(CssefRPCEndpoint):
+    name = "Organization Add"
+    rpc_name = "organizationadd"
+    menu_path = "organization.add"
     onRequestArgs = ['auth']
     def on_request(self, auth, **kwargs):
         """Celery task to create a new organization.
@@ -30,6 +33,9 @@ class OrganizationAdd(CssefRPCEndpoint):
         return return_dict
 
 class OrganizationDel(CssefRPCEndpoint):
+    name = "Organization Delete"
+    rpc_name = "organizationdel"
+    menu_path = "organization.del"
     takesKwargs = False
     onRequestArgs = ['auth', 'pkid']
     def on_request(self, auth, pkid):
@@ -46,6 +52,9 @@ class OrganizationDel(CssefRPCEndpoint):
         return model_del(Organization, self.database_connection, pkid)
 
 class OrganizationSet(CssefRPCEndpoint):
+    name = "Organization Set"
+    rpc_name = "organizationset"
+    menu_path = "organization.set"
     onRequestArgs = ['auth', 'pkid']
     def on_request(self, auth, pkid, **kwargs):
         """Celery task to edit an existing organization.
@@ -62,6 +71,9 @@ class OrganizationSet(CssefRPCEndpoint):
         return model_set(Organization, self.database_connection, pkid, **kwargs)
 
 class OrganizationGet(CssefRPCEndpoint):
+    name = "Organization Get"
+    rpc_name = "organizationget"
+    menu_path = "organization.get"
     onRequestArgs = ['auth']
     def on_request(self, auth, **kwargs):
         """Celery task to get one or more existing organization.
@@ -77,6 +89,9 @@ class OrganizationGet(CssefRPCEndpoint):
         return model_get(Organization, self.database_connection, **kwargs)
 
 class UserAdd(CssefRPCEndpoint):
+    name = "User Add"
+    rpc_name = "useradd"
+    menu_path = "user.add"
     onRequestArgs = ['auth']
     def on_request(self, auth, **kwargs):
         """Celery task to create a new user.
@@ -100,6 +115,9 @@ class UserAdd(CssefRPCEndpoint):
         return return_dict
 
 class UserDel(CssefRPCEndpoint):
+    name = "User Delete"
+    rpc_name = "userdel"
+    menu_path = "user.del"
     takesKwargs = False
     onRequestArgs = ['auth', 'pkid']
     def on_request(self, auth, pkid):
@@ -116,6 +134,9 @@ class UserDel(CssefRPCEndpoint):
         return model_del(User, self.database_connection, pkid)
 
 class UserSet(CssefRPCEndpoint):
+    name = "User Set"
+    rpc_name = "userset"
+    menu_path = "user.set"
     onRequestArgs = ['auth', 'pkid']
     def on_request(self, auth, pkid, **kwargs):
         """Celery task to edit an existing user.
@@ -132,6 +153,9 @@ class UserSet(CssefRPCEndpoint):
         return model_set(User, self.database_connection, pkid, **kwargs)
 
 class UserGet(CssefRPCEndpoint):
+    name = "User Get"
+    rpc_name = "userget"
+    menu_path = "user.get"
     onRequestArgs = ['auth']
     def on_request(self, auth, **kwargs):
         """Celery task to get one or more existing users.
@@ -145,3 +169,19 @@ class UserGet(CssefRPCEndpoint):
         """
         authorize_access(self.database_connection, auth, self.config)
         return model_get(User, self.database_connection, **kwargs)
+
+def endpoint_source():
+    source_dict = {}
+    source_dict['name'] = 'account'
+    endpoints = []
+    # Now add the endpoints to the endpoint_list
+    endpoints.append(OrganizationAdd.info_dict())
+    endpoints.append(OrganizationDel.info_dict())
+    endpoints.append(OrganizationSet.info_dict())
+    endpoints.append(OrganizationGet.info_dict())
+    endpoints.append(UserAdd.info_dict())
+    endpoints.append(UserDel.info_dict())
+    endpoints.append(UserSet.info_dict())
+    endpoints.append(UserGet.info_dict())
+    source_dict['endpoints'] = endpoints
+    return source_dict

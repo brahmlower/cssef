@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
 	# Application name:
-	name = "cssef-competition-attack-defend",
+	name = "cssef-cdc",
 
 	# Version number:
 	version = "0.0.1",
@@ -30,5 +30,5 @@ setup(
 	long_description = open("README.md").read(),
 
 	# Dependant packages:
-	install_requires = ["ipaddr", "cssef-server"],
+	install_requires = ["ipaddr", "sqlalchemy", "cssef-server"],
 )

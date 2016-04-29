@@ -17,13 +17,13 @@ class AvailableEndpoints(RPCEndpoint):
 			args (list): The required arguments while calling the rpc endpoint
 		"""
 		self.config = config
-		self.endpointName = 'AvailableEndpoints'
+		self.endpointName = 'availableendpoints'
 		self.args = []
 
 class RenewToken(RPCEndpoint):
 	def __init__(self, config):
 		self.config = config
-		self.endpointName = 'RenewToken'
+		self.endpointName = 'renewtoken'
 
 	def execute(self, **kwargs):
 		print kwargs
@@ -47,7 +47,7 @@ class RenewToken(RPCEndpoint):
 class Login(RPCEndpoint):
 	def __init__(self, config):
 		self.config = config
-		self.endpointName = 'Login'
+		self.endpointName = 'login'
 		self.args = []
 
 	def execute(self, **kwargs):
