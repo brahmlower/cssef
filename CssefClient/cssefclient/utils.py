@@ -36,43 +36,20 @@ class RPCEndpoint(object):
 	This class gets subclassed by other classes to define a specific
 	task on the cssef server.
 	"""
-	def __init__(self, config, endpointName, args = None):
+	def __init__(self, config, rpc_name):
 		"""
 		Args:
 			config (Configuration): The current configuration to use
-			endpointName (str): The task name as defined by the rpc server
+			rpc_name (str): The task name as defined by the rpc server
 			args (list): Arguments that are available to the task
 
 		Attributes:
 			config (Configuration): The current configuration to use
-			endpointName (str): The task name as defined by the rpc server
+			rpc_name (str): The task name as defined by the rpc server
 			args (list): Arguments that are available to the task
 		"""
 		self.config = config
-		self.endpointName = endpointName
-		self.args = args
-		self.task = None
-
-	@classmethod
-	def fromDict(cls, config, inputDict):
-		"""Creates a RPCEndpoint object from a dictionary
-
-		Args:
-			config (Configuration): The current configuration to use
-			inputDict (dict): Dictionary containing necessary values to define
-				the rpc endpoint
-
-		Returns:
-			An instance of RPCEndpoint that has been filled with the
-			information defined in the provided dictionary is returned.
-
-		Example:
-			<todo>
-		"""
-		args = []
-		instance = cls(config, inputDict['endpointName'], args)
-		instance.name = inputDict['name']
-		return instance
+		self.rpc_name = rpc_name
 
 	def execute(self, **kwargs):
 		"""Calls the rpc endpoint on the remote server
@@ -88,7 +65,7 @@ class RPCEndpoint(object):
 			created with values describing the encountered exception.
 		"""
 		if self.config.verbose:
-			print "[LOGGING] Calling rpc with name '%s'."  % self.endpointName
+			print "[LOGGING] Calling rpc with name '%s'."  % self.rpc_name
 		try:
 			# This is a hint at a larger issue- If I don't cast this to an
 			# integer, it is passed to send_task() and get() as a string
@@ -99,9 +76,9 @@ class RPCEndpoint(object):
 			#self.task = self.config.apiConn.send_task(self.endpointName,
 			#	args = args, kwargs = kwargs, expires = task_timeout)
 			#result = self.task.get(timeout = task_timeout)
-			result = self.config.serverConnection.request(self.endpointName, **kwargs)
-			if result:
-				return CommandOutput(**result)
+			output_dict = self.config.serverConnection.request(self.rpc_name, **kwargs)
+			if output_dict:
+				return CommandOutput(**output_dict)
 			else:
 				return CommandOutput(value=-1, content=[], message=['Call to endpoint returned "None".'])
 		except Exception as e:

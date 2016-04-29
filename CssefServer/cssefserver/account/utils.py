@@ -54,7 +54,6 @@ def authorize_access(db_conn, auth_dict, config):
             return False
         else:
             raise errors.AuthIncorrectAdminToken
-            print "[AUTH WARNING] Provided auth-token was incorrect."
     # Importing for this got pretty ugly... :(
     if not auth_dict.get('username', None):
         #print "[AUTH WARNING] No username provided."

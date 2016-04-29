@@ -19,17 +19,8 @@ class AvailableEndpoints(CssefRPCEndpoint):
             content is a list of dictionaries containing information about the
             available endpoints.
         """
-        # # This is another temporary solution to an awful problem
-        # user_endpoint_file_content = open('/etc/cssef/userEndpointsDict.json', 'r').read()
-        # org_endpoint_file_content = open('/etc/cssef/organizationEndpointsDict.json', 'r').read()
-        # user_endpoints_dict = ast.literal_eval(user_endpoint_file_content)
-        # organization_endpoints_dict = ast.literal_eval(org_endpoint_file_content)
-
         return_dict = get_empty_return_dict()
         return_dict['content'] = self.config.endpoint_sources
-        # Having this commented out will not present plugin endpoints to clients
-        # for plugin in plugins:
-        #   return_dict['content'].append(plugin.tasks.endpointsDict)
         return return_dict
 
 class RenewToken(CssefRPCEndpoint):
@@ -58,8 +49,8 @@ class Login(CssefRPCEndpoint):
     rpc_name = "login"
     menu_path = "login"
     takesKwargs = False
-    onRequestArgs = ['username', 'organization', 'password']
-    def on_request(self, username, organization, password):
+    onRequestArgs = ['auth']
+    def on_request(self, auth):
         """Celery task to login.
 
         Returns:
@@ -68,6 +59,9 @@ class Login(CssefRPCEndpoint):
             the credentials were correct. Content will be empty if the credentials
             were incorrect, and value will be non-zero.
         """
+        username = auth.pop('username')
+        password = auth.pop('password')
+        organization = auth.pop('organization')
         user_results = User.search(self.database_connection, username=username, \
             organization=organization)
         if len(user_results) != 1:

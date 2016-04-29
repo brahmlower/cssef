@@ -6,13 +6,13 @@ from cssefserver.daemon import CssefDaemon
 if __name__ == "__main__":
     daemon = CssefDaemon()
     if len(sys.argv) == 2:
-        if 'start' == sys.argv[1]:
+        if sys.argv[1] == 'start':
             daemon.start()
-        elif 'stop' == sys.argv[1]:
+        elif sys.argv[1] == 'stop':
             daemon.stop()
-        elif 'restart' == sys.argv[1]:
+        elif sys.argv[1] == 'restart':
             daemon.restart()
-        elif 'status' == sys.argv[1]:
+        elif sys.argv[1] == 'status':
             daemon.status()
         else:
             print "Unknown command"

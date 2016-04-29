@@ -49,8 +49,8 @@ class CompetitionSet(CssefRPCEndpoint):
 
 class CompetitionGet(CssefRPCEndpoint):
     name = "Competition Get"
-    rpc_name = "competitionset"
-    menu_path = "competition.set"
+    rpc_name = "competitionget"
+    menu_path = "competition.get"
     onRequestArgs = ['auth']
     def on_request(self, auth, **kwargs):
         authorize_access(self.database_connection, auth, self.config)

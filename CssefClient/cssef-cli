@@ -11,72 +11,16 @@ from cssefclient.tasks import Logout
 from cssefclient.errors import NonExistantCommand
 
 class Menu(object):
-	def __init__(self, config, endpoints):
+	def __init__(self, config, source_list):
 		self.config = config
-		self.availableEndpoints = endpoints
+		self.source_list = source_list
 		self.menuDict = {}
 
 	def construct(self):
-		# Build dynamic rpc endpoints
-		for moduleDict in self.availableEndpoints:
-			self.menuDict[moduleDict['menuName']] = {}
-			for endpointDict in moduleDict['endpoints']:
-				self.menuDict[moduleDict['menuName']] = self.buildMenuBranch(
-					self.menuDict[moduleDict['menuName']],	# This is the current menu
-					endpointDict['menu'],					# This is the menu heiarchy
-					endpointDict)							# This is the content for the end of the menu
-
-		# Build local endpoints
-		self.menuDict['login'] = Login(self.config)
-		self.menuDict['logout'] = Logout(self.config)
-
-	def buildMenuBranch(self, currentMenu, menuList, endpointContent):
-		if len(menuList) == 1:
-			# This means endpointContent is a dictionary that defines a rpc
-			# endpoint. We now instantiate the endpoint from that dictionary
-			currentMenu[menuList[0]] = RPCEndpoint.fromDict(
-				self.config,
-				endpointContent)
-			return currentMenu
-		else:
-			try:
-				currentMenu[menuList[0]] = self.buildMenuBranch(
-					currentMenu[menuList[0]],
-					menuList[1:],
-					endpointContent)
-			except KeyError:
-				currentMenu[menuList[0]] = {}
-				currentMenu[menuList[0]] = self.buildMenuBranch(
-					currentMenu[menuList[0]],
-					menuList[1:],
-					endpointContent)
-			return currentMenu
-
-	def walkDictPath(self, dictionary, path):
-		"""This will walk down the path l through dictionary d
-		Example:
-			Given list l defined as `l = ['a', 'b', 'c']` and dictionary d
-			defined as `d = {
-				'a': {
-					'b': {
-						'c': "object1",
-						'f': "object2"
-					},
-					'e': "object3"
-				},
-				'd': {
-					'g': "object4"
-				}
-			}` this function will return object1
-		"""
-		if len(path) == 0:
-			return None
-		if len(path) == 1:
-			return dictionary[path[0]]
-		else:
-			# a KeyError exception will be raised if someone forgetts to provide an
-			#argument to an option here. maybe sanitize input somehow?
-			return self.walkDictPath(dictionary[path[0]], path[1:])
+		# Start by looping over the endpoint sources
+		for source in self.source_list:
+			for endpoint in source['endpoints']:
+				self.menuDict[endpoint['menu_path']] = RPCEndpoint(self.config, endpoint['rpc_name'])
 
 	def getCommand(self, commandList):
 		"""Gets the selected command from the menu dictionary
@@ -91,14 +35,11 @@ class Menu(object):
 			Command: Instantiated command class, which can be called to
 				execute the rpc endpoint
 		"""
-		# print "Walking path:"
-		# print commandList
-		# print "Walking tree:"
-		# print self.menuDict
-		command = self.walkDictPath(self.menuDict, commandList)
-		if not command:
+		menu_path = ".".join(commandList)
+		try:
+			return self.menuDict[menu_path]
+		except KeyError:
 			raise NonExistantCommand
-		return command
 
 class ParseInput(object):
 	def __init__(self, inputList):
@@ -197,13 +138,9 @@ def buildAuthDict(parsed_input, config):
 			return None
 	return tmpDict
 
-
 def printOutput(output):
-	if not output:
-		sys.stderr.write("Return values was not in correct output format.")
-		sys.exit()
 	if output.value != 0:
-		sys.stderr.write("An error was encountered:\n")
+		sys.stderr.write("The server is reporting the following error:\n")
 		sys.stderr.write("\n".join(output.message)+"\n")
 	if output.tableHeaders:
 		# Its a dictionary list, make a table and print it
