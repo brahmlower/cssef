@@ -36,6 +36,7 @@ class Menu(object):
         try:
             return self.menu_dict[menu_path]
         except KeyError:
+            print menu_path
             raise NonExistantCommand
 
 class ParseInput(object):

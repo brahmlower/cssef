@@ -76,7 +76,7 @@ class RPCEndpoint(object):
             #self.task = self.config.apiConn.send_task(self.endpointName,
             #    args = args, kwargs = kwargs, expires = task_timeout)
             #result = self.task.get(timeout = task_timeout)
-            output_dict = self.config.serverConnection.request(self.rpc_name, **kwargs)
+            output_dict = self.config.server_connection.request(self.rpc_name, **kwargs)
             if output_dict:
                 return CommandOutput(**output_dict)
             else:

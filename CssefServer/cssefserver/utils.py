@@ -1,5 +1,6 @@
 import abc
 import traceback
+import logging
 import yaml
 # Database related imports
 from sqlalchemy import create_engine
@@ -119,8 +120,10 @@ class CssefRPCEndpoint(object):
             else:
                 return self.on_request(*args_list)
         except CssefException as err:
+            logging.error("Caught a csseferror:\n %s" % err)
             return err.as_return_dict()
         except Exception as err:
+            logging.error("Caught a real exception:\n %s" % err)
             return handle_exception(err)
 
     @classmethod
@@ -222,16 +225,6 @@ class ModelWrapper(object):
 
 def create_database_connection(config):
     """Returns a database session for the specified database"""
-    # We're importing the plugin models to make sure they get synced
-    # when the database is instantiated. I don't think this is the
-    # best place for this though
-    # if config.installed_plugins:
-    #     for module_name in config.installed_plugins:
-    #         try:
-    #             __import__("%s.models" % module_name)
-    #         except:
-    #             print "Failed to load module: '%s'" % module_name
-
     # Now actually create the database instantiation
     database_engine = create_engine('sqlite:///' + config.database_path)
     Base.metadata.create_all(database_engine)

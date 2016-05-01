@@ -7,12 +7,12 @@ class CssefTest(unittest.TestCase):
     def setUp(self):
         self.config = Configuration()
         self.config.load_config_file(self.config.global_config_path)
-        self.config.database_path = "./db.sqlite3"
+        self.config.database_path = ":memory:"
         self.db_connection = create_database_connection(self.config)
 
     def tearDown(self):
         self.db_connection.close()
-        os.remove(self.config.database_path)
+        #os.remove(self.config.database_path)
 
     def assert_dict_content(self, return_dict, expected_dict):
         self.assertEqual(return_dict['value'], expected_dict['value'])
