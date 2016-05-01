@@ -13,20 +13,6 @@ from django.forms import IntegerField
 from django.forms import HiddenInput
 from django.forms.widgets import PasswordInput
 
-class CreateCompetitionForm(Form):
-	name = CharField(
-		label = 'Name',
-		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
-	)
-	url = CharField(
-		label = 'URL',
-		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
-	)
-	description = CharField(
-		label = 'Description',
-		widget = Textarea(attrs={'class':'form-control', 'required': 'True'})
-	)
-
 class CreateInjectForm(Form):
 	title = CharField(
 		label = 'Title',

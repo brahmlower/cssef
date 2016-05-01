@@ -7,11 +7,6 @@ from WebInterface.modules.competition.views import blueteam
 #from WebInterface.modules.competition.views import redteam
 
 urlpatterns = patterns('',
-	# Management pages
-	url(r'^(?P<organizationUrl>[\w\-\_]{0,50})/management/summary/$',	management.listCompetitions),
-	#url(r'^(?P<organizationUrl>[\w\-\_]{0,50})/management/list/$',		management.listCompetitions),
-	url(r'^(?P<organizationUrl>[\w\-\_]{0,50})/management/create/$',	management.createCompetition),
-
 	# Orange Team pages
 	#url(r'^(?P<competitionUrl>[\w\-\_]{0,50})/teamorange/$', orangeteam.summary),
 

@@ -38,7 +38,7 @@ class EditOrganizationContext(FormContext):
 		self.httpMethodActions['POST'] = self.apiOnPost
 
 	def apiOnGet(self):
-		output = makeApiRequest('organizationGet', {'pkid': self.pkid})
+		output = makeApiRequest('organizationget', {'pkid': self.pkid})
 		self.translateApiReturn(output)
 		self.form = self.form(initial = output['content'][0])
 
@@ -46,7 +46,7 @@ class EditOrganizationContext(FormContext):
 		if not self.validateFormData():
 			return False
 		self.formData['pkid'] = self.pkid
-		output = makeApiRequest('organizationSet', self.formData)
+		output = makeApiRequest('organizationset', self.formData)
 		self.translateApiReturn(output)
 		if output['value'] == 0:
 			self.form = self.form(initial = output['content'][0])
@@ -68,7 +68,7 @@ class CreateOrganizationContext(FormContext):
 	def apiOnPost(self):
 		if not self.validateFormData():
 			return False
-		output = makeApiRequest('organizationAdd', self.formData)
+		output = makeApiRequest('organizationadd', self.formData)
 		self.translateApiReturn(output)
 
 class ListOrganizationContext(BaseContext):
@@ -81,7 +81,7 @@ class ListOrganizationContext(BaseContext):
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
-		output = makeApiRequest('organizationGet', {})
+		output = makeApiRequest('organizationget', {})
 		self.translateApiReturn(output)
 
 ###################################################
@@ -97,7 +97,7 @@ class EditUserContext(FormContext):
 		self.httpMethodActions['POST'] = self.apiOnPost
 
 	def apiOnGet(self):
-		output = makeApiRequest('userGet', {'pkid': self.pkid})
+		output = makeApiRequest('userget', {'pkid': self.pkid})
 		self.translateApiReturn(output)
 		self.form = self.form(initial = output['content'][0])
 
@@ -129,7 +129,7 @@ class CreateUserContext(FormContext):
 	def apiOnPost(self):
 		if not self.validateFormData():
 			return False
-		output = makeApiRequest('userAdd', self.formData)
+		output = makeApiRequest('useradd', self.formData)
 		self.translateApiReturn(output)
 
 class ListUserContext(BaseContext):
@@ -142,7 +142,7 @@ class ListUserContext(BaseContext):
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
-		output = makeApiRequest('userGet', {})
+		output = makeApiRequest('userget', {})
 		self.translateApiReturn(output)
 
 class DeleteUserContext(FormContext):
@@ -155,8 +155,7 @@ class DeleteUserContext(FormContext):
 	def apiOnPost(self):
 		if not self.validateFormData():
 			return False
-		output = makeApiRequest('userDel', self.formData)
-		print output
+		output = makeApiRequest('userdel', self.formData)
 		self.translateApiReturn(output)
 
 ###################################################
@@ -180,7 +179,7 @@ class ListScoringEnginesContext(BaseContext):
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
-		output = makeApiRequest('scoringEngineGet', {})
+		output = makeApiRequest('scoringengineget', {})
 		self.translateApiReturn(output)
 
 class DeleteScoringEngineContext(BaseContext):

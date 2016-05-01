@@ -1,0 +1,90 @@
+{% extends "organization/templates/pageTemplate.html" %}
+
+{% block page_content %}
+  <section class="content-header">
+    <h1>{{ organization.name }} CDC Competitions</h1>
+    <ol class="breadcrumb">
+      <li><a href="/"><i class="fa fa-home"></i> Site Home </a></li>
+      <li><a href="/admin/home">Admin</a></li>
+      <li class="active"><a href="/admin/siteconfigs"> CDC Competitions </a></li>
+    </ol>
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+  	<p>This is a list of competitions hosted by the organization. You have {{ apiData|length }} competition(s) of a maximum of {{ organization.maxCompetitions }}.</p>
+	{#{% if organization.canAddCompetitions and apiData|length < organization.maxCompetitions %}#}
+	<a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createplugincomp">New {{ plugin.name }} Competition</a>
+	{#{% endif %}#}
+
+	<div id="competition_list">
+		{% if apiData %}
+		<table class="table">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for i in apiData %}
+				<tr>
+					<td style="vertical-align: middle">{{ i.id }}</td>
+					<td style="vertical-align: middle">{{ i.name }}</td>
+					<td style="vertical-align: middle">{{ i.description }}</td>
+					<td>
+						<div class="dropdown" style="float: left;">
+							<button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> View As <span class="caret"></span> </button>
+							<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+								<li><a href="/competition/{{ i.id }}/teamwhite/summary/">White Team</a></li>
+								<li><a href="/competition/{{ i.id }}/teamblue/summary/">Blue Team</a></li>
+							</ul>
+						</div>
+						{% if organization.canDeleteCompetitions %}
+						&nbsp;<button type="button" class="btn btn-sm btn-danger" href="/competition/{{ organization.id }}/management/delete/"> Delete </button>
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% else %}
+		<p>No competitions have been created yet. Go ahead and make one!</p>
+		{% endif %}
+	</div>
+  </section><!-- /.content -->
+
+{#{% if organization.canAddCompetitions and apiData|length < organization.maxCompetitions %}#}
+<!-- Plugin competition creation modal -->
+<div class="modal fade" id="createplugincomp" tabindex="-1" role="dialog" aria-labelledby="createplugincomplable" style="display: none;" data-backdrop="">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createplugincomplable">Create {{ plugin.name }} Competition</h4>
+      </div>
+      <!-- <form action="/organization/{{ organization.id }}/plugin/{{ plugin.shortname }}/create" method="post" class="form-horizontal" enctype="multipart/form-data"> -->
+      <form action="/organization/{{ organization.id }}/plugin/cdc/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+          <label for="{{ form.name.id_for_label }}">{{ forms.form_create.name.label }}</label>
+          <div>{{ forms.form_create.name }}</div>
+
+          <label for="{{ form.url.id_for_label }}">{{ forms.form_create.url.label }}</label>
+          <div>{{ forms.form_create.url }}<br></div>
+
+          <label for="{{ form.description.id_for_label }}">{{ forms.form_create.description.label }}</label>
+          <div>{{ forms.form_create.description }}<br></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"> Cancel </button>
+          <button id="form_sub_button" type="submit" class="btn btn-primary"> Save </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{#{% endif %}#}
+{% endblock %}

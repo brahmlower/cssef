@@ -3,6 +3,8 @@ from WebInterface.context import BaseContext
 from WebInterface.modules.organization.context import OrganizationContext
 from WebInterface.modules.organization.context import ListMemberContext
 from WebInterface.modules.organization.context import OrganizationSettingsContext
+from WebInterface.modules.organization.context import CompPluginListContext
+from WebInterface.modules.organization.context import CompPluginCreateContext
 
 templatePathPrefix = "organization/templates/"
 
@@ -35,3 +37,10 @@ def members(request, organizationId):
 def settings(request, organizationId):
 	pageTemplate = templatePathPrefix + 'settings.html'
 	return getContext(OrganizationSettingsContext, request, page_template = pageTemplate, organizationId = organizationId)
+
+def compplugin_list(request, organizationId, plugin_name):
+	pageTemplate = templatePathPrefix + 'plugin_list.html'
+	return getContext(CompPluginListContext, request, page_template = pageTemplate, organizationId = organizationId, plugin_name = plugin_name)
+
+def compplugin_create(request, organizationId, plugin_name):
+	return getContext(CompPluginCreateContext, request, redirect_url = '/organization/%s/plugin/%s/' % (organizationId, plugin_name), organizationId = organizationId)
