@@ -4,3 +4,4 @@
 db.sqlite3
 docs/build/
 docs/source/autodoc
+WebInterface/WebInterface/static/adminlte/*
