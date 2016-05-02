@@ -51,6 +51,9 @@ class CssefServer(object):
                 continue
             plugin_class_inst = plugin_class_ref(self.config)
             self.plugins.append(plugin_class_inst)
+        # This is just to finish implementing the Available Endpoints task
+        # TODO: Maybe make a distinctions between 'configuration' and 'running configuration'?
+        self.config.installed_plugins = self.plugins
 
     def load_rpc_endpoints(self):
         # Create the list of endpoints sources
@@ -111,6 +114,7 @@ class CssefServer(object):
 class Plugin(object):
     name = ""
     short_name = ""
+    __version__ = ""
     endpoints = []
     def __init__(self, config):
         self.config = config
@@ -119,7 +123,16 @@ class Plugin(object):
     def endpoint_info(cls):
         tmp_dict = {}
         tmp_dict['name'] = cls.__name__
-        tmp_dict['endpoints'] = cls.endpoints
+        tmp_dict['endpoints'] = []
+        for endpoint in cls.endpoints:
+            tmp_dict['endpoints'].append(endpoint.info_dict())
+        return tmp_dict
+
+    def as_dict(self):
+        tmp_dict = {}
+        tmp_dict['name'] = self.name
+        tmp_dict['short_name'] = self.short_name
+        tmp_dict['version'] = self.__version__
         return tmp_dict
 
 # Dumpy old logging methods

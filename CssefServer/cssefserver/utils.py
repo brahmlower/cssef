@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from cssefserver.modelbase import BASE as Base
 from cssefserver.errors import CssefException
+from cssefserver.errors import CssefObjectDoesNotExist
 
 class Configuration(object):
     """Contains and loads server configuration values
@@ -39,7 +40,7 @@ class Configuration(object):
         """Load configuration from a file
 
         This will read a yaml configuration file. The yaml file is converted
-        to a dictionary object, which is just passed to `loadConfigDict`.
+        to a dictionary object, which is just passed to `load_config_dict`.
 
         Args:
             config_path (str): A filepath to the yaml config file
@@ -138,14 +139,6 @@ class CssefRPCEndpoint(object):
     @abc.abstractmethod
     def on_request(self, *args, **kwargs):
         pass
-
-class CssefObjectDoesNotExist(Exception):
-    'An exception for when the requested object does not exist - not needed I think'
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return repr(self.message)
 
 class ModelWrapper(object):
     """ The base class for wrapping SQLAlchemy model objects

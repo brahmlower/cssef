@@ -19,6 +19,11 @@ class AvailableEndpoints(RPCEndpoint):
         self.config = config
         self.rpc_name = 'availableendpoints'
 
+class AvailablePlugins(RPCEndpoint):
+    def __init__(self, config):
+        self.config = config
+        self.rpc_name = 'availableplugins'
+
 class RenewToken(RPCEndpoint):
     def __init__(self, config):
         self.config = config

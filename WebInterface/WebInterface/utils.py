@@ -8,7 +8,7 @@ client.config.load_config_file('/etc/cssef/cssef.yml')
 client.connect()
 auth_dict = {'username': 'admin', 'password': 'admin', 'organization': 1}
 
-def makeApiRequest(apiEndpointString, args_dict, apiConnection = client.config.server_connection):
+def makeApiRequest(apiEndpointString, args_dict = {}):
 	print '[UTILS] Making api request to endpoint "%s" with arguments "%s"' % (apiEndpointString, args_dict)
 	args_dict['auth'] = auth_dict
 	output = RPCEndpoint(client.config, apiEndpointString).execute(**args_dict)

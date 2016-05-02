@@ -7,11 +7,14 @@ from WebInterface.modules.organization.forms import CreatePluginCompForm
 class OrganizationContext(BaseContext):
 	def __init__(self, request, organizationId = None):
 		super(OrganizationContext, self).__init__(request)
+		apiReturn = makeApiRequest('availableplugins')
+		self.plugins = apiReturn['content']
 		apiReturn = makeApiRequest('organizationget', {'pkid': organizationId})
 		self.organization = apiReturn['content'][0]
 
 	def getContext(self):
 		super(OrganizationContext, self).getContext()
+		self.context.push({'plugins': self.plugins})
 		self.context.push({'organization': self.organization})
 		return self.context
 

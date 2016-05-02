@@ -17,6 +17,14 @@ class CssefException(Exception):
     def as_return_dict(self):
         return {'value': self.value, 'message': self.message, 'content': []}
 
+class CssefObjectDoesNotExist(Exception):
+    'An exception for when the requested object does not exist - not needed I think'
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return repr(self.message)
+
 class IncorrectCredentials(CssefException):
     value = 30
     message = ['Bad username or password']

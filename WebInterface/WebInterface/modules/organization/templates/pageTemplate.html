@@ -20,10 +20,12 @@
   </li>
 
   <li class="header">PLUGINS</li>
+  {% for plugin in plugins%}
   <li>
-    <a href="/organization/{{ organization.id }}/plugin/cdc">
-      <i class="fa fa-shield"></i> <span> CDC </span>
+    <a href="/organization/{{ organization.id }}/plugin/{{ plugin.short_name.lower }}">
+      <i class="fa fa-shield"></i> <span> {{ plugin.name }} </span>
     </a>
   </li>
+  {% endfor %}
 </ul>
 {% endblock %}
