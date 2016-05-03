@@ -1,28 +1,54 @@
 {% extends "sitePageTemplate.html" %}
 
-{% block authed_navbar_links %}
-<li class="active"><a href="/organization/{{ competition.organization }}/home/">{{ organization.name }} Home</a></li>
-{% endblock %}
-
-{% block sidebar %}
-<div class="col-sm-3 col-md-2 sidebar">
-	<ul class="nav nav-sidebar">
-		<li><a href="/competition/{{ competition.organization }}/management/summary/"><span class="glyphicon glyphicon-chevron-left"></span> Back </a></li>
-		<li class="nav-divider"><li>
-		<li id="sidebar_summary"><a href="/competition/{{ competition.id }}/teamwhite/summary/">Summary</a></li>
-		<!-- This is some SUPER hackish css because I don't want to put in the time to do it right at the moment. I'll fix this later, I promise -->
-		<li class="nav-divider"><li>
-		<li style="padding-top: 10px; padding-left: 20px; padding-right: 20px, padding-bottom: 15px"> Configuration </li>
-		<li id="sidebar_settings"><a href="/competition/{{ competition.id }}/teamwhite/settings/">Settings</a></li>
-		<!-- Built in configuables -->
-		<li id="sidebar_teams"><a href="/competition/{{ competition.id }}/teamwhite/teams/">Teams</a></li>
-		<li id="sidebar_injects"><a href="/competition/{{ competition.id }}/teamwhite/injects/">Injects</a></li>
-		<!-- Scoring engine configurables -->
-		<li class="nav-divider"><li>
-		<li style="padding-top: 10px; padding-left: 20px; padding-right: 20px, padding-bottom: 15px"> Review </li>
-		<li id="sidebar_injects"><a href="/competition/{{ competition.id }}/teamwhite/injects/">Inject Response</a></li>
-		<li id="sidebar_injects"><a href="/competition/{{ competition.id }}/teamwhite/injects/">Incidents</a></li>
-		<li id="sidebar_injects"><a href="/competition/{{ competition.id }}/teamwhite/injects/">Scores</a></li>
-	</ul>
-</div>
+{% block sidebarmenu %}
+<ul class="sidebar-menu">
+  <li class="header">MAIN NAVIGATION</li>
+  <li>
+    <a href="/competition/{{ competition.id }}/teamwhite/summary/">
+      <i class="fa fa-home"></i> <span>Summary</span>
+    </a>
+  </li>
+  <li class="header">CONFIGURATION</li>
+  <li>
+    <a href="/competition/{{ competition.id }}/teamwhite/settings/">
+      <i class="fa fa-gear"></i> <span>Settings</span>
+    </a>
+  </li>
+  <li>
+    <a href="/competition/{{ competition.id }}/teamwhite/services/">
+      <i class="fa fa-server"></i> <span>Services</span>
+    </a>
+  </li>
+  <li>
+    <a href="/competition/{{ competition.id }}/teamwhite/teams/">
+      <i class="fa fa-users"></i> <span>Teams</span>
+    </a>
+  </li>
+  <li>
+    <a href="/competition/{{ competition.id }}/teamwhite/injects/">
+      <i class="fa fa-envelope"></i> <span>Injects</span>
+    </a>
+  </li>
+  <li class="header">REVIEW</li>
+  <li>
+    <a href="/competition/{{ competition.id }}/teamwhite/injectresponses/">
+      <i class="fa fa-comments"></i> <span>Inject Response</span>
+    </a>
+  </li>
+  <li>
+    <a href="/competition/{{ competition.id }}/teamwhite/incidents/">
+      <i class="fa fa-eye"></i> <span>Incidents</span>
+    </a>
+  </li>
+  <li>
+    <a href="/competition/{{ competition.id }}/teamwhite/incidentresponses/">
+      <i class="fa fa-exclamation-circle"></i> <span>Incident Response</span>
+    </a>
+  </li>
+  <li>
+    <a href="/competition/{{ competition.id }}/teamwhite/scores/">
+      <i class="fa fa-check"></i> <span>Scores</span>
+    </a>
+  </li>
+</ul>
 {% endblock %}

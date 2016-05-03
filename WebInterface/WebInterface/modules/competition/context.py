@@ -10,9 +10,9 @@ from WebInterface.modules.organization.context import OrganizationContext
 from WebInterface.modules.organization.context import OrganizationFormContext
 
 class CompetitionContext(BaseContext):
-	def __init__(self, request, competitionId = None):
+	def __init__(self, request, comp_pkid = None):
 		super(CompetitionContext, self).__init__(request)
-		apiReturn = makeApiRequest('competitionget', {'pkid': competitionId})
+		apiReturn = makeApiRequest('competitionget', {'pkid': comp_pkid})
 		self.competition = apiReturn['content'][0]
 
 	def getContext(self):
@@ -21,9 +21,9 @@ class CompetitionContext(BaseContext):
 		return self.context
 
 class CompetitionFormContext(FormContext):
-	def __init__(self, request, competitionId = None):
+	def __init__(self, request, comp_pkid = None):
 		super(CompetitionFormContext, self).__init__(request)
-		apiReturn = makeApiRequest('competitionget', {'pkid': competitionId})
+		apiReturn = makeApiRequest('competitionget', {'pkid': comp_pkid})
 		self.competition = apiReturn['content'][0]
 
 	def getContext(self):
@@ -35,12 +35,12 @@ class CompetitionFormContext(FormContext):
 # WhiteTeam Context Classes - General
 # ==================================================
 class WhiteteamSummaryContext(CompetitionContext):
-	def __init__(self, request, competitionId = None):
-		super(WhiteteamSummaryContext, self).__init__(request, competitionId)
+	def __init__(self, request, comp_pkid = None):
+		super(WhiteteamSummaryContext, self).__init__(request, comp_pkid)
 
 class WhiteteamSettingsContext(CompetitionFormContext):
-	def __init__(self, request, competitionId = None):
-		super(WhiteteamSettingsContext, self).__init__(request, competitionId)
+	def __init__(self, request, comp_pkid = None):
+		super(WhiteteamSettingsContext, self).__init__(request, comp_pkid)
 		self.action = self.EDIT
 		self.form = CompetitionSettingsForm
 		self.httpMethodActions['GET'] = self.apiOnGet
@@ -60,11 +60,26 @@ class WhiteteamSettingsContext(CompetitionFormContext):
 		self.form = self.form(initial = apiReturn['content'][0])
 
 # ==================================================
+# WhiteTeam Context Classes - Service
+# ==================================================
+class ServiceListContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(ServiceListContext, self).__init__(request, comp_pkid)
+
+class ServiceEditContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(ServiceEditContext, self).__init__(request, comp_pkid)
+
+class ServiceCreateContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(ServiceCreateContext, self).__init__(request, comp_pkid)
+
+# ==================================================
 # WhiteTeam Context Classes - Team
 # ==================================================
 class TeamListContext(CompetitionContext):
-	def __init__(self, request, competitionId = None):
-		super(TeamListContext, self).__init__(request, competitionId)
+	def __init__(self, request, comp_pkid = None):
+		super(TeamListContext, self).__init__(request, comp_pkid)
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
@@ -72,8 +87,8 @@ class TeamListContext(CompetitionContext):
 		self.translateApiReturn(apiReturn)
 
 class TeamEditContext(CompetitionFormContext):
-	def __init__(self, request, competitionId, pkid):
-		super(TeamEditContext, self).__init__(request, competitionId)
+	def __init__(self, request, comp_pkid, pkid):
+		super(TeamEditContext, self).__init__(request, comp_pkid)
 		self.action = self.EDIT
 		self.pkid = pkid
 		self.form = CreateTeamForm
@@ -114,8 +129,8 @@ class TeamEditContext(CompetitionFormContext):
 			self.form = self.form(initial = apiReturn['content'][0])
 
 class TeamCreateContext(CompetitionFormContext):
-	def __init__(self, request, competitionId = None):
-		super(TeamCreateContext, self).__init__(request, competitionId)
+	def __init__(self, request, comp_pkid = None):
+		super(TeamCreateContext, self).__init__(request, comp_pkid)
 		self.action = self.CREATE
 		self.form = CreateTeamForm
 		self.httpMethodActions['POST'] = self.apiOnPost
@@ -148,8 +163,8 @@ class TeamCreateContext(CompetitionFormContext):
 # WhiteTeam Context Classes - Inject
 # ==================================================
 class InjectListContext(CompetitionContext):
-	def __init__(self, request, competitionId = None):
-		super(InjectListContext, self).__init__(request, competitionId)
+	def __init__(self, request, comp_pkid = None):
+		super(InjectListContext, self).__init__(request, comp_pkid)
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
@@ -157,8 +172,8 @@ class InjectListContext(CompetitionContext):
 		self.translateApiReturn(apiReturn)
 
 class InjectEditContext(CompetitionFormContext):
-	def __init__(self, request, competitionId = None, pkid = None):
-		super(InjectEditContext, self).__init__(request, competitionId)
+	def __init__(self, request, comp_pkid = None, pkid = None):
+		super(InjectEditContext, self).__init__(request, comp_pkid)
 		self.action = self.EDIT
 		self.pkid = pkid
 		self.form = CreateInjectForm
@@ -187,8 +202,8 @@ class InjectEditContext(CompetitionFormContext):
 			self.form = self.form(initial = apiReturn['content'][0])
 
 class InjectCreateContext(CompetitionFormContext):
-	def __init__(self, request, competitionId = None):
-		super(InjectCreateContext, self).__init__(request, competitionId)
+	def __init__(self, request, comp_pkid = None):
+		super(InjectCreateContext, self).__init__(request, comp_pkid)
 		self.action = self.CREATE
 		self.form = CreateInjectForm
 		self.httpMethodActions['POST'] = self.apiOnPost
@@ -204,3 +219,63 @@ class InjectCreateContext(CompetitionFormContext):
 				self.formData.pop(i, None)
 		apiReturn = makeApiRequest('injectadd', self.formData)
 		self.translateApiReturn(apiReturn)
+
+# ==================================================
+# WhiteTeam Context Classes - Inject Response
+# ==================================================
+class InjectResponseListContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(InjectResponseListContext, self).__init__(request, comp_pkid)
+
+class InjectResponseEditContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(InjectResponseEditContext, self).__init__(request, comp_pkid)
+
+class InjectResponseCreateContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(InjectResponseCreateContext, self).__init__(request, comp_pkid)
+
+# ==================================================
+# WhiteTeam Context Classes - Incident
+# ==================================================
+class IncidentListContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(IncidentListContext, self).__init__(request, comp_pkid)
+
+class IncidentEditContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(IncidentEditContext, self).__init__(request, comp_pkid)
+
+class IncidentCreateContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(IncidentCreateContext, self).__init__(request, comp_pkid)
+
+# ==================================================
+# WhiteTeam Context Classes - Incident Response
+# ==================================================
+class IncidentResponseListContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(IncidentResponseListContext, self).__init__(request, comp_pkid)
+
+class IncidentResponseEditContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(IncidentResponseEditContext, self).__init__(request, comp_pkid)
+
+class IncidentResponseCreateContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(IncidentResponseCreateContext, self).__init__(request, comp_pkid)
+
+# ==================================================
+# WhiteTeam Context Classes - Score
+# ==================================================
+class ScoreListContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(ScoreListContext, self).__init__(request, comp_pkid)
+
+class ScoreEditContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(ScoreEditContext, self).__init__(request, comp_pkid)
+
+class ScoreCreateContext(CompetitionContext):
+	def __init__(self, request, comp_pkid = None):
+		super(ScoreCreateContext, self).__init__(request, comp_pkid)

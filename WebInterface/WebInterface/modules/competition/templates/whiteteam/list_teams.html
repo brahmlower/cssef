@@ -1,0 +1,75 @@
+{% extends "competition/templates/whiteteam/pageTemplate.html" %}
+
+{% block page_content %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <h1>
+    {{ competition.name }} - Teams
+    <!-- <small>it all starts here</small> -->
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="/"><i class="fa fa-dashboard"></i> Site Home</a></li>
+    <li><a href="/admin/home">Admin</a></li>
+    <li class="active"><a href="/admin/home">Home</a></li>
+  </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+	<p>These are the teams that exist within the competition.<br>
+	<a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createteammodel">Create Team</a></p>
+	{% if apiData %}
+		<table class="table">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Team Name</th>
+					<th>Username</th>
+					<th>CIDR</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for i in apiData %}
+				<tr>
+					<th>{{ i.id }}</th>
+					<th>{{ i.name }}</th>
+					<th>{{ i.username }}</th>
+					<th>{{ i.networkCidr }}</th>
+					<th>
+						<a href="/competition/{{ competition.id }}/teamwhite/teams/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
+						<a href="/competition/{{ organization.id }}/manage/delete/" class="btn-sm btn-danger">Delete </a>
+					</th>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% else %}
+		<p>No teams have been created yet. Go ahead and make one!</p>
+	{% endif %}
+</section><!-- /.content -->
+
+<!-- Modal -->
+<div class="modal fade" id="createteammodel" tabindex="-1" role="dialog" aria-labelledby="createteammodellable" style="display: none;" data-backdrop="">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createteammodellable">Create User</h4>
+      </div>
+      <form action="/competition/{{ competition.id }}/teamwhite/teams/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+        	{{ form }}
+          <!--<label for="{{ form.name.id_for_label }}">{{ forms.form_create.name.label }}</label>
+          <div>{{ forms.form_create.name }}</div>-->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"> Cancel </button>
+          <button id="form_sub_button" type="submit" class="btn btn-primary"> Save </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

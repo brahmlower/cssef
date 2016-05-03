@@ -1,49 +1,133 @@
 from WebInterface.utils import getContext
-from WebInterface.modules.competition.context import WhiteteamSummaryContext
-from WebInterface.modules.competition.context import WhiteteamSettingsContext
-from WebInterface.modules.competition.context import TeamListContext
-from WebInterface.modules.competition.context import TeamEditContext
-from WebInterface.modules.competition.context import TeamCreateContext
-from WebInterface.modules.competition.context import InjectListContext
-from WebInterface.modules.competition.context import InjectEditContext
-from WebInterface.modules.competition.context import InjectCreateContext
+from WebInterface.modules.competition import context
 
-templatePathPrefix = "competition/templates/whiteteam/"
+template_path_prefix = "competition/templates/whiteteam/"
 
-def summary(request, competitionId):
-	pageTemplate = templatePathPrefix + 'summary.html'
-	return getContext(WhiteteamSummaryContext, pageTemplate, request, competitionId = competitionId)
+def summary(request, comp_pkid):
+	page_template = template_path_prefix + 'summary.html'
+	return getContext(context.WhiteteamSummaryContext, request,
+		page_template = page_template, comp_pkid = comp_pkid)
 
-def settings(request, competitionId):
-	pageTemplate = templatePathPrefix + 'settings.html'
-	return getContext(WhiteteamSettingsContext, pageTemplate, request, competitionId = competitionId)
+def settings(request, comp_pkid):
+	page_template = template_path_prefix + 'settings.html'
+	return getContext(context.WhiteteamSettingsContext, request,
+		page_template = page_template, comp_pkid = comp_pkid)
+
+# ==================================================
+# Service Methods
+# ==================================================
+def list_services(request, comp_pkid):
+	page_template = template_path_prefix + 'list_services.html'
+	return getContext(context.ServiceListContext, request,
+		page_template = page_template, comp_pkid = comp_pkid)
+
+def create_service(request, comp_pkid):
+	return getContext(context.ServiceCreateContext, request,
+		redirect_url = '../', comp_pkid = comp_pkid)
+
+def edit_service(request, comp_pkid, service_pkid):
+	page_template = template_path_prefix + 'edit_service.html'
+	return getContext(context.ServiceEditContext, request,
+		page_template = page_template, comp_pkid = comp_pkid, pkid = service_pkid)
 
 # ==================================================
 # Team Methods
 # ==================================================
-def listTeams(request, competitionId):
-	pageTemplate = templatePathPrefix + 'listTeams.html'
-	return getContext(TeamListContext, pageTemplate, request, competitionId = competitionId)
+def list_teams(request, comp_pkid):
+	page_template = template_path_prefix + 'list_teams.html'
+	return getContext(context.TeamListContext, request,
+		page_template = page_template, comp_pkid = comp_pkid)
 
-def createTeam(request, competitionId):
-	pageTemplate = templatePathPrefix + 'createEditTeam.html'
-	return getContext(TeamCreateContext, pageTemplate, request, competitionId = competitionId)
+def create_team(request, comp_pkid):
+	return getContext(context.TeamCreateContext, request,
+		redirect_url = '../', comp_pkid = comp_pkid)
 
-def editTeam(request, competitionId, teamId):
-	pageTemplate = templatePathPrefix + 'createEditTeam.html'
-	return getContext(TeamEditContext, pageTemplate, request, competitionId = competitionId, pkid = teamId)
+def edit_team(request, comp_pkid, teamId):
+	page_template = template_path_prefix + 'edit_team.html'
+	return getContext(context.TeamEditContext, request,
+		page_template = page_template, comp_pkid = comp_pkid, pkid = teamId)
 
 # ==================================================
 # Inject Methods
 # ==================================================
-def listInjects(request, competitionId):
-	pageTemplate = templatePathPrefix + 'listInjects.html'
-	return getContext(InjectListContext, pageTemplate, request, competitionId = competitionId)
+def list_injects(request, comp_pkid):
+	page_template = template_path_prefix + 'list_injects.html'
+	return getContext(context.InjectListContext, request,
+		page_template = page_template, comp_pkid = comp_pkid)
 
-def createInject(request, competitionId):
-	pageTemplate = templatePathPrefix + 'createEditInject.html'
-	return getContext(InjectCreateContext, pageTemplate, request, competitionId = competitionId)
+def create_inject(request, comp_pkid):
+	return getContext(context.InjectCreateContext, request,
+		redirect_url = '../', comp_pkid = comp_pkid)
 
-def editInject(request, competitionId, injectId):
-	pageTemplate = templatePathPrefix + 'createEditInject.html'
-	return getContext(InjectEditContext, pageTemplate, request, competitionId = competitionId, pkid = injectId)
+def edit_inject(request, comp_pkid, injectId):
+	page_template = template_path_prefix + 'edit_inject.html'
+	return getContext(context.InjectEditContext, request,
+		page_template = page_template, comp_pkid = comp_pkid, pkid = injectId)
+
+# ==================================================
+# Inject Response Methods
+# ==================================================
+def list_injectresponses(request, comp_pkid):
+	page_template = template_path_prefix + 'list_injectresponses.html'
+	return getContext(context.InjectResponseListContext, request,
+		page_template = page_template, comp_pkid = comp_pkid)
+
+def create_injectresponse(request, comp_pkid):
+	return getContext(context.InjectResponseCreateContext, request,
+		redirect_url = '../', comp_pkid = comp_pkid)
+
+def edit_injectresponse(request, comp_pkid, injectresponse_pkid):
+	page_template = template_path_prefix + 'edit_injectresponse.html'
+	return getContext(context.InjectResponseEditContext, request,
+		page_template = page_template, comp_pkid = comp_pkid, pkid = injectresponse_pkid)
+
+# ==================================================
+# Incident Methods
+# ==================================================
+def list_incidents(request, comp_pkid):
+	page_template = template_path_prefix + 'list_incidents.html'
+	return getContext(context.IncidentListContext, request,
+		page_template = page_template, comp_pkid = comp_pkid)
+
+def create_incident(request, comp_pkid):
+	return getContext(context.IncidentCreateContext, request,
+		redirect_url = '../', comp_pkid = comp_pkid)
+
+def edit_incident(request, comp_pkid, incident_pkid):
+	page_template = template_path_prefix + 'edit_incident.html'
+	return getContext(context.IncidentEditContext, request,
+		page_template = page_template, comp_pkid = comp_pkid, pkid = incident_pkid)
+
+# ==================================================
+# Incident Response Methods
+# ==================================================
+def list_incidentresponses(request, comp_pkid):
+	page_template = template_path_prefix + 'list_incidentresponses.html'
+	return getContext(context.IncidentResponseListContext, request,
+		page_template = page_template, comp_pkid = comp_pkid)
+
+def create_incidentresponse(request, comp_pkid):
+	return getContext(context.IncidentResponseCreateContext, request,
+		redirect_url = '../', comp_pkid = comp_pkid)
+
+def edit_incidentresponse(request, comp_pkid, incidentresponse_pkid):
+	page_template = template_path_prefix + 'edit_incidentresponse.html'
+	return getContext(context.IncidentResponseEditContext, request,
+		page_template = page_template, comp_pkid = comp_pkid, pkid = incidentresponse_pkid)
+
+# ==================================================
+# Score Methods
+# ==================================================
+def list_scores(request, comp_pkid):
+	page_template = template_path_prefix + 'list_scores.html'
+	return getContext(context.ScoreListContext, request,
+		page_template = page_template, comp_pkid = comp_pkid)
+
+def create_score(request, comp_pkid):
+	return getContext(context.ScoreCreateContext, request,
+		redirect_url = '../', comp_pkid = comp_pkid)
+
+def edit_score(request, comp_pkid, score_pkid):
+	page_template = template_path_prefix + 'edit_score.html'
+	return getContext(context.ScoreEditContext, request,
+		page_template = page_template, comp_pkid = comp_pkid, pkid = score_pkid)

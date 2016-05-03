@@ -107,7 +107,7 @@ class TeamGet(CssefRPCEndpoint):
     name = "Team Get"
     rpc_name = "teamget"
     menu_path = "team.get"
-    onRequestArgs = ['auth' 'competition']
+    onRequestArgs = ['auth', 'competition']
     def on_request(self, auth, competition, **kwargs):
         authorize_access(self.database_connection, auth, self.config)
         return model_get(Team, self.database_connection, **kwargs)
