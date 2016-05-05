@@ -42,10 +42,13 @@ def create_team(request, comp_pkid):
 	return getContext(context.TeamCreateContext, request,
 		redirect_url = '../', comp_pkid = comp_pkid)
 
-def edit_team(request, comp_pkid, teamId):
+def edit_team(request, comp_pkid, team_pkid):
 	page_template = template_path_prefix + 'edit_team.html'
 	return getContext(context.TeamEditContext, request,
-		page_template = page_template, comp_pkid = comp_pkid, pkid = teamId)
+		page_template = page_template, comp_pkid = comp_pkid, pkid = team_pkid)
+
+def delete_team(request, comp_pkid):
+	return getContext(context.TeamDeleteContext, request, redirect_url = '../')
 
 # ==================================================
 # Inject Methods
@@ -59,10 +62,13 @@ def create_inject(request, comp_pkid):
 	return getContext(context.InjectCreateContext, request,
 		redirect_url = '../', comp_pkid = comp_pkid)
 
-def edit_inject(request, comp_pkid, injectId):
+def edit_inject(request, comp_pkid, inject_pkid):
 	page_template = template_path_prefix + 'edit_inject.html'
 	return getContext(context.InjectEditContext, request,
-		page_template = page_template, comp_pkid = comp_pkid, pkid = injectId)
+		page_template = page_template, comp_pkid = comp_pkid, pkid = inject_pkid)
+
+def delete_inject(request, comp_pkid):
+	return getContext(context.InjectDeleteContext, request, redirect_url = '../')
 
 # ==================================================
 # Inject Response Methods

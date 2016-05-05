@@ -1,11 +1,47 @@
 {% extends "competition/templates/whiteteam/pageTemplate.html" %}
 
+{% block headers_css %}
+<!-- Datetime Pickter -->
+<link href="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/build/css/bootstrap-datetimepicker.css" rel="stylesheet">
+{% endblock %}
+
+{% block headers_js %}
+<!-- Moment.js - Required for Datetime Picker -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+<!-- Datetime Picker -->
+<script src="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/src/js/bootstrap-datetimepicker.js"></script>
+<script>
+	function setItemFocus(id, name, type) {
+		document.getElementById("item_name").innerHTML = name;
+		document.getElementById("item_type").innerHTML = type
+		document.getElementById("item_id").value = id
+	}
+
+	var datetime = $("#{{ forms.form_create.datetime.id_for_label }}");
+	datetime.datetimepicker();
+
+	// $(document).ready(function() {
+	// 	if (!datetime.attr('checked')) {
+	// 		datetimeStart.attr('disabled', true);
+	// 	}
+	// 	if (!scoringEnabled.bootstrapToggle('checked')) {
+	// 		scoringInterval.attr('disabled', true);
+	// 		scoringIntervalUncertainty.attr('disabled', true);
+	// 		scoringMethod.attr('disabled', true);
+	// 	}
+	// 	if (!scoringSlaEnabled.bootstrapToggle('checked')) {
+	// 		scoringSlaThreashold.attr('disabled', true);
+	// 		scoringSlaPenalty.attr('disabled', true);
+	// 	}
+	// });
+</script>
+{% endblock %}
+
 {% block page_content %}
 <!-- Content Header (Page header) -->
 <section class="content-header">
   <h1>
     {{ competition.name }} - Scores
-    <!-- <small>it all starts here</small> -->
   </h1>
   <ol class="breadcrumb">
     <li><a href="/"><i class="fa fa-dashboard"></i> Site Home</a></li>
@@ -16,5 +52,80 @@
 
 <!-- Main content -->
 <section class="content">
+	<a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createscoremodel">Create Score</a></p>
+	{% if apiData %}
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Team</th>
+					<th>Value</th>
+					<th>Message</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for i in apiData %}
+				<tr>
+					<td>{{ i.datetime }}</td>
+					<td>{{ i.team }}</td>
+					<td>{{ i.value }}</td>
+					<td>{{ i.message }}</td>
+					<td>
+						<!-- <a href="/competition/{{ competition.id }}/teamwhite/teams/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a> -->
+						<a href="#" class="btn-sm btn-danger" onclick="setItemFocus({{i.id}}, '{{i.name}}', 'Score');" data-toggle="modal" data-target="#deleteitemmodel"> Delete </a>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% else %}
+		<p>No scores have been logged yet. If you need, you can manually create one.</p>
+	{% endif %}
+
+<!-- Create Score Modal -->
+<div class="modal fade" id="createscoremodel" tabindex="-1" role="dialog" aria-labelledby="createscoremodellable" style="display: none;" data-backdrop="">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createscoremodellable">Create Score</h4>
+      </div>
+      <form action="/competition/{{ competition.id }}/teamwhite/scores/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+        	{{ forms.form_create }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"> Cancel </button>
+          <button id="form_sub_button" type="submit" class="btn btn-primary"> Save </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Item Model -->
+<div class="modal fade" id="deleteitemmodel" tabindex="-1" role="dialog" aria-labelledby="deleteitemmodellable" style="display: none;" data-backdrop="">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="deleteitemmodellable">Delete <span id="item_type"></span></h4>
+      </div>
+      <form action="/competition/{{ competition.id }}/teamwhite/teams/delete/" method="post" class="form-horizontal" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="competition" value="{{ competition.id }}">
+        <input id="item_id" type="hidden" name="pkid" value="">
+        <div class="modal-body">
+        	<p> Are you sure you want to delete '<span id="item_name"></span>'? This action cannot be reversed.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"> Cancel </button>
+          <button id="form_sub_button" type="submit" class="btn btn-danger"> Delete </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 </section>
 {% endblock %}

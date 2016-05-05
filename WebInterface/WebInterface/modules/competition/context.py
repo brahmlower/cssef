@@ -3,11 +3,12 @@ from datetime import datetime
 from WebInterface.context import BaseContext
 from WebInterface.context import FormContext
 from WebInterface.utils import makeApiRequest
-from WebInterface.modules.competition.forms import CreateInjectForm
-from WebInterface.modules.competition.forms import CreateTeamForm
-from WebInterface.modules.competition.forms import CompetitionSettingsForm
-from WebInterface.modules.organization.context import OrganizationContext
-from WebInterface.modules.organization.context import OrganizationFormContext
+from WebInterface.modules.competition import forms
+# from WebInterface.modules.competition.forms import CreateInjectForm
+# from WebInterface.modules.competition.forms import CreateTeamForm
+#from WebInterface.modules.competition.forms import CompetitionSettingsForm
+#from WebInterface.modules.organization.context import OrganizationContext
+#from WebInterface.modules.organization.context import OrganizationFormContext
 
 class CompetitionContext(BaseContext):
 	def __init__(self, request, comp_pkid = None):
@@ -37,12 +38,36 @@ class CompetitionFormContext(FormContext):
 class WhiteteamSummaryContext(CompetitionContext):
 	def __init__(self, request, comp_pkid = None):
 		super(WhiteteamSummaryContext, self).__init__(request, comp_pkid)
+		self.httpMethodActions['GET'] = self.apiOnGet
+		self.number_teams = 0
+		self.number_injects = 0
+		self.number_services = 0
+
+	def apiOnGet(self):
+		apiReturn = makeApiRequest('teamget', {'competition': self.competition['id']})
+		self.translateApiReturn(apiReturn)
+		self.number_teams = len(self.apiData)
+		apiReturn = makeApiRequest('scoreget', {'competition': self.competition['id']})
+		self.translateApiReturn(apiReturn)
+		self.number_scores = len(self.apiData)
+		apiReturn = makeApiRequest('injectget', {'competition': self.competition['id']})
+		self.translateApiReturn(apiReturn)
+		self.number_injects = len(self.apiData)
+
+	def getContext(self):
+		super(WhiteteamSummaryContext, self).getContext()
+		self.context.push({'number_teams': self.number_teams})
+		self.context.push({'number_services': self.number_services})
+		self.context.push({'number_injects': self.number_injects})
+		return self.context
+
+
 
 class WhiteteamSettingsContext(CompetitionFormContext):
 	def __init__(self, request, comp_pkid = None):
 		super(WhiteteamSettingsContext, self).__init__(request, comp_pkid)
 		self.action = self.EDIT
-		self.form = CompetitionSettingsForm
+		self.form = forms.CompetitionSettingsForm
 		self.httpMethodActions['GET'] = self.apiOnGet
 		self.httpMethodActions['POST'] = self.apiOnPost
 
@@ -53,6 +78,7 @@ class WhiteteamSettingsContext(CompetitionFormContext):
 
 	def apiOnPost(self):
 		if not self.validateFormData():
+			print self.errors
 			return False
 		self.formData['pkid'] = self.competition['id']
 		apiReturn = makeApiRequest('competitionset', self.formData)
@@ -80,6 +106,10 @@ class ServiceCreateContext(CompetitionContext):
 class TeamListContext(CompetitionContext):
 	def __init__(self, request, comp_pkid = None):
 		super(TeamListContext, self).__init__(request, comp_pkid)
+		self.forms = {
+			'form_delete': forms.DeleteCompetitionObjectForm(),
+			'form_create': forms.CreateTeamForm()
+		}
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
@@ -91,7 +121,7 @@ class TeamEditContext(CompetitionFormContext):
 		super(TeamEditContext, self).__init__(request, comp_pkid)
 		self.action = self.EDIT
 		self.pkid = pkid
-		self.form = CreateTeamForm
+		self.form = forms.CreateTeamForm
 		self.httpMethodActions['GET'] = self.apiOnGet
 		self.httpMethodActions['POST'] = self.apiOnPost
 
@@ -132,7 +162,7 @@ class TeamCreateContext(CompetitionFormContext):
 	def __init__(self, request, comp_pkid = None):
 		super(TeamCreateContext, self).__init__(request, comp_pkid)
 		self.action = self.CREATE
-		self.form = CreateTeamForm
+		self.form = forms.CreateTeamForm
 		self.httpMethodActions['POST'] = self.apiOnPost
 
 	def apiOnPost(self):
@@ -159,12 +189,29 @@ class TeamCreateContext(CompetitionFormContext):
 		apiReturn = makeApiRequest('teamadd', self.formData)
 		self.translateApiReturn(apiReturn)
 
+class TeamDeleteContext(FormContext):
+	def __init__(self, request):
+		super(TeamDeleteContext, self).__init__(request)
+		self.action = self.DELETE
+		self.form = forms.DeleteCompetitionObjectForm
+		self.httpMethodActions['POST'] = self.apiOnPost
+
+	def apiOnPost(self):
+		if not self.validateFormData():
+			return False
+		output = makeApiRequest('teamdel', self.formData)
+		self.translateApiReturn(output)
+
 # ==================================================
 # WhiteTeam Context Classes - Inject
 # ==================================================
 class InjectListContext(CompetitionContext):
 	def __init__(self, request, comp_pkid = None):
 		super(InjectListContext, self).__init__(request, comp_pkid)
+		self.forms = {
+			'form_delete': forms.DeleteCompetitionObjectForm(),
+			'form_create': forms.CreateInjectForm()
+		}
 		self.httpMethodActions['GET'] = self.apiOnGet
 
 	def apiOnGet(self):
@@ -176,7 +223,7 @@ class InjectEditContext(CompetitionFormContext):
 		super(InjectEditContext, self).__init__(request, comp_pkid)
 		self.action = self.EDIT
 		self.pkid = pkid
-		self.form = CreateInjectForm
+		self.form = forms.CreateInjectForm
 		self.httpMethodActions['GET'] = self.apiOnGet
 		self.httpMethodActions['POST'] = self.apiOnPost
 
@@ -205,7 +252,7 @@ class InjectCreateContext(CompetitionFormContext):
 	def __init__(self, request, comp_pkid = None):
 		super(InjectCreateContext, self).__init__(request, comp_pkid)
 		self.action = self.CREATE
-		self.form = CreateInjectForm
+		self.form = forms.CreateInjectForm
 		self.httpMethodActions['POST'] = self.apiOnPost
 
 	def apiOnPost(self):
@@ -220,6 +267,19 @@ class InjectCreateContext(CompetitionFormContext):
 		apiReturn = makeApiRequest('injectadd', self.formData)
 		self.translateApiReturn(apiReturn)
 
+class InjectDeleteContext(FormContext):
+	def __init__(self, request):
+		super(InjectDeleteContext, self).__init__(request)
+		self.action = self.DELETE
+		self.form = forms.DeleteCompetitionObjectForm
+		self.httpMethodActions['POST'] = self.apiOnPost
+
+	def apiOnPost(self):
+		if not self.validateFormData():
+			return False
+		output = makeApiRequest('injectdel', self.formData)
+		self.translateApiReturn(output)
+
 # ==================================================
 # WhiteTeam Context Classes - Inject Response
 # ==================================================
@@ -231,7 +291,7 @@ class InjectResponseEditContext(CompetitionContext):
 	def __init__(self, request, comp_pkid = None):
 		super(InjectResponseEditContext, self).__init__(request, comp_pkid)
 
-class InjectResponseCreateContext(CompetitionContext):
+class InjectResponseCreateContext(CompetitionFormContext):
 	def __init__(self, request, comp_pkid = None):
 		super(InjectResponseCreateContext, self).__init__(request, comp_pkid)
 
@@ -246,7 +306,7 @@ class IncidentEditContext(CompetitionContext):
 	def __init__(self, request, comp_pkid = None):
 		super(IncidentEditContext, self).__init__(request, comp_pkid)
 
-class IncidentCreateContext(CompetitionContext):
+class IncidentCreateContext(CompetitionFormContext):
 	def __init__(self, request, comp_pkid = None):
 		super(IncidentCreateContext, self).__init__(request, comp_pkid)
 
@@ -261,7 +321,7 @@ class IncidentResponseEditContext(CompetitionContext):
 	def __init__(self, request, comp_pkid = None):
 		super(IncidentResponseEditContext, self).__init__(request, comp_pkid)
 
-class IncidentResponseCreateContext(CompetitionContext):
+class IncidentResponseCreateContext(CompetitionFormContext):
 	def __init__(self, request, comp_pkid = None):
 		super(IncidentResponseCreateContext, self).__init__(request, comp_pkid)
 
@@ -269,13 +329,35 @@ class IncidentResponseCreateContext(CompetitionContext):
 # WhiteTeam Context Classes - Score
 # ==================================================
 class ScoreListContext(CompetitionContext):
-	def __init__(self, request, comp_pkid = None):
+	def __init__(self, request, comp_pkid):
 		super(ScoreListContext, self).__init__(request, comp_pkid)
+		self.forms = {
+			'form_delete': forms.DeleteCompetitionObjectForm(),
+			'form_create': forms.CreateScoreForm(comp_pkid)
+		}
+		self.httpMethodActions['GET'] = self.apiOnGet
+
+	def apiOnGet(self):
+		apiReturn = makeApiRequest('scoreget', {'competition': self.competition['id']})
+		self.translateApiReturn(apiReturn)
 
 class ScoreEditContext(CompetitionContext):
 	def __init__(self, request, comp_pkid = None):
 		super(ScoreEditContext, self).__init__(request, comp_pkid)
 
-class ScoreCreateContext(CompetitionContext):
-	def __init__(self, request, comp_pkid = None):
+class ScoreCreateContext(CompetitionFormContext):
+	def __init__(self, request, comp_pkid):
 		super(ScoreCreateContext, self).__init__(request, comp_pkid)
+		self.action = self.CREATE
+		self.form = forms.CreateScoreForm
+		self.httpMethodActions['POST'] = self.apiOnPost
+
+	def apiOnPost(self):
+		if not self.validateFormData(): #comp_pkid = self.competition['id']):
+			return False
+		if self.formData['datetime'] != '':
+			return False
+		self.formData['datetime'] = datetime.strptime(self.formData['datetime'], "%Y-%m-%d %H:%M:%S")
+		self.formData['competition'] = self.competition['id']
+		apiReturn = makeApiRequest('injectadd', self.formData)
+		self.translateApiReturn(apiReturn)

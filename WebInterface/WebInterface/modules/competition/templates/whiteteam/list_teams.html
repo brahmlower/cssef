@@ -1,5 +1,15 @@
 {% extends "competition/templates/whiteteam/pageTemplate.html" %}
 
+{% block headers_js %}
+<script>
+	function setItemFocus(id, name, type) {
+		document.getElementById("item_name").innerHTML = name;
+		document.getElementById("item_type").innerHTML = type
+		document.getElementById("item_id").value = id
+	}
+</script>
+{% endblock %}
+
 {% block page_content %}
 <!-- Content Header (Page header) -->
 <section class="content-header">
@@ -32,14 +42,14 @@
 			<tbody>
 				{% for i in apiData %}
 				<tr>
-					<th>{{ i.id }}</th>
-					<th>{{ i.name }}</th>
-					<th>{{ i.username }}</th>
-					<th>{{ i.networkCidr }}</th>
-					<th>
+					<td>{{ i.id }}</td>
+					<td>{{ i.name }}</td>
+					<td>{{ i.username }}</td>
+					<td>{{ i.networkCidr }}</td>
+					<td>
 						<a href="/competition/{{ competition.id }}/teamwhite/teams/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
-						<a href="/competition/{{ organization.id }}/manage/delete/" class="btn-sm btn-danger">Delete </a>
-					</th>
+						<a href="#" class="btn-sm btn-danger" onclick="setItemFocus({{i.id}}, '{{i.name}}', 'Team');" data-toggle="modal" data-target="#deleteitemmodel"> Delete </a>
+					</td>
 				</tr>
 				{% endfor %}
 			</tbody>
@@ -49,24 +59,46 @@
 	{% endif %}
 </section><!-- /.content -->
 
-<!-- Modal -->
+<!-- Create Team Modal -->
 <div class="modal fade" id="createteammodel" tabindex="-1" role="dialog" aria-labelledby="createteammodellable" style="display: none;" data-backdrop="">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="createteammodellable">Create User</h4>
+        <h4 class="modal-title" id="createteammodellable">Create Team</h4>
       </div>
       <form action="/competition/{{ competition.id }}/teamwhite/teams/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="modal-body">
-        	{{ form }}
-          <!--<label for="{{ form.name.id_for_label }}">{{ forms.form_create.name.label }}</label>
-          <div>{{ forms.form_create.name }}</div>-->
+        	{{ forms.form_create }}
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal"> Cancel </button>
           <button id="form_sub_button" type="submit" class="btn btn-primary"> Save </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Item Model -->
+<div class="modal fade" id="deleteitemmodel" tabindex="-1" role="dialog" aria-labelledby="deleteitemmodellable" style="display: none;" data-backdrop="">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="deleteitemmodellable">Delete <span id="item_type"></span></h4>
+      </div>
+      <form action="/competition/{{ competition.id }}/teamwhite/teams/delete/" method="post" class="form-horizontal" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="competition" value="{{ competition.id }}">
+        <input id="item_id" type="hidden" name="pkid" value="">
+        <div class="modal-body">
+        	<p> Are you sure you want to delete '<span id="item_name"></span>'? This action cannot be reversed.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"> Cancel </button>
+          <button id="form_sub_button" type="submit" class="btn btn-danger"> Delete </button>
         </div>
       </form>
     </div>

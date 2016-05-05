@@ -12,6 +12,11 @@ from django.forms import BooleanField
 from django.forms import IntegerField
 from django.forms import HiddenInput
 from django.forms.widgets import PasswordInput
+from WebInterface.utils import makeApiRequest
+
+class DeleteCompetitionObjectForm(Form):
+	competition = CharField(widget = HiddenInput())
+	pkid = CharField(widget = HiddenInput())
 
 class CreateInjectForm(Form):
 	title = CharField(
@@ -70,6 +75,37 @@ class CreateTeamForm(Form):
 		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
 	)
 
+def getTeamChoices(comp_pkid):
+	teamChoices = []
+	output = makeApiRequest('teamget', {'competition': comp_pkid})
+	for i in output['content']:
+		teamChoices.append((i['id'], i['name']))
+	return teamChoices
+
+class CreateScoreForm(Form):
+	def __init__(self, comp_pkid = None):
+		super(CreateScoreForm, self).__init__()
+		if comp_pkid:
+			self.fields['team'].choices = getTeamChoices(comp_pkid)
+
+	datetime = CharField(
+		label = 'Datetime',
+		widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm:ss"}),
+	)
+	team = ChoiceField(
+		label = 'Team',
+		choices = [],
+		widget = Select(attrs={'class':'form-control'})
+	)
+	value = CharField(
+		label = 'Value',
+		widget = NumberInput(attrs={'class':'form-control'}),
+	)
+	message = CharField(
+		label = 'Message',
+		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
+	)
+
 # class CreateServiceForm(Form):
 # 	def __init__(self, *args, **kwargs):
 # 		competitionId = kwargs.pop('competitionId', None)
@@ -94,15 +130,18 @@ class CreateTeamForm(Form):
 class CompetitionSettingsForm(Form):
 	name = CharField(
 		label = 'Name',
-		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
+		widget = TextInput(attrs={'class':'form-control'}),
+		required = False
 	)
 	url = CharField(
 		label = 'URL',
-		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
+		widget = TextInput(attrs={'class':'form-control'}),
+		required = False
 	)
 	description = CharField(
 		label = 'Description',
-		widget = Textarea(attrs={'class':'form-control', 'required': 'True'})
+		widget = Textarea(attrs={'class':'form-control'}),
+		required = False
 	)
 	datetimeDisplay = CharField(
 		label = 'Datetime Viewable',
@@ -138,7 +177,8 @@ class CompetitionSettingsForm(Form):
 	)
 	scoringMethod = CharField(
 		label = 'Scoring Method',
-		widget = TextInput(attrs={'class':'form-control', 'required': True})
+		widget = TextInput(attrs={'class':'form-control'}),
+		required = False
 	) # TODO: This actually needs to be a choice field
 	scoringSlaEnabled = BooleanField(
 		label = 'Enable SLAs',
@@ -151,7 +191,7 @@ class CompetitionSettingsForm(Form):
 		required = False
 	)
 	scoringSlaPenalty = CharField(
-		label = 'SLA Violation Penalty',
+		label = 'SLA Violation Points Penalty',
 		widget = NumberInput(attrs={'class':'form-control'}),
 		required = False
 	)

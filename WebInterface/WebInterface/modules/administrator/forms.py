@@ -63,7 +63,7 @@ class DeleteOrganizationForm(Form):
 
 def getOrganizationChoices():
 	organizationChoices = []
-	output = makeApiRequest('organizationGet', {})
+	output = makeApiRequest('organizationget', {})
 	for i in output['content']:
 		organizationChoices.append((i['id'], i['name']))
 	return organizationChoices

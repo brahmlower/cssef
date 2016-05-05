@@ -23,10 +23,12 @@ urlpatterns = patterns('',
 	# Teams
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/teams/$', whiteteam.list_teams),
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/teams/create/$', whiteteam.create_team),
+	url(r'^(?P<comp_pkid>\d+)/teamwhite/teams/delete/$', whiteteam.delete_team),
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/teams/edit/(?P<team_pkid>\d+)/$', whiteteam.edit_team),
 	# Injects
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/injects/$', whiteteam.list_injects),
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/injects/create/$', whiteteam.create_inject),
+	url(r'^(?P<comp_pkid>\d+)/teamwhite/injects/delete/$', whiteteam.delete_inject),
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/injects/edit/(?P<inject_pkid>\d+)/$', whiteteam.edit_inject),
 	# URLs for review related pages
 	# Inject Responses

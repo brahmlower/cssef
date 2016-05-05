@@ -1,11 +1,21 @@
 {% extends "competition/templates/whiteteam/pageTemplate.html" %}
 
-{% load staticfiles %}
 {% block headers_css %}
+{% load staticfiles %}
+<!-- Datetime Pickter -->
+<link href="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/build/css/bootstrap-datetimepicker.css" rel="stylesheet">
+<!-- Bootstrap Toggle -->
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-datetimepicker.min.css" %}">
 {% endblock %}
 
 {% block headers_js %}
+<!-- Moment.js - Required for Datetime Picker -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+<!-- Datetime Picker -->
+<script src="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/src/js/bootstrap-datetimepicker.js"></script>
+<!-- Bootstrap Toggle -->
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 <script src="{% static "js/moment.min.js" %}"></script>
 <script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
 <script>
@@ -54,22 +64,19 @@
 			if (!autoStart.attr('checked')) {
 				datetimeStart.attr('disabled', true);
 			}
-			if (!scoringEnabled.attr('checked')) {
+			if (!scoringEnabled.bootstrapToggle('checked')) {
 				scoringInterval.attr('disabled', true);
 				scoringIntervalUncertainty.attr('disabled', true);
 				scoringMethod.attr('disabled', true);
 			}
-			if (!scoringSlaEnabled.attr('checked')) {
+			if (!scoringSlaEnabled.bootstrapToggle('checked')) {
 				scoringSlaThreashold.attr('disabled', true);
 				scoringSlaPenalty.attr('disabled', true);
 			}
 		});
 	});
-
 </script>
 {% endblock %}
-
-{% block sidebar_id %}sidebar_settings{% endblock %}
 
 {% block page_content %}
 <!-- Content Header (Page header) -->
@@ -90,33 +97,95 @@
 	<form action="/competition/{{ competition.id }}/teamwhite/settings/" method="post" class="form-horizontal" enctype="multipart/form-data">
 		{% csrf_token %}
 
-		<label for="{{ form.name.id_for_label }}" class="col-lg-2 control-label">{{ form.name.label }}</label>
-		<div class="col-lg-4">{{ form.name }}<br></div>
+		<div class="row">
+			<div class="col-md-12" style="margin-bottom: 20px;">
+				<p> These are settings that determine how the competition will behave while running.</p>
+				<button type="submit" class="btn btn-primary">Save Settings</button>
+			</div>
+		</div>
 
-		<label for="{{ form.url.id_for_label }}" class="col-lg-2 control-label">{{ form.url.label }}</label>
-		<div class="col-lg-4">{{ form.url }}<br></div>
+		<div class="row">
+			<div class="col-md-6">
+				<div class="box box-primary">
+					<div class="box-header with-border">
+						<h3 class="box-title">General Settings</h3>
+					</div>
+					<div class="box-body">
+						<label for="{{ form.name.id_for_label }}" class="control-label">{{ form.name.label }}</label>
+						{{ form.name }}
 
-		<label for="{{ form.description.id_for_label }}" class="col-lg-2 control-label">{{ form.description.label }}</label>
-		<div class="col-lg-4">{{ form.description }}</div>
+						<label for="{{ form.url.id_for_label }}" class="control-label">{{ form.url.label }}</label>
+						{{ form.url }}
 
-		<label for="{{ form.datetimeDisplay.id_for_label }}" class="col-lg-2 control-label">{{ form.datetimeDisplay.label }}</label>
-		<div class="col-lg-4">{{ form.datetimeDisplay }}<br></div>
+						<label for="{{ form.description.id_for_label }}" class="control-label">{{ form.description.label }}</label>
+						{{ form.description }}
+					</div>
+				</div>
+			</div>
 
-		<label for="{{ form.autoStart.id_for_label }}" class="col-lg-2 control-label">{{ form.autoStart.label }}</label>
-		<div class="col-lg-4">{{ form.autoStart }}<br><br></div>
+			<div class="col-md-6">
+				<div class="box box-primary">
+					<div class="box-header with-border">
+						<h3 class="box-title">Scheduling Settings</h3>
+					</div>
+					<div class="box-body">
+						<label for="{{ form.datetimeDisplay.id_for_label }}" class="control-label">{{ form.datetimeDisplay.label }}</label>
+						<div class="input-group">
+							<span class="input-group-addon">
+	                        	<span class="fa fa-calendar"></span>
+	                    	</span>
+							{{ form.datetimeDisplay }}
+						</div>
 
-		<label for="{{ form.datetimeStart.id_for_label }}" class="col-lg-2 control-label">{{ form.datetimeStart.label }}</label>
-		<div class="col-lg-4">{{ form.datetimeStart }}<br></div>
+						<label for="{{ form.autoStart.id_for_label }}" class="control-label">{{ form.autoStart.label }}</label>
+						<div class="input-group">
+					    	<span class="input-group-addon">{{ form.autoStart }}</span>
+					    	{{ form.datetimeStart }}
+					    </div>
 
-		<label for="{{ form.datetimeFinish.id_for_label }}" class="col-lg-2 control-label">{{ form.datetimeFinish.label }}</label>
-		<div class="col-lg-4">{{ form.datetimeFinish }}<br></div>
+				        <label for="{{ form.datetimeFinish.id_for_label }}" class="control-label">{{ form.datetimeFinish.label }}</label>
+				        <div class="input-group">
+				        	<span class="input-group-addon">
+	                        	<span class="fa fa-calendar"></span>
+	                    	</span>
+	                    	{{ form.datetimeFinish }}
+				        </div>
+					</div>
+				</div>
+			</div>
 
-		<label for="{{ form.scoringEnabled.id_for_label }}" class="col-lg-2 control-label">{{ form.scoringEnabled.label }}</label>
-		<div class="col-lg-4">{{ form.scoringEnabled }}<br></div>
+			<div class="col-md-6">
+				<div class="box box-primary">
+					<div class="box-header with-border">
+						<h3 class="box-title">Scoring Settings</h3>
+						<div class="box-tools pull-right">
+							<input type="checkbox" name="scoringEnabled" data-toggle="toggle" data-on="Enabled" data-off="Disabled" data-size="small">
+						</div>
+					</div>
+					<div class="box-body">
+						<label for="{{ form.scoringInterval.id_for_label }}" class="control-label">{{ form.scoringInterval.label }}</label>
+						{{ form.scoringInterval }}
 
-		<div class="col-lg-10 col-lg-offset-2">
-			<br><a class="btn btn-default" href="/competition/{{ competition.id }}/teamwhite/summary/">Cancel</a>
-			<button type="submit" class="btn btn-primary">Save</button>
+						<label for="{{ form.scoringIntervalUncertainty.id_for_label }}" class="control-label">{{ form.scoringIntervalUncertainty.label }}</label>
+						{{ form.scoringIntervalUncertainty }}
+
+						<label for="{{ form.scoringMethod.id_for_label }}" class="control-label">{{ form.scoringMethod.label }}</label>
+						{{ form.scoringMethod }}
+
+						<label for="{{ form.scoringSlaEnabled.id_for_label }}" class="control-label">{{ form.scoringSlaEnabled.label }}</label>
+						<input type="checkbox" name="scoringSlaEnabled" data-toggle="toggle" data-on="Enabled" data-off="Disabled" data-size="mini">
+						{# {{ form.scoringSlaEnabled }} #}
+						<!-- Eventually use a toggle button instead. http://www.bootstraptoggle.com/ -->
+						<br>
+
+						<label for="{{ form.scoringSlaThreashold.id_for_label }}" class="control-label">{{ form.scoringSlaThreashold.label }}</label>
+						{{ form.scoringSlaThreashold }}
+
+						<label for="{{ form.scoringSlaPenalty.id_for_label }}" class="control-label">{{ form.scoringSlaPenalty.label }}</label>
+						{{ form.scoringSlaPenalty }}
+					</div>
+				</div>
+			</div>
 		</div>
 	</form>
 </section>

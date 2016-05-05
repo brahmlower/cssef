@@ -16,14 +16,91 @@
 
 <!-- Main content -->
 <section class="content">
-	{% if competition.description %}
-	<!-- displays the short description -->
-	<div class="panel panel-default">
-		<div class="panel-heading">Description</div>
-		<div class="panel-body">
-			<p>{{ competition.description }}</p>
+	<div class="row">
+		<!-- Teams info box -->
+		<div class="col-md-4 col-sm-4 col-xs-12">
+		<div class="info-box">
+		  <!-- Apply any bg-* class to to the icon to color it -->
+		  <span class="info-box-icon bg-green"><i class="fa fa-users"></i></span>
+		  <div class="info-box-content">
+		    <span class="info-box-text" style="font-size: 20px">Teams</span>
+		    <span class="info-box-number" style="font-size: 35px">{{ number_teams }}</span>
+		  </div><!-- /.info-box-content -->
+		</div><!-- /.info-box -->
+		</div>
+
+		<!-- Services info box -->
+		<div class="col-md-4 col-sm-4 col-xs-12">
+		<div class="info-box">
+		  <!-- Apply any bg-* class to to the icon to color it -->
+		  <span class="info-box-icon bg-red"><i class="fa fa-server"></i></span>
+		  <div class="info-box-content">
+		    <span class="info-box-text" style="font-size: 20px">Services</span>
+		    <span class="info-box-number" style="font-size: 35px">{{ number_services }}</span>
+		  </div><!-- /.info-box-content -->
+		</div><!-- /.info-box -->
+		</div>
+
+		<!-- Injects info box -->
+		<div class="col-md-4 col-sm-4 col-xs-12">
+		<div class="info-box">
+		  <!-- Apply any bg-* class to to the icon to color it -->
+		  <span class="info-box-icon bg-yellow"><i class="fa fa-envelope"></i></span>
+		  <div class="info-box-content">
+		    <span class="info-box-text" style="font-size: 20px">Injects</span>
+		    <span class="info-box-number" style="font-size: 35px">{{ number_injects }}</span>
+		  </div><!-- /.info-box-content -->
+		</div><!-- /.info-box -->
 		</div>
 	</div>
-	{% endif %}
+
+	<div class="row">
+		<!-- displays info about when the competitiion starts -->
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">Competition Controls</div>
+				<div class="panel-body">
+					<h4>Competition Start</h4>
+					{% if competition.manualStart %}
+					<p> The competition won't start until you tell it to!</p>
+					<a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="">Start</a></p>
+					{% else %}
+					<p> The competition will automatically start in...</p>
+					{% endif %}
+					<hr>
+					<h4>Competition Finish</h4>
+					{% if competition.started %}
+					<p>The competition will finish in...</p>
+					{% else %}
+					<p>The competition hasn't started yet.</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+		<!-- displays the short description -->
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">Pre-Flight Checks</div>
+				<div class="panel-body">
+					<p>There are several things that need to prepared before starting the competition. Make sure each of the following items is checked before the start of the competition!</p>
+					<ul class="list-group">
+						<li class="list-group-item list-group-item-success"><span class="fa fa-check-square-o"></span> Set Start Time/Method</li>
+						<li class="list-group-item"><span class="fa fa-square-o"></span> Set Finish Time</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		{% if competition.description %}
+		<!-- displays the short description -->
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">Description</div>
+				<div class="panel-body">
+					<p>{{ competition.description }}</p>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+	</div>
 </section><!-- /.content -->
 {% endblock %}

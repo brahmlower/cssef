@@ -7,11 +7,14 @@ from django.forms import IntegerField
 from django.forms import HiddenInput
 from django.forms.widgets import PasswordInput
 
-class DeleteObject(Form):
-	objectId = IntegerField(widget = HiddenInput())
-	def __init__(self, objectId):
-		super(DeleteObject, self).__init__()
-		self.fields['objectId'].initial = objectId
+# class DeleteObject(Form):
+# 	objectId = IntegerField(widget = HiddenInput())
+# 	def __init__(self, objectId):
+# 		super(DeleteObject, self).__init__()
+# 		self.fields['objectId'].initial = objectId
+
+class DeleteObjectForm(Form):
+	pkid = CharField(widget = HiddenInput())
 
 class LoginSiteAdmin(Form):
 	username = CharField(label = 'Username', widget = TextInput(attrs={'class':'form-control', 'required': True}))
