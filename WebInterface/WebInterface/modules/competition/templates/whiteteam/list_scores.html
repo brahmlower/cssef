@@ -6,11 +6,11 @@
 {% endblock %}
 
 {% block headers_js %}
-<!-- Moment.js - Required for Datetime Picker -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
-<!-- Datetime Picker -->
-<script src="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/src/js/bootstrap-datetimepicker.js"></script>
-<script>
+	<!-- Moment.js - Required for Datetime Picker -->
+	<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+	<!-- Datetime Picker -->
+	<script src="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/src/js/bootstrap-datetimepicker.js"></script>
+	<script>
 	function setItemFocus(id, name, type) {
 		document.getElementById("item_name").innerHTML = name;
 		document.getElementById("item_type").innerHTML = type
@@ -41,7 +41,7 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
   <h1>
-    {{ competition.name }} - Scores
+    {{ api_data.competition.name }} - Scores
   </h1>
   <ol class="breadcrumb">
     <li><a href="/"><i class="fa fa-dashboard"></i> Site Home</a></li>
@@ -53,7 +53,11 @@
 <!-- Main content -->
 <section class="content">
 	<a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createscoremodel">Create Score</a></p>
-	{% if apiData %}
+	<div class="callout callout-danger">
+        <h4>Some parts aren't working</h4>
+        <ul><li>Creating scores</li><li>Editing scores</li></ul>
+    </div>
+	{% if api_data.scores %}
 		<table class="table">
 			<thead>
 				<tr>
@@ -64,7 +68,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{% for i in apiData %}
+				{% for i in api_data.scores %}
 				<tr>
 					<td>{{ i.datetime }}</td>
 					<td>{{ i.team }}</td>
@@ -90,7 +94,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="createscoremodellable">Create Score</h4>
       </div>
-      <form action="/competition/{{ competition.id }}/teamwhite/scores/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
+      <form action="/competition/{{ api_data.competition.id }}/teamwhite/scores/" method="post" class="form-horizontal" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="modal-body">
         	{{ forms.form_create }}
@@ -112,10 +116,11 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="deleteitemmodellable">Delete <span id="item_type"></span></h4>
       </div>
-      <form action="/competition/{{ competition.id }}/teamwhite/teams/delete/" method="post" class="form-horizontal" enctype="multipart/form-data">
+      <form action="/competition/{{ api_data.competition.id }}/teamwhite/scores/" method="post" class="form-horizontal" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="hidden" name="competition" value="{{ competition.id }}">
+        <input type="hidden" name="competition" value="{{ api_data.competition.id }}">
         <input id="item_id" type="hidden" name="pkid" value="">
+        <input id="item_id" type="hidden" name="formtype" value="delete">
         <div class="modal-body">
         	<p> Are you sure you want to delete '<span id="item_name"></span>'? This action cannot be reversed.</p>
         </div>

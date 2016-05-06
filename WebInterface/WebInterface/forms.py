@@ -14,6 +14,7 @@ from django.forms.widgets import PasswordInput
 # 		self.fields['objectId'].initial = objectId
 
 class DeleteObjectForm(Form):
+	formtype = CharField(widget = HiddenInput())
 	pkid = CharField(widget = HiddenInput())
 
 class LoginSiteAdmin(Form):

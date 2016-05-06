@@ -14,11 +14,26 @@ from django.forms import HiddenInput
 from django.forms.widgets import PasswordInput
 from WebInterface.utils import makeApiRequest
 
+def getTeamChoices(comp_pkid):
+	teamChoices = []
+	output = makeApiRequest('teamget', {'competition': comp_pkid})
+	for i in output['content']:
+		teamChoices.append((i['id'], i['name']))
+	return teamChoices
+
+def getInjectChoices(comp_pkid):
+	injectChoices = []
+	output = makeApiRequest('injectget', {'competition': comp_pkid})
+	for i in output['content']:
+		injectChoices.append((i['id'], i['title']))
+	return injectChoices
+
 class DeleteCompetitionObjectForm(Form):
 	competition = CharField(widget = HiddenInput())
 	pkid = CharField(widget = HiddenInput())
 
 class CreateInjectForm(Form):
+	formtype = CharField(widget = HiddenInput(), initial = "create")
 	title = CharField(
 		label = 'Title',
 		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
@@ -53,7 +68,39 @@ class CreateInjectForm(Form):
 		required = False
 	)
 
+class CreateInjectResponseForm(Form):
+	def __init__(self, comp_pkid, *args, **kwargs):
+		super(CreateInjectResponseForm, self).__init__(*args, **kwargs)
+		self.fields['team'].choices = getTeamChoices(comp_pkid)
+		self.fields['inject'].choices = getInjectChoices(comp_pkid)
+
+	formtype = CharField(widget = HiddenInput(), initial = "create")
+	team = ChoiceField(
+		label = 'Team',
+		choices = [],
+		widget = Select(attrs={'class':'form-control'})
+	)
+	inject = ChoiceField(
+		label = 'Inject',
+		choices = [],
+		widget = Select(attrs={'class':'form-control'})
+	)
+	title = CharField(
+		label = 'Title',
+		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
+	)
+	content = CharField(
+		label = 'Body',
+		widget = Textarea(attrs={'class':'form-control', 'required': 'True'})
+	)
+	datetime = CharField(
+		label = 'Delivery',
+		widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm:ss"}),
+		required = False
+	)
+
 class CreateTeamForm(Form):
+	formtype = CharField(widget = HiddenInput(), initial = "create")
 	name = CharField(
 		label = 'Team Name',
 		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
@@ -75,19 +122,12 @@ class CreateTeamForm(Form):
 		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
 	)
 
-def getTeamChoices(comp_pkid):
-	teamChoices = []
-	output = makeApiRequest('teamget', {'competition': comp_pkid})
-	for i in output['content']:
-		teamChoices.append((i['id'], i['name']))
-	return teamChoices
-
 class CreateScoreForm(Form):
-	def __init__(self, comp_pkid = None):
-		super(CreateScoreForm, self).__init__()
-		if comp_pkid:
-			self.fields['team'].choices = getTeamChoices(comp_pkid)
+	def __init__(self, comp_pkid, *args, **kwargs):
+		super(CreateScoreForm, self).__init__(*args, **kwargs)
+		self.fields['team'].choices = getTeamChoices(comp_pkid)
 
+	formtype = CharField(widget = HiddenInput(), initial = "create")
 	datetime = CharField(
 		label = 'Datetime',
 		widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm:ss"}),
@@ -106,6 +146,49 @@ class CreateScoreForm(Form):
 		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
 	)
 
+class CreateIncidentForm(Form):
+	formtype = CharField(widget = HiddenInput(), initial = "create")
+	datetime = CharField(
+		label = 'Datetime',
+		widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm:ss"}),
+	)
+	team = ChoiceField(
+		label = 'Team',
+		choices = [],
+		widget = Select(attrs={'class':'form-control'})
+	)
+	subject = CharField(
+		label = 'Subject',
+		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
+	)
+	content = CharField(
+		label = 'Content',
+		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
+	)
+
+class CreateIncidentResponseForm(Form):
+	def __init__(self, comp_pkid, *args, **kwargs):
+		super(CreateIncidentResponseForm, self).__init__(*args, **kwargs)
+		self.fields['team'].choices = getTeamChoices(comp_pkid)
+
+	formtype = CharField(widget = HiddenInput(), initial = "create")
+	datetime = CharField(
+		label = 'Datetime',
+		widget = TextInput(attrs={'class':'form-control', 'data-date-format': "YYYY-MM-DD HH:mm:ss"}),
+	)
+	team = ChoiceField(
+		label = 'Team',
+		choices = [],
+		widget = Select(attrs={'class':'form-control'})
+	)
+	subject = CharField(
+		label = 'Subject',
+		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
+	)
+	content = CharField(
+		label = 'Content',
+		widget = TextInput(attrs={'class':'form-control', 'required': 'True'})
+	)
 # class CreateServiceForm(Form):
 # 	def __init__(self, *args, **kwargs):
 # 		competitionId = kwargs.pop('competitionId', None)

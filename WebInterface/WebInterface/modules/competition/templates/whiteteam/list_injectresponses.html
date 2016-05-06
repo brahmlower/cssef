@@ -1,10 +1,20 @@
 {% extends "competition/templates/whiteteam/pageTemplate.html" %}
 
+{% block headers_js %}
+<script>
+	function setItemFocus(id, name, type) {
+		document.getElementById("item_name").innerHTML = name;
+		document.getElementById("item_type").innerHTML = type
+		document.getElementById("item_id").value = id
+	}
+</script>
+{% endblock %}
+
 {% block page_content %}
 <!-- Content Header (Page header) -->
 <section class="content-header">
   <h1>
-    {{ competition.name }} - Inject Responses
+    {{ api_data.competition.name }} - Inject Responses
     <!-- <small>it all starts here</small> -->
   </h1>
   <ol class="breadcrumb">
@@ -16,5 +26,90 @@
 
 <!-- Main content -->
 <section class="content">
+		<p> These are inject resposnes that blue teams have submitted. <br><a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createinjectresponsemodel">Create Inject Response</a></p>
+  <div class="callout callout-danger">
+    <h4>Some parts aren't working</h4>
+    <ul><li>Creating inject respones</li><li>Editing inject responses</li></ul>
+  </div>
+{% if api_data.injectresponses %}
+	<table class="table">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Datetime</th>
+				<th>Team</th>
+				<th>Inject</th>
+				<th>Content</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in api_data.injectresponses %}
+			<tr>
+				<td>{{ i.id }}</td>
+				<td>{{ i.datetime }}</td>
+				<td>{{ i.team }}</td>
+				<td>{{ i.inject }}</td>
+				<td>{{ i.content }}</td>
+				<td>
+					<a href="/competition/{{ api_data.competition.id }}/teamwhite/injectresponses/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
+					<a href="#" class="btn-sm btn-danger" onclick="setItemFocus({{i.id}}, '{{i.title}}', 'Inject Response');" data-toggle="modal" data-target="#deleteitemmodel"> Delete </a>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% else %}
+	<p>No inject responses have been created yet.</p>
+	{% endif %}
 </section>
+
+
+<!-- Modal -->
+<div class="modal fade" id="createinjectresponsemodel" tabindex="-1" role="dialog" aria-labelledby="createinjectresponsemodellable" style="display: none;" data-backdrop="">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="createinjectresponsemodellable">Create Inject Response</h4>
+      </div>
+      <form action="/competition/{{ api_data.competition.id }}/teamwhite/injectresponses/" method="post" class="form-horizontal" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+        	{{ forms.form_create }}
+          <!--<label for="{{ form.name.id_for_label }}">{{ forms.form_create.name.label }}</label>
+          <div>{{ forms.form_create.name }}</div>-->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"> Cancel </button>
+          <button id="form_sub_button" type="submit" class="btn btn-primary"> Save </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Item Model -->
+<div class="modal fade" id="deleteitemmodel" tabindex="-1" role="dialog" aria-labelledby="deleteitemmodellable" style="display: none;" data-backdrop="">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="deleteitemmodellable">Delete <span id="item_type"></span></h4>
+      </div>
+      <form action="/competition/{{ api_data.competition.id }}/teamwhite/injectresponses/" method="post" class="form-horizontal" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="competition" value="{{ api_data.competition.id }}">
+        <input id="item_id" type="hidden" name="pkid" value="">
+        <input id="item_id" type="hidden" name="formtype" value="delete">
+        <div class="modal-body">
+        	<p> Are you sure you want to delete '<span id="item_name"></span>'? This action cannot be reversed.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"> Cancel </button>
+          <button id="form_sub_button" type="submit" class="btn btn-danger"> Delete </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

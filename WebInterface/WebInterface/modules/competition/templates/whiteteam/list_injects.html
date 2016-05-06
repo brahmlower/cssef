@@ -14,7 +14,7 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
   <h1>
-    {{ competition.name }} - Injects
+    {{ api_data.competition.name }} - Injects
     <!-- <small>it all starts here</small> -->
   </h1>
   <ol class="breadcrumb">
@@ -27,7 +27,11 @@
 <!-- Main content -->
 <section class="content">
 	<p> These are injects that can be delivered to teams throughout the competition. <br><a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createinjectmodel">Create Inject</a></p>
-{% if apiData %}
+  <div class="callout callout-danger">
+    <h4>Some parts aren't working</h4>
+    <ul><li>Editing injects</li></ul>
+  </div>
+{% if api_data.injects %}
 	<table class="table">
 		<thead>
 			<tr>
@@ -38,7 +42,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{% for i in apiData %}
+			{% for i in api_data.injects %}
 			<tr>
 				<td>{{ i.id }}</td>
 				<td>{{ i.title }}</td>
@@ -46,9 +50,9 @@
 				<td>
 					{% if i.manualDelivery %}
 					{# This will eventually also have to check if the competition is already started. If not, don't show the button. #}
-					<a href="/competition/{{ competition.id }}/teamwhite/inject/deliver/" class="btn-sm btn-success">Deliver</a>
+					<a href="/competition/{{ api_data.competition.id }}/teamwhite/inject/deliver/" class="btn-sm btn-success">Deliver</a>
 					{% endif %}
-					<a href="/competition/{{ competition.id }}/teamwhite/inject/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
+					<a href="/competition/{{ api_data.competition.id }}/teamwhite/inject/edit/{{ i.id }}/" class="btn-sm btn-primary">Edit</a>
 					<a href="#" class="btn-sm btn-danger" onclick="setItemFocus({{i.id}}, '{{i.title}}', 'Inject');" data-toggle="modal" data-target="#deleteitemmodel"> Delete </a>
 				</td>
 			</tr>
@@ -68,7 +72,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="createinjectmodellable">Create User</h4>
       </div>
-      <form action="/competition/{{ competition.id }}/teamwhite/injects/create/" method="post" class="form-horizontal" enctype="multipart/form-data">
+      <form action="/competition/{{ api_data.competition.id }}/teamwhite/injects/" method="post" class="form-horizontal" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="modal-body">
         	{{ forms.form_create }}
@@ -92,10 +96,11 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="deleteitemmodellable">Delete <span id="item_type"></span></h4>
       </div>
-      <form action="/competition/{{ competition.id }}/teamwhite/injects/delete/" method="post" class="form-horizontal" enctype="multipart/form-data">
+      <form action="/competition/{{ api_data.competition.id }}/teamwhite/injects/" method="post" class="form-horizontal" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="hidden" name="competition" value="{{ competition.id }}">
+        <input type="hidden" name="competition" value="{{ api_data.competition.id }}">
         <input id="item_id" type="hidden" name="pkid" value="">
+        <input id="item_id" type="hidden" name="formtype" value="delete">
         <div class="modal-body">
         	<p> Are you sure you want to delete '<span id="item_name"></span>'? This action cannot be reversed.</p>
         </div>

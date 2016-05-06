@@ -103,18 +103,18 @@ class ServiceCreateContext(CompetitionContext):
 # ==================================================
 # WhiteTeam Context Classes - Team
 # ==================================================
-class TeamListContext(CompetitionContext):
-	def __init__(self, request, comp_pkid = None):
-		super(TeamListContext, self).__init__(request, comp_pkid)
-		self.forms = {
-			'form_delete': forms.DeleteCompetitionObjectForm(),
-			'form_create': forms.CreateTeamForm()
-		}
-		self.httpMethodActions['GET'] = self.apiOnGet
+# class TeamListContext(CompetitionContext):
+# 	def __init__(self, request, comp_pkid = None):
+# 		super(TeamListContext, self).__init__(request, comp_pkid)
+# 		self.forms = {
+# 			'form_delete': forms.DeleteCompetitionObjectForm(),
+# 			'form_create': forms.CreateTeamForm()
+# 		}
+# 		self.httpMethodActions['GET'] = self.apiOnGet
 
-	def apiOnGet(self):
-		apiReturn = makeApiRequest('teamget', {'competition': self.competition['id']})
-		self.translateApiReturn(apiReturn)
+# 	def apiOnGet(self):
+# 		apiReturn = makeApiRequest('teamget', {'competition': self.competition['id']})
+# 		self.translateApiReturn(apiReturn)
 
 class TeamEditContext(CompetitionFormContext):
 	def __init__(self, request, comp_pkid, pkid):
@@ -158,65 +158,65 @@ class TeamEditContext(CompetitionFormContext):
 		else:
 			self.form = self.form(initial = apiReturn['content'][0])
 
-class TeamCreateContext(CompetitionFormContext):
-	def __init__(self, request, comp_pkid = None):
-		super(TeamCreateContext, self).__init__(request, comp_pkid)
-		self.action = self.CREATE
-		self.form = forms.CreateTeamForm
-		self.httpMethodActions['POST'] = self.apiOnPost
+# class TeamCreateContext(CompetitionFormContext):
+# 	def __init__(self, request, comp_pkid = None):
+# 		super(TeamCreateContext, self).__init__(request, comp_pkid)
+# 		self.action = self.CREATE
+# 		self.form = forms.CreateTeamForm
+# 		self.httpMethodActions['POST'] = self.apiOnPost
 
-	def apiOnPost(self):
-		if not self.validateFormData():
-			return False
-		# Make sure the passwords match - return False if not
-		if self.formData['password'] != self.formData['passwordConf']:
-			# Passwords do not match
-			self.returnValue = 1
-			self.errors = "Password values do not match."
-			self.form = self.form(initial = self.formData)
-			return False
-		else:
-			self.formData.pop('passwordConf', None)
-		# Make sure the CIDR is valid - return False if not
-		try:
-			ip = netaddr.IPNetwork(self.formData['networkCidr'])
-		except netaddr.core.AddrFormatError:
-			self.returnValue = 1
-			self.errors = "Network CIDR is invalid."
-			self.form = self.form(initial = self.formData)
-			return False
-		self.formData['competition'] = self.competition['id']
-		apiReturn = makeApiRequest('teamadd', self.formData)
-		self.translateApiReturn(apiReturn)
+# 	def apiOnPost(self):
+# 		if not self.validateFormData():
+# 			return False
+# 		# Make sure the passwords match - return False if not
+# 		if self.formData['password'] != self.formData['passwordConf']:
+# 			# Passwords do not match
+# 			self.returnValue = 1
+# 			self.errors = "Password values do not match."
+# 			self.form = self.form(initial = self.formData)
+# 			return False
+# 		else:
+# 			self.formData.pop('passwordConf', None)
+# 		# Make sure the CIDR is valid - return False if not
+# 		try:
+# 			ip = netaddr.IPNetwork(self.formData['networkCidr'])
+# 		except netaddr.core.AddrFormatError:
+# 			self.returnValue = 1
+# 			self.errors = "Network CIDR is invalid."
+# 			self.form = self.form(initial = self.formData)
+# 			return False
+# 		self.formData['competition'] = self.competition['id']
+# 		apiReturn = makeApiRequest('teamadd', self.formData)
+# 		self.translateApiReturn(apiReturn)
 
-class TeamDeleteContext(FormContext):
-	def __init__(self, request):
-		super(TeamDeleteContext, self).__init__(request)
-		self.action = self.DELETE
-		self.form = forms.DeleteCompetitionObjectForm
-		self.httpMethodActions['POST'] = self.apiOnPost
+# class TeamDeleteContext(FormContext):
+# 	def __init__(self, request):
+# 		super(TeamDeleteContext, self).__init__(request)
+# 		self.action = self.DELETE
+# 		self.form = forms.DeleteCompetitionObjectForm
+# 		self.httpMethodActions['POST'] = self.apiOnPost
 
-	def apiOnPost(self):
-		if not self.validateFormData():
-			return False
-		output = makeApiRequest('teamdel', self.formData)
-		self.translateApiReturn(output)
+# 	def apiOnPost(self):
+# 		if not self.validateFormData():
+# 			return False
+# 		output = makeApiRequest('teamdel', self.formData)
+# 		self.translateApiReturn(output)
 
 # ==================================================
 # WhiteTeam Context Classes - Inject
 # ==================================================
-class InjectListContext(CompetitionContext):
-	def __init__(self, request, comp_pkid = None):
-		super(InjectListContext, self).__init__(request, comp_pkid)
-		self.forms = {
-			'form_delete': forms.DeleteCompetitionObjectForm(),
-			'form_create': forms.CreateInjectForm()
-		}
-		self.httpMethodActions['GET'] = self.apiOnGet
+# class InjectListContext(CompetitionContext):
+# 	def __init__(self, request, comp_pkid = None):
+# 		super(InjectListContext, self).__init__(request, comp_pkid)
+# 		self.forms = {
+# 			'form_delete': forms.DeleteCompetitionObjectForm(),
+# 			'form_create': forms.CreateInjectForm()
+# 		}
+# 		self.httpMethodActions['GET'] = self.apiOnGet
 
-	def apiOnGet(self):
-		apiReturn = makeApiRequest('injectget', {'competition': self.competition['id']})
-		self.translateApiReturn(apiReturn)
+# 	def apiOnGet(self):
+# 		apiReturn = makeApiRequest('injectget', {'competition': self.competition['id']})
+# 		self.translateApiReturn(apiReturn)
 
 class InjectEditContext(CompetitionFormContext):
 	def __init__(self, request, comp_pkid = None, pkid = None):
@@ -248,37 +248,37 @@ class InjectEditContext(CompetitionFormContext):
 		else:
 			self.form = self.form(initial = apiReturn['content'][0])
 
-class InjectCreateContext(CompetitionFormContext):
-	def __init__(self, request, comp_pkid = None):
-		super(InjectCreateContext, self).__init__(request, comp_pkid)
-		self.action = self.CREATE
-		self.form = forms.CreateInjectForm
-		self.httpMethodActions['POST'] = self.apiOnPost
+# class InjectCreateContext(CompetitionFormContext):
+# 	def __init__(self, request, comp_pkid = None):
+# 		super(InjectCreateContext, self).__init__(request, comp_pkid)
+# 		self.action = self.CREATE
+# 		self.form = forms.CreateInjectForm
+# 		self.httpMethodActions['POST'] = self.apiOnPost
 
-	def apiOnPost(self):
-		if not self.validateFormData():
-			return False
-		self.formData['competition'] = self.competition['id']
-		for i in ['datetimeDelivery', 'datetimeResponseDue', 'datetimeResponseClose']:
-			if self.formData[i] != '':
-				self.formData[i] = datetime.strptime(self.formData[i], "%Y-%m-%d %H:%M:%S")
-			else:
-				self.formData.pop(i, None)
-		apiReturn = makeApiRequest('injectadd', self.formData)
-		self.translateApiReturn(apiReturn)
+# 	def apiOnPost(self):
+# 		if not self.validateFormData():
+# 			return False
+# 		self.formData['competition'] = self.competition['id']
+# 		for i in ['datetimeDelivery', 'datetimeResponseDue', 'datetimeResponseClose']:
+# 			if self.formData[i] != '':
+# 				self.formData[i] = datetime.strptime(self.formData[i], "%Y-%m-%d %H:%M:%S")
+# 			else:
+# 				self.formData.pop(i, None)
+# 		apiReturn = makeApiRequest('injectadd', self.formData)
+# 		self.translateApiReturn(apiReturn)
 
-class InjectDeleteContext(FormContext):
-	def __init__(self, request):
-		super(InjectDeleteContext, self).__init__(request)
-		self.action = self.DELETE
-		self.form = forms.DeleteCompetitionObjectForm
-		self.httpMethodActions['POST'] = self.apiOnPost
+# class InjectDeleteContext(FormContext):
+# 	def __init__(self, request):
+# 		super(InjectDeleteContext, self).__init__(request)
+# 		self.action = self.DELETE
+# 		self.form = forms.DeleteCompetitionObjectForm
+# 		self.httpMethodActions['POST'] = self.apiOnPost
 
-	def apiOnPost(self):
-		if not self.validateFormData():
-			return False
-		output = makeApiRequest('injectdel', self.formData)
-		self.translateApiReturn(output)
+# 	def apiOnPost(self):
+# 		if not self.validateFormData():
+# 			return False
+# 		output = makeApiRequest('injectdel', self.formData)
+# 		self.translateApiReturn(output)
 
 # ==================================================
 # WhiteTeam Context Classes - Inject Response

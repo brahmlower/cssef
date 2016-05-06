@@ -306,7 +306,7 @@ class IncidentResponseAdd(CssefRPCEndpoint):
         kwargs['competition'] = competition_obj.get_id()
         incident_response = IncidentResponse.from_dict(self.database_connection, kwargs)
         return_dict = get_empty_return_dict()
-        return_dict['content'].append(incident_response.from_dict())
+        return_dict['content'].append(incident_response.as_dict())
         return return_dict
 
 class IncidentResponseDel(CssefRPCEndpoint):

@@ -608,7 +608,6 @@ class IncidentResponse(ModelWrapper):
     'Incident Response object for controlling incident response settings'
     model_object = IncidentResponseModel
     fields = [
-        'replyTo',
         'datetime',
         'subject',
         'content']

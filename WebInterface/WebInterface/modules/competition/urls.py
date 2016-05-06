@@ -21,31 +21,23 @@ urlpatterns = patterns('',
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/services/create/$', whiteteam.create_service),
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/services/edit/(?P<service_pkid>\d+)/$', whiteteam.edit_service),
 	# Teams
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/teams/$', whiteteam.list_teams),
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/teams/create/$', whiteteam.create_team),
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/teams/delete/$', whiteteam.delete_team),
+	url(r'^(?P<comp_pkid>\d+)/teamwhite/teams/$', whiteteam.TeamView.as_view()),
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/teams/edit/(?P<team_pkid>\d+)/$', whiteteam.edit_team),
 	# Injects
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/injects/$', whiteteam.list_injects),
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/injects/create/$', whiteteam.create_inject),
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/injects/delete/$', whiteteam.delete_inject),
+	url(r'^(?P<comp_pkid>\d+)/teamwhite/injects/$', whiteteam.InjectView.as_view()),
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/injects/edit/(?P<inject_pkid>\d+)/$', whiteteam.edit_inject),
 	# URLs for review related pages
 	# Inject Responses
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/injectresponses/$', whiteteam.list_injectresponses),
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/injectresponses/create/$', whiteteam.create_injectresponse),
+	url(r'^(?P<comp_pkid>\d+)/teamwhite/injectresponses/$', whiteteam.InjectResponseView.as_view()),
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/injectresponses/edit/(?P<injectresponse_pkid>\d+)$', whiteteam.edit_injectresponse),
 	# Incidents
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/incidents/$', whiteteam.list_incidents),
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/incidents/create/$', whiteteam.create_incident),
+	url(r'^(?P<comp_pkid>\d+)/teamwhite/incidents/$', whiteteam.IncidentView.as_view()),
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/incidents/edit/(?P<incident_pkid>\d+)$', whiteteam.edit_incident),
 	# Incident Responses
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/incidentresponses/$', whiteteam.list_incidentresponses),
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/incidentresponses/create/$', whiteteam.create_incidentresponse),
+	url(r'^(?P<comp_pkid>\d+)/teamwhite/incidentresponses/$', whiteteam.IncidentResponseView.as_view()),
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/incidentresponses/edit/(?P<incidentresponse_pkid>\d+)$', whiteteam.edit_incidentresponse),
 	# Scores
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/scores/$', whiteteam.list_scores),
-	url(r'^(?P<comp_pkid>\d+)/teamwhite/scores/create/$', whiteteam.create_score),
+	url(r'^(?P<comp_pkid>\d+)/teamwhite/scores/$', whiteteam.ScoreView.as_view()),
 	url(r'^(?P<comp_pkid>\d+)/teamwhite/scores/edit/(?P<score_pkid>\d+)/$', whiteteam.edit_score),
 
 	# Blue Team pages
