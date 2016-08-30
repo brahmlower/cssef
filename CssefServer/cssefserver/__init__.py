@@ -14,11 +14,13 @@ from cssefserver.utils import create_database_connection
 from cssefserver.account import tasks as account_tasks
 
 class CssefServer(object):
-    def __init__(self):
+    def __init__(self, config_dict = {}):
         self.config = Configuration()
-        # TODO: Idealy we would load configs from multiple source,
-        # but we'll add that functionality later on...
+        # Load configurations from the config file, then load the
+        # configurations provided at object initialization
         self.config.load_config_file(self.config.global_config_path)
+        if config_dict != {}:
+            self.config.load_config_dict(config_dict)
 
         # THIS IS SUPER TEMPORARY!
         self.prepare_logging()

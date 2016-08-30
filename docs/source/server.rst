@@ -16,7 +16,7 @@ Configure the rabbitmq server
 
 	user@debian:~$ sudo rabbitmqctl add_user cssefd-user cssefd-pass
 	user@debian:~$ sudo rabbitmqctl set_user_tags cssefd-user administrator
-	user@debian:~$ sudo rabbitmqctl set_permissions ".*" ".*" ".*"
+	user@debian:~$ sudo rabbitmqctl set_permissions cssefd-user ".*" ".*" ".*"
 
 Install the CSSEF server
 ::
@@ -107,13 +107,13 @@ database-path
 	Example config file
 	::
 
-		# Save database on ramdisk for performance testing
-		database-path: /mnt/ramdisk/cssef/db.sqlite3
+		# Hold the database in memory for performance while testing
+		database-path: ''
 
 	Example command line
 	::
 
-		user@debian ~$ cssefd start --database-path /mnt/ramdisk/cssef/db.sqlite3
+		user@debian ~$ cssefd start --database-path ''
 
 database-table-prefix
 	This value will be the prefix for every table in the database. Depending

@@ -3,21 +3,86 @@ from __future__ import absolute_import
 import sys
 from cssefserver.daemon import CssefDaemon
 
+class ParseInput(object):
+    def __init__(self, input_list):
+        self.remaining_args = input_list
+        self.options = {}
+        self.command = []
+        self.command_args = {}
+        self.parse_input()
+
+    def parse_input(self):
+        self.parse_command()
+        self.parse_command_args()
+
+    def parse_options(self):
+        index = 0
+        while index < len(self.remaining_args) and self.remaining_args[index][0] == '-':
+            argument = self.remaining_args[index]
+            argument = argument.strip('-')
+            if len(argument.split("=")) > 1:
+                # The value is in the same argument
+                keyword = argument.split('=')[0]
+                value = argument.split('=')[1]
+            else:
+                # The value is in the next argument
+                keyword = argument
+                value = self.remaining_args[index + 1]
+                index += 1
+            self.options[keyword] = value
+            index += 1
+        self.remaining_args = self.remaining_args[index:]
+
+    def parse_command(self):
+        index = 0
+        while index < len(self.remaining_args) and self.remaining_args[index][0] != '-':
+            self.command.append(self.remaining_args[index])
+            index += 1
+        self.remaining_args = self.remaining_args[index:]
+
+    def parse_command_args(self):
+        index = 0
+        while index < len(self.remaining_args) and self.remaining_args[index][0] == '-':
+            argument = self.remaining_args[index]
+            argument = argument.strip('-')
+            if len(argument.split("=")) > 1:
+                # The value is in the same argument
+                keyword = argument.split('=')[0].replace('-', '_')
+                value = argument.split('=')[1]
+            else:
+                # The value is in the next argument
+                keyword = argument.replace('-', '_')
+                try:
+                    value = self.remaining_args[index + 1]
+                except IndexError:
+                    # There is no next error. Complain and quit
+                    sys.exit("Expected value in for argument, but got none.")
+                index += 1
+            self.command_args[keyword] = value
+            index += 1
+
+def exit_help():
+    print "Usage: %s start|stop|restart|status" % sys.argv[0]
+    sys.exit(2)
+
 if __name__ == "__main__":
-    daemon = CssefDaemon()
-    if len(sys.argv) == 2:
-        if sys.argv[1] == 'start':
-            daemon.start()
-        elif sys.argv[1] == 'stop':
-            daemon.stop()
-        elif sys.argv[1] == 'restart':
-            daemon.restart()
-        elif sys.argv[1] == 'status':
-            daemon.status()
-        else:
-            print "Unknown command"
-            sys.exit(2)
-        sys.exit(0)
+    # Parse the user input. Make sure a command was provided and that it is
+    # one of the available commands
+    user_input = ParseInput(sys.argv[1:])
+    if len(user_input.command) != 1:
+        exit_help()
+    if user_input.command[0] not in ['start','stop','restart','status']:
+        exit_help()
+    # Now create the daemon object with any provided runtime settings
+    daemon = CssefDaemon(user_input.command_args)
+    # Execute the command that was specified
+    if user_input.command[0] == 'start':
+        daemon.start()
+    elif user_input.command[0] == 'stop':
+        daemon.stop()
+    elif user_input.command[0] == 'restart':
+        daemon.restart()
     else:
-        print "usage: %s start|stop|restart|status" % sys.argv[0]
-        sys.exit(2)
+        # user_input.command[0] == 'status'
+        daemon.status()
+    sys.exit(0)

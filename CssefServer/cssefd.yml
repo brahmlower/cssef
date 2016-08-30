@@ -4,7 +4,7 @@ admin-token:
 database-path: /tmp/db.sqlite3
 database-table-prefix: cssef
 
-# Loggin configs
+# Logging configs
 cssef-loglevel: DEBUG
 cssef-stderr: /var/log/cssef/cssef_stderr.log
 cssef-stdout: /var/log/cssef/cssef_stdout.log

@@ -146,13 +146,9 @@ class BaseDaemon(object):
         pass
 
 class CssefDaemon(BaseDaemon):
-    def __init__(self):
-        self.server = CssefServer()
-        super(CssefDaemon, self).__init__(
-            self.server.config.pidfile)
-            #self.server.config.pidfile,
-            #stderr = self.server.config.cssef_stderr,
-            #stdout = self.server.config.cssef_stdout)
+    def __init__(self, config_dict = {}):
+        self.server = CssefServer(config_dict)
+        super(CssefDaemon, self).__init__(self.server.config.pidfile)
 
     def run(self):
         atexit.register(self.stop)
