@@ -1,10 +1,32 @@
+# CSSEF Server Settings
+
+# For more information about these configuration, please see the server
+# configuration documentation at:
+# cssef.readthedocs.io/en/latest/server.html#available-options
+
 # Genaric configs
-pidfile: /tmp/cssefd.pid
+##############################################################################
+# This is a string value representing the absolute path for the pid file.
+pidfile: /var/run/cssefd.pid
+
+# This should only be used for initial setup, but may be used in the event
+# you are locked out of administrator accounts. The client may provide the
+# token to authorize requests by completely bypassing username and password
+# checks. If you are not actively using this, the value should be left blank,
+# meaning admin-token auth is disabled.
 admin-token: 
-database-path: /tmp/db.sqlite3
-database-table-prefix: cssef
+
+# While using sqlite as the backend database, this option will be for the
+# absolute path to store the database file at.
+database-path: /var/opt/cssef/db.sqlite3
+
+# This value will be the prefix for every table in the database. Depending on
+# your database backend, this may not be as important. The default will result
+# in tables that look similar to “cssef_users".
+database-table-prefix: cssef_
 
 # Logging configs
+##############################################################################
 cssef-loglevel: DEBUG
 cssef-stderr: /var/log/cssef/cssef_stderr.log
 cssef-stdout: /var/log/cssef/cssef_stdout.log
@@ -14,14 +36,30 @@ celery-stderr: /var/log/cssef/cssef_celery_stderr.log
 celery-stdout: /var/log/cssef/cssef_celery_stdout.log
 
 # Celery configs
-# rpc-username: cssefd
-# rpc-password: cssefd-pass
-# rpc-host: localhost
+##############################################################################
+# This is the username to authenticate to the RPC service with.
+rpc-username: cssefd
 
-# amqp-username: cssefd
-# amqp-password: cssefd-pass
-# amqp-host: localhost
+# This is the password to use while authenticating to the RPC server.
+rpc-password: cssefd-pass
+
+# The address for the host that is hosting the RPC service.
+rpc-host: localhost
+
+# This is the username to authenticate to the AMQP service with.
+amqp-username: cssefd
+
+# This is the password to use while authenticating to the AMQP server
+amqp-password: cssefd-pass
+
+# The address for the host that is hosting the AMQP service.
+amqp-host: localhost
 
 # Installed plugins
+##############################################################################
+# This is a list of plugins that conform to the CSSEF plugin model that should
+# be imported. Those plugins must already be installed, and the entries in
+# this list must be the names of the modules.
 installed-plugins:
-- cssefcdc.CyberDefenseCompetition
+#- cssefctf.CaptureTheFlag
+#- cssefcdc.CyberDefenseCompetition

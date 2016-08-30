@@ -51,7 +51,7 @@ class Configuration(object):
         try:
             config_dict = yaml.load(open(config_path, 'r'))
         except IOError:
-            print "[WARNING] Failed to load config file at '%s'." % config_path
+            print "[WARNING] Failed to load configuration file at '%s'." % config_path
             return
         self.load_config_dict(config_dict)
 
@@ -85,7 +85,7 @@ class Configuration(object):
             else:
                 # We don't care about it. Just skip it!
                 if self.verbose:
-                    print "[LOGGING] Ignoring invalid setting '%s'." % i
+                    print "[LOGGING] Ignoring invalid configuration '%s'." % i
 
 class CssefRPCEndpoint(object):
     name = None
@@ -231,6 +231,8 @@ def handle_exception(err):
     return_dict = get_empty_return_dict()
     return_dict['value'] = 1
     return_dict['message'] = traceback.format_exc().splitlines()
+    logging.error("Return value: %d" % return_dict['value'])
+    logging.error("Return message:\n%s" % return_dict['message'])
     return return_dict
 
 def get_empty_return_dict():

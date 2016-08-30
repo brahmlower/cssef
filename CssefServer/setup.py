@@ -21,13 +21,13 @@ setup(
     url = "http://github.com/bplower/cssef/",
 
     # Scripts:
-    scripts = [
-        "cssefd"
-    ],
+    #scripts = [
+    #    "cssefd"
+    #],
 
-    data_files = [
-        ('/etc/cssef/', ['cssefd.yml'])
-    ],
+    #data_files = [
+    #    ('/etc/cssef/', ['cssefd.yml'])
+    #],
 
     # Description:
     description = "The CSSEF server.",

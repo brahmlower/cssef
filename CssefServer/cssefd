@@ -71,7 +71,7 @@ if __name__ == "__main__":
     user_input = ParseInput(sys.argv[1:])
     if len(user_input.command) != 1:
         exit_help()
-    if user_input.command[0] not in ['start','stop','restart','status']:
+    if user_input.command[0] not in ['start', 'stop', 'restart', 'status']:
         exit_help()
     # Now create the daemon object with any provided runtime settings
     daemon = CssefDaemon(user_input.command_args)

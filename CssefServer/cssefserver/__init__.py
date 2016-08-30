@@ -16,11 +16,20 @@ from cssefserver.account import tasks as account_tasks
 class CssefServer(object):
     def __init__(self, config_dict = {}):
         self.config = Configuration()
-        # Load configurations from the config file, then load the
-        # configurations provided at object initialization
+
+        # The configuration loading process is tricky, since settings provided
+        # at runtime may dictate how we load other configurations. Load the
+        # runtime configurations, and then load the configurations from the
+        # file. We load the runtime configurations again to reset any
+        # configurations that may have been overwritten while loading from the
+        # file.
+
+        # 1: Load the runtime configurations
+        # 2: Load the file configurations
+        # 3: Load the runtime configurations again
+        self.config.load_config_dict(config_dict)
         self.config.load_config_file(self.config.global_config_path)
-        if config_dict != {}:
-            self.config.load_config_dict(config_dict)
+        self.config.load_config_dict(config_dict)
 
         # THIS IS SUPER TEMPORARY!
         self.prepare_logging()
@@ -38,6 +47,12 @@ class CssefServer(object):
         self.plugins = []
 
     def import_plugins(self):
+        # If the 'installed_plugins' line is provided, but no items are
+        # included in the list, then the value of
+        # self.config.installed_plugins will be None. Return if there are no
+        # installed plugins.
+        if not self.config.installed_plugins:
+            return
         for module_string in self.config.installed_plugins:
             try:
                 module_name = module_string.split(".")[0]
@@ -93,18 +108,22 @@ class CssefServer(object):
     def start(self):
         # This next line can throw a permissions error:
         # IOError: [Errno 13] Permission denied: '/var/log/cssef/error.log'
-        # This should be caught and handleds, and possibly reported to the daemon?
-        logging.basicConfig(filename='/var/log/cssef/error.log', level=logging.DEBUG)
-        logging.info('started logging!')
-        # This *must* happen before making the database connection otherwise
-        # tables won't be made for plugins
+        # This should be caught and handled, and possibly reported to the daemon?
+        logging.basicConfig(filename=self.config.cssef_stderr, level=logging.DEBUG)
+        logging.info('Initialized logging')
+        # Plugin imports *must* happen before making the database connection
+        # otherwise tables won't be made for plugins
+        logging.debug('Starting plugin import')
         self.import_plugins()
-        # This *must* happen before loading the rpc endpoints, otherwise
-        # they'll get the default value for the database_connection, which
-        # is None (breaks everything)
+        # The database connection *must* be initialized before loading the rpc
+        # endpoints, otherwise the endpoints will get the default value for
+        # the database_connection, which is None (breaks everything)
+        logging.debug('Initializing database connection')
         self.database_connection = create_database_connection(self.config)
+        logging.debug('Loading RCP endpoints')
         self.load_rpc_endpoints()
         # Start listening for rpc requests via Flask
+        logging.debug('Initializing flask instance')
         self.flask_app.add_url_rule('/', 'index', self.index, methods=['POST'])
         self.flask_app.run(debug=False)
 
