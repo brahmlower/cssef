@@ -76,3 +76,4 @@ def authorize_access(db_conn, auth_dict, config):
     # Authorize the user
     if not user.authorized(auth_dict, 'organization'):
         raise errors.PermissionDenied
+    return user

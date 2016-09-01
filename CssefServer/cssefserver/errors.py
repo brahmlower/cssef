@@ -10,11 +10,15 @@ General User Errors:
 Allotted error codes: 50 - 150
 50 - InvalidPkidValue
 """
+import logging
 
 class CssefException(Exception):
     value = None
     message = None
     def as_return_dict(self):
+        logging.error("(error %d): Caught a CSSEF error" % self.value)
+        for i in self.message:
+            logging.error("(error %d): %s" % (self.value, i))
         return {'value': self.value, 'message': self.message, 'content': []}
 
 class CssefObjectDoesNotExist(Exception):

@@ -1,24 +1,6 @@
 from cssefserver.utils import get_empty_return_dict
 from cssefserver.errors import InvalidPkidValue
 
-def log_bad_user_search_results(results, username, organization):
-    # This isn't how logging is done, but I'll get it fixed with I improve logging
-    if len(results) > 1:
-        print "There were too many users returned"
-    elif len(results) < 1:
-        print "There was fewer than 1 user returned."
-    else:
-        print "Num results was neither 1, >1, <1. You should NEVER see this message."
-    print "Number of users: %d" % len(results)
-    print "Provided username: %s" % username
-    print "Provided organization: %s" % organization
-
-def client_failed_login_output():
-    return_dict = get_empty_return_dict()
-    return_dict['message'] = ["Incorrect username or password."]
-    return_dict['value'] = 1
-    return return_dict
-
 def model_del(cls, database_connection, pkid):
     if pkid == "*":
         # todo: implement a wildcard

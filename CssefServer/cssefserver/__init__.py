@@ -31,7 +31,12 @@ class CssefServer(object):
         self.config.load_config_file(self.config.global_config_path)
         self.config.load_config_dict(config_dict)
 
-        # THIS IS SUPER TEMPORARY!
+        # Prepare the logger. This will run before start() is called, meaning
+        # any logging errors should arise before daemonization happens. This
+        # might cause problems if the daemonized process is started as a user
+        # that has different permissions than the user that own the parent
+        # process...
+        # TODO: Test this hypothesis
         self.prepare_logging()
 
         # This is the database connection
@@ -92,25 +97,13 @@ class CssefServer(object):
                 endpoint.pop('reference')
 
     def prepare_logging(self):
-        pass
-        # # I don't really know what's going on here. Making an issue to fix this later
-        # # Make sure the files exist first
-        # make_log_files(self.config)
-        # # Set up the loggers (kinda... i suck at this)
-        # logger = logging.getLogger("CssefDaemonLog")
-        # logger.setLevel(logging.DEBUG)
-        # formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-        # if self.config.cssef_stdout != '':
-        # 	handler = logging.FileHandler(self.config.cssef_stdout)
-        #   handler.setFormatter(formatter)
-        # 	logger.addHandler(handler)
-
-    def start(self):
         # This next line can throw a permissions error:
         # IOError: [Errno 13] Permission denied: '/var/log/cssef/error.log'
         # This should be caught and handled, and possibly reported to the daemon?
         logging.basicConfig(filename=self.config.cssef_stderr, level=logging.DEBUG)
         logging.info('Initialized logging')
+
+    def start(self):
         # Plugin imports *must* happen before making the database connection
         # otherwise tables won't be made for plugins
         logging.debug('Starting plugin import')
@@ -120,6 +113,8 @@ class CssefServer(object):
         # the database_connection, which is None (breaks everything)
         logging.debug('Initializing database connection')
         self.database_connection = create_database_connection(self.config)
+        # Load the RCP Endpoints, instantiating each one and making it available
+        # for Flask
         logging.debug('Loading RCP endpoints')
         self.load_rpc_endpoints()
         # Start listening for rpc requests via Flask
@@ -155,21 +150,6 @@ class Plugin(object):
         tmp_dict['short_name'] = self.short_name
         tmp_dict['version'] = self.__version__
         return tmp_dict
-
-# Dumpy old logging methods
-def make_log_files(config):
-    # Now create the log files within that directory
-    files = [config.cssef_stderr, config.cssef_stdout]
-    for i in files:
-        if i == '':
-            continue
-        # Get the directory the file should be in
-        log_directory = "/".join(i.split('/')[:-1])
-        if not os.path.exists(log_directory):
-            os.makedirs(log_directory)
-        # Now create the files in that directory
-        if not os.path.isfile(i):
-            open(i, 'a').close()
 
 # Import plugins
 def import_plugins(config):

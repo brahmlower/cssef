@@ -5,6 +5,7 @@ import yaml
 # Database related imports
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import sqlalchemy.exc
 from cssefserver.modelbase import BASE as Base
 from cssefserver.errors import CssefException
 from cssefserver.errors import CssefObjectDoesNotExist
@@ -121,10 +122,10 @@ class CssefRPCEndpoint(object):
             else:
                 return self.on_request(*args_list)
         except CssefException as err:
-            logging.error("Caught a csseferror:\n %s" % err)
+            #logging.error("Caught a csseferror:\n %s" % str(err.message))
             return err.as_return_dict()
         except Exception as err:
-            logging.error("Caught a real exception:\n %s" % err)
+            #logging.error("Caught a real exception:\n %s" % err)
             return handle_exception(err)
 
     @classmethod
@@ -220,19 +221,22 @@ def create_database_connection(config):
     """Returns a database session for the specified database"""
     # Now actually create the database instantiation
     database_engine = create_engine('sqlite:///' + config.database_path)
-    Base.metadata.create_all(database_engine)
+    try:
+        Base.metadata.create_all(database_engine)
+    except sqlalchemy.exc.OperationalError as error:
+        logging.error('Failed to open or sync database file: %s' % config.database_path)
+        raise error
     Base.metadata.bind = database_engine
     database_session = sessionmaker(bind=database_engine)
     return database_session()
 
 def handle_exception(err):
-    # todo
-    # log the full stacktrace!
     return_dict = get_empty_return_dict()
     return_dict['value'] = 1
     return_dict['message'] = traceback.format_exc().splitlines()
-    logging.error("Return value: %d" % return_dict['value'])
-    logging.error("Return message:\n%s" % return_dict['message'])
+    logging.error("(error %d): Encountered runtime error with given id %d. Observe the following stack trace:" % (return_dict['value'], return_dict['value']))
+    for i in return_dict['message']:
+        logging.error("(error %d): %s" % (return_dict['value'], i))
     return return_dict
 
 def get_empty_return_dict():

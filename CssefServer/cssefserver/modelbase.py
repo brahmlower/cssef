@@ -9,7 +9,7 @@ class BaseModel(object):
     @declared_attr
     def __tablename__(self):
         # Hardcoding the tablePrefix breaks the configurable feature
-        # introduced in commit 7bafda8bf25673c7b6dc29342135b34566df77af
+        # introduced in commit 993d87efef98d709209eead4340ff86a1da32f27
         table_prefix = "cssef"#cssefserver.config.database_table_prefix
         module_prefix = "test"
         module_name = self.__name__.lower()
