@@ -115,9 +115,11 @@ database-path
 		user@debian ~$ cssefd start --database-path ''
 
 database-table-prefix
+
 	.. attention::
 	This feature is broken as of `commit 993d87e`_. The prefix is hardcoded to
 	"cssef" for the time being.
+
 	.. _commit 993d87e: https://github.com/bplower/cssef/commit/993d87efef98d709209eead4340ff86a1da32f27
 
 	This value will be the prefix for every table in the database. Depending
