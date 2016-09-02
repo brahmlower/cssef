@@ -66,14 +66,3 @@ environments that don't actually have the cssef client available. The web
 client is currently using django, which itself simply consumes endpoints
 within the cssef client. For more information about the web client, see the
 cssef webui documentation.
-
-Web API
-~~~~~~~
-.. note::
-	Work on the web API has stopped until the server and client have reached
-	a decently stable state.
-
-The web API is intended to be provided in situations where one may want to
-provide a proxy to the cssef server for another frontend application that
-cannot itself have the client application installed on it. Eventually, the
-CSSEF client will be able to consume endpoints provided by the web API.
