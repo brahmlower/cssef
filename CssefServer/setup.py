@@ -20,15 +20,6 @@ setup(
     # Details:
     url = "http://github.com/bplower/cssef/",
 
-    # Scripts:
-    #scripts = [
-    #    "cssefd"
-    #],
-
-    #data_files = [
-    #    ('/etc/cssef/', ['cssefd.yml'])
-    #],
-
     # Description:
     description = "The CSSEF server.",
     long_description = open("README.md").read(),
