@@ -4,33 +4,28 @@ Server Installation and Configuration
 
 Server Installation
 -------------------
-The server requires python, pip, rabbitmq, and celery.
+The server requires systemd, python and pip.
 
 Install the prerequisets
 ::
 
-	user@debian:~$ sudo apt-get install -y git python-pip python-dev rabbitmq-server
-
-Configure the rabbitmq server
-::
-
-	user@debian:~$ sudo rabbitmqctl add_user cssefd-user cssefd-pass
-	user@debian:~$ sudo rabbitmqctl set_user_tags cssefd-user administrator
-	user@debian:~$ sudo rabbitmqctl set_permissions cssefd-user ".*" ".*" ".*"
+	user@debian:~$ sudo apt-get install -y git python-pip python-dev systemd libsystemd-dev
 
 Install the CSSEF server
 ::
 
 	user@debian:~$ git clone https://github.com/bplower/cssef.git
 	user@debian:~$ cd cssef/CssefServer
-	user@debian:~/cssef/CssefServer$ sudo pip install .
+	user@debian:~/cssef/CssefServer$ sudo make install
 
 Verify the installation was successful
 ::
 
-	user@debian:~/cssef/CssefServer$ cssefd start
-	user@debian:~/cssef/CssefServer$ cssefd status
-	Running with pid 26351
+	user@debian:~/cssef/CssefServer$ sudo systemctl is-enabled cssef-server.service
+	enabled
+	user@debian:~/cssef/CssefServer$ sudo systemctl start cssef-server.service
+	user@debian:~/cssef/CssefServer$ sudo systemctl status cssef-server.service | grep Active:
+	Active: active (running) since Thu 2016-09-01 22:00:49 AKDT; 6s ago
 
 .. _server-server_configuration:
 
@@ -43,7 +38,6 @@ values are loaded is as follows:
 
 1. Default (hard coded)
 2. Global config file
-3. Local config file
 4. Command line configs
 
 Please consider the following example:
@@ -61,22 +55,6 @@ configuration sources (excluding the default configs for obvious reasons).
 
 Available Options
 ~~~~~~~~~~~~~~~~~
-pidfile
-	This is a string value representing the absolute path for the pid file.
-
-	Default: ``/var/run/cssefd.pid``
-
-	Example config file
-	::
-
-		# Setting a custom location for the pid file
-		pidfile: /custom-dir/cssef.pid
-
-	Example command line
-	::
-
-		user@debian ~$ cssefd start --pidfile /custom-dir/cssef.pid
-
 admin-token
 	This should only be used for initial setup, but may be used in the event
 	you are locked out of administrator accounts. The client may provide the
@@ -142,24 +120,6 @@ database-table-prefix
 logging
 	I've completely skipped the logging values because they're all basically
 	useless right now...
-
-rpc-username
-	This is the username to authenticate to the RPC service with.
-
-rpc-password
-	This is the password to use while authenticating to the RPC server.
-
-rpc-host
-	The address for the host that is hosting the RPC service.
-
-amqp-username
-	This is the username to authenticate to the AMQP service with.
-
-amqp-password
-	This is the password to use while authenticating to the AMQP server.
-
-amqp-host
-	The address for the host that is hosting the AMQP service.
 
 installed-plugins
 	This is a list of plugins that conform to the CSSEF plugin model that

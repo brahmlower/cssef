@@ -6,9 +6,6 @@
 
 # Genaric configs
 ##############################################################################
-# This is a string value representing the absolute path for the pid file.
-pidfile: /var/run/cssefd.pid
-
 # This should only be used for initial setup, but may be used in the event
 # you are locked out of administrator accounts. The client may provide the
 # token to authorize requests by completely bypassing username and password
@@ -30,30 +27,6 @@ database-table-prefix: cssef_
 cssef-loglevel: DEBUG
 cssef-stderr: /var/log/cssef/cssef_stderr.log
 cssef-stdout: /var/log/cssef/cssef_stdout.log
-
-celery-loglevel: DEBUG
-celery-stderr: /var/log/cssef/cssef_celery_stderr.log
-celery-stdout: /var/log/cssef/cssef_celery_stdout.log
-
-# Celery configs
-##############################################################################
-# This is the username to authenticate to the RPC service with.
-rpc-username: cssefd
-
-# This is the password to use while authenticating to the RPC server.
-rpc-password: cssefd-pass
-
-# The address for the host that is hosting the RPC service.
-rpc-host: localhost
-
-# This is the username to authenticate to the AMQP service with.
-amqp-username: cssefd
-
-# This is the password to use while authenticating to the AMQP server
-amqp-password: cssefd-pass
-
-# The address for the host that is hosting the AMQP service.
-amqp-host: localhost
 
 # Installed plugins
 ##############################################################################

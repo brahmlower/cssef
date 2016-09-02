@@ -1,6 +1,6 @@
 import abc
 import traceback
-import logging
+from systemd import journal
 import yaml
 # Database related imports
 from sqlalchemy import create_engine
@@ -20,14 +20,12 @@ class Configuration(object):
     """
     def __init__(self):
         # Super global configs
-        self.global_config_path = "/etc/cssef/cssefd.yml"
+        self.global_config_path = "/etc/cssef/cssef-server.yml"
         self.admin_token = ""
-        self.pidfile = ""
         # SQLAlchemy configurations
         self.database_table_prefix = "cssef_"
         self.database_path = None
         # General configurations
-        self.verbose = False
         self.auth_failover = True
         # Logging configurations
         self.cssef_loglevel = ""
@@ -78,15 +76,13 @@ class Configuration(object):
                 setting = i.replace('-', '_')
                 value = config_dict[i]
                 setattr(self, setting, value)
-                if self.verbose:
-                    print "[LOGGING] Configuration '%s' set to '%s'." % (i, value)
+                journal.send(message = "Configuration '%s' set to '%s'." % (i, value))
             elif isinstance(config_dict[i], dict):
                 # This is a dictionary and may contain additional values
                 self.load_config_dict(config_dict[i])
             else:
                 # We don't care about it. Just skip it!
-                if self.verbose:
-                    print "[LOGGING] Ignoring invalid configuration '%s'." % i
+                journal.send(message = "Ignoring invalid configuration '%s'." % i)
 
 class CssefRPCEndpoint(object):
     name = None
@@ -122,10 +118,8 @@ class CssefRPCEndpoint(object):
             else:
                 return self.on_request(*args_list)
         except CssefException as err:
-            #logging.error("Caught a csseferror:\n %s" % str(err.message))
             return err.as_return_dict()
         except Exception as err:
-            #logging.error("Caught a real exception:\n %s" % err)
             return handle_exception(err)
 
     @classmethod
@@ -219,12 +213,12 @@ class ModelWrapper(object):
 
 def create_database_connection(config):
     """Returns a database session for the specified database"""
-    # Now actually create the database instantiation
+    journal.send(message = 'Initializing database connection')
     database_engine = create_engine('sqlite:///' + config.database_path)
     try:
         Base.metadata.create_all(database_engine)
     except sqlalchemy.exc.OperationalError as error:
-        logging.error('Failed to open or sync database file: %s' % config.database_path)
+        journal.send(message = 'Failed to open or sync database file: %s' % config.database_path)
         raise error
     Base.metadata.bind = database_engine
     database_session = sessionmaker(bind=database_engine)
@@ -234,9 +228,9 @@ def handle_exception(err):
     return_dict = get_empty_return_dict()
     return_dict['value'] = 1
     return_dict['message'] = traceback.format_exc().splitlines()
-    logging.error("(error %d): Encountered runtime error with given id %d. Observe the following stack trace:" % (return_dict['value'], return_dict['value']))
+    journal.send("(error %d): Encountered runtime error with given id %d. Observe the following stack trace:" % (return_dict['value'], return_dict['value']))
     for i in return_dict['message']:
-        logging.error("(error %d): %s" % (return_dict['value'], i))
+        journal.send(message = "(error %d): %s" % (return_dict['value'], i))
     return return_dict
 
 def get_empty_return_dict():

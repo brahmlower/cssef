@@ -1,6 +1,5 @@
 from __future__ import absolute_import
 import ast
-import logging
 from cssefserver.utils import get_empty_return_dict
 from cssefserver.utils import CssefRPCEndpoint
 

@@ -1,6 +1,6 @@
 import os
 import os.path
-import logging
+from systemd import journal
 # RPC Server related imports
 from flask import Flask
 from flask import request
@@ -31,14 +31,6 @@ class CssefServer(object):
         self.config.load_config_file(self.config.global_config_path)
         self.config.load_config_dict(config_dict)
 
-        # Prepare the logger. This will run before start() is called, meaning
-        # any logging errors should arise before daemonization happens. This
-        # might cause problems if the daemonized process is started as a user
-        # that has different permissions than the user that own the parent
-        # process...
-        # TODO: Test this hypothesis
-        self.prepare_logging()
-
         # This is the database connection
         self.database_connection = None
 
@@ -56,6 +48,7 @@ class CssefServer(object):
         # included in the list, then the value of
         # self.config.installed_plugins will be None. Return if there are no
         # installed plugins.
+        journal.send(message = 'Starting plugin import')
         if not self.config.installed_plugins:
             return
         for module_string in self.config.installed_plugins:
@@ -63,13 +56,13 @@ class CssefServer(object):
                 module_name = module_string.split(".")[0]
                 module_class = module_string.split(".")[1]
             except ValueError:
-                logging.error("Incorrectly formatted plugin entry: '%s'." % module_string)
+                journal.send(message = "Incorrectly formatted plugin entry: '%s'." % module_string)
                 continue
             try:
                 module = __import__(module_name)
                 plugin_class_ref = getattr(module, module_class)
             except:
-                logging.error("Failed to import module: '%s'" % module_name)
+                journal.send(message = "Failed to import module: '%s'" % module_name)
                 continue
             plugin_class_inst = plugin_class_ref(self.config)
             self.plugins.append(plugin_class_inst)
@@ -78,6 +71,7 @@ class CssefServer(object):
         self.config.installed_plugins = self.plugins
 
     def load_rpc_endpoints(self):
+        journal.send(message = 'Loading RCP endpoints...')
         # Create the list of endpoints sources
         self.config.endpoint_sources = []
         self.config.endpoint_sources.append(account_tasks.endpoint_source())
@@ -90,35 +84,25 @@ class CssefServer(object):
             for endpoint in source['endpoints']:
                 # Add the endpoint to the method list for Flask
                 instance = endpoint['reference'](self.config, self.database_connection)
-                logging.info('Adding plugin method: %s, %s' % (instance.__class__, endpoint['rpc_name']))
+                journal.send(message = 'Loading endpoint: %s' % endpoint['rpc_name'])
                 self.rpc_methods.add_method(instance, endpoint['rpc_name'])
                 # Pop the reference key from the dict so we don't try to send it
                 # to the client later when the client requests the available enpoints
                 endpoint.pop('reference')
 
-    def prepare_logging(self):
-        # This next line can throw a permissions error:
-        # IOError: [Errno 13] Permission denied: '/var/log/cssef/error.log'
-        # This should be caught and handled, and possibly reported to the daemon?
-        logging.basicConfig(filename=self.config.cssef_stderr, level=logging.DEBUG)
-        logging.info('Initialized logging')
-
     def start(self):
         # Plugin imports *must* happen before making the database connection
         # otherwise tables won't be made for plugins
-        logging.debug('Starting plugin import')
         self.import_plugins()
         # The database connection *must* be initialized before loading the rpc
         # endpoints, otherwise the endpoints will get the default value for
         # the database_connection, which is None (breaks everything)
-        logging.debug('Initializing database connection')
         self.database_connection = create_database_connection(self.config)
         # Load the RCP Endpoints, instantiating each one and making it available
         # for Flask
-        logging.debug('Loading RCP endpoints')
         self.load_rpc_endpoints()
         # Start listening for rpc requests via Flask
-        logging.debug('Initializing flask instance')
+        journal.send(message = 'Initializing flask instance')
         self.flask_app.add_url_rule('/', 'index', self.index, methods=['POST'])
         self.flask_app.run(debug=False)
 
