@@ -26,7 +26,6 @@ setup(
 
     # Dependant packages:
     install_requires = [
-        "systemd",
         "bcrypt",
         "sqlalchemy",
         "tokenlib",
