@@ -20,15 +20,6 @@ setup(
     # Details:
     url = "http://github.com/bplower/cssef/",
 
-    # Scripts:
-    scripts = [
-        'cssef-cli'
-    ],
-
-    data_files = [
-        ('/etc/cssef/', ['cssef.yml'],)
-    ],
-
     # Description:
     description = "A CSSEF client to interact with CSSEF servers via rpc.",
     long_description = open("README.md").read(),

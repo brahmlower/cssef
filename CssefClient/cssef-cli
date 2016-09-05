@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import sys
 from getpass import getpass
 from prettytable import PrettyTable
@@ -98,44 +99,9 @@ class ParseInput(object):
             self.command_args[keyword] = value
             index += 1
 
-class AuthDict(object):
-    def __init__(self, config, parsed_input):
-        pass
-
-def build_auth_dict(config):
-    tmp_dict = {}
-    # If the admin token was provided, add that to the auth dict and then
-    # return since we don't need anything else.
-    if config.admin_token:
-        tmp_dict["admin-token"] = config.admin_token
-        return tmp_dict
-    # Add the username to the auth Dict
-    if not config.username:
-        print "No username was provided."
-        return None
-    tmp_dict["username"] = config.username
-    # Add the organization to the auth Dict
-    if not config.organization:
-        print "No organization was provided."
-        return None
-    tmp_dict["organization"] = config.organization
-    # If a password is provided, we want to use that instead of the token
-    if config.password:
-        tmp_dict["password"] = config.password
-    elif config.token_auth_enabled and config.token:
-        tmp_dict["token"] = config.token
-    else:
-        # If it's okay, prompt the user for a password
-        if config.prompt_password:
-            tmp_dict["password"] = getpass()
-        else:
-            # Both values failed
-            print "Neither password nor token were provided."
-            return None
-    return tmp_dict
-
 def print_output(output):
     if output.value != 0:
+        # A value of non-zero means there was an error of some kind.
         sys.stderr.write("The server is reporting the following error:\n")
         sys.stderr.write("\n".join(output.message)+"\n")
     if output.table_headers:
@@ -152,27 +118,27 @@ def print_output(output):
             print i
 
 if __name__ == "__main__":
-    # # Ensure user data directory exists
-    # if not os.path.exists(self.userDataDir):
-    #     os.makedirs(self.userDataDir)
-
     # Set up and configure the client
     user_input = ParseInput(sys.argv[1:])
     client = cssefclient.CssefClient()
     client.config.load_config_file(client.config.global_config_path)
     client.config.load_config_file(client.config.config_path)
     client.config.load_config_dict(user_input.options)
+    client.config.load_token()
+
+    # Ensure user data directory exists
+    if not os.path.exists(client.config.user_data_dir):
+        os.makedirs(client.config.user_data_dir)
 
     # Prepare the auth dictionary
-    auth_dict = build_auth_dict(client.config)
-    if not auth_dict:
+    auth_builder = cssefclient.AuthBuilder(client.config)
+    if not auth_builder.is_valid():
         sys.exit()
-    user_input.command_args['auth'] = auth_dict
+    user_input.command_args['auth'] = auth_builder.as_dict()
 
     # Make connection to server, load endpoints, authenticate
     client.connect()
     client.load_endpoints()
-    client.load_token(auth=user_input.command_args['auth'])
 
     # Call command and handle return
     commandMenu = Menu(client.config, client.endpoints)

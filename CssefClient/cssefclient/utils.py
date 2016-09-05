@@ -99,7 +99,7 @@ def load_token_file(token_file):
     if not os.path.isfile(token_file):
         sys.stderr.write("[WARNING] Token file not found. Cannot use token authentication.\n")
         sys.stderr.flush()
-        return False
+        return None
     # Now make sure that only we have access to it
     file_permissions = os.stat(token_file).st_mode
     permissions_denied = [stat.S_IRGRP, stat.S_IWGRP, stat.S_IXGRP,
@@ -108,12 +108,12 @@ def load_token_file(token_file):
         if bool(file_permissions & i):
             sys.stderr.write("Token file may not have any permissions for group or other.\n")
             sys.stderr.flush()
-            return False
+            return None
     # Now actually read in the file
     token = open(token_file, 'r').read()
     if len(token) > 0:
         return token
-    return False
+    return None
 
 def save_token_file(token_file_path, token):
     # Save the returned token

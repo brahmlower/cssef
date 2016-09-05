@@ -37,8 +37,6 @@ class CssefClient(object):
         token = load_token_file(self.config.token_file)
         if token:
             self.config.token = token
-        else:
-            print "[ERROR] Failed to load token"
         # Renew the token if it's enabled
         if self.config.token_renewal_enabled:
             return RenewToken(self.config).execute(auth=auth)
@@ -56,9 +54,9 @@ class Configuration(object):
     """
     def __init__(self):
         # Super global configs
-        self.global_config_path = "/etc/cssef/cssef.yml"
+        self.global_config_path = "/etc/cssef/cssef-client.yml"
         self.user_data_dir = os.path.expanduser("~/.cssef/")
-        self.config_path = self.user_data_dir + "cssef.yml"
+        self.config_path = self.user_data_dir + "cssef-client.yml"
         self.server_connection = None
         # General configurations
         self.auth = {}
@@ -163,6 +161,76 @@ class Configuration(object):
                 # We don't care about it. Just skip it!
                 # if self.verbose:
                 print "[WARNING] Ignoring invalid setting '%s'." % i
+
+    def load_token(self):
+        # If we're not supposed to do this, then dont do it
+        if not self.token_auth_enabled:
+            return None
+        # Load the token. Failure to load will set self.token to None, which
+        # is already the default value. Token absense is handled elsewhere. Errors
+        # are logged by load_token_file
+        self.token = load_token_file(self.token_file)
+
+class AuthBuilder(object):
+    def __init__(self, config):
+        self.admin_token = config.admin_token
+        self.username = config.username
+        self.organization = config.organization
+        self.password = config.password
+        self.token = config.token
+        # This is just to track what type of authentication we're doing
+        # available options are "password", "token", "admin-token", "invalid"
+        self.auth_strategy = {
+            "invalid": self.auth_invalid,
+            "admin-token": self.auth_admin_token,
+            "token": self.auth_token,
+            "password": self.auth_password
+        }
+
+    def get_auth_strategy(self):
+        # If the admin token is set, we use that and ignore any other options
+        if self.admin_token:
+            return "admin-token"
+        # For other types of of authentication, we need a username/organization
+        if not self.username or not self.organization:
+            return "invalid"
+        if self.token:
+            return "token"
+        if self.password:
+            return "password"
+        # Since no other authentication type has matched yet, if the requirements
+        # for password authentication are fufilled, then we have incomplete
+        # authentication information
+        return "invalid"
+
+    def auth_invalid(self):
+        return None
+
+    def auth_admin_token(self):
+        auth_dict = {}
+        auth_dict["admin-token"] = self.admin_token
+        return auth_dict
+
+    def auth_token(self):
+        auth_dict = {}
+        auth_dict["username"] = self.username
+        auth_dict["organization"] = self.organization
+        auth_dict["token"] = self.token
+        return auth_dict
+
+    def auth_password(self):
+        auth_dict = {}
+        auth_dict["username"] = self.username
+        auth_dict["organization"] = self.organization
+        auth_dict["password"] = self.password
+        return auth_dict
+
+    def as_dict(self):
+        strategy = self.get_auth_strategy()
+        return self.auth_strategy[strategy]()
+
+    def is_valid(self):
+        return not "invalid" == self.get_auth_strategy()
 
 class EndpointsLoader(object):
     def __init__(self, config):
