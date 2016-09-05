@@ -1,8 +1,6 @@
 #!/usr/bin/python
 import os
 import sys
-from getpass import getpass
-from prettytable import PrettyTable
 import cssefclient
 from cssefclient.utils import RPCEndpoint
 from cssefclient.errors import NonExistantCommand
@@ -99,52 +97,42 @@ class ParseInput(object):
             self.command_args[keyword] = value
             index += 1
 
-def print_output(output):
-    if output.value != 0:
-        # A value of non-zero means there was an error of some kind.
-        sys.stderr.write("The server is reporting the following error:\n")
-        sys.stderr.write("\n".join(output.message)+"\n")
-    if output.table_headers:
-        # Its a dictionary list, make a table and print it
-        output_table = PrettyTable(output.table_headers)
-        output_table.padding_width = 1
-        for i in output.content:
-            output_table.add_row(i.values())
-        print output_table
-    else:
-        # It's just a list of strings, print each one
-        # TODO: Maybe I just shouldn't support this...
-        for i in output.content:
-            print i
-
 if __name__ == "__main__":
     # Set up and configure the client
     user_input = ParseInput(sys.argv[1:])
     client = cssefclient.CssefClient()
     client.config.load_config_file(client.config.global_config_path)
-    client.config.load_config_file(client.config.config_path)
+    client.config.load_config_file(client.config.user_config_path)
     client.config.load_config_dict(user_input.options)
     client.config.load_token()
+
+    # Make the initial connection to the server
+    client.connect()
+
+    # Prepare our authentication object
+    if not client.load_auth():
+        # There was incomplete data for authentication
+        sys.exit()
+    # We have to do this because there isn't a better way yet
+    user_input.command_args['auth'] = client.auth.as_dict()
 
     # Ensure user data directory exists
     if not os.path.exists(client.config.user_data_dir):
         os.makedirs(client.config.user_data_dir)
 
-    # Prepare the auth dictionary
-    auth_builder = cssefclient.AuthBuilder(client.config)
-    if not auth_builder.is_valid():
-        sys.exit()
-    user_input.command_args['auth'] = auth_builder.as_dict()
-
-    # Make connection to server, load endpoints, authenticate
-    client.connect()
+    # Retrieve the raw endpoint data. This will load from either the cache or
+    # the server, depending on the the configurations
     client.load_endpoints()
 
-    # Call command and handle return
-    commandMenu = Menu(client.config, client.endpoints)
+    # Now convert the raw endpoint data into a meaningful menu list that the
+    # user input can be compared against.
+    commandMenu = Menu(client.config, client.endpoint_sources)
     commandMenu.construct()
 
+    # Initialize the command object
     command = commandMenu.get_command(user_input.command)
-    output_obj = client.call_endpoint(command, user_input.command_args)
-    print_output(output_obj)
+    # Execute the command, passing the arguments to the server
+    output_obj = command.execute(client.server_connection, **user_input.command_args)
+    # Handle the return message object
+    print output_obj
     sys.exit(output_obj.value)

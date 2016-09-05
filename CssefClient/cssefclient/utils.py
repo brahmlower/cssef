@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import stat
+from prettytable import PrettyTable
 
 class CommandOutput(object):
     def __init__(self, value, message, content):
@@ -30,6 +31,26 @@ class CommandOutput(object):
         temp_dict['content'] = self.content
         return temp_dict
 
+    def __str__(self):
+        return_string = ""
+        if self.value != 0:
+            # A value of non-zero means there was an error of some kind.
+            return_string += "The server is reporting the following error:\n"
+            return_string += "\n".join(self.message)+"\n"
+        if self.table_headers:
+            # Its a dictionary list, make a table and print it
+            output_table = PrettyTable(self.table_headers)
+            output_table.padding_width = 1
+            for i in self.content:
+                output_table.add_row(i.values())
+            return_string = output_table.get_string()
+        else:
+            # It's just a list of strings, print each one
+            # TODO: Maybe I just shouldn't support this...
+            for i in self.content:
+                return_string += i
+        return return_string
+
 class RPCEndpoint(object):
     """Base class to represent an endpoint task on the server.
 
@@ -51,7 +72,7 @@ class RPCEndpoint(object):
         self.config = config
         self.rpc_name = rpc_name
 
-    def execute(self, **kwargs):
+    def execute(self, server_connection, **kwargs):
         """Calls the rpc endpoint on the remote server
 
         Args:
@@ -76,7 +97,7 @@ class RPCEndpoint(object):
             #self.task = self.config.apiConn.send_task(self.endpointName,
             #    args = args, kwargs = kwargs, expires = task_timeout)
             #result = self.task.get(timeout = task_timeout)
-            output_dict = self.config.server_connection.request(self.rpc_name, **kwargs)
+            output_dict = server_connection.request(self.rpc_name, **kwargs)
             if output_dict:
                 return CommandOutput(**output_dict)
             else:

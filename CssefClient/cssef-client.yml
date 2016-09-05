@@ -32,7 +32,7 @@ admin-token:
 # This is the organization you belong to. At this stage of development, the
 # value is the ID of the organization, but this will eventually be updated to
 # be the organizations name.
-organization: 1
+organization: 
 
 # Username
 # This is the username for your account.
