@@ -11,21 +11,21 @@ If you don't have the repo cloned yet, clone it.
 
 	user@debian:~$ git clone https://github.com/bplower/cssef.git
 
-Move to the client package directory and install it via pip. The required pip dependancies are ``prettytable`` and ``jsonrpcclient``.
+Move to the client package directory and install the python package and
+execuables via make. The required pip dependancies are ``prettytable``,
+``jsonrpcclient``, and ``PyYAML``.
 ::
 
 	user@debian:~$ cd cssef/CssefClient
-	user@debian:~/cssef/CssefClient$ sudo pip install .
+	user@debian:~/cssef/CssefClient$ sudo make install
 
 .. _client-client_configuration:
 
 Client Configuration
 --------------------
 
-A bunch of words go here.
-
-Available Options
-~~~~~~~~~~~~~~~~~
+General
+~~~~~~~
 
 verbose
 	This is by default false, but when set to true, will allow additional
@@ -42,28 +42,84 @@ verbose
 	Example command line
 	::
 
-		user@debian ~$ cssef-cli --verbose organization get
+		user@debian:~$ cssef-cli --verbose organization get
+
+task-timeout
+	The time in seconds to wait for a task to be completed. This is in case
+	the server is not running, or has crashed while handling your request.
+
+	Default: 5
+
+	Example config file
+	::
+
+		# My server is super fast so I should never have to wait.
+		task-timeout: 1
+
+	Example command line
+	::
+
+		user@debian:~$ cssef-cli --task-timeout 30 organization get
+
+Server Connection
+~~~~~~~~~~~~~~~~~
+
+rpc-hostname
+	This is the hostname or IP address for the CSSEF server.
+
+	Default: localhost
+
+	Example config file
+	::
+
+		# The CSSEF server for the practice competition
+		rpc-hostname: 10.0.0.50
+
+	Example command line
+	::
+
+		user@debian:~$ cssef-cli --rpc-hostname cssef.example.com login
+
+rpc-port
+	This is the port the CSSEF server is using on the remote host.
+
+	Default: 5000
+
+	Example config file
+	::
+
+		# Running the service on a non-standard port
+		rpc-port: 9001
+
+	Example command line
+	::
+
+		user@debian:~$ cssef-cli --rpc-port 1234 login
+
+Authentication
+~~~~~~~~~~~~~~
 
 organization
 	This is the organization you belong to. At this stage of development, the 
 	value is the ID of the organization, but this will eventually be updated
-	to be the organizations name
+	to be the organizations name.
 
 	Defaut:
 
 	Example config file
 	::
 
-		# Setting the organization so that we don't have to provide it each time we authenticate
+		# Setting the organization so that we don't have to provide it each
+		# time we authenticate
 		organization: 1
 
 	Example command line
 	::
 
-		user@debian ~$ cssef-cli --organization 1 organization get
+		user@debian:~$ cssef-cli --organization 1 organization get
 
 username
-	This is the username for yor account.
+	This is the username for your account.
 
 	Default:
 
@@ -76,10 +132,10 @@ username
 	Example command line
 	::
 
-		user@debian ~$ cssef-cli --username admin organization get
+		user@debian:~$ cssef-cli --username admin organization get
 
 password
-	The password for you account. If you do not provide your password in a
+	The password for your account. If you do not provide your password in a
 	situation where it is required (assuming you provide the rest of your
 	credentials), you will be prompted for your password. This is exemplified
 	in the command line examples section. 
@@ -99,45 +155,13 @@ password
 	Example command line
 	::
 
-		user@debian ~$ cssef-cli --password mypassword organization get
+		user@debian:~$ cssef-cli --password mypassword organization get
 		...
-		user@debian ~$ cssef-cli organization get
+		user@debian:~$ cssef-cli organization get
 		Password:
 
-task-timeout
-	The time in seconds to wait for a task to be completed. This is in case
-	the server is not running, or has crashed while handling your request.
-
-	Default: 5
-
-	Example config file
-	::
-
-		# My server is super fast so I should never have to wait.
-		task-timeout: 1
-
-	Example command line
-	::
-
-		user@debian ~$ cssef-cli --task-timeout 30 organization get
-
-rpc-username
-	This is the username to authenticate to the RPC service with.
-
-rpc-password
-	This is the password to use while authenticating to the RPC server.
-
-rpc-host
-	The address for the host that is hosting the RPC service.
-
-amqp-username
-	This is the username to authenticate to the AMQP service with.
-
-amqp-password
-	This is the password to use while authenticating to the AMQP server.
-
-amqp-host
-	The address for the host that is hosting the AMQP service.
+Token
+~~~~~
 
 token-auth-enabled
 	This simply enables or disables the token authentication system. Setting
@@ -149,24 +173,14 @@ token-auth-enabled
 	Example config file
 	::
 
-		# I was once bullied by tokens in school, so I don't want them on my client at all. This will disable token authentication.
+		# I was once bullied by tokens in school, so I don't want them on my
+		# client at all. This will disable token authentication.
 		token-auth-enabled: False
 
 	Example command line
 	::
 
-		user@debian ~$ cssef-cli --token-auth-enabled false organization get
-
-token
-	This will hold the token you're using while submitting a request.
-	Technically you can set this in a configuration file or even provide it
-	on the command line, but this is not suggested as it's long and will
-	frequently change.
-
-	There is a system built in to manage your tokens so under normal
-	circumstances, you shouldn't have to manually provide this configuration.
-
-	Default:
+		user@debian:~$ cssef-cli --token-auth-enabled false organization get
 
 token-file
 	This is the file to store your current token in. This is a configuration
@@ -178,13 +192,14 @@ token-file
 	Example config file
 	::
 
-		# I don't like file names less than two words in length. Renaming the token file
+		# I don't like file names less than two words in length, so I'm
+		# renaming the token file
 		token-file: ~/.cssef/auth-token-file
 
 	Example command line
 	::
 
-		user@debian ~$ cssef-cli --token-file ~/.cssef/tmp-token login
+		user@debian:~$ cssef-cli --token-file ~/.cssef/tmp-token login
 
 token-renewal-enabled
 	Most tokens have expirations. When you log in, your token will expire
@@ -193,6 +208,9 @@ token-renewal-enabled
 	If the token expiration time is 'T', this means you won't have to log in
 	again unless it has been T time since you last executed a cssef-cli
 	request.
+
+Endpoint Caching
+~~~~~~~~~~~~~~~~
 
 endpoint-cache-enabled
 	The client gets a list of available commands the server provides. This
@@ -206,13 +224,15 @@ endpoint-cache-enabled
 	Example config file
 	::
 
-		# I'm a bleeding edge kind of guy- I have to make sure I have the updated list as soon as it's availble, therefore I've disabled endpoint caching.
+		# I'm a bleeding edge kind of guy- I have to make sure I have the
+		# updated list as soon as it's availble, therefore I've disabled
+		# endpoint caching.
 		endpoint-cache-enabled: False
 
 	Example command line
 	::
 
-		user@debian ~$ cssef-cli --endpoint-cache-enabled False organization get
+		user@debian:~$ cssef-cli --endpoint-cache-enabled False organization get
 
 force-endpoint-cache
 	In some cases, you may want to force the the client to use the cached
@@ -231,7 +251,7 @@ force-endpoint-cache
 	Example command line
 	::
 
-		user@debian ~$ cssef-cli --force-endpoint-cache True organization get
+		user@debian:~$ cssef-cli --force-endpoint-cache True organization get
 
 force-endpoint-server
 	In some cases, you may want to force the client to check the server for
@@ -250,7 +270,7 @@ force-endpoint-server
 	Example command line
 	::
 
-		user@debian ~$ cssef-cli --force-endpoint-server True organization get
+		user@debian:~$ cssef-cli --force-endpoint-server True organization get
 
 endpoint-cache-file
 	This is the path to the file to cache the available endpoint data.
@@ -266,7 +286,7 @@ endpoint-cache-file
 	Example command line
 	::
 
-		user@debian ~$ cssef-cli --endpoint-cache-file ~/.caches/cssef_endpoint-cache organization get
+		user@debian:~$ cssef-cli --endpoint-cache-file ~/.caches/cssef_endpoint-cache organization get
 
 endpoint-cache-time
 	This is the maximum amount of time that may pass before the client will
@@ -295,4 +315,4 @@ endpoint-cache-time
 	Example command line
 	::
 
-		user@debian ~$ cssef-cli --endpoint-cache-time 5s organization get
+		user@debian:~$ cssef-cli --endpoint-cache-time 5s organization get

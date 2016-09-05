@@ -1,6 +1,5 @@
 
 install:
-	#pip install cssef-server
 	pip install .
 	mkdir -p /etc/cssef/
 	mkdir -p /var/opt/cssef
@@ -15,6 +14,8 @@ uninstall:
 	rm /lib/systemd/system/cssef-server.service
 	rm /usr/local/bin/cssef-server
 	pip uninstall cssef-server -y
+
+reinstall: uninstall install
 
 test:
 	pylint cssefserver/ --errors-only

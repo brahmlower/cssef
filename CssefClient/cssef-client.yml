@@ -1,6 +1,101 @@
-# rpc-username: cssefd
-# rpc-password: cssefd-pass
-# rpc-host: localhost
-# amqp-username: cssefd
-# amqp-password: cssefd-pass
-# amqp-host: localhost
+# CSSEF Client Settings
+
+# For more information about these configurations, please see the client
+# configuration documentation at:
+# url
+
+# General Configurations
+##############################################################################
+# This is by default false, but when set to true, will allow additional output
+# to be printed detailing events and actions that are happening.
+verbose: False
+
+# The time in seconds to wait for a task to be completed. This is in case the
+# server is not running, or has crashed while handling your request.
+task-timeout: 5
+
+# Server Connection Configurations
+##############################################################################
+# RPC Hostname
+# This is the hostname or IP address for the CSSEF server.
+rpc-hostname: localhost
+
+# RPC Port
+# This is the port the CSSEF server is using on the remote host.
+rpc-port: 5000
+
+# Authentication Configurations
+##############################################################################
+admin-token: 
+
+# Organization
+# This is the organization you belong to. At this stage of development, the
+# value is the ID of the organization, but this will eventually be updated to
+# be the organizations name.
+organization: 1
+
+# Username
+# This is the username for your account.
+username: 
+
+# Promp Password
+prompt-password: True
+
+# Token Configurations
+##############################################################################
+# Token Auth Enabled
+# This simply enables or disables the token authentication system. Setting
+# this to ‘False’ makes the login command useless since the login command is
+# only used to retrieve an authentication token.
+token-auth-enabled: True
+
+# Token File
+# This is the file to store your current token in. This is a configuration you
+# will most often set within your local configuration file, since this tells
+# the client where to find your token file.
+token-file: ~/.cssef/token
+
+# Token Renewal Enabled
+# Most tokens have expirations. When you log in, your token will expire after
+# some period of time, after which you will have to login again. Token renewal
+# will request a new token each time you execute a command. If the token
+# expiration time is ‘T’, this means you won’t have to log in again unless it
+# has been T time since you last executed a cssef-cli request.
+token-renewal-enabled: True
+
+# Endpoint Caching Configurations
+##############################################################################
+# Endpoint Cache Enabled
+# The client gets a list of available commands the server provides. This
+# allows the server to add and remove plugins (thus changing the available
+# commands) without requiring the client to install or uninstall additional
+# components. Endpoint caching lets the client retain that list of endpoints
+# so that it doesn’t have to ask the server for it each time.
+endpoint-cache-enabled: True
+
+# Force Endpoint Cache
+# In some cases, you may want to force the the client to use the cached
+# endpoint data. If you already had cached data and decided that you never
+# wanted to check available endpoints again, you could set this a
+# configuration file- but that is not recommended.
+force-endpoint-cache: False
+
+# Endpoint Cache File
+# This is the path to the file to cache the available endpoint data.
+endpoint-cache-file: ~/.cssef/endpoint-cache
+
+# Endpoint Cache Time
+# This is the maximum amount of time that may pass before the client will
+# check for available endpoints. This is based on the last time the file
+# specified by endpoint-cache-file was modified. You can see when a file was
+# last modified by using stat. There isn’t much point to specifying this via
+# command line, unless to induce the same functionality
+# as force-endpoint-server.
+# If an integer with no metric is provided, it will be assumed to be seconds.
+# For simplicity, you may provide metrics for seconds, minutes, hours, and
+# days using one of the following:
+# * The first letter of the metric (example: ‘d’ for days)
+# * The singlular of the metric (example: ‘hour’)
+# * The plurl of the metric (example: ‘minutes’)
+endpoint-cache-time: 1h
+

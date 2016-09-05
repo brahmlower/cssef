@@ -73,7 +73,7 @@ admin-token
 	Example command line
 	::
 
-		user@debian ~$ cssefd start --admin-token abc123def456
+		user@debian:~$ cssefd start --admin-token abc123def456
 
 database-path
 	While using sqlite as the backend database, this option will be for the
@@ -90,7 +90,7 @@ database-path
 	Example command line
 	::
 
-		user@debian ~$ cssefd start --database-path ''
+		user@debian:~$ cssefd start --database-path ''
 
 database-table-prefix
 
@@ -115,7 +115,7 @@ database-table-prefix
 	Example command line
 	::
 
-		user@debian ~$ cssefd start --database-table-prefix cssef-prod
+		user@debian:~$ cssefd start --database-table-prefix cssef-prod
 
 logging
 	I've completely skipped the logging values because they're all basically
@@ -139,4 +139,4 @@ installed-plugins
 	Example command line
 	::
 
-		user@debian ~$ cssefd start --installed-plugins cssef-ccdc,cssef-ctf
+		user@debian:~$ cssefd start --installed-plugins cssef-ccdc,cssef-ctf

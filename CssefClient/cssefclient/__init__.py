@@ -70,7 +70,6 @@ class Configuration(object):
         # Default values for the client configuration
         self.rpc_hostname = "localhost"
         self.rpc_port = "5000"
-        self.rpc_base_uri = "/"
         # Token configurations
         self.token_auth_enabled = True
         self.token = None
@@ -85,7 +84,7 @@ class Configuration(object):
 
     @property
     def server_url(self):
-        return "http://%s:%s%s" % (self.rpc_hostname, self.rpc_port, self.rpc_base_uri)
+        return "http://%s:%s/" % (self.rpc_hostname, self.rpc_port)
 
     @property
     def endpoint_cache_time(self):
