@@ -6,12 +6,17 @@ language: python
 python:
   -  "2.7"
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install libsystemd-dev
+
 git:
   depth: 1
-# command to install dependencies
+
 install:
   - sudo pip install CssefClient/.
   - sudo pip install CssefServer/.
   - sudo pip install nose
+  
 script:
   - ./pre-commit.sh --no-virtual-env
