@@ -29,8 +29,8 @@ configuration changes.
 ::
 
 	user@debian:~$ admintoken=`openssl rand -hex 16`
-	user@debian:~$ sudo sed -i "s|admin-token:|admin-token: $admintoken|" /etc/cssef/cssefd.yml
-	user@debian:~$ cssefd restart
+	user@debian:~$ sudo sed -i "s|admin-token:|admin-token: $admintoken|" /etc/cssef/cssef-server.yml
+	user@debian:~$ sudo systemctl restart cssef-server.service
 
 We can now provide the admintoken while executing commands. This will allow
 us to bypass authentication checks and limits. First create an administrator
@@ -58,8 +58,8 @@ Disable admintoken access by removing the admin token from the server
 configuration file.
 ::
 
-	user@debian:~$ sudo sed -i "s|admin-token:*|admin-token:|" /etc/cssef/cssefd.yml
-	user@debian:~$ cssefd restart
+	user@debian:~$ sudo sed -i "s|admin-token:*|admin-token:|" /etc/cssef/cssef-server.yml
+	user@debian:~$ sudo systemctl restart cssef-server.service
 
 This can be verified by attempting to list availble users using the admin
 token we used. At this point in time, the server doesn't explicitly deny the
