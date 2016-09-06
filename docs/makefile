@@ -51,18 +51,11 @@ help:
 
 .PHONY: clean
 clean:
-	sudo pip uninstall -y cssef-server
-	sudo pip uninstall -y cssef-client
-	rm -rf $(BUILDDIR)/*
-	rm -rf $(AUTODOCDIR)/*
+	rm -rf $(BUILDDIR)/
+	rm -rf $(AUTODOCDIR)/
 
 .PHONY: html
 html:
-	sudo pip install ../CssefServer/.
-	sudo pip install ../CssefClient/.
-	$(SPHINXAUTODOC) -f -o source/autodoc/cssefserver/ ../CssefServer/cssefserver/
-	$(SPHINXAUTODOC) -f -o source/autodoc/cssefclient/ ../CssefClient/cssefclient/
-	#$(SPHINXAUTODOC) -f -o source/autodoc/webui/ ../WebInterface/WebInterface
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

@@ -1,0 +1,8 @@
+prettytable
+jsonrpcclient
+jsonrpcserver
+bcrypt
+sqlalchemy
+tokenlib
+flask
+PyYAML

@@ -19,6 +19,11 @@ import os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../../CssefServer'))
+sys.path.insert(0, os.path.abspath('../../CssefClient'))
+# Inspired by an openstack config I found
+# https://github.com/openstack/deb-python-pycadf/blob/master/doc/source/conf.py
+sys.path.insert(0, os.path.abspath('..'))
 
 # -- General configuration ------------------------------------------------
 
@@ -30,7 +35,8 @@ import os
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'ext.apidoc'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -287,3 +293,14 @@ texinfo_documents = [
 #texinfo_no_detailmenu = False
 
 autodoc_member_order = 'bysource'
+
+import sys
+from unittest.mock import MagicMock
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+            return Mock()
+
+MOCK_MODULES = ['systemd']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
