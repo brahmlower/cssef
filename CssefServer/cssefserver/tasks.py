@@ -4,6 +4,12 @@ from cssefserver.utils import get_empty_return_dict
 from cssefserver.utils import CssefRPCEndpoint
 
 class AvailableEndpoints(CssefRPCEndpoint):
+    """Provides a list of endpoint sources
+
+    This will provide the list of raw enpoint source data, that being a list
+    of dictionaries, where each dictionary is a single endpoint source
+    containing information about the endpoints it provides.
+    """
     name = "Available Endpoints"
     rpc_name = "availableendpoints"
     menu_path = None
@@ -11,34 +17,43 @@ class AvailableEndpoints(CssefRPCEndpoint):
         """RPC task to get all available celery endpoints.
 
         Returns:
-            A return_dict dictionary containing the results of the API call. The
-            content is a list of dictionaries containing information about the
-            available endpoints.
+            ReturnMessage: A return message where the content is a list of
+            dictionaries containing information about the available endpoints.
         """
         return_dict = get_empty_return_dict()
         return_dict['content'] = self.config.endpoint_sources
         return return_dict
 
 class AvailablePlugins(CssefRPCEndpoint):
+    """Provides a list of registered plugins
+
+    This returns a list of the plugins that the server is using.
+    """
     name = "Available Plugins"
     rpc_name = "availableplugins"
     menu_path = "availableplugins"
     def on_request(self, auth):
-        """RPC task to get all available competition plugins.
+        """Get the list of plugins when the endpoint is requested
 
         Returns:
-            A return_dict dictionary containing the results of the API call. The
-            content is a list of dictionaries containing information about the
-            available endpoints.
+            ReturnMessage: A list of the plugins, where each entry is a result
+            of calling ``plugin_instance.as_dict()``.
         """
         return_dict = get_empty_return_dict()
-        plugin_dict_list = []
-        for i in self.config.installed_plugins:
-            plugin_dict_list.append(i.as_dict())
-        return_dict['content'] = plugin_dict_list
+        for plugin in self.config.installed_plugins:
+            return_dict['content'].append(plugin.as_dict())
         return return_dict
 
 def endpoint_source():
+    """Builds a dictionary defining the endpoints
+
+    This builds an "endpoint dictionary" that defines information about the
+    endpoints in this module and where their source, relative to the overall
+    project.
+
+    Returns:
+        dict: Dictionary with the keys 'name' and 'endpoints'.
+    """
     source_dict = {}
     source_dict['name'] = 'base'
     endpoints = []

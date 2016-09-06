@@ -4,6 +4,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import declared_attr
 
 class BaseModel(object):
+    """A base model for the sqlalchemy models
+
+    I defined a special base model in an attempt to set a prefix on the
+    database tables. That functionality was broken at one point and hasn't
+    been restored.
+    """
     __name__ = ''
 
     @declared_attr

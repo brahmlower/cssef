@@ -2,6 +2,17 @@ from cssefserver.utils import get_empty_return_dict
 from cssefserver.errors import InvalidPkidValue
 
 def model_del(cls, database_connection, pkid):
+    """Genaric function to delete models
+
+    Args:
+        cls (Model): The class type the pkid is refering to.
+        database_connection (sqlalchemy.orm.Session): The existing database
+            connection to use.
+        pkid (int): The ID of the model instance to be deleted.
+
+    Return:
+        dict: A return dict indicating the result of the operation.
+    """
     if pkid == "*":
         # todo: implement a wildcard
         return_dict = get_empty_return_dict()
@@ -52,6 +63,17 @@ def model_del(cls, database_connection, pkid):
     return return_dict
 
 def model_set(cls, database_connection, pkid, **kwargs):
+    """Genaric function to modify model values
+
+    Args:
+        cls (Model): The class type the pkid is refering to.
+        database_connection (sqlalchemy.orm.Session): The existing database
+            connection to use.
+        pkid (int): The ID of the model instance to be modified.
+
+    Return:
+        dict: A return dict indicating the result of the operation.
+    """
     model_obj = cls.from_database(database_connection, pkid)
     model_obj.edit(**kwargs)
     return_dict = get_empty_return_dict()
@@ -59,6 +81,16 @@ def model_set(cls, database_connection, pkid, **kwargs):
     return return_dict
 
 def model_get(cls, database_connection, **kwargs):
+    """Genaric function to get models
+
+    Args:
+        cls (Model): The class type to get entries from.
+        database_connection (sqlalchemy.orm.Session): The existing database
+            connection to use.
+
+    Return:
+        dict: A return dict indicating the result of the operation.
+    """
     model_objs = cls.search(database_connection, **kwargs)
     return_dict = get_empty_return_dict()
     for i in model_objs:

@@ -64,7 +64,7 @@ class Configuration(object):
         class will be ignored (this will be logged).
 
         Args:
-            configDict (dict): A dictionary containing configurations and
+            config_dict (dict): A dictionary containing configurations and
                 values
 
         Returns:
@@ -85,6 +85,11 @@ class Configuration(object):
                 journal.send(message = "Ignoring invalid configuration '%s'." % i)
 
 class CssefRPCEndpoint(object):
+    """Base class for RPC endpoints
+
+    This class provides the functionality and utilities to create new RPC
+    endpoints, consumable by clients.
+    """
     name = None
     rpc_name = None
     menu_path = None
@@ -133,6 +138,18 @@ class CssefRPCEndpoint(object):
 
     @abc.abstractmethod
     def on_request(self, *args, **kwargs):
+        """Abstract method for endpoint work
+
+        This method is where work specifically for fufilling requests goes.
+        When the RPC class is called, on_request() is called and wrapped in
+        error handling and message passing so the subclass doesn't need to
+        deal with it.
+
+        This method **must** return a dictionary. For best results (for the
+        client), that dictionary should conform to the "return_dict" structure
+        losely defined in the code base. That structure being ``{'value': int,
+        'message': [string], content: [string]}``
+        """
         pass
 
 class ModelWrapper(object):
