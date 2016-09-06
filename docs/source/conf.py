@@ -295,7 +295,10 @@ texinfo_documents = [
 autodoc_member_order = 'bysource'
 
 import sys
-from unittest.mock import MagicMock
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import MagicMock
 
 class Mock(MagicMock):
     @classmethod
