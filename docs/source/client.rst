@@ -1,5 +1,5 @@
-Client Installation and Configuration
-=====================================
+CSSEF Client
+============
 .. _client-client_installation:
 
 Client Installation

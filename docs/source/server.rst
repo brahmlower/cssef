@@ -1,5 +1,5 @@
-Server Installation and Configuration
-=====================================
+CSSEF Server
+============
 .. _server-server_installation:
 
 Server Installation
@@ -38,7 +38,7 @@ values are loaded is as follows:
 
 1. Default (hard coded)
 2. Global config file
-4. Command line configs
+3. Command line configs
 
 Please consider the following example:
 
@@ -93,16 +93,15 @@ database-path
 		user@debian:~$ cssefd start --database-path ''
 
 database-table-prefix
-
-	.. attention::
-	This feature is broken as of `commit 993d87e`_. The prefix is hardcoded to
-	"cssef" for the time being.
-
-	.. _commit 993d87e: https://github.com/bplower/cssef/commit/993d87efef98d709209eead4340ff86a1da32f27
-
 	This value will be the prefix for every table in the database. Depending
 	on your database backend, this may not be as important. The default will
 	result in tables that look similar to "cssef_users".
+
+	.. attention::
+		This feature is broken as of `commit 993d87e`_. The prefix is hardcoded to
+		"cssef" for the time being.
+
+		.. _commit 993d87e: https://github.com/bplower/cssef/commit/993d87efef98d709209eead4340ff86a1da32f27
 
 	Default: ``cssef``
 
@@ -133,7 +132,7 @@ installed-plugins
 
 		# Include the default CCDC like competition and CTF competition
 		installed-plugins:
-		- cssef-ccdc
+		- cssef-cdc
 		- cssef-ctf
 
 	Example command line

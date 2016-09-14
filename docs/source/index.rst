@@ -15,22 +15,19 @@ Welcome to Cssef's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Configuration
+   :caption: Install + Setup
 
    server
    client
+   webui
 
 .. toctree::
    :maxdepth: 3
-   :caption: Developer Documentation
+   :caption: Development
 
-   autodoc/cssefserver/modules
-   autodoc/cssefclient/modules
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+   dev/overview
+   dev/client
+   dev/server
+   dev/webui
+   dev/documentation
+   dev/plugins
