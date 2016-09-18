@@ -47,7 +47,7 @@ class CommandOutput(object):
         else:
             # It's just a list of strings, print each one
             # TODO: Maybe I just shouldn't support this...
-            for i in self.content:
+            for i in str(self.content):
                 return_string += i
         return return_string
 

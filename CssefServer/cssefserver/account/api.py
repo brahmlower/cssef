@@ -29,66 +29,66 @@ class User(ModelWrapper):
         'description',
         'organization']
 
-    @property
-    def name(self):
-        """Name of the user.
+    # @property
+    # def name(self):
+    #     """Name of the user.
 
-        This wraps the name attribute of the associated model.
+    #     This wraps the name attribute of the associated model.
 
-        Returns:
-            str: String containing the name of the User object.
-        """
-        return self.model.name
+    #     Returns:
+    #         str: String containing the name of the User object.
+    #     """
+    #     return self.model.name
 
-    @name.setter
-    def name(self, value):
-        """Sets the name of the User.
+    # @name.setter
+    # def name(self, value):
+    #     """Sets the name of the User.
 
-        This abstracts the process setting the new value in the database.
+    #     This abstracts the process setting the new value in the database.
 
-        Args:
-            value (str): The value to set the name to.
+    #     Args:
+    #         value (str): The value to set the name to.
 
-        Returns:
-            None:
+    #     Returns:
+    #         None:
 
-        Example:
-            <todo>
-        """
-        self.model.name = value
-        self.db_conn.commit()
+    #     Example:
+    #         <todo>
+    #     """
+    #     self.model.name = value
+    #     self.db_conn.commit()
 
-    @property
-    def username(self):
-        """Username for the user.
+    # @property
+    # def username(self):
+    #     """Username for the user.
 
-        This wraps the username attribute of the associated model.
+    #     This wraps the username attribute of the associated model.
 
-        Returns:
-            str: String containing the username of the User object.
-        """
-        return self.model.username
+    #     Returns:
+    #         str: String containing the username of the User object.
+    #     """
+    #     return self.model.username
 
-    @username.setter
-    def username(self, value):
-        """Sets the username of the User.
+    # @username.setter
+    # def username(self, value):
+    #     """Sets the username of the User.
 
-        This abstracts the process setting the new value in the database.
+    #     This abstracts the process setting the new value in the database.
 
-        TODO: This will eventually have to check that the username is unique
-        to the organization. If it has already been taken, thow an error.
+    #     TODO: This will eventually have to check that the username is unique
+    #     to the organization. If it has already been taken, thow an error.
 
-        Args:
-            value (str): The value to set the username to.
+    #     Args:
+    #         value (str): The value to set the username to.
 
-        Returns:
-            None:
+    #     Returns:
+    #         None:
 
-        Example:
-            <todo>
-        """
-        self.model.username = value
-        self.db_conn.commit()
+    #     Example:
+    #         <todo>
+    #     """
+    #     self.model.username = value
+    #     self.db_conn.commit()
 
     @property
     def password(self):

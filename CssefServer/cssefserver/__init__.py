@@ -1,5 +1,6 @@
 import os
 import os.path
+import traceback
 from systemd import journal
 # RPC Server related imports
 from flask import Flask
@@ -43,9 +44,6 @@ class CssefServer(object):
         # Methods object to pass to the dispatcher when a request is handled
         self.rpc_methods = Methods()
 
-        # The flask instance that handles incoming networking requests
-        self.flask_app = Flask(__name__)
-
         # The list of plugins we will be running with
         self.plugins = []
 
@@ -60,7 +58,7 @@ class CssefServer(object):
         Returns:
             None
         """
-        journal.send(message = 'Starting plugin import')
+        journal.send(message='Starting plugin import')
         # If the 'installed_plugins' line is provided, but no items are
         # included in the list, then the value of
         # self.config.installed_plugins will be None. Return if there are no
@@ -72,16 +70,19 @@ class CssefServer(object):
                 module_name = module_string.split(".")[0]
                 module_class = module_string.split(".")[1]
             except ValueError:
-                journal.send(message = "Incorrectly formatted plugin entry: '%s'." % module_string)
+                journal.send(message="Incorrectly formatted plugin entry: '%s'." % module_string)
                 continue
             try:
                 module = __import__(module_name)
                 plugin_class_ref = getattr(module, module_class)
+                plugin_class_inst = plugin_class_ref(self.config)
+                self.plugins.append(plugin_class_inst)
+                journal.send(message="Successfully import plugin: '%s'" % module_name)
             except:
-                journal.send(message = "Failed to import module: '%s'" % module_name)
+                journal.send(message="Failed to import module: '%s'" % module_name)
+                for i in traceback.format_exc().splitlines():
+                    journal.send(message="    " + i)
                 continue
-            plugin_class_inst = plugin_class_ref(self.config)
-            self.plugins.append(plugin_class_inst)
         # This is just to finish implementing the Available Endpoints task
         # TODO: Maybe make a distinctions between 'configuration' and 'running
         # configuration'?
@@ -98,7 +99,7 @@ class CssefServer(object):
         Returns:
             None
         """
-        journal.send(message = 'Loading RCP endpoints...')
+        journal.send(message='Loading RCP endpoints...')
         # Create the list of endpoints sources
         self.config.endpoint_sources = []
         self.config.endpoint_sources.append(account_tasks.endpoint_source())
@@ -111,7 +112,7 @@ class CssefServer(object):
             for endpoint in source['endpoints']:
                 # Add the endpoint to the method list for Flask
                 instance = endpoint['reference'](self.config, self.database_connection)
-                journal.send(message = 'Loading endpoint: %s' % endpoint['rpc_name'])
+                journal.send(message='Loading endpoint: %s' % endpoint['rpc_name'])
                 self.rpc_methods.add_method(instance, endpoint['rpc_name'])
                 # Pop the reference key from the dict so we don't try to send
                 # it to the client later when the client requests the
@@ -139,14 +140,16 @@ class CssefServer(object):
         # The database connection *must* be initialized before loading the rpc
         # endpoints, otherwise the endpoints will get the default value for
         # the database_connection, which is None (breaks everything)
-        self.database_connection = create_database_connection(self.config)
+        self.database_connection = create_database_connection(self.config.database_path)
         # Load the RCP Endpoints, instantiating each one and making it
         # available for Flask
         self.load_rpc_endpoints()
         # Start listening for rpc requests via Flask
-        journal.send(message = 'Initializing flask instance')
-        self.flask_app.add_url_rule('/', 'index', self.index, methods=['POST'])
-        self.flask_app.run(debug=False)
+        journal.send(message='Initializing flask instance')
+        flask_app = Flask(__name__)
+        flask_app.add_url_rule('/', 'index', self.index, methods=['POST'])
+        flask_app.run(debug=False)
+
 
     def index(self):
         """Function called by the flask app for new requests
@@ -158,8 +161,9 @@ class CssefServer(object):
         TODO: This function should probably not be here forever.
         TODO: Improve comments explaining what's happening here...
         """
-        rpc_resp = dispatch(self.rpc_methods, request.get_data().decode('utf-8'))
-        return Response(str(rpc_resp), rpc_resp.http_status, mimetype='application/json')
+        received_data = request.get_data().decode('utf-8')
+        rpc_result = dispatch(self.rpc_methods, received_data)
+        return Response(str(rpc_result), rpc_result.http_status, mimetype='application/json')
 
 class Plugin(object):
     """A base competition plugin class

@@ -76,13 +76,13 @@ class Configuration(object):
                 setting = i.replace('-', '_')
                 value = config_dict[i]
                 setattr(self, setting, value)
-                journal.send(message = "Configuration '%s' set to '%s'." % (i, value))
+                journal.send(message="Configuration '%s' set to '%s'." % (i, value))
             elif isinstance(config_dict[i], dict):
                 # This is a dictionary and may contain additional values
                 self.load_config_dict(config_dict[i])
             else:
                 # We don't care about it. Just skip it!
-                journal.send(message = "Ignoring invalid configuration '%s'." % i)
+                journal.send(message="Ignoring invalid configuration '%s'." % i)
 
 class CssefRPCEndpoint(object):
     """Base class for RPC endpoints
@@ -173,6 +173,27 @@ class ModelWrapper(object):
     def __init__(self, db_conn, model):
         self.db_conn = db_conn
         self.model = model
+        self.define_properties()
+
+    def define_properties(self):
+        for i in self.fields:
+            if not hasattr(self, i):
+                attribute_get = self.__class__.dec_get(self, i)
+                attribute_set = self.__class__.dec_set(self, i)
+                prop = property(attribute_get, attribute_set)
+                setattr(self.__class__, i, prop)
+
+    def dec_get(self, attribute):
+        def default_get(self):
+            return getattr(self.model, attribute)
+
+        return default_get
+
+    def dec_set(self, attribute):
+        def default_set(self, value):
+            setattr(self.model, attribute, value)
+            self.db_conn.commit()
+        return default_set
 
     def get_id(self):
         return self.model.pkid
@@ -228,14 +249,14 @@ class ModelWrapper(object):
         db_conn.commit()
         return cls_inst
 
-def create_database_connection(config):
+def create_database_connection(database_path):
     """Returns a database session for the specified database"""
-    journal.send(message = 'Initializing database connection')
-    database_engine = create_engine('sqlite:///' + config.database_path)
+    journal.send(message='Initializing database connection')
+    database_engine = create_engine('sqlite:///' + database_path)
     try:
         Base.metadata.create_all(database_engine)
     except sqlalchemy.exc.OperationalError as error:
-        journal.send(message = 'Failed to open or sync database file: %s' % config.database_path)
+        journal.send(message='Failed to open or sync database file: %s' % database_path)
         raise error
     Base.metadata.bind = database_engine
     database_session = sessionmaker(bind=database_engine)
@@ -245,9 +266,9 @@ def handle_exception(err):
     return_dict = get_empty_return_dict()
     return_dict['value'] = 1
     return_dict['message'] = traceback.format_exc().splitlines()
-    journal.send("(error %d): Encountered runtime error with given id %d. Observe the following stack trace:" % (return_dict['value'], return_dict['value']))
+    journal.send(message="(error %d): Encountered runtime error with given id %d. Observe the following stack trace:" % (return_dict['value'], return_dict['value']))
     for i in return_dict['message']:
-        journal.send(message = "(error %d): %s" % (return_dict['value'], i))
+        journal.send(message="(error %d): %s" % (return_dict['value'], i))
     return return_dict
 
 def get_empty_return_dict():
