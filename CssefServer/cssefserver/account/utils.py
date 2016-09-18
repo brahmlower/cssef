@@ -51,7 +51,7 @@ def authorize_access(db_conn, auth_dict, config):
         if config.admin_token == auth_dict['admin-token']:
             # Auth key matched!
             print "[AUTH INFO] Provided auth-token was correct."
-            return False
+            return None
         else:
             raise errors.AuthIncorrectAdminToken
     # Importing for this got pretty ugly... :(

@@ -132,7 +132,7 @@ class User(ModelWrapper):
             print "Neither a password nor auth token were provided!"
             return False
 
-    def authenticate_token(self, token):
+    def authenticate_token(self, raw_token):
         """Check if the provided token is valid for this user.
 
         This abstracts the process setting the new value in the database. This
@@ -153,12 +153,14 @@ class User(ModelWrapper):
             <todo>
         """
         try:
-            parsed_token = tokenlib.parse_token(token, secret=SECRET_SALT, now=time.time())
+            token = tokenlib.parse_token(raw_token, secret=SECRET_SALT, now=time.time())
         except tokenlib.errors.MalformedTokenError:
             return False
-        return parsed_token['id'] == self.get_id() and \
-            parsed_token['username'] == self.username and \
-            parsed_token['organization'] == self.organization
+        # This is a large comparison, so it's been split into three booleans
+        ids_match = token['id'] == self.get_id()
+        username_match = token['username'] == self.username #pylint: disable=no-member
+        org_match = token['organization'] == self.organization #pylint: disable=no-member
+        return ids_match and username_match and org_match
 
     def authenticate_password(self, password):
         """Check if the provided plaintext password is valid for this user.
@@ -178,7 +180,9 @@ class User(ModelWrapper):
         return PasswordHash(self.password) == password
 
     def get_new_token(self):
-        token_dict = {"id": self.get_id(), "username": self.username, "organization": self.organization}
+        token_dict = {"id": self.get_id(),
+            "username": self.username, #pylint: disable=no-member
+            "organization": self.organization} #pylint: disable=no-member
         token = tokenlib.make_token(token_dict, secret=SECRET_SALT)
         return token
 

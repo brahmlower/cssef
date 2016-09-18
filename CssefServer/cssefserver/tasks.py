@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 import ast
-from cssefserver.utils import get_empty_return_dict
+from cssefserver.utils import EndpointOutput
 from cssefserver.utils import CssefRPCEndpoint
 
 class AvailableEndpoints(CssefRPCEndpoint):
@@ -20,9 +20,8 @@ class AvailableEndpoints(CssefRPCEndpoint):
             ReturnMessage: A return message where the content is a list of
             dictionaries containing information about the available endpoints.
         """
-        return_dict = get_empty_return_dict()
-        return_dict['content'] = self.config.endpoint_sources
-        return return_dict
+        output = EndpointOutput(content = self.config.endpoint_sources)
+        return output.as_dict()
 
 class AvailablePlugins(CssefRPCEndpoint):
     """Provides a list of registered plugins
@@ -39,10 +38,10 @@ class AvailablePlugins(CssefRPCEndpoint):
             ReturnMessage: A list of the plugins, where each entry is a result
             of calling ``plugin_instance.as_dict()``.
         """
-        return_dict = get_empty_return_dict()
+        output = EndpointOutput()
         for plugin in self.config.installed_plugins:
-            return_dict['content'].append(plugin.as_dict())
-        return return_dict
+            output.content.append(plugin.as_dict())
+        return output.as_dict()
 
 def endpoint_source():
     """Builds a dictionary defining the endpoints

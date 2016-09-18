@@ -1,5 +1,6 @@
 from cssefserver.utils import CssefRPCEndpoint
-from cssefserver.utils import get_empty_return_dict
+#from cssefserver.utils import get_empty_return_dict
+from cssefserver.utils import EndpointOutput
 from cssefserver.taskutils import model_del
 from cssefserver.taskutils import model_set
 from cssefserver.taskutils import model_get
@@ -24,9 +25,8 @@ class CompetitionAdd(CssefRPCEndpoint):
     def on_request(self, auth, **kwargs):
         authorize_access(self.database_connection, auth, self.config)
         competition = Competition.from_dict(self.database_connection, kwargs)
-        return_dict = get_empty_return_dict()
-        return_dict['content'].append(competition.as_dict())
-        return return_dict
+        content = competition.as_dict()
+        return EndpointOutput(content = content)
 
 class CompetitionDel(CssefRPCEndpoint):
     name = "Competition Delete"
@@ -66,6 +66,7 @@ class CompetitionStart(CssefRPCEndpoint):
         authorize_access(self.database_connection, auth, self.config)
         competition = Competition.from_database(self.database_connection, pkid)
         competition.start()
+        return EndpointOutput()
 
 # ==================================================
 # Team Endpoints
@@ -80,9 +81,8 @@ class TeamAdd(CssefRPCEndpoint):
         competition_obj = Competition.from_database(self.database_connection, competition)
         kwargs['competition'] = competition_obj.get_id()
         team = Team.from_dict(self.database_connection, kwargs)
-        return_dict = get_empty_return_dict()
-        return_dict['content'].append(team.as_dict())
-        return return_dict
+        content = [team.as_dict()]
+        return EndpointOutput(content = content)
 
 class TeamDel(CssefRPCEndpoint):
     name = "Team Delete"
@@ -125,9 +125,8 @@ class ScoreAdd(CssefRPCEndpoint):
         competition_obj = Competition.from_database(self.database_connection, competition)
         kwargs['competition'] = competition_obj.get_id()
         score = Score.from_dict(self.database_connection, kwargs)
-        return_dict = get_empty_return_dict()
-        return_dict['content'].append(score.as_dict())
-        return return_dict
+        content = [score.as_dict()]
+        return EndpointOutput(content = content)
 
 class ScoreDel(CssefRPCEndpoint):
     name = "Score Delete"
@@ -170,9 +169,8 @@ class InjectAdd(CssefRPCEndpoint):
         competition_obj = Competition.from_database(self.database_connection, competition)
         kwargs['competition'] = competition_obj.get_id()
         inject = Inject.from_dict(self.database_connection, kwargs)
-        return_dict = get_empty_return_dict()
-        return_dict['content'].append(inject.as_dict())
-        return return_dict
+        content = [inject.as_dict()]
+        return EndpointOutput(content = content)
 
 class InjectDel(CssefRPCEndpoint):
     name = "Inject Delete"
@@ -215,9 +213,8 @@ class InjectResponseAdd(CssefRPCEndpoint):
         competition_obj = Competition.from_database(self.database_connection, competition)
         kwargs['competition'] = competition_obj.get_id()
         injectResponse = InjectResponse.from_dict(self.database_connection, kwargs)
-        return_dict = get_empty_return_dict()
-        return_dict['content'].append(injectResponse.as_dict())
-        return return_dict
+        content = [injectResponse.as_dict()]
+        return EndpointOutput(content = content)
 
 class InjectResponseDel(CssefRPCEndpoint):
     name = "Inject Response Delete"
@@ -260,9 +257,8 @@ class IncidentAdd(CssefRPCEndpoint):
         competition_obj = Competition.from_database(self.database_connection, competition)
         kwargs['competition'] = competition_obj.get_id()
         incident = Incident.from_dict(self.database_connection, kwargs)
-        return_dict = get_empty_return_dict()
-        return_dict['content'].append(incident.as_dict())
-        return return_dict
+        content = [incident.as_dict()]
+        return EndpointOutput(content = content)
 
 class IncidentDel(CssefRPCEndpoint):
     name = "Incident Del"
@@ -305,9 +301,8 @@ class IncidentResponseAdd(CssefRPCEndpoint):
         competition_obj = Competition.from_database(self.database_connection, competition)
         kwargs['competition'] = competition_obj.get_id()
         incident_response = IncidentResponse.from_dict(self.database_connection, kwargs)
-        return_dict = get_empty_return_dict()
-        return_dict['content'].append(incident_response.as_dict())
-        return return_dict
+        content = [incident_response.as_dict()]
+        return EndpointOutput(content = content)
 
 class IncidentResponseDel(CssefRPCEndpoint):
     name = "Incident Response Delete"
@@ -348,9 +343,8 @@ class ScoringEngineAdd(CssefRPCEndpoint):
     def on_request(self, auth, **kwargs):
         authorize_access(self.database_connection, auth, self.config)
         scoringEngine = ScoringEngine.from_dict(self.database_connection, kwargs)
-        return_dict = get_empty_return_dict()
-        return_dict['content'].append(scoringEngine.as_dict())
-        return return_dict
+        content = [scoringEngine.as_dict()]
+        return EndpointOutput(content = content)
 
 class ScoringEngineDel(CssefRPCEndpoint):
     name = "Scoring Engine Delete"

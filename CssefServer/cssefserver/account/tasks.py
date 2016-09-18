@@ -1,4 +1,5 @@
-from cssefserver.utils import get_empty_return_dict
+#from cssefserver.utils import get_empty_return_dict
+from cssefserver.utils import EndpointOutput
 from cssefserver.utils import CssefRPCEndpoint
 from cssefserver.taskutils import model_del
 from cssefserver.taskutils import model_set
@@ -25,9 +26,8 @@ class OrganizationAdd(CssefRPCEndpoint):
         """
         authorize_access(self.database_connection, auth, self.config)
         organization = Organization.from_dict(self.database_connection, kwargs)
-        return_dict = get_empty_return_dict()
-        return_dict['content'].append(organization.as_dict())
-        return return_dict
+        content = [organization.as_dict()]
+        return EndpointOutput(content = content)
 
 class OrganizationDel(CssefRPCEndpoint):
     name = "Organization Delete"
@@ -102,11 +102,9 @@ class UserAdd(CssefRPCEndpoint):
             get_empty_return_dict for more information.
         """
         authorize_access(self.database_connection, auth, self.config)
-        #kwargs['organization'] = organization
         user = User.from_dict(self.database_connection, kwargs)
-        return_dict = get_empty_return_dict()
-        return_dict['content'].append(user.as_dict())
-        return return_dict
+        content = [user.as_dict()]
+        return EndpointOutput(content = content)
 
 class UserDel(CssefRPCEndpoint):
     name = "User Delete"
@@ -183,9 +181,8 @@ class RenewToken(CssefRPCEndpoint):
             content field contains the new token if authentication was successful
         """
         user = authorize_access(self.database_connection, auth, self.config)
-        return_dict = get_empty_return_dict()
-        return_dict['content'] = [user.get_new_token()]
-        return return_dict
+        content = [user.get_new_token()]
+        return EndpointOutput(content = content)
 
 class Login(CssefRPCEndpoint):
     name = "Login"
@@ -204,9 +201,8 @@ class Login(CssefRPCEndpoint):
         """
         user = authorize_access(self.database_connection, auth, self.config)
         # The user is authenticated. Generate a key for them
-        return_dict = get_empty_return_dict()
-        return_dict['content'] = [user.get_new_token()]
-        return return_dict
+        content = [user.get_new_token()]
+        return EndpointOutput(content = content)
 
 def endpoint_source():
     source_dict = {}

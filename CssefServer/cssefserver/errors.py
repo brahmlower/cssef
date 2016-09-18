@@ -19,6 +19,7 @@ Allotted error codes: 50 - 150
 
 """
 from systemd import journal
+from cssefserver.utils import EndpointOutput
 
 class CssefException(Exception):
     """A basic CSSEF exception to be subclassed
@@ -44,10 +45,14 @@ class CssefException(Exception):
             
             ``{'value': 1, 'message': ['Example message'], 'content': []}``
         """
+        # Log everything we need first
         journal.send(message = "(error %d): Caught a CSSEF error" % self.value)
         for i in self.message:
             journal.send(message = "(error %d): %s" % (self.value, i))
-        return {'value': self.value, 'message': self.message, 'content': []}
+
+        # Now build the return object
+        output = EndpointOutput(self.value, self.message)
+        return output.as_dict()
 
 class CssefObjectDoesNotExist(Exception):
     """Expection for model instantiation errors

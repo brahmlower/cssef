@@ -109,19 +109,21 @@ class CssefRPCEndpoint(object):
             try:
                 kwargs.pop(i)
             except KeyError:
-                return_dict = get_empty_return_dict()
-                return_dict['value'] = 1
-                return_dict['message'] = ["Missing required argument '%s'." % i]
-                return return_dict
+                value = 1
+                message = ["Missing required argument '%s'." % i]
+                output = EndpointOutput(value, message)
+                return output.as_dict()
         # Now call the on_request method that actually handles the request.
         # Here we're determining if we should pass it kwargs or not (the
         # subclass tells us yes or no). This is surrounded by a catch
         # to handle various errors that may crop up
         try:
             if self.takesKwargs:
-                return self.on_request(*args_list, **kwargs)
+                output = self.on_request(*args_list, **kwargs)
+                return output.as_dict()
             else:
-                return self.on_request(*args_list)
+                output = self.on_request(*args_list)
+                return output.as_dict()
         except CssefException as err:
             return err.as_return_dict()
         except Exception as err:
@@ -263,17 +265,40 @@ def create_database_connection(database_path):
     return database_session()
 
 def handle_exception(err):
-    return_dict = get_empty_return_dict()
-    return_dict['value'] = 1
-    return_dict['message'] = traceback.format_exc().splitlines()
-    journal.send(message="(error %d): Encountered runtime error with given id %d. Observe the following stack trace:" % (return_dict['value'], return_dict['value']))
-    for i in return_dict['message']:
-        journal.send(message="(error %d): %s" % (return_dict['value'], i))
-    return return_dict
+    value = 1
+    message = traceback.format_exc().splitlines()
+    output = EndpointOutput(value, message)
+    # Log the occurance of this error
+    journal.send(message="(error %d): Encountered runtime error with given id %d. Observe the following stack trace:" % (output.value, output.value))
+    for i in output.message:
+        journal.send(message="(error %d): %s" % (output.value, i))
+    return output.as_dict()
 
-def get_empty_return_dict():
-    return {
-        'value': 0,
-        'message': 'Success',
-        'content': []
-    }
+# def get_empty_return_dict():
+#     return {
+#         'value': 0,
+#         'message': 'Success',
+#         'content': []
+#     }
+
+class EndpointOutput(object):
+    def __init__(self, value = 0, message = [], content = []):
+        self.value = value
+        self.message = message
+        # Cast the content to a list
+        if isinstance(content, list):
+            self.content = content
+        elif isinstance(content, str):
+            self.content = [content]
+        else:
+            raise ValueError
+
+    def __nonzero__(self):
+        return self.value == 0
+
+    def as_dict(self):
+        temp_dict = {}
+        temp_dict['value'] = self.value
+        temp_dict['message'] = self.message
+        temp_dict['content'] = self.content
+        return temp_dict
