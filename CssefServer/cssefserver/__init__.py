@@ -21,7 +21,9 @@ class CssefServer(object):
     endpoints, database connection and socket connection (via flask) for
     incoming requests.
     """
-    def __init__(self, config_dict = {}):
+    def __init__(self, config_dict=None):
+        if not config_dict:
+            config_dict = None
         self.config = Configuration()
 
         # The configuration loading process is tricky, since settings provided

@@ -4,7 +4,6 @@ from cssefserver.utils import CssefRPCEndpoint
 from cssefserver.taskutils import model_del
 from cssefserver.taskutils import model_set
 from cssefserver.taskutils import model_get
-from cssefserver.errors import CssefException
 from cssefserver.account.api import Organization
 from cssefserver.account.api import User
 from cssefserver.account.utils import authorize_access
@@ -27,7 +26,7 @@ class OrganizationAdd(CssefRPCEndpoint):
         authorize_access(self.database_connection, auth, self.config)
         organization = Organization.from_dict(self.database_connection, kwargs)
         content = [organization.as_dict()]
-        return EndpointOutput(content = content)
+        return EndpointOutput(content=content)
 
 class OrganizationDel(CssefRPCEndpoint):
     name = "Organization Delete"
@@ -104,7 +103,7 @@ class UserAdd(CssefRPCEndpoint):
         authorize_access(self.database_connection, auth, self.config)
         user = User.from_dict(self.database_connection, kwargs)
         content = [user.as_dict()]
-        return EndpointOutput(content = content)
+        return EndpointOutput(content=content)
 
 class UserDel(CssefRPCEndpoint):
     name = "User Delete"
@@ -182,7 +181,7 @@ class RenewToken(CssefRPCEndpoint):
         """
         user = authorize_access(self.database_connection, auth, self.config)
         content = [user.get_new_token()]
-        return EndpointOutput(content = content)
+        return EndpointOutput(content=content)
 
 class Login(CssefRPCEndpoint):
     name = "Login"
@@ -202,7 +201,7 @@ class Login(CssefRPCEndpoint):
         user = authorize_access(self.database_connection, auth, self.config)
         # The user is authenticated. Generate a key for them
         content = [user.get_new_token()]
-        return EndpointOutput(content = content)
+        return EndpointOutput(content=content)
 
 def endpoint_source():
     source_dict = {}

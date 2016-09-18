@@ -46,9 +46,9 @@ class CssefException(Exception):
             ``{'value': 1, 'message': ['Example message'], 'content': []}``
         """
         # Log everything we need first
-        journal.send(message = "(error %d): Caught a CSSEF error" % self.value)
+        journal.send(message="(error %d): Caught a CSSEF error" % self.value)
         for i in self.message:
-            journal.send(message = "(error %d): %s" % (self.value, i))
+            journal.send(message="(error %d): %s" % (self.value, i))
 
         # Now build the return object
         output = EndpointOutput(self.value, self.message)
@@ -64,6 +64,7 @@ class CssefObjectDoesNotExist(Exception):
     Exception, but there may be some unintended consequences to that.
     """
     def __init__(self, message):
+        super(CssefObjectDoesNotExist, self).__init__()
         self.message = message
 
     def __str__(self):

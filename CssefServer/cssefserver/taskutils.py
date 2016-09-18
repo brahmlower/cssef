@@ -33,7 +33,8 @@ def model_del(cls, database_connection, pkid):
                 # One of the ranges provided could not be cast as an integer.
                 # Return error.
                 value = 1
-                message = [("Range value could not be cast to integer. Expected integer range like 1-4. Got '%s' instead." % pkid)]
+                message = [("Range value could not be cast to integer. Expected"
+                            " integer range like 1-4. Got '%s' instead." % pkid)]
                 return EndpointOutput(value, message)
         else:
             value = 1
@@ -56,7 +57,8 @@ def model_del(cls, database_connection, pkid):
     # We don't know what the hell we were given. Disregard it and thow
     # an error :(
     value = 1
-    message = [("Expected integer value (5) or range (2-7). Got '%s' of type %s instead." % (str(pkid), str(type(pkid))))]
+    message = [("Expected integer value (5) or range (2-7). Got '%s' of type "
+                "%s instead." % (str(pkid), str(type(pkid))))]
     return EndpointOutput(value, message)
 
 def model_set(cls, database_connection, pkid, **kwargs):
@@ -74,7 +76,7 @@ def model_set(cls, database_connection, pkid, **kwargs):
     model_obj = cls.from_database(database_connection, pkid)
     model_obj.edit(**kwargs)
     content = [model_obj.as_dict()]
-    return EndpointOutput(content = content)
+    return EndpointOutput(content=content)
 
 def model_get(cls, database_connection, **kwargs):
     """Genaric function to get models

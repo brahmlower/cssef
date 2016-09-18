@@ -181,8 +181,8 @@ class User(ModelWrapper):
 
     def get_new_token(self):
         token_dict = {"id": self.get_id(),
-            "username": self.username, #pylint: disable=no-member
-            "organization": self.organization} #pylint: disable=no-member
+                      "username": self.username, #pylint: disable=no-member
+                      "organization": self.organization} #pylint: disable=no-member
         token = tokenlib.make_token(token_dict, secret=SECRET_SALT)
         return token
 

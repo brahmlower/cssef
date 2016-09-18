@@ -127,7 +127,7 @@ class CssefRPCEndpoint(object):
         except CssefException as err:
             return err.as_return_dict()
         except Exception as err:
-            return handle_exception(err)
+            return handle_exception()
 
     @classmethod
     def info_dict(cls):
@@ -164,10 +164,7 @@ class ModelWrapper(object):
     __metaclass__ = abc.ABCMeta
     class ObjectDoesNotExist(CssefObjectDoesNotExist):
         def __init__(self, message):
-            self.message = message
-
-        def __str__(self):
-            return repr(self.message)
+            super(ObjectDoesNotExist, self).__init__(message)
 
     model_object = None
     fields = []
@@ -264,29 +261,27 @@ def create_database_connection(database_path):
     database_session = sessionmaker(bind=database_engine)
     return database_session()
 
-def handle_exception(err):
+def handle_exception():
     value = 1
     message = traceback.format_exc().splitlines()
     output = EndpointOutput(value, message)
     # Log the occurance of this error
-    journal.send(message="(error %d): Encountered runtime error with given id %d. Observe the following stack trace:" % (output.value, output.value))
+    journal.send(message="(error %d): Encountered runtime error with given id"
+        " %d. Observe the following stack trace:" % (output.value, output.value))
     for i in output.message:
         journal.send(message="(error %d): %s" % (output.value, i))
     return output.as_dict()
 
-# def get_empty_return_dict():
-#     return {
-#         'value': 0,
-#         'message': 'Success',
-#         'content': []
-#     }
-
 class EndpointOutput(object):
-    def __init__(self, value = 0, message = [], content = []):
+    def __init__(self, value=0, message=None, content=None):
         self.value = value
         self.message = message
+        if not message:
+            self.message = []
         # Cast the content to a list
-        if isinstance(content, list):
+        if not content:
+            self.content = []
+        elif isinstance(content, list):
             self.content = content
         elif isinstance(content, str):
             self.content = [content]
