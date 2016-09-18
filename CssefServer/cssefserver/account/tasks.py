@@ -1,4 +1,3 @@
-#from cssefserver.utils import get_empty_return_dict
 from cssefserver.utils import EndpointOutput
 from cssefserver.utils import CssefRPCEndpoint
 from cssefserver.taskutils import model_del

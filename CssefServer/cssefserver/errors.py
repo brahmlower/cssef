@@ -42,13 +42,13 @@ class CssefException(Exception):
         Returns:
             dict: A dictionary with the keys 'value' and 'message' with
             values of the corresponding properties. An example dict:
-            
+
             ``{'value': 1, 'message': ['Example message'], 'content': []}``
         """
         # Log everything we need first
-        journal.send(message="(error %d): Caught a CSSEF error" % self.value)
+        journal.send(message="(error %d): Caught a CSSEF error" % self.value) #pylint: disable=no-member
         for i in self.message:
-            journal.send(message="(error %d): %s" % (self.value, i))
+            journal.send(message="(error %d): %s" % (self.value, i)) #pylint: disable=no-member
 
         # Now build the return object
         output = EndpointOutput(self.value, self.message)
@@ -124,7 +124,7 @@ class PermissionDenied(CssefException):
 class AuthFindsMultipleUsers(CssefException):
     """Error returned when multiple users have the same name
 
-    This error is thrown when there are multiple users with the same username 
+    This error is thrown when there are multiple users with the same username
     within the same organization. This is extremely bad, and will idealy never
     be seen.
     """

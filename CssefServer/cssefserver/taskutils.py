@@ -1,4 +1,3 @@
-#from cssefserver.utils import get_empty_return_dict
 from cssefserver.utils import EndpointOutput
 from cssefserver.errors import InvalidPkidValue
 

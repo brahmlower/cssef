@@ -1,7 +1,6 @@
 import abc
 import traceback
 from systemd import journal
-import yaml
 # Database related imports
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -9,80 +8,6 @@ import sqlalchemy.exc
 from cssefserver.modelbase import BASE as Base
 from cssefserver.errors import CssefException
 from cssefserver.errors import CssefObjectDoesNotExist
-
-class Configuration(object):
-    """Contains and loads server configuration values
-
-    There is one attribute for each configuration that can be set.
-    Configurations can be loaded from a file or dictionary. When loading
-    configurations, any hyphens wihtin key values will be converted to
-    underscores so that the attribute can be set.
-    """
-    def __init__(self):
-        # Super global configs
-        self.global_config_path = "/etc/cssef/cssef-server.yml"
-        self.admin_token = ""
-        # SQLAlchemy configurations
-        self.database_table_prefix = "cssef_"
-        self.database_path = None
-        # General configurations
-        self.auth_failover = True
-        # Logging configurations
-        self.cssef_loglevel = ""
-        self.cssef_stderr = ""
-        self.cssef_stdout = ""
-        # Plugin configurations
-        self.installed_plugins = []
-        self.endpoint_sources = []
-
-    def load_config_file(self, config_path):
-        """Load configuration from a file
-
-        This will read a yaml configuration file. The yaml file is converted
-        to a dictionary object, which is just passed to `load_config_dict`.
-
-        Args:
-            config_path (str): A filepath to the yaml config file
-
-        Returns:
-            None
-        """
-        try:
-            config_dict = yaml.load(open(config_path, 'r'))
-        except IOError:
-            print "[WARNING] Failed to load configuration file at '%s'." % config_path
-            return
-        self.load_config_dict(config_dict)
-
-    def load_config_dict(self, config_dict):
-        """Load configurations from a dictionary
-
-        This will convert strings with hyphens (-) to underscores (_) that way
-        attributes can be added. Underscores are not used in the config files
-        because I think they look ugly. That's my only reasoning - deal with
-        it. Any key within the dictionary that is not an attribute of the
-        class will be ignored (this will be logged).
-
-        Args:
-            config_dict (dict): A dictionary containing configurations and
-                values
-
-        Returns:
-            None
-        """
-        for i in config_dict:
-            if hasattr(self, i.replace('-', '_')):
-                # Set the attribute
-                setting = i.replace('-', '_')
-                value = config_dict[i]
-                setattr(self, setting, value)
-                journal.send(message="Configuration '%s' set to '%s'." % (i, value))
-            elif isinstance(config_dict[i], dict):
-                # This is a dictionary and may contain additional values
-                self.load_config_dict(config_dict[i])
-            else:
-                # We don't care about it. Just skip it!
-                journal.send(message="Ignoring invalid configuration '%s'." % i)
 
 class CssefRPCEndpoint(object):
     """Base class for RPC endpoints
@@ -164,7 +89,7 @@ class ModelWrapper(object):
     __metaclass__ = abc.ABCMeta
     class ObjectDoesNotExist(CssefObjectDoesNotExist):
         def __init__(self, message):
-            super(ObjectDoesNotExist, self).__init__(message)
+            super(self.__class__, self).__init__(message)
 
     model_object = None
     fields = []
@@ -248,30 +173,6 @@ class ModelWrapper(object):
         db_conn.commit()
         return cls_inst
 
-def create_database_connection(database_path):
-    """Returns a database session for the specified database"""
-    journal.send(message='Initializing database connection')
-    database_engine = create_engine('sqlite:///' + database_path)
-    try:
-        Base.metadata.create_all(database_engine)
-    except sqlalchemy.exc.OperationalError as error:
-        journal.send(message='Failed to open or sync database file: %s' % database_path)
-        raise error
-    Base.metadata.bind = database_engine
-    database_session = sessionmaker(bind=database_engine)
-    return database_session()
-
-def handle_exception():
-    value = 1
-    message = traceback.format_exc().splitlines()
-    output = EndpointOutput(value, message)
-    # Log the occurance of this error
-    journal.send(message="(error %d): Encountered runtime error with given id"
-        " %d. Observe the following stack trace:" % (output.value, output.value))
-    for i in output.message:
-        journal.send(message="(error %d): %s" % (output.value, i))
-    return output.as_dict()
-
 class EndpointOutput(object):
     def __init__(self, value=0, message=None, content=None):
         self.value = value
@@ -297,3 +198,27 @@ class EndpointOutput(object):
         temp_dict['message'] = self.message
         temp_dict['content'] = self.content
         return temp_dict
+
+def create_database_connection(database_path):
+    """Returns a database session for the specified database"""
+    journal.send(message='Initializing database connection') #pylint: disable=no-member
+    database_engine = create_engine('sqlite:///' + database_path)
+    try:
+        Base.metadata.create_all(database_engine)
+    except sqlalchemy.exc.OperationalError as error:
+        journal.send(message='Failed to open or sync database file: %s' % database_path) #pylint: disable=no-member
+        raise error
+    Base.metadata.bind = database_engine
+    database_session = sessionmaker(bind=database_engine)
+    return database_session()
+
+def handle_exception():
+    value = 1
+    message = traceback.format_exc().splitlines()
+    output = EndpointOutput(value, message)
+    # Log the occurance of this error
+    journal.send(message="(error %d): Encountered runtime error with given id" #pylint: disable=no-member
+                 " %d. Observe the following stack trace:" % (output.value, output.value)) #pylint: disable=no-member
+    for i in output.message:
+        journal.send(message="(error %d): %s" % (output.value, i)) #pylint: disable=no-member
+    return output.as_dict()
