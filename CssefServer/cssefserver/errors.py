@@ -25,7 +25,7 @@ class CssefException(Exception):
     """A basic CSSEF exception to be subclassed
 
     This class is meant to be subclassed by actual errors, setting the value
-    for 'value' and 'message'. Any CssefExpection can be easily prepared for
+    for 'value' and 'message'. Any CssefExcption can be easily prepared for
     the user by calling ``as_return_dict()``.
     """
     value = None
@@ -53,6 +53,17 @@ class CssefException(Exception):
         # Now build the return object
         output = EndpointOutput(self.value, self.message)
         return output.as_dict()
+
+class CssefPluginMalformedName(CssefException):
+    value = 9000
+    message = ["Incorrectly formatted plugin entry."]
+
+    def __init__(self, plugin_value):
+        self.message.append("The provided plugin value was: '%s'" % plugin_value)
+
+class CssefPluginInstantiationError(CssefException):
+    value = 9001
+    message = ["Module failed to instantiate."]
 
 class CssefObjectDoesNotExist(Exception):
     """Expection for model instantiation errors

@@ -1,5 +1,6 @@
 import os
 import os.path
+import abc
 import traceback
 from systemd import journal
 import yaml
@@ -10,9 +11,15 @@ from flask import Response
 from jsonrpcserver import dispatch
 from jsonrpcserver import Methods
 # Local imports
-from cssefserver import tasks as base_tasks
+#from cssefserver import tasks as base_tasks
 from cssefserver.utils import create_database_connection
-from cssefserver.account import tasks as account_tasks
+from cssefserver.utils import handle_exception
+from cssefserver.utils import import_plugins
+from cssefserver.utils import EndpointOutput
+#from cssefserver.account import tasks as account_tasks
+from cssefserver.errors import CssefException
+from cssefserver.errors import CssefObjectDoesNotExist
+from cssefserver.errors import CssefPluginMalformedName
 
 class CssefServer(object):
     """The CSSEF Server object
@@ -21,24 +28,9 @@ class CssefServer(object):
     endpoints, database connection and socket connection (via flask) for
     incoming requests.
     """
-    def __init__(self, config_dict=None):
-        if not config_dict:
-            config_dict = None
-        self.config = Configuration()
-
-        # The configuration loading process is tricky, since settings provided
-        # at runtime may dictate how we load other configurations. Load the
-        # runtime configurations, and then load the configurations from the
-        # file. We load the runtime configurations again to reset any
-        # configurations that may have been overwritten while loading from the
-        # file.
-
-        # 1: Load the runtime configurations
-        # 2: Load the file configurations
-        # 3: Load the runtime configurations again
-        self.config.load_config_dict(config_dict)
-        self.config.load_config_file(self.config.global_config_path)
-        self.config.load_config_dict(config_dict)
+    def __init__(self, config=None):
+        if not config:
+            self.config = Configuration()
 
         # This is the database connection
         self.database_connection = None
@@ -48,47 +40,6 @@ class CssefServer(object):
 
         # The list of plugins we will be running with
         self.plugins = []
-
-    def import_plugins(self):
-        """Instantiates CSSEF competition plugins
-
-        Plugins that were specified within the ``installed-plugins``
-        configuration are instantiated here. Successfully loaded plugins are
-        listed in ``self.plugins``. If a plugin fails to load, it is
-        effectively removed from ``self.config.installed_plugins``.
-
-        Returns:
-            None
-        """
-        journal.send(message='Starting plugin import') #pylint: disable=no-member
-        # If the 'installed_plugins' line is provided, but no items are
-        # included in the list, then the value of
-        # self.config.installed_plugins will be None. Return if there are no
-        # installed plugins.
-        if not self.config.installed_plugins:
-            return
-        for module_string in self.config.installed_plugins:
-            try:
-                module_name = module_string.split(".")[0]
-                module_class = module_string.split(".")[1]
-            except ValueError:
-                journal.send(message="Incorrectly formatted plugin entry: '%s'." % module_string) #pylint: disable=no-member
-                continue
-            try:
-                module = __import__(module_name)
-                plugin_class_ref = getattr(module, module_class)
-                plugin_class_inst = plugin_class_ref(self.config)
-                self.plugins.append(plugin_class_inst)
-                journal.send(message="Successfully import plugin: '%s'" % module_name) #pylint: disable=no-member
-            except:
-                journal.send(message="Failed to import module: '%s'" % module_name) #pylint: disable=no-member
-                for i in traceback.format_exc().splitlines():
-                    journal.send(message="    " + i) #pylint: disable=no-member
-                continue
-        # This is just to finish implementing the Available Endpoints task
-        # TODO: Maybe make a distinctions between 'configuration' and 'running
-        # configuration'?
-        self.config.installed_plugins = self.plugins
 
     def load_rpc_endpoints(self):
         """Instantiates RPC endpoints
@@ -104,8 +55,8 @@ class CssefServer(object):
         journal.send(message='Loading RCP endpoints...') #pylint: disable=no-member
         # Create the list of endpoints sources
         self.config.endpoint_sources = []
-        self.config.endpoint_sources.append(account_tasks.endpoint_source())
-        self.config.endpoint_sources.append(base_tasks.endpoint_source())
+        self.config.endpoint_sources.append(cssefserver.account.tasks.endpoint_source())
+        self.config.endpoint_sources.append(cssefserver.tasks.endpoint_source())
         for plugin in self.plugins:
             self.config.endpoint_sources.append(plugin.endpoint_info())
 
@@ -138,7 +89,8 @@ class CssefServer(object):
 
         # Plugin imports *must* happen before making the database connection
         # otherwise tables won't be made for plugins
-        self.import_plugins()
+        journal.send(message='Starting plugin import') #pylint: disable=no-member
+        self.plugins = import_plugins(self.config.installed_plugins)
         # The database connection *must* be initialized before loading the rpc
         # endpoints, otherwise the endpoints will get the default value for
         # the database_connection, which is None (breaks everything)
@@ -177,11 +129,10 @@ class Configuration(object):
     """
     def __init__(self):
         # Super global configs
-        self.global_config_path = "/etc/cssef/cssef-server.yml"
         self.admin_token = ""
         # SQLAlchemy configurations
-        self.database_table_prefix = "cssef_"
-        self.database_path = None
+        self.database_table_prefix = ""
+        self.database_path = ""
         # General configurations
         self.auth_failover = True
         # Logging configurations
@@ -192,26 +143,39 @@ class Configuration(object):
         self.installed_plugins = []
         self.endpoint_sources = []
 
-    def load_config_file(self, config_path):
+    def _clean_setting(self, string):
+        return string.replace('-', '_')
+
+    def _valid_setting(self, string):
+        return hasattr(self, self._clean_setting(string))
+
+    def set_setting(self, setting_name, setting_value):
+        if not self._valid_setting(setting_name):
+            return False
+        setting_name = self._clean_setting(setting_name)
+        setattr(self, setting_name, setting_value)
+        return True
+
+    def load_settings_file(self, settings_file_path):
         """Load configuration from a file
 
         This will read a yaml configuration file. The yaml file is converted
-        to a dictionary object, which is just passed to `load_config_dict`.
+        to a dictionary object, which is just passed to `load_settings_dict`.
 
         Args:
-            config_path (str): A filepath to the yaml config file
+            settings_file_path (str): A filepath to the yaml config file
 
         Returns:
             None
         """
         try:
-            config_dict = yaml.load(open(config_path, 'r'))
+            settings_file = open(settings_file_path, 'r')
+            settings_dict = yaml.load(settings_file)
+            self.load_settings_dict(settings_dict)
         except IOError:
-            print "[WARNING] Failed to load configuration file at '%s'." % config_path
-            return
-        self.load_config_dict(config_dict)
+            journal.send(message="Failed to load configuration file at '%s'." % settings_file_path) #pylint: disable=no-member
 
-    def load_config_dict(self, config_dict):
+    def load_settings_dict(self, settings_dict):
         """Load configurations from a dictionary
 
         This will convert strings with hyphens (-) to underscores (_) that way
@@ -221,24 +185,16 @@ class Configuration(object):
         class will be ignored (this will be logged).
 
         Args:
-            config_dict (dict): A dictionary containing configurations and
+            settings_dict (dict): A dictionary containing configurations and
                 values
 
         Returns:
             None
         """
-        for i in config_dict:
-            if hasattr(self, i.replace('-', '_')):
-                # Set the attribute
-                setting = i.replace('-', '_')
-                value = config_dict[i]
-                setattr(self, setting, value)
-                journal.send(message="Configuration '%s' set to '%s'." % (i, value)) #pylint: disable=no-member
-            elif isinstance(config_dict[i], dict):
-                # This is a dictionary and may contain additional values
-                self.load_config_dict(config_dict[i])
+        for i in settings_dict:
+            if self.set_setting(i, settings_dict[i]):
+                journal.send(message="Configuration '%s' set to '%s'." % (i, settings_dict[i])) #pylint: disable=no-member
             else:
-                # We don't care about it. Just skip it!
                 journal.send(message="Ignoring invalid configuration '%s'." % i) #pylint: disable=no-member
 
 class Plugin(object):
@@ -252,8 +208,6 @@ class Plugin(object):
     short_name = ""
     __version__ = ""
     endpoints = []
-    def __init__(self, config):
-        self.config = config
 
     @classmethod
     def endpoint_info(cls):
@@ -270,3 +224,169 @@ class Plugin(object):
         tmp_dict['short_name'] = self.short_name
         tmp_dict['version'] = self.__version__
         return tmp_dict
+
+class CssefRPCEndpoint(object):
+    """Base class for RPC endpoints
+
+    This class provides the functionality and utilities to create new RPC
+    endpoints, consumable by clients.
+    """
+    name = None
+    rpc_name = None
+    menu_path = None
+    takes_kwargs = True
+    on_request_args = []
+    def __init__(self, config, database_connection):
+        self.config = config
+        self.database_connection = database_connection
+
+    def __call__(self, **kwargs):
+        args_list = []
+        # This builds the list of arguments we were told are expected
+        # by the overloaded on_request() method
+        for i in self.on_request_args:
+            args_list.append(kwargs.get(i))
+        for i in self.on_request_args:
+            try:
+                kwargs.pop(i)
+            except KeyError:
+                value = 1
+                message = ["Missing required argument '%s'." % i]
+                output = EndpointOutput(value, message)
+                return output.as_dict()
+        # Now call the on_request method that actually handles the request.
+        # Here we're determining if we should pass it kwargs or not (the
+        # subclass tells us yes or no). This is surrounded by a catch
+        # to handle various errors that may crop up
+        try:
+            output = self.on_request(*args_list, **kwargs)
+            return output.as_dict()
+            # if self.takes_kwargs:
+            #     output = self.on_request(*args_list, **kwargs)
+            #     return output.as_dict()
+            # else:
+            #     output = self.on_request(*args_list)
+            #     return output.as_dict()
+        except CssefException as err:
+            return err.as_return_dict()
+        except Exception as err:
+            return handle_exception()
+
+    @classmethod
+    def info_dict(cls):
+        tmp_dict = {}
+        tmp_dict['name'] = cls.name
+        tmp_dict['rpc_name'] = cls.rpc_name
+        tmp_dict['menu_path'] = cls.menu_path
+        tmp_dict['reference'] = cls
+        return tmp_dict
+
+    @abc.abstractmethod
+    def on_request(self, *args, **kwargs):
+        """Abstract method for endpoint work
+
+        This method is where work specifically for fufilling requests goes.
+        When the RPC class is called, on_request() is called and wrapped in
+        error handling and message passing so the subclass doesn't need to
+        deal with it.
+
+        This method **must** return a dictionary. For best results (for the
+        client), that dictionary should conform to the "return_dict" structure
+        losely defined in the code base. That structure being ``{'value': int,
+        'message': [string], content: [string]}``
+        """
+        pass
+
+class ModelWrapper(object):
+    """ The base class for wrapping SQLAlchemy model objects
+
+    This class provides utilities for interacting with SQLAlchemy models
+    in a clean manner. This should be subclassed by any other objects that
+    will need to wrap a SQLAlchemy model object.
+    """
+    __metaclass__ = abc.ABCMeta
+    class ObjectDoesNotExist(CssefObjectDoesNotExist):
+        def __init__(self, message):
+            super(self.__class__, self).__init__(message)
+
+    model_object = None
+    fields = []
+
+    def __init__(self, db_conn, model):
+        self.db_conn = db_conn
+        self.model = model
+        self.define_properties()
+
+    def define_properties(self):
+        for i in self.fields:
+            if not hasattr(self, i):
+                attribute_get = self.__class__.dec_get(self, i)
+                attribute_set = self.__class__.dec_set(self, i)
+                prop = property(attribute_get, attribute_set)
+                setattr(self.__class__, i, prop)
+
+    def dec_get(self, attribute):
+        def default_get(self):
+            return getattr(self.model, attribute)
+
+        return default_get
+
+    def dec_set(self, attribute):
+        def default_set(self, value):
+            setattr(self.model, attribute, value)
+            self.db_conn.commit()
+        return default_set
+
+    def get_id(self):
+        return self.model.pkid
+
+    def edit(self, **kwargs):
+        for i in kwargs:
+            if i in self.fields:
+                setattr(self, i, kwargs[i])
+
+    def delete(self):
+        self.db_conn.delete(self.model)
+        self.db_conn.commit()
+
+    def as_dict(self):
+        tmp_dict = {}
+        tmp_dict['id'] = self.get_id()
+        for i in self.fields:
+            try:
+                tmp_dict[i] = getattr(self, i)
+            except AttributeError:
+                # The field is not an attribute of the subclassed model wrapper
+                # We'll try to find it in the classes model
+                tmp_dict[i] = getattr(self.model, i)
+        return tmp_dict
+
+    @classmethod
+    def count(cls, db_conn, **kwargs):
+        return db_conn.query(cls.model_object).filter_by(**kwargs).count()
+
+    @classmethod
+    def search(cls, db_conn, **kwargs):
+        model_object_list = db_conn.query(cls.model_object).filter_by(**kwargs)
+        cls_list = []
+        for i in model_object_list:
+            cls_list.append(cls(db_conn, i))
+        return cls_list
+
+    @classmethod
+    def from_database(cls, db_conn, pkid):
+        try:
+            return cls.search(db_conn, pkid=pkid)[0]
+        except IndexError:
+            return None
+
+    @classmethod
+    def from_dict(cls, db_conn, kw_dict):
+        model_object_inst = cls.model_object() #pylint: disable=not-callable
+        cls_inst = cls(db_conn, model_object_inst)
+        for i in kw_dict:
+            if i in cls_inst.fields:
+                setattr(cls_inst, i, kw_dict[i])
+        db_conn.add(cls_inst.model)
+        db_conn.commit()
+        return cls_inst

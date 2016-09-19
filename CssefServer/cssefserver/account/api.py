@@ -1,6 +1,6 @@
 import time
 import tokenlib
-from cssefserver.utils import ModelWrapper
+from cssefserver import ModelWrapper
 from cssefserver.account.models import User as UserModel
 from cssefserver.account.models import Organization as OrganizationModel
 from cssefserver.account.utils import PasswordHash

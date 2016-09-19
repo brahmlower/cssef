@@ -33,6 +33,6 @@ cssef-stdout: /var/log/cssef/cssef_stdout.log
 # This is a list of plugins that conform to the CSSEF plugin model that should
 # be imported. Those plugins must already be installed, and the entries in
 # this list must be the names of the modules.
-installed-plugins:
+#installed-plugins:
 #- cssefctf.CaptureTheFlag
 #- cssefcdc.CyberDefenseCompetition

@@ -39,5 +39,3 @@ class CyberDefenseCompetition(Plugin):
         tasks.ScoringEngineSet,
         tasks.ScoringEngineGet
     ]
-    def __init__(self, config):
-        self.config = config

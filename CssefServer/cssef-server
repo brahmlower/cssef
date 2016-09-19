@@ -72,4 +72,17 @@ if __name__ == "__main__":
         exit_help()
 
     server = CssefServer(user_input.command_args)
+    # The configuration loading process is tricky, since settings provided at
+    # runtime may dictate how we load other configurations. Load the runtime
+    # configurations, and then load the configurations from the file. We load
+    # the runtime configurations again to reset any configurations that may have
+    # been overwritten while loading from the file.
+
+    # 1: Load the runtime configurations
+    # 2: Load the file configurations
+    # 3: Load the runtime configurations again
+    server.config.load_config_dict(user_input.command_args)
+    server.config.load_config_file("/etc/cssef/cssef-server.yml")
+    server.config.load_config_dict(user_input.command_args)
+    # Now start the server
     server.start()

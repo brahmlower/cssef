@@ -1,5 +1,5 @@
+from cssefserver import CssefRPCEndpoint
 from cssefserver.utils import EndpointOutput
-from cssefserver.utils import CssefRPCEndpoint
 from cssefserver.taskutils import model_del
 from cssefserver.taskutils import model_set
 from cssefserver.taskutils import model_get
@@ -11,7 +11,7 @@ class OrganizationAdd(CssefRPCEndpoint):
     name = "Organization Add"
     rpc_name = "organizationadd"
     menu_path = "organization.add"
-    onRequestArgs = ['auth']
+    on_request_args = ['auth']
     def on_request(self, auth, **kwargs):
         """RPC task to create a new organization.
 
@@ -31,8 +31,8 @@ class OrganizationDel(CssefRPCEndpoint):
     name = "Organization Delete"
     rpc_name = "organizationdel"
     menu_path = "organization.del"
-    takesKwargs = False
-    onRequestArgs = ['auth', 'pkid']
+    takes_kwargs = False
+    on_request_args = ['auth', 'pkid']
     def on_request(self, auth, pkid):
         """RPC task to delete an existing organization.
 
@@ -50,7 +50,7 @@ class OrganizationSet(CssefRPCEndpoint):
     name = "Organization Set"
     rpc_name = "organizationset"
     menu_path = "organization.set"
-    onRequestArgs = ['auth', 'pkid']
+    on_request_args = ['auth', 'pkid']
     def on_request(self, auth, pkid, **kwargs):
         """RPC task to edit an existing organization.
 
@@ -69,7 +69,7 @@ class OrganizationGet(CssefRPCEndpoint):
     name = "Organization Get"
     rpc_name = "organizationget"
     menu_path = "organization.get"
-    onRequestArgs = ['auth']
+    on_request_args = ['auth']
     def on_request(self, auth, **kwargs):
         """RPC task to get one or more existing organization.
 
@@ -87,7 +87,7 @@ class UserAdd(CssefRPCEndpoint):
     name = "User Add"
     rpc_name = "useradd"
     menu_path = "user.add"
-    onRequestArgs = ['auth']
+    on_request_args = ['auth']
     def on_request(self, auth, **kwargs):
         """RPC task to create a new user.
 
@@ -108,8 +108,8 @@ class UserDel(CssefRPCEndpoint):
     name = "User Delete"
     rpc_name = "userdel"
     menu_path = "user.del"
-    takesKwargs = False
-    onRequestArgs = ['auth', 'pkid']
+    takes_kwargs = False
+    on_request_args = ['auth', 'pkid']
     def on_request(self, auth, pkid):
         """RPC task to delete an existing user.
 
@@ -127,7 +127,7 @@ class UserSet(CssefRPCEndpoint):
     name = "User Set"
     rpc_name = "userset"
     menu_path = "user.set"
-    onRequestArgs = ['auth', 'pkid']
+    on_request_args = ['auth', 'pkid']
     def on_request(self, auth, pkid, **kwargs):
         """RPC task to edit an existing user.
 
@@ -146,7 +146,7 @@ class UserGet(CssefRPCEndpoint):
     name = "User Get"
     rpc_name = "userget"
     menu_path = "user.get"
-    onRequestArgs = ['auth']
+    on_request_args = ['auth']
     def on_request(self, auth, **kwargs):
         """RPC task to get one or more existing users.
 
@@ -164,8 +164,8 @@ class RenewToken(CssefRPCEndpoint):
     name = "Renew Token"
     rpc_name = "renewtoken"
     menu_path = "user.renewtoken"
-    takesKwargs = False
-    onRequestArgs = ['auth']
+    takes_kwargs = False
+    on_request_args = ['auth']
     def on_request(self, auth):
         """RPC task to get a more up to date authentication token.
 
@@ -186,8 +186,8 @@ class Login(CssefRPCEndpoint):
     name = "Login"
     rpc_name = "login"
     menu_path = "user.login"
-    takesKwargs = False
-    onRequestArgs = ['auth']
+    takes_kwargs = False
+    on_request_args = ['auth']
     def on_request(self, auth):
         """RPC task to login.
 
