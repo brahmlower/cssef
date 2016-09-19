@@ -38,10 +38,28 @@ class CssefServer(object):
         # Methods object to pass to the dispatcher when a request is handled
         self.rpc_methods = Methods()
 
+        # List of endpoint sources
+        self.endpoint_sources = []
+
         # The list of plugins we will be running with
         self.plugins = []
 
-    def load_rpc_endpoints(self):
+    def load_endpoint_sources(self):
+        temp_list = []
+        temp_list.append(base_tasks.endpoint_source())
+        temp_list.append(account_tasks.endpoint_source())
+        for i in self.plugins:
+            temp_list.append(i.endpoint_info())
+        self.plugins = temp_list
+
+    def load_source_endpoints(self, source):
+        journal.send(message="Loading endpoints from source '%s'." % source['name']) #pylint: disable=no-member
+        for endpoint in source['endpoints']:
+            # Instantiate the endpoint and pass it a reference to the server
+            instance = endpoint['reference'](self)
+            self.rpc_methods.add_method(instance, endpoint['rpc_name'])
+
+    def load_endpoints(self):
         """Instantiates RPC endpoints
 
         The RPC endpoing objects are all instantiated once, and then simply
@@ -52,27 +70,8 @@ class CssefServer(object):
         Returns:
             None
         """
-        journal.send(message='Loading RCP endpoints...') #pylint: disable=no-member
-        # Create the list of endpoints sources
-        self.config.endpoint_sources = []
-        #self.config.endpoint_sources.append(cssefserver.account.tasks.endpoint_source())
-        self.config.endpoint_sources.append(base_tasks.endpoint_source())
-        #self.config.endpoint_sources.append(cssefserver.tasks.endpoint_source())
-        self.config.endpoint_sources.append(account_tasks.endpoint_source())
-        for plugin in self.plugins:
-            self.config.endpoint_sources.append(plugin.endpoint_info())
-
-        # Now import add all of the endpoints as methods to watch for
-        for source in self.config.endpoint_sources:
-            for endpoint in source['endpoints']:
-                # Add the endpoint to the method list for Flask
-                instance = endpoint['reference'](self.config, self.database_connection)
-                journal.send(message='Loading endpoint: %s' % endpoint['rpc_name']) #pylint: disable=no-member
-                self.rpc_methods.add_method(instance, endpoint['rpc_name'])
-                # Pop the reference key from the dict so we don't try to send
-                # it to the client later when the client requests the
-                # available enpoints
-                endpoint.pop('reference')
+        for source in self.endpoint_sources:
+            self.load_source_endpoints(source)
 
     def start(self):
         """Starts running the service
@@ -99,13 +98,12 @@ class CssefServer(object):
         self.database_connection = create_database_connection(self.config.database_path)
         # Load the RCP Endpoints, instantiating each one and making it
         # available for Flask
-        self.load_rpc_endpoints()
+        self.load_endpoints()
         # Start listening for rpc requests via Flask
         journal.send(message='Initializing flask instance') #pylint: disable=no-member
         flask_app = Flask(__name__)
         flask_app.add_url_rule('/', 'index', self.index, methods=['POST'])
         flask_app.run(debug=False)
-
 
     def index(self):
         """Function called by the flask app for new requests
@@ -143,7 +141,6 @@ class Configuration(object):
         self.cssef_stdout = ""
         # Plugin configurations
         self.installed_plugins = []
-        self.endpoint_sources = []
 
     def _clean_setting(self, string):
         return string.replace('-', '_')

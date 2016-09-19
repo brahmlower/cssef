@@ -19,7 +19,7 @@ class AvailableEndpoints(CssefRPCEndpoint):
             ReturnMessage: A return message where the content is a list of
             dictionaries containing information about the available endpoints.
         """
-        return EndpointOutput(content=self.config.endpoint_sources)
+        return EndpointOutput(content=self.server.endpoint_sources)
 
 class AvailablePlugins(CssefRPCEndpoint):
     """Provides a list of registered plugins
@@ -37,7 +37,7 @@ class AvailablePlugins(CssefRPCEndpoint):
             of calling ``plugin_instance.as_dict()``.
         """
         output = EndpointOutput()
-        for plugin in self.config.installed_plugins:
+        for plugin in self.server.config.installed_plugins:
             output.content.append(plugin.as_dict())
         return output
 

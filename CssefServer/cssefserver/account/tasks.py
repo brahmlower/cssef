@@ -22,8 +22,8 @@ class OrganizationAdd(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        authorize_access(self.database_connection, auth, self.config)
-        organization = Organization.from_dict(self.database_connection, kwargs)
+        authorize_access(self.server.database_connection, auth, self.server.config)
+        organization = Organization.from_dict(self.server.database_connection, kwargs)
         content = [organization.as_dict()]
         return EndpointOutput(content=content)
 
@@ -43,8 +43,8 @@ class OrganizationDel(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        authorize_access(self.database_connection, auth, self.config)
-        return model_del(Organization, self.database_connection, pkid)
+        authorize_access(self.server.database_connection, auth, self.server.config)
+        return model_del(Organization, self.server.database_connection, pkid)
 
 class OrganizationSet(CssefRPCEndpoint):
     name = "Organization Set"
@@ -62,8 +62,8 @@ class OrganizationSet(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        authorize_access(self.database_connection, auth, self.config)
-        return model_set(Organization, self.database_connection, pkid, **kwargs)
+        authorize_access(self.server.database_connection, auth, self.server.config)
+        return model_set(Organization, self.server.database_connection, pkid, **kwargs)
 
 class OrganizationGet(CssefRPCEndpoint):
     name = "Organization Get"
@@ -80,8 +80,8 @@ class OrganizationGet(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        authorize_access(self.database_connection, auth, self.config)
-        return model_get(Organization, self.database_connection, **kwargs)
+        authorize_access(self.server.database_connection, auth, self.server.config)
+        return model_get(Organization, self.server.database_connection, **kwargs)
 
 class UserAdd(CssefRPCEndpoint):
     name = "User Add"
@@ -99,8 +99,8 @@ class UserAdd(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        authorize_access(self.database_connection, auth, self.config)
-        user = User.from_dict(self.database_connection, kwargs)
+        authorize_access(self.server.database_connection, auth, self.server.config)
+        user = User.from_dict(self.server.database_connection, kwargs)
         content = [user.as_dict()]
         return EndpointOutput(content=content)
 
@@ -120,8 +120,8 @@ class UserDel(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        authorize_access(self.database_connection, auth, self.config)
-        return model_del(User, self.database_connection, pkid)
+        authorize_access(self.server.database_connection, auth, self.server.config)
+        return model_del(User, self.server.database_connection, pkid)
 
 class UserSet(CssefRPCEndpoint):
     name = "User Set"
@@ -139,8 +139,8 @@ class UserSet(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        authorize_access(self.database_connection, auth, self.config)
-        return model_set(User, self.database_connection, pkid, **kwargs)
+        authorize_access(self.server.database_connection, auth, self.server.config)
+        return model_set(User, self.server.database_connection, pkid, **kwargs)
 
 class UserGet(CssefRPCEndpoint):
     name = "User Get"
@@ -157,8 +157,8 @@ class UserGet(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. See
             get_empty_return_dict for more information.
         """
-        authorize_access(self.database_connection, auth, self.config)
-        return model_get(User, self.database_connection, **kwargs)
+        authorize_access(self.server.database_connection, auth, self.server.config)
+        return model_get(User, self.server.database_connection, **kwargs)
 
 class RenewToken(CssefRPCEndpoint):
     name = "Renew Token"
@@ -178,7 +178,7 @@ class RenewToken(CssefRPCEndpoint):
             A return_dict dictionary containing the results of the API call. The
             content field contains the new token if authentication was successful
         """
-        user = authorize_access(self.database_connection, auth, self.config)
+        user = authorize_access(self.server.database_connection, auth, self.server.config)
         content = [user.get_new_token()]
         return EndpointOutput(content=content)
 
@@ -197,7 +197,7 @@ class Login(CssefRPCEndpoint):
             the credentials were correct. Content will be empty if the credentials
             were incorrect, and value will be non-zero.
         """
-        user = authorize_access(self.database_connection, auth, self.config)
+        user = authorize_access(self.server.database_connection, auth, self.server.config)
         # The user is authenticated. Generate a key for them
         content = [user.get_new_token()]
         return EndpointOutput(content=content)

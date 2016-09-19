@@ -1,4 +1,5 @@
 import abc
+import weakref
 from cssefserver.utils import EndpointOutput
 from cssefserver.utils import handle_exception
 from cssefserver.errors import CssefException
@@ -15,9 +16,10 @@ class CssefRPCEndpoint(object):
     menu_path = None
     takes_kwargs = True
     on_request_args = []
-    def __init__(self, config, database_connection):
-        self.config = config
-        self.database_connection = database_connection
+    def __init__(self, server):
+        self.server =  weakref.ref(server)
+        # self.config = config
+        # self.database_connection = database_connection
 
     def __call__(self, **kwargs):
         args_list = []
