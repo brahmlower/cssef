@@ -11,12 +11,10 @@ from flask import Response
 from jsonrpcserver import dispatch
 from jsonrpcserver import Methods
 # Local imports
-#from cssefserver import tasks as base_tasks
 from cssefserver.utils import create_database_connection
 from cssefserver.utils import handle_exception
 from cssefserver.utils import import_plugins
 from cssefserver.utils import EndpointOutput
-#from cssefserver.account import tasks as account_tasks
 from cssefserver.errors import CssefException
 from cssefserver.errors import CssefObjectDoesNotExist
 from cssefserver.errors import CssefPluginMalformedName
@@ -45,12 +43,14 @@ class CssefServer(object):
         self.plugins = []
 
     def load_endpoint_sources(self):
+        from cssefserver.account import tasks as account_tasks
+        from cssefserver import tasks as base_tasks
         temp_list = []
         temp_list.append(base_tasks.endpoint_source())
         temp_list.append(account_tasks.endpoint_source())
         for i in self.plugins:
             temp_list.append(i.endpoint_info())
-        self.plugins = temp_list
+        self.endpoint_sources = temp_list
 
     def load_source_endpoints(self, source):
         journal.send(message="Loading endpoints from source '%s'." % source['name']) #pylint: disable=no-member
@@ -70,6 +70,7 @@ class CssefServer(object):
         Returns:
             None
         """
+        journal.send(message="Loading endpoints from %d sources." % len(self.endpoint_sources))
         for source in self.endpoint_sources:
             self.load_source_endpoints(source)
 
@@ -98,6 +99,7 @@ class CssefServer(object):
         self.database_connection = create_database_connection(self.config.database_path)
         # Load the RCP Endpoints, instantiating each one and making it
         # available for Flask
+        self.load_endpoint_sources()
         self.load_endpoints()
         # Start listening for rpc requests via Flask
         journal.send(message='Initializing flask instance') #pylint: disable=no-member
