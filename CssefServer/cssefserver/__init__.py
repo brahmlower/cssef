@@ -11,7 +11,7 @@ from flask import Response
 from jsonrpcserver import dispatch
 from jsonrpcserver import Methods
 # Local imports
-from cssefserver.utils import create_database_connection
+from cssefserver.databaseutils import create_database_connection
 from cssefserver.utils import handle_exception
 from cssefserver.utils import import_plugins
 from cssefserver.utils import EndpointOutput

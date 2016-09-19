@@ -1,7 +1,7 @@
 import unittest
 import os
 from cssefserver import Configuration
-from cssefserver.utils import create_database_connection
+from cssefserver.databaseutils import create_database_connection
 
 class CssefTest(unittest.TestCase):
     def setUp(self):

@@ -1,13 +1,6 @@
 import traceback
 from systemd import journal
-import sqlalchemy.exc
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from cssefserver.modelbase import BASE as Base
 from cssefserver import errors
-# from cssefserver.errors import CssefException
-# from cssefserver.errors import CssefPluginMalformedName
-# from cssefserver.errors import CssefPluginInstantiationError
 
 class EndpointOutput(object):
     def __init__(self, value=0, message='', content=None):
@@ -32,19 +25,6 @@ class EndpointOutput(object):
         temp_dict['message'] = self.message
         temp_dict['content'] = self.content
         return temp_dict
-
-def create_database_connection(database_path=''):
-    """Returns a database session for the specified database"""
-    journal.send(message='Initializing database connection') #pylint: disable=no-member
-    database_engine = create_engine('sqlite:///' + database_path)
-    try:
-        Base.metadata.create_all(database_engine)
-    except sqlalchemy.exc.OperationalError as error:
-        journal.send(message='Failed to open or sync database file: %s' % database_path) #pylint: disable=no-member
-        raise error
-    Base.metadata.bind = database_engine
-    database_session = sessionmaker(bind=database_engine)
-    return database_session()
 
 def handle_exception():
     # Todo: this should maybe be called handle_endpoint_exception()

@@ -3,10 +3,10 @@ from sqlalchemy import String
 from sqlalchemy import Integer
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime
-from cssefserver.modelbase import BASE as Base
-from cssefserver.modelutils import get_foreign_key
+from cssefserver.databaseutils import BASE as ModelBase
+from cssefserver.databaseutils import get_foreign_key
 
-class Organization(Base):
+class Organization(ModelBase):
     """This is a base User SQLAlchemy model.
     """
     deletable = Column(Boolean, default=True)
@@ -22,7 +22,7 @@ class Organization(Base):
     num_members = Column(Integer)
     num_competitions = Column(Integer)
 
-class User(Base):
+class User(ModelBase):
     """This is a base User SQLAlchemy model.
     """
     organization = Column(Integer, get_foreign_key(Organization))
