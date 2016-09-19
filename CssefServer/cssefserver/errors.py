@@ -18,8 +18,9 @@ Allotted error codes: 50 - 150
 - 50 - InvalidPkidValue
 
 """
+import traceback
 from systemd import journal
-from cssefserver.utils import EndpointOutput
+#from cssefserver.utils import EndpointOutput
 
 class CssefException(Exception):
     """A basic CSSEF exception to be subclassed
@@ -51,19 +52,34 @@ class CssefException(Exception):
             journal.send(message="(error %d): %s" % (self.value, i)) #pylint: disable=no-member
 
         # Now build the return object
-        output = EndpointOutput(self.value, self.message)
-        return output.as_dict()
+        return {"value": self.value, "message": self.message}
+        # The following is commented because importing EndpointOutput here
+        # causes some *really* bad cyclical import errors
+        # TODO: Maybe this method shoudln't be a thing. I have a function to handle
+        # exceptions that are thrown- so CssefExeptions shouldn't be any different.
+        # let them be thrown, then let them be handled by the handle_exception method
+        # like everything else.
+        # output = EndpointOutput(self.value, self.message)
+        # return output.as_dict()
+
+    def __repr__(self):
+        return str(self.message)
 
 class CssefPluginMalformedName(CssefException):
     value = 9000
     message = ["Incorrectly formatted plugin entry."]
 
     def __init__(self, plugin_value):
-        self.message.append("The provided plugin value was: '%s'" % plugin_value)
+        self.message.append("The provided plugin value was: '%s'." % plugin_value)
 
 class CssefPluginInstantiationError(CssefException):
     value = 9001
     message = ["Module failed to instantiate."]
+
+    def __init__(self, plugin_value):
+        self.message.append("The provided plugin value was: '%s'." % plugin_value)
+        for i in traceback.format_exc().splitlines():
+            self.message.append(i)
 
 class CssefObjectDoesNotExist(Exception):
     """Expection for model instantiation errors

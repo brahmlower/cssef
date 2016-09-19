@@ -53,3 +53,20 @@ class ConfigurationTest(unittest.TestCase):
         configuration.load_settings_dict(settings_dict)
         self.assertEquals(configuration.admin_token, settings_dict['admin-token'])
         self.assertEquals(configuration.database_table_prefix, settings_dict['database-table-prefix'])
+
+class PluginTest(unittest.TestCase):
+    def test_as_dict(self):
+        golden_dict = {"name": "TestPlugin", "short_name": "tp", "version": ''}
+        plugin = cssefserver.Plugin()
+        plugin.name = golden_dict['name']
+        plugin.short_name = golden_dict['short_name']
+        self.assertEquals(golden_dict, plugin.as_dict())
+
+    def test_endpoint_info(self):
+        golden_dict = {"name": "Plugin", "endpoints": []}
+        endpoint_info = cssefserver.Plugin.endpoint_info()
+        self.assertEquals(golden_dict, endpoint_info)
+
+class ModelWrapperTest(unittest.TestCase):
+    """Tests cssefserver.ModelWrapper
+    """

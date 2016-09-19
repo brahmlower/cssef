@@ -4,13 +4,15 @@ import sqlalchemy.exc
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from cssefserver.modelbase import BASE as Base
+from cssefserver import errors
+# from cssefserver.errors import CssefException
+# from cssefserver.errors import CssefPluginMalformedName
+# from cssefserver.errors import CssefPluginInstantiationError
 
 class EndpointOutput(object):
-    def __init__(self, value=0, message=None, content=None):
+    def __init__(self, value=0, message='', content=None):
         self.value = value
         self.message = message
-        if not message:
-            self.message = []
         # Cast the content to a list
         if not content:
             self.content = []
@@ -31,7 +33,7 @@ class EndpointOutput(object):
         temp_dict['content'] = self.content
         return temp_dict
 
-def create_database_connection(database_path):
+def create_database_connection(database_path=''):
     """Returns a database session for the specified database"""
     journal.send(message='Initializing database connection') #pylint: disable=no-member
     database_engine = create_engine('sqlite:///' + database_path)
@@ -45,6 +47,7 @@ def create_database_connection(database_path):
     return database_session()
 
 def handle_exception():
+    # Todo: this should maybe be called handle_endpoint_exception()
     value = 1
     message = traceback.format_exc().splitlines()
     output = EndpointOutput(value, message)
@@ -56,19 +59,18 @@ def handle_exception():
     return output.as_dict()
 
 def import_plugin(module_string):
-    try:
-        module_name = module_string.split(".")[0]
-        module_class = module_string.split(".")[1]
-    except ValueError:
-        raise CssefPluginMalformedName(module_string)
+    if len(module_string.split(".")) != 2:
+        raise errors.CssefPluginMalformedName(module_string)
+    module_name = module_string.split(".")[0]
+    module_class = module_string.split(".")[1]
     try:
         module = __import__(module_name)
         plugin_class_ref = getattr(module, module_class)
         return plugin_class_ref()
     except:
-        raise CssefPluginInstantiationError
+        raise errors.CssefPluginInstantiationError(module_string)
 
-def import_plugins(self, plugin_name_list):
+def import_plugins(plugin_name_list):
     """Instantiates CSSEF competition plugins
 
     Plugins that were specified within the ``installed-plugins``
@@ -85,6 +87,6 @@ def import_plugins(self, plugin_name_list):
         try:
             plugin_instance = import_plugin(module_string)
             plugin_instance_list.append(plugin_instance)
-        except CssefException as error:
+        except errors.CssefException as error:
             journal.send(message=str(error)) #pylint: disable=no-member
     return plugin_instance_list

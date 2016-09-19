@@ -1,14 +1,12 @@
 import unittest
 import os
-#from cssefserver import Configuration
+from cssefserver import Configuration
 from cssefserver.utils import create_database_connection
 
 class CssefTest(unittest.TestCase):
     def setUp(self):
-        # self.config = Configuration()
-        # self.config.load_settings_file(self.config.global_config_path)
-        # self.config.database_path = ""
-        self.database_connection = create_database_connection("")
+        self.config = Configuration()
+        self.database_connection = create_database_connection()
 
     def tearDown(self):
         self.database_connection.close()

@@ -1,5 +1,5 @@
-from cssefserver import CssefRPCEndpoint
 from cssefserver.utils import EndpointOutput
+from cssefserver.taskutils import CssefRPCEndpoint
 from cssefserver.taskutils import model_del
 from cssefserver.taskutils import model_set
 from cssefserver.taskutils import model_get

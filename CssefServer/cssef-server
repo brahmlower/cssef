@@ -81,8 +81,8 @@ if __name__ == "__main__":
     # 1: Load the runtime configurations
     # 2: Load the file configurations
     # 3: Load the runtime configurations again
-    server.config.load_config_dict(user_input.command_args)
-    server.config.load_config_file("/etc/cssef/cssef-server.yml")
-    server.config.load_config_dict(user_input.command_args)
+    server.config.load_settings_dict(user_input.command_args)
+    server.config.load_settings_file("/etc/cssef/cssef-server.yml")
+    server.config.load_settings_dict(user_input.command_args)
     # Now start the server
     server.start()

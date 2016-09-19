@@ -1,6 +1,6 @@
 from __future__ import absolute_import
-import cssefserver import CssefRPCEndpoint
 from cssefserver.utils import EndpointOutput
+from cssefserver.taskutils import CssefRPCEndpoint
 
 class AvailableEndpoints(CssefRPCEndpoint):
     """Provides a list of endpoint sources
