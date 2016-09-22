@@ -13,8 +13,6 @@ git:
   depth: 1
 
 install:
-  - sudo pip install CssefClient/.
-  - sudo pip install CssefServer/.
   - sudo pip install nose
   
 script:
