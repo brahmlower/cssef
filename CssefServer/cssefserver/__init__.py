@@ -5,9 +5,6 @@ import traceback
 from systemd import journal
 import yaml
 # RPC Server related imports
-from flask import Flask
-from flask import request
-from flask import Response
 from jsonrpcserver import dispatch
 from jsonrpcserver import Methods
 # Local imports
@@ -23,7 +20,7 @@ class CssefServer(object):
     """The CSSEF Server object
 
     The server coordinates the tracking of configurations, plugins,
-    endpoints, database connection and socket connection (via flask) for
+    endpoints, database connection and socket connection (via jsonrpcserver) for
     incoming requests.
     """
     def __init__(self, config=None):
@@ -65,7 +62,7 @@ class CssefServer(object):
         The RPC endpoing objects are all instantiated once, and then simply
         called any time a request is received for that endpoint. After the
         endpoint has been instantiated, it is added to the ``self.rpc_methods``
-        object, which is provided to the flask app to define request routing.
+        object, which is provided to the jsonrpcserver to define request routing.
 
         Returns:
             None
@@ -79,10 +76,10 @@ class CssefServer(object):
 
         This will start the process of importing plugins, creating the
         database connection, loading the rpc endpoints, and then registering
-        and starting the flask app.
+        and starting the builtin httpserver that is wrapped by the jsonrpcserver.
 
         TODO: I may eventually change this so that this **only** starts the
-        flask app, meaning the rest of the work can be done elsewhere, which
+        rpcserver, meaning the rest of the work can be done elsewhere, which
         would allow for better flexabiltiy and error handling.
 
         Returns:
@@ -98,28 +95,12 @@ class CssefServer(object):
         # the database_connection, which is None (breaks everything)
         self.database_connection = create_database_connection(self.config.database_path)
         # Load the RCP Endpoints, instantiating each one and making it
-        # available for Flask
+        # available for the web server
         self.load_endpoint_sources()
         self.load_endpoints()
-        # Start listening for rpc requests via Flask
-        journal.send(message='Initializing flask instance') #pylint: disable=no-member
-        flask_app = Flask(__name__)
-        flask_app.add_url_rule('/', 'index', self.index, methods=['POST'])
-        flask_app.run(debug=False)
-
-    def index(self):
-        """Function called by the flask app for new requests
-
-        This function handles incoming requests to the '/' path for the RPC
-        server. It matches the incoming request to the corresponding endpoint
-        that's registered in self.rpc_methods.
-
-        TODO: This function should probably not be here forever.
-        TODO: Improve comments explaining what's happening here...
-        """
-        received_data = request.get_data().decode('utf-8')
-        rpc_result = dispatch(self.rpc_methods, received_data)
-        return Response(str(rpc_result), rpc_result.http_status, mimetype='application/json')
+        # Start listening for rpc requests
+        journal.send(message='Starting httpserver') #pylint: disable=no-member
+        self.rpc_methods.serve_forever()
 
 class Configuration(object):
     """Contains and loads server configuration values

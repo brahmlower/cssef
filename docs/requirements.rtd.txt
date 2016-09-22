@@ -5,5 +5,4 @@ jsonrpcserver
 bcrypt
 sqlalchemy
 tokenlib
-flask
 PyYAML

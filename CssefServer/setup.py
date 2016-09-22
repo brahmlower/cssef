@@ -31,7 +31,6 @@ setup(
         "sqlalchemy",
         "tokenlib",
         "jsonrpcserver",
-        "flask",
         "PyYAML"
     ],
 )
