@@ -1,7 +1,5 @@
 import unittest
 import os
-from cssefserver import Configuration
-from cssefserver.databaseutils import create_database_connection
 
 try:
     import systemd
@@ -12,13 +10,11 @@ except:
     except ImportError:
         from mock import MagicMock
 
-    class Mock(MagicMock):
-        @classmethod
-        def __getattr__(cls, name):
-                return Mock()
+    sys.modules['systemd'] = MagicMock()
 
-    MOCK_MODULES = ['systemd']
-    sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+from cssefserver import Configuration
+from cssefserver.databaseutils import create_database_connection
+
 
 class CssefTest(unittest.TestCase):
     def setUp(self):
