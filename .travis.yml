@@ -14,7 +14,7 @@ git:
 
 install:
   - sudo pip install nose
-  - sudo pip instal -r requirements.txt
+  - sudo pip install -r requirements.txt
   
 script:
   - nosetests CssefClient/.
