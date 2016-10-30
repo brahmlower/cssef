@@ -13,6 +13,7 @@ from cssefserver.utils import EndpointOutput
 from cssefserver.errors import CssefException
 from cssefserver.errors import CssefObjectDoesNotExist
 from cssefserver.errors import CssefPluginMalformedName
+from cssefserver.errors import CssefPluginInstantiationError
 
 class CssefServer(object):
     """The CSSEF Server object
@@ -39,11 +40,10 @@ class CssefServer(object):
         #self.plugins = []
 
     def load_endpoint_sources(self):
-        from cssefserver.account import tasks as account_tasks
         from cssefserver import tasks as base_tasks
         temp_list = []
         temp_list.append(base_tasks.endpoint_source())
-        temp_list.append(account_tasks.endpoint_source())
+        #temp_list.append(account_tasks.endpoint_source())
         for plugin in self.plugin_manager.available_plugins:
             temp_list.append(plugin.endpoint_info())
         self.endpoint_sources = temp_list
@@ -188,7 +188,7 @@ class PluginManager(object):
 
     def import_from_string(self, module_string):
         if len(module_string.split(".")) != 2:
-            raise errors.CssefPluginMalformedName(module_string)
+            raise CssefPluginMalformedName(module_string)
         module_name = module_string.split(".")[0]
         class_name = module_string.split(".")[1]
         try:
@@ -198,7 +198,7 @@ class PluginManager(object):
             journal.send(message='Plugin import success: {}'.format(module_string)) #pylint: disable=no-member
         except:
             journal.send(message='Plugin import failed: {}'.format(module_string)) #pylint: disable=no-member
-            raise errors.CssefPluginInstantiationError(module_string)
+            raise CssefPluginInstantiationError(module_string)
 
     def import_from_list(self, module_list):
         for module_string in module_list:

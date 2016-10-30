@@ -1,10 +1,10 @@
 import time
 import tokenlib
 from cssefserver import ModelWrapper
-from cssefserver.account.models import User as UserModel
-from cssefserver.account.models import Organization as OrganizationModel
-from cssefserver.account.utils import PasswordHash
-from cssefserver.account.errors import MaxMembersReached
+from cssefserver.models import User as UserModel
+from cssefserver.models import Organization as OrganizationModel
+from cssefserver.utils import PasswordHash
+from cssefserver.errors import MaxMembersReached
 
 class User(ModelWrapper):
     """Defines a basic User object.
@@ -271,3 +271,37 @@ class Organization(ModelWrapper):
         """
         kwargs['organization'] = self.get_id()
         return User(**kwargs)
+
+def authorize_access(db_conn, auth_dict, config):
+    # Check if we're doing user authentication, or admin token auth.
+    if 'admin-token' in auth_dict:
+        # Just check that the auth key matches that of the authkey in the server config file
+        if config.admin_token == auth_dict['admin-token']:
+            # Auth key matched!
+            print "[AUTH INFO] Provided auth-token was correct."
+            return None
+        else:
+            raise errors.AuthIncorrectAdminToken
+    # Importing for this got pretty ugly... :(
+    if not auth_dict.get('username', None):
+        #print "[AUTH WARNING] No username provided."
+        raise errors.NoUsernameProvided
+    if not auth_dict.get('organization', None):
+        print "[AUTH WARNING] No organization was provided."
+        raise errors.NoOrganizationProvided
+    user_list = User.search(db_conn, \
+        username=auth_dict['username'], organization=auth_dict['organization'])
+    if len(user_list) < 1:
+        # No matching user was found
+        raise errors.NonexistentUser
+    if len(user_list) > 1:
+        # There are multiple users. This is extremely bad
+        raise errors.AuthFindsMultipleUsers
+    user = user_list[0]
+    # Authenticate the user
+    if not user.authenticate(auth_dict):
+        raise errors.IncorrectCredentials
+    # Authorize the user
+    if not user.authorized(auth_dict, 'organization'):
+        raise errors.PermissionDenied
+    return user

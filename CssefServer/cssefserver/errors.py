@@ -20,7 +20,6 @@ Allotted error codes: 50 - 150
 """
 import traceback
 from systemd import journal
-#from cssefserver.utils import EndpointOutput
 
 class CssefException(Exception):
     """A basic CSSEF exception to be subclassed
@@ -37,7 +36,7 @@ class CssefException(Exception):
         for i in self.message:
             journal.send(message="(error %d): %s" % (self.value, i)) #pylint: disable=no-member
 
-    def as_return_dict(self):
+    def as_dict(self):
         """Return the error as a return dictionary
 
         This returns a "return_dict", which is just a dictionary containing
@@ -181,3 +180,20 @@ class InvalidPkidValue(CssefException):
     """
     value = 50
     message = ['Provided pkid was not valid.']
+
+class MaxCompetitionsReached(Exception):
+    def __init__(self, max_competitions):
+        super(MaxCompetitionsReached, self).__init__()
+        self.max_competitions = max_competitions
+        self.message = "The maximum number of competitions is %d" % self.max_competitions
+
+    def __str__(self):
+        return repr(self.message)
+
+class MaxMembersReached(Exception):
+    def __init__(self, max_members):
+        super(MaxMembersReached, self).__init__()
+        self.max_members = max_members
+        self.message = "The maximum number of members is %d" % self.max_members
+    def __str__(self):
+        return repr(self.message)

@@ -2,19 +2,6 @@ import tempfile
 import unittest
 import cssefserver
 
-class CssefServerTest(unittest.TestCase):
-    """Tests cssefserver.CssefServer
-    """
-    def test_server(self):
-        server = cssefserver.CssefServer()
-        user_object = create_org_and_user(self.database_connection)
-        self.assertTrue(isinstance(user_object, User))
-
-    def test_edit_user(self):
-        user_object = create_org_and_user(self.database_connection)
-        user_object.edit(name = "Super Bob")
-        self.assertEquals(user_object.name, "Super Bob")
-
 class ConfigurationTest(unittest.TestCase):
     """Tests cssefserver.Configuration
     """

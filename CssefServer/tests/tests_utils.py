@@ -44,7 +44,7 @@ class EndpointOutputTest(unittest.TestCase):
             print end_out.message
             self.assertTrue(end_out.message.endswith("Exception: test_from_traceback\n"))
 
-class ImportPluginManagerTest(unittest.TestCase):
+class PluginManagerTest(unittest.TestCase):
     """ Tests cssefserver.PluginManager
     """
     def test_import_from_string_malformed_no_period(self):
@@ -87,3 +87,38 @@ class ImportPluginManagerTest(unittest.TestCase):
         self.assertEquals(len(plugin_manager.available_plugins), 2)
         for plugin_instance in plugin_manager.available_plugins:
             self.assertTrue(isinstance(plugin_instance, cssefserver.Plugin))
+
+class PasswordHashTest(unittest.TestCase):
+    """Tests cssefserver.utils.PasswordHash
+    """
+    def test_new_utf8_hash(self):
+        plaintext_secret = "7hi$ isa p!aint3xt passw0rd"
+        rounds = 5
+        hash_obj = cssefserver.utils.PasswordHash.new(plaintext_secret, rounds)
+        self.assertTrue(isinstance(hash_obj, cssefserver.utils.PasswordHash))
+
+    def test_new_hash_from_unicode(self):
+        plaintext_secret = u"UNICODE password h3re"
+        rounds = 5
+        hash_obj = cssefserver.utils.PasswordHash.new(plaintext_secret, rounds)
+        self.assertTrue(isinstance(hash_obj, cssefserver.utils.PasswordHash))
+
+    def test_from_existing_hash_string(self):
+        phrase_text = "7hi$ isa p!aint3xt passw0rd"
+        phrase_hash = "$2b$05$gubbsSVmiLWdBN28fjl0p.69iDxyuUjpCX/9B6ypIDRUTKvxDv.2q"
+        hash_obj = cssefserver.utils.PasswordHash(phrase_hash)
+        self.assertTrue(isinstance(hash_obj, cssefserver.utils.PasswordHash))
+        self.assertTrue(str(hash_obj), phrase_hash)
+
+    def test_equals(self):
+        phrase_text = "7hi$ isa p!aint3xt passw0rd"
+        phrase_hash = "$2b$05$gubbsSVmiLWdBN28fjl0p.69iDxyuUjpCX/9B6ypIDRUTKvxDv.2q"
+        hash_obj = cssefserver.utils.PasswordHash(phrase_hash)
+        self.assertTrue(hash_obj == phrase_text)
+        self.assertFalse(hash_obj == None)
+        self.assertFalse(hash_obj == "this is not equal to the phrase")
+        self.assertFalse(hash_obj == u"this is an incorrect unicode string")
+
+class AuthorizeAccessTest(unittest.TestCase):
+    pass
+

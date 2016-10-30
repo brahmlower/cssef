@@ -1,10 +1,10 @@
-import unittest
 import os
+import sys
+import unittest
 
 try:
     import systemd
 except:
-    import sys
     try:
         from unittest.mock import MagicMock
     except ImportError:
@@ -12,9 +12,9 @@ except:
 
     sys.modules['systemd'] = MagicMock()
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cssefserver'))
 from cssefserver import Configuration
 from cssefserver.databaseutils import create_database_connection
-
 
 class CssefTest(unittest.TestCase):
     def setUp(self):
