@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import sys
-from cssefserver import CssefServer
+import cssefserver
 
 class ParseInput(object):
     def __init__(self, input_list):
@@ -71,7 +71,6 @@ if __name__ == "__main__":
     if len(user_input.command) < 0:
         exit_help()
 
-    server = CssefServer(user_input.command_args)
     # The configuration loading process is tricky, since settings provided at
     # runtime may dictate how we load other configurations. Load the runtime
     # configurations, and then load the configurations from the file. We load
@@ -81,8 +80,12 @@ if __name__ == "__main__":
     # 1: Load the runtime configurations
     # 2: Load the file configurations
     # 3: Load the runtime configurations again
-    server.config.load_settings_dict(user_input.command_args)
-    server.config.load_settings_file("/etc/cssef/cssef-server.yml")
-    server.config.load_settings_dict(user_input.command_args)
-    # Now start the server
+    config = cssefserver.Configuration()
+    config.from_dict(user_input.command_args)
+    config.from_file("/etc/cssef/cssef-server.yml")
+    config.from_dict(user_input.command_args)
+
+    # Create the server object based on the configuration we built, and then
+    # start it.
+    server = cssefserver.CssefServer(config = config)
     server.start()

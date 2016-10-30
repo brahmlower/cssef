@@ -9,8 +9,6 @@ from jsonrpcserver import dispatch
 from jsonrpcserver import Methods
 # Local imports
 from cssefserver.databaseutils import create_database_connection
-from cssefserver.utils import handle_exception
-from cssefserver.utils import import_plugins
 from cssefserver.utils import EndpointOutput
 from cssefserver.errors import CssefException
 from cssefserver.errors import CssefObjectDoesNotExist
@@ -37,7 +35,8 @@ class CssefServer(object):
         self.endpoint_sources = []
 
         # The list of plugins we will be running with
-        self.plugins = []
+        self.plugin_manager = PluginManager(module_list = self.config.installed_plugins)
+        #self.plugins = []
 
     def load_endpoint_sources(self):
         from cssefserver.account import tasks as account_tasks
@@ -45,16 +44,16 @@ class CssefServer(object):
         temp_list = []
         temp_list.append(base_tasks.endpoint_source())
         temp_list.append(account_tasks.endpoint_source())
-        for i in self.plugins:
-            temp_list.append(i.endpoint_info())
+        for plugin in self.plugin_manager.available_plugins:
+            temp_list.append(plugin.endpoint_info())
         self.endpoint_sources = temp_list
 
-    def load_source_endpoints(self, source):
-        journal.send(message="Loading endpoints from source '%s'." % source['name']) #pylint: disable=no-member
-        for endpoint in source['endpoints']:
-            # Instantiate the endpoint and pass it a reference to the server
-            instance = endpoint['reference'](self)
-            self.rpc_methods.add_method(instance, endpoint['rpc_name'])
+    #def load_source_endpoints(self, source):
+    #    journal.send(message="Loading endpoints from source '%s'." % source['name']) #pylint: disable=no-member
+    #    for endpoint in source['endpoints']:
+    #        # Instantiate the endpoint and pass it a reference to the server
+    #        instance = endpoint['reference'](self)
+    #        self.rpc_methods.add_method(instance, endpoint['rpc_name'])
 
     def load_endpoints(self):
         """Instantiates RPC endpoints
@@ -69,7 +68,11 @@ class CssefServer(object):
         """
         journal.send(message="Loading endpoints from %d sources." % len(self.endpoint_sources))
         for source in self.endpoint_sources:
-            self.load_source_endpoints(source)
+            journal.send(message="Loading endpoints from source '%s'." % source['name']) #pylint: disable=no-member
+            for endpoint in source['endpoints']:
+                # Instantiate the endpoint and pass it a reference to the server
+                instance = endpoint['reference'](self)
+                self.rpc_methods.add_method(instance, endpoint['rpc_name'])
 
     def start(self):
         """Starts running the service
@@ -89,7 +92,7 @@ class CssefServer(object):
         # Plugin imports *must* happen before making the database connection
         # otherwise tables won't be made for plugins
         journal.send(message='Starting plugin import') #pylint: disable=no-member
-        self.plugins = import_plugins(self.config.installed_plugins)
+        #self.plugins = import_plugins(self.config.installed_plugins)
         # The database connection *must* be initialized before loading the rpc
         # endpoints, otherwise the endpoints will get the default value for
         # the database_connection, which is None (breaks everything)
@@ -118,6 +121,7 @@ class Configuration(object):
         self.database_path = ""
         # General configurations
         self.auth_failover = True
+        self.auth_token_salt = ""
         # Logging configurations
         self.cssef_loglevel = ""
         self.cssef_stderr = ""
@@ -133,12 +137,11 @@ class Configuration(object):
 
     def set_setting(self, setting_name, setting_value):
         if not self._valid_setting(setting_name):
-            return False
+            raise ValueError("Invalid configuration setting {}".format(setting_name))
         setting_name = self._clean_setting(setting_name)
         setattr(self, setting_name, setting_value)
-        return True
 
-    def load_settings_file(self, settings_file_path):
+    def from_file(self, settings_file_path):
         """Load configuration from a file
 
         This will read a yaml configuration file. The yaml file is converted
@@ -150,14 +153,11 @@ class Configuration(object):
         Returns:
             None
         """
-        try:
-            settings_file = open(settings_file_path, 'r')
+        with open(settings_file_path, 'r') as settings_file:
             settings_dict = yaml.load(settings_file)
-            self.load_settings_dict(settings_dict)
-        except IOError:
-            journal.send(message="Failed to load configuration file at '%s'." % settings_file_path) #pylint: disable=no-member
+        self.from_dict(settings_dict)
 
-    def load_settings_dict(self, settings_dict):
+    def from_dict(self, settings_dict):
         """Load configurations from a dictionary
 
         This will convert strings with hyphens (-) to underscores (_) that way
@@ -174,10 +174,35 @@ class Configuration(object):
             None
         """
         for i in settings_dict:
-            if self.set_setting(i, settings_dict[i]):
+            try:
+                self.set_setting(i, settings_dict[i])
                 journal.send(message="Configuration '%s' set to '%s'." % (i, settings_dict[i])) #pylint: disable=no-member
-            else:
+            except ValueError:
                 journal.send(message="Ignoring invalid configuration '%s'." % i) #pylint: disable=no-member
+
+class PluginManager(object):
+    def __init__(self, module_list = None):
+        self.available_plugins = []
+        if module_list != None:
+            self.import_from_list(module_list)
+
+    def import_from_string(self, module_string):
+        if len(module_string.split(".")) != 2:
+            raise errors.CssefPluginMalformedName(module_string)
+        module_name = module_string.split(".")[0]
+        class_name = module_string.split(".")[1]
+        try:
+            module = __import__(module_name)
+            plugin_class_ref = getattr(module, class_name)
+            self.available_plugins.append(plugin_class_ref())
+            journal.send(message='Plugin import success: {}'.format(module_string)) #pylint: disable=no-member
+        except:
+            journal.send(message='Plugin import failed: {}'.format(module_string)) #pylint: disable=no-member
+            raise errors.CssefPluginInstantiationError(module_string)
+
+    def import_from_list(self, module_list):
+        for module_string in module_list:
+            self.import_from_string(module_string)
 
 class Plugin(object):
     """A base competition plugin class
@@ -207,6 +232,7 @@ class Plugin(object):
         tmp_dict['version'] = self.__version__
         return tmp_dict
 
+#TODO: Write unit tests
 class ModelWrapper(object):
     """ The base class for wrapping SQLAlchemy model objects
 

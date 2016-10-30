@@ -18,41 +18,46 @@ class CssefServerTest(unittest.TestCase):
 class ConfigurationTest(unittest.TestCase):
     """Tests cssefserver.Configuration
     """
-    def test_settings_via_direct(self):
+    def test_set_setting(self):
         # Prepare the settings data to use
-        setting = 'admin-token'
-        value = 'this is a token'
+        setting_name = 'admin-token'
+        setting_value = 'this is a token'
         # Test the settings
         configuration = cssefserver.Configuration()
-        configuration.set_setting(setting, value)
-        self.assertEquals(configuration.admin_token, value)
+        configuration.set_setting(setting_name, setting_value)
+        self.assertEquals(configuration.admin_token, setting_value)
 
-    def test_settings_via_dict(self):
+    def test_set_setting_fails(self):
+        setting_name = 'not-real'
+        configuration = cssefserver.Configuration()
+        with self.assertRaises(ValueError) as context:
+            configuration.set_setting(setting_name, 'testvalue')
+
+    def test_from_dict(self):
         # Prepare the settings data to use
-        settings_dict = {'admin-token': 'this is a token'}
+        settings_dict = {'admin-token': 'this is a token', "database-table-prefix": "test"}
         # Test the settings
         configuration = cssefserver.Configuration()
-        configuration.load_settings_dict(settings_dict)
+        configuration.from_dict(settings_dict)
         self.assertEquals(configuration.admin_token, settings_dict['admin-token'])
 
-    def test_settings_via_file(self):
+    def test_from_dict_setting_fails(self):
+        # Prepare the settings data to use
+        settings_dict = {'admin-token': 'this is a token', "not-real": "test"}
+        # Test the settings
+        configuration = cssefserver.Configuration()
+        configuration.from_dict(settings_dict)
+        self.assertEquals(configuration.admin_token, settings_dict['admin-token'])
+
+    def test_from_file(self):
         # Prepare the settings data to use
         settings_file = tempfile.NamedTemporaryFile()
         settings_file.write("installed-plugins:\n- cssefctf.CaptureTheFlag")
         settings_file.flush()
         # Test the settings
         configuration = cssefserver.Configuration()
-        configuration.load_settings_file(settings_file.name)
+        configuration.from_file(settings_file.name)
         self.assertEquals(configuration.installed_plugins, ['cssefctf.CaptureTheFlag'])
-
-    def test_multiple_settings_via_dict(self):
-        # Prepare the settings data to use
-        settings_dict = { "admin-token": "abcd", "database-table-prefix": "test" }
-        # Test the settings
-        configuration = cssefserver.Configuration()
-        configuration.load_settings_dict(settings_dict)
-        self.assertEquals(configuration.admin_token, settings_dict['admin-token'])
-        self.assertEquals(configuration.database_table_prefix, settings_dict['database-table-prefix'])
 
 class PluginTest(unittest.TestCase):
     def test_as_dict(self):
@@ -67,6 +72,3 @@ class PluginTest(unittest.TestCase):
         endpoint_info = cssefserver.Plugin.endpoint_info()
         self.assertEquals(golden_dict, endpoint_info)
 
-class ModelWrapperTest(unittest.TestCase):
-    """Tests cssefserver.ModelWrapper
-    """

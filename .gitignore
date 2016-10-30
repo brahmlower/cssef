@@ -1,6 +1,8 @@
 *.pyc
 *.pid
 .DS_Store
+*.coverage
+*coverage_html
 db.sqlite3
 docs/build/
 docs/source/autodoc

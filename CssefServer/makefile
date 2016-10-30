@@ -17,7 +17,10 @@ uninstall:
 
 reinstall: uninstall install
 
+clean:
+	rm tests/*.pyc
+	rm cssefserver/*.pyc
+	rm .coverage
+
 test:
-	pylint cssefserver/ --errors-only
-	pylint cssef-server --errors-only
-	nosetests .
+	nosetests

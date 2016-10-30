@@ -32,6 +32,11 @@ class CssefException(Exception):
     value = None
     message = None
 
+    def log(self):
+        journal.send(message="(error %d): Caught a CSSEF error" % self.value) #pylint: disable=no-member
+        for i in self.message:
+            journal.send(message="(error %d): %s" % (self.value, i)) #pylint: disable=no-member
+
     def as_return_dict(self):
         """Return the error as a return dictionary
 
@@ -47,9 +52,10 @@ class CssefException(Exception):
             ``{'value': 1, 'message': ['Example message'], 'content': []}``
         """
         # Log everything we need first
-        journal.send(message="(error %d): Caught a CSSEF error" % self.value) #pylint: disable=no-member
-        for i in self.message:
-            journal.send(message="(error %d): %s" % (self.value, i)) #pylint: disable=no-member
+        self.log()
+        # journal.send(message="(error %d): Caught a CSSEF error" % self.value) #pylint: disable=no-member
+        # for i in self.message:
+        #     journal.send(message="(error %d): %s" % (self.value, i)) #pylint: disable=no-member
 
         # Now build the return object
         return {"value": self.value, "message": self.message}

@@ -6,9 +6,6 @@ from cssefserver.account.models import Organization as OrganizationModel
 from cssefserver.account.utils import PasswordHash
 from cssefserver.account.errors import MaxMembersReached
 
-# TODO: THIS IS HARDCODED, WHICH IS BAD
-SECRET_SALT = "Gv1Z5EYyCJzNuc6hEbj5fd+E2P4+iNFw"
-
 class User(ModelWrapper):
     """Defines a basic User object.
 
@@ -153,7 +150,7 @@ class User(ModelWrapper):
             <todo>
         """
         try:
-            token = tokenlib.parse_token(raw_token, secret=SECRET_SALT, now=time.time())
+            token = tokenlib.parse_token(raw_token, secret=self.server.config.auth_token_salt, now=time.time())
         except tokenlib.errors.MalformedTokenError:
             return False
         # This is a large comparison, so it's been split into three booleans
@@ -183,7 +180,7 @@ class User(ModelWrapper):
         token_dict = {"id": self.get_id(),
                       "username": self.username, #pylint: disable=no-member
                       "organization": self.organization} #pylint: disable=no-member
-        token = tokenlib.make_token(token_dict, secret=SECRET_SALT)
+        token = tokenlib.make_token(token_dict, secret=self.server.config.auth_token_salt)
         return token
 
 class Organization(ModelWrapper):

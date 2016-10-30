@@ -1,6 +1,6 @@
 import abc
 from cssefserver.utils import EndpointOutput
-from cssefserver.utils import handle_exception
+#from cssefserver.utils import handle_exception
 from cssefserver.errors import CssefException
 from cssefserver.errors import InvalidPkidValue
 
@@ -48,7 +48,8 @@ class CssefRPCEndpoint(object):
         except CssefException as err:
             return err.as_return_dict()
         except Exception as err:
-            return handle_exception()
+            #return handle_exception()
+            return EndpointOutput.from_traceback().as_dict()
 
     @classmethod
     def info_dict(cls):
