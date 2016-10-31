@@ -234,6 +234,7 @@ class ModelWrapper(object):
         self.server = server
         self.model = model
         self.define_properties()
+        self.auto_commit = True
 
     def define_properties(self):
         for i in self.fields:
@@ -251,16 +252,32 @@ class ModelWrapper(object):
     def dec_set(self, attribute):
         def default_set(self, value):
             setattr(self.model, attribute, value)
-            self.server.database_connection.commit()
+            # Check we're supposed to auto commit database changes
+            # This is true by default
+            if self.auto_commit:
+                self.server.database_connection.commit()
         return default_set
 
     def get_id(self):
         return self.model.pkid
 
     def edit(self, **kwargs):
+        # Record the previous state so we can reset it afterward
+        prior_commit_state = self.auto_commit
+        # Disable auto database commit in case of failures
+        self.auto_commit = False
         for i in kwargs:
             if i in self.fields:
                 setattr(self, i, kwargs[i])
+            else:
+                # The setting wasn't a field, reset the commit state
+                # and the raise an error without committing
+                self.auto_commit = prior_commit_state
+                raise ValueError("No such field '{}'".format(i))
+        # The edit finished correctly. Commit the database changes
+        # and then reset the commit sate to what it was before
+        self.server.database_connection.commit()
+        self.auto_commit = prior_commit_state
 
     def delete(self):
         self.server.database_connection.delete(self.model)
@@ -295,7 +312,7 @@ class ModelWrapper(object):
         try:
             return cls.search(server, pkid=pkid)[0]
         except IndexError:
-            return None
+            raise CssefObjectDoesNotExist("No object with ID: '{}'".format(pkid))
 
     @classmethod
     def from_dict(cls, server, kw_dict):

@@ -7,6 +7,7 @@ from cssefserver.taskutils import model_get
 from cssefserver.taskutils import model_set
 from cssefserver.api import Organization
 from cssefserver.utils import EndpointOutput
+from cssefserver.errors import CssefObjectDoesNotExist
 
 class ModelDelTest(CssefTest):
     """ Tests cssefserver.taskutils.model_del
@@ -31,12 +32,13 @@ class ModelDelTest(CssefTest):
 
     def test_del_missing_pkid(self):
         # Delete an object that isn't even there
-        output = model_del(Organization, self.server, 1)
-        # Make sure the return is what we expected
-        self.assertTrue(isinstance(output, EndpointOutput))
-        self.assertTrue(isinstance(output.content, list))
-        self.assertEquals(len(output.content), 0)
-        self.assertNotEquals(output.value, 0)
+        with self.assertRaises(CssefObjectDoesNotExist) as context:
+            output = model_del(Organization, self.server, 1)
+        # # Make sure the return is what we expected
+        # self.assertTrue(isinstance(output, EndpointOutput))
+        # self.assertTrue(isinstance(output.content, list))
+        # self.assertEquals(len(output.content), 0)
+        # self.assertNotEquals(output.value, 0)
 
 class ModelSetTest(CssefTest):
     """Tests cssefserver.taskutils.model_set

@@ -1,4 +1,3 @@
-mock
 prettytable
 jsonrpcclient
 jsonrpcserver

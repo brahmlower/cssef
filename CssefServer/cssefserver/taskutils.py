@@ -80,8 +80,7 @@ def model_del(cls, server, pkid):
         dict: A return dict indicating the result of the operation.
     """
     model_obj = cls.from_database(server, pkid)
-    if model_obj:
-        model_obj.delete()
+    model_obj.delete()
     return EndpointOutput()
 
 def model_set(cls, server, pkid, **kwargs):
