@@ -15,7 +15,7 @@ setup(
     license = "GPL-3.0",
 
     # Packages:
-    packages = ["cssefserver", "cssefserver.account"],
+    packages = ["cssefserver"],
 
     # Details:
     url = "http://github.com/bplower/cssef/",
@@ -26,7 +26,6 @@ setup(
 
     # Dependant packages:
     install_requires = [
-        "systemd",
         "bcrypt",
         "sqlalchemy",
         "tokenlib",

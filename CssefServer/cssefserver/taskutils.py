@@ -1,7 +1,6 @@
 import abc
 from cssefserver.utils import EndpointOutput
 from cssefserver.errors import CssefException
-from cssefserver.errors import InvalidPkidValue
 
 class CssefRPCEndpoint(object):
     """Base class for RPC endpoints
@@ -68,53 +67,52 @@ class CssefRPCEndpoint(object):
         """
         pass # pragma: no cover
 
-# TODO: Split this function up. It's horribl by every measure...
-def model_del(cls, database_connection, pkid):
+def model_del(cls, server, pkid):
     """Genaric function to delete models
 
     Args:
         cls (Model): The class type the pkid is refering to.
-        database_connection (sqlalchemy.orm.Session): The existing database
+        server (sqlalchemy.orm.Session): The existing database
             connection to use.
         pkid (int): The ID of the model instance to be deleted.
 
     Return:
         dict: A return dict indicating the result of the operation.
     """
-    model_obj = cls.from_database(database_connection, pkid)
+    model_obj = cls.from_database(server, pkid)
     if model_obj:
         model_obj.delete()
     return EndpointOutput()
 
-def model_set(cls, database_connection, pkid, **kwargs):
+def model_set(cls, server, pkid, **kwargs):
     """Genaric function to modify model values
 
     Args:
         cls (Model): The class type the pkid is refering to.
-        database_connection (sqlalchemy.orm.Session): The existing database
+        server (sqlalchemy.orm.Session): The existing database
             connection to use.
         pkid (int): The ID of the model instance to be modified.
 
     Return:
         dict: A return dict indicating the result of the operation.
     """
-    model_obj = cls.from_database(database_connection, pkid)
+    model_obj = cls.from_database(server, pkid)
     model_obj.edit(**kwargs)
     content = [model_obj.as_dict()]
     return EndpointOutput(content=content)
 
-def model_get(cls, database_connection, **kwargs):
+def model_get(cls, server, **kwargs):
     """Genaric function to get models
 
     Args:
         cls (Model): The class type to get entries from.
-        database_connection (sqlalchemy.orm.Session): The existing database
+        server (sqlalchemy.orm.Session): The existing database
             connection to use.
 
     Return:
         dict: A return dict indicating the result of the operation.
     """
-    model_objs = cls.search(database_connection, **kwargs)
+    model_objs = cls.search(server, **kwargs)
     output = EndpointOutput()
     # TODO: We're looping over the whole list because we need to cast it all
     # to a dictionary. Really we should just define a proper way to serialize

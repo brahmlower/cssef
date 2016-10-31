@@ -1,7 +1,6 @@
 import traceback
+import logging
 import bcrypt
-from systemd import journal
-from cssefserver import errors
 
 class PasswordHash(object):
     """
@@ -70,10 +69,10 @@ class EndpointOutput(object):
     def log(self):
         # Check if this was an unexpected error (ID = 1)
         if self.value == 1:
-            log_message = "(error %d): Encountered runtime error with given ID %d. Observe the following stack trace:" % (self.value, self.value)
-            journal.send(message=log_message) #pylint: disable=no-member 
+            log_message = "(error {}): Encountered runtime error with given ID {}. Observe the following stack trace:".format(self.value, self.value)
+            logging.warning(log_message)
             for i in self.message.splitlines():
-                journal.send(message="(error %d): %s" % (self.value, i)) #pylint: disable=no-member 
+                logging.warning("(error {}): {}".format(self.value, i))
 
     def as_dict(self):
         temp_dict = {}

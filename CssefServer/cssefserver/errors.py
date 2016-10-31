@@ -19,7 +19,8 @@ Allotted error codes: 50 - 150
 
 """
 import traceback
-from systemd import journal
+import logging
+#from systemd import journal
 
 class CssefException(Exception):
     """A basic CSSEF exception to be subclassed
@@ -32,9 +33,11 @@ class CssefException(Exception):
     message = None
 
     def log(self):
-        journal.send(message="(error %d): Caught a CSSEF error" % self.value) #pylint: disable=no-member
+        logging.warning("(error {}): Caught a CSSEF error".format(self.value))
+        #journal.send(message=) #pylint: disable=no-member
         for i in self.message:
-            journal.send(message="(error %d): %s" % (self.value, i)) #pylint: disable=no-member
+            logging.warning("(error {}): {}".format(self.value, i))
+            #journal.send(message=) #pylint: disable=no-member
 
     def as_dict(self):
         """Return the error as a return dictionary

@@ -1,10 +1,18 @@
 import time
+import logging
 import tokenlib
 from cssefserver import ModelWrapper
 from cssefserver.models import User as UserModel
 from cssefserver.models import Organization as OrganizationModel
 from cssefserver.utils import PasswordHash
 from cssefserver.errors import MaxMembersReached
+from cssefserver.errors import AuthIncorrectAdminToken
+from cssefserver.errors import NoUsernameProvided
+from cssefserver.errors import NoOrganizationProvided
+from cssefserver.errors import NonexistentUser
+from cssefserver.errors import AuthFindsMultipleUsers
+from cssefserver.errors import IncorrectCredentials
+from cssefserver.errors import PermissionDenied
 
 class User(ModelWrapper):
     """Defines a basic User object.
@@ -71,11 +79,11 @@ class User(ModelWrapper):
         rounds = 10
         pass_hash = PasswordHash.new(value, rounds)
         self.model.password = pass_hash.hash
-        self.db_conn.commit()
+        self.server.database_connection.commit()
 
     @classmethod
-    def from_dict(cls, db_conn, kw_dict):
-        org = Organization.from_database(db_conn, pkid=kw_dict['organization'])
+    def from_dict(cls, server, kw_dict):
+        org = Organization.from_database(server, pkid=kw_dict['organization'])
         if not org:
             print "Failed to get organization with pkid '%s'" % kw_dict['organization']
             raise ValueError
@@ -83,12 +91,12 @@ class User(ModelWrapper):
             raise MaxMembersReached(org.max_members)
         # Copied right from ModelWrapper.from_dict
         model_object_inst = cls.model_object()
-        cls_inst = cls(db_conn, model_object_inst)
+        cls_inst = cls(server, model_object_inst)
         for i in kw_dict:
             if i in cls_inst.fields:
                 setattr(cls_inst, i, kw_dict[i])
-        db_conn.add(cls_inst.model)
-        db_conn.commit()
+        server.database_connection.add(cls_inst.model)
+        server.database_connection.commit()
         org.set_num_members()
         return cls_inst
 
@@ -239,8 +247,8 @@ class Organization(ModelWrapper):
         Returns:
             int: The number of users that are part of the oragnizaiton
         """
-        self.model.num_members = User.count(self.db_conn, organization=self.get_id())
-        self.db_conn.commit()
+        self.model.num_members = User.count(self.server.database_connection, organization=self.get_id())
+        self.server.database_connection.commit()
 
     def get_num_competitions(self):
         return self.model.set_num_competitions
@@ -272,36 +280,36 @@ class Organization(ModelWrapper):
         kwargs['organization'] = self.get_id()
         return User(**kwargs)
 
-def authorize_access(db_conn, auth_dict, config):
+def authorize_access(server, auth_dict, config):
     # Check if we're doing user authentication, or admin token auth.
     if 'admin-token' in auth_dict:
         # Just check that the auth key matches that of the authkey in the server config file
         if config.admin_token == auth_dict['admin-token']:
-            # Auth key matched!
-            print "[AUTH INFO] Provided auth-token was correct."
+            # Auth key matched
+            logging.debug("[AUTH INFO] Provided auth-token was correct.")
             return None
         else:
-            raise errors.AuthIncorrectAdminToken
+            raise AuthIncorrectAdminToken
     # Importing for this got pretty ugly... :(
     if not auth_dict.get('username', None):
         #print "[AUTH WARNING] No username provided."
-        raise errors.NoUsernameProvided
+        raise NoUsernameProvided
     if not auth_dict.get('organization', None):
-        print "[AUTH WARNING] No organization was provided."
-        raise errors.NoOrganizationProvided
-    user_list = User.search(db_conn, \
+        logging.debug("[AUTH WARNING] No organization was provided.")
+        raise NoOrganizationProvided
+    user_list = User.search(server, \
         username=auth_dict['username'], organization=auth_dict['organization'])
     if len(user_list) < 1:
         # No matching user was found
-        raise errors.NonexistentUser
+        raise NonexistentUser
     if len(user_list) > 1:
         # There are multiple users. This is extremely bad
-        raise errors.AuthFindsMultipleUsers
+        raise AuthFindsMultipleUsers
     user = user_list[0]
     # Authenticate the user
     if not user.authenticate(auth_dict):
-        raise errors.IncorrectCredentials
+        raise IncorrectCredentials
     # Authorize the user
     if not user.authorized(auth_dict, 'organization'):
-        raise errors.PermissionDenied
+        raise PermissionDenied
     return user

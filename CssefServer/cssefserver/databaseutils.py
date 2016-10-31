@@ -1,4 +1,5 @@
-from systemd import journal
+#from systemd import journal
+import logging
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import ForeignKey
@@ -25,7 +26,7 @@ class BaseModel(object):
         table_prefix = "cssef"#cssefserver.config.database_table_prefix
         module_prefix = "test"
         module_name = self.__name__.lower()
-        return "%s_%s_%s" % (table_prefix, module_prefix, module_name)
+        return "{}_{}_{}".format(table_prefix, module_prefix, module_name)
 
 def get_foreign_key(cls, column="pkid"):
     """Gets foreign key of another model
@@ -44,12 +45,12 @@ def get_foreign_key(cls, column="pkid"):
 
 def create_database_connection(database_path=''):
     """Returns a database session for the specified database"""
-    journal.send(message='Initializing database connection') #pylint: disable=no-member
+    logging.info("Initializing database connection")
     database_engine = create_engine('sqlite:///' + database_path)
     try:
         BASE.metadata.create_all(database_engine)
     except OperationalError as error:
-        journal.send(message='Failed to open or sync database file: %s' % database_path) #pylint: disable=no-member
+        logging.error("Failed to open or sync database file: {}".format(database_path))
         raise error
     BASE.metadata.bind = database_engine
     database_session = sessionmaker(bind=database_engine)

@@ -1,8 +1,8 @@
 import os
 import os.path
+import sys
 import abc
-import traceback
-from systemd import journal
+import logging
 import yaml
 # RPC Server related imports
 from jsonrpcserver import dispatch
@@ -23,7 +23,8 @@ class CssefServer(object):
     incoming requests.
     """
     def __init__(self, config=None):
-        if not config:
+        self.config = config
+        if not self.config:
             self.config = Configuration()
 
         # This is the database connection
@@ -36,24 +37,15 @@ class CssefServer(object):
         self.endpoint_sources = []
 
         # The list of plugins we will be running with
-        self.plugin_manager = PluginManager(module_list = self.config.installed_plugins)
-        #self.plugins = []
+        self.plugin_manager = PluginManager(module_list=self.config.installed_plugins)
 
     def load_endpoint_sources(self):
         from cssefserver import tasks as base_tasks
         temp_list = []
         temp_list.append(base_tasks.endpoint_source())
-        #temp_list.append(account_tasks.endpoint_source())
         for plugin in self.plugin_manager.available_plugins:
             temp_list.append(plugin.endpoint_info())
         self.endpoint_sources = temp_list
-
-    #def load_source_endpoints(self, source):
-    #    journal.send(message="Loading endpoints from source '%s'." % source['name']) #pylint: disable=no-member
-    #    for endpoint in source['endpoints']:
-    #        # Instantiate the endpoint and pass it a reference to the server
-    #        instance = endpoint['reference'](self)
-    #        self.rpc_methods.add_method(instance, endpoint['rpc_name'])
 
     def load_endpoints(self):
         """Instantiates RPC endpoints
@@ -66,9 +58,9 @@ class CssefServer(object):
         Returns:
             None
         """
-        journal.send(message="Loading endpoints from %d sources." % len(self.endpoint_sources))
+        logging.info("Loading endpoints from {} sources.".format(len(self.endpoint_sources)))
         for source in self.endpoint_sources:
-            journal.send(message="Loading endpoints from source '%s'." % source['name']) #pylint: disable=no-member
+            logging.info("Loading endpoints from source '{}'.".format(source['name']))
             for endpoint in source['endpoints']:
                 # Instantiate the endpoint and pass it a reference to the server
                 instance = endpoint['reference'](self)
@@ -88,21 +80,12 @@ class CssefServer(object):
         Returns:
             None
         """
-
-        # Plugin imports *must* happen before making the database connection
-        # otherwise tables won't be made for plugins
-        journal.send(message='Starting plugin import') #pylint: disable=no-member
-        #self.plugins = import_plugins(self.config.installed_plugins)
-        # The database connection *must* be initialized before loading the rpc
-        # endpoints, otherwise the endpoints will get the default value for
-        # the database_connection, which is None (breaks everything)
-        self.database_connection = create_database_connection(self.config.database_path)
         # Load the RCP Endpoints, instantiating each one and making it
         # available for the web server
         self.load_endpoint_sources()
         self.load_endpoints()
         # Start listening for rpc requests
-        journal.send(message='Starting httpserver') #pylint: disable=no-member
+        logging.info('Starting httpserver')
         self.rpc_methods.serve_forever()
 
 class Configuration(object):
@@ -176,12 +159,12 @@ class Configuration(object):
         for i in settings_dict:
             try:
                 self.set_setting(i, settings_dict[i])
-                journal.send(message="Configuration '%s' set to '%s'." % (i, settings_dict[i])) #pylint: disable=no-member
+                logging.info("Configuration '{}' set to '{}'.".format(i, settings_dict[i]))
             except ValueError:
-                journal.send(message="Ignoring invalid configuration '%s'." % i) #pylint: disable=no-member
+                logging.warning("Ignoring invalid configuration '{}'.".format(i))
 
 class PluginManager(object):
-    def __init__(self, module_list = None):
+    def __init__(self, module_list=None):
         self.available_plugins = []
         if module_list != None:
             self.import_from_list(module_list)
@@ -195,9 +178,9 @@ class PluginManager(object):
             module = __import__(module_name)
             plugin_class_ref = getattr(module, class_name)
             self.available_plugins.append(plugin_class_ref())
-            journal.send(message='Plugin import success: {}'.format(module_string)) #pylint: disable=no-member
+            logging.info('Plugin import success: {}'.format(module_string))
         except:
-            journal.send(message='Plugin import failed: {}'.format(module_string)) #pylint: disable=no-member
+            logging.warning('Plugin import failed: {}'.format(module_string))
             raise CssefPluginInstantiationError(module_string)
 
     def import_from_list(self, module_list):
@@ -232,7 +215,6 @@ class Plugin(object):
         tmp_dict['version'] = self.__version__
         return tmp_dict
 
-#TODO: Write unit tests
 class ModelWrapper(object):
     """ The base class for wrapping SQLAlchemy model objects
 
@@ -248,8 +230,8 @@ class ModelWrapper(object):
     model_object = None
     fields = []
 
-    def __init__(self, db_conn, model):
-        self.db_conn = db_conn
+    def __init__(self, server, model):
+        self.server = server
         self.model = model
         self.define_properties()
 
@@ -269,7 +251,7 @@ class ModelWrapper(object):
     def dec_set(self, attribute):
         def default_set(self, value):
             setattr(self.model, attribute, value)
-            self.db_conn.commit()
+            self.server.database_connection.commit()
         return default_set
 
     def get_id(self):
@@ -281,8 +263,8 @@ class ModelWrapper(object):
                 setattr(self, i, kwargs[i])
 
     def delete(self):
-        self.db_conn.delete(self.model)
-        self.db_conn.commit()
+        self.server.database_connection.delete(self.model)
+        self.server.database_connection.commit()
 
     def as_dict(self):
         tmp_dict = {}
@@ -297,31 +279,120 @@ class ModelWrapper(object):
         return tmp_dict
 
     @classmethod
-    def count(cls, db_conn, **kwargs):
-        return db_conn.query(cls.model_object).filter_by(**kwargs).count()
+    def count(cls, server, **kwargs):
+        return server.database_connection.query(cls.model_object).filter_by(**kwargs).count()
 
     @classmethod
-    def search(cls, db_conn, **kwargs):
-        model_object_list = db_conn.query(cls.model_object).filter_by(**kwargs)
+    def search(cls, server, **kwargs):
+        model_object_list = server.database_connection.query(cls.model_object).filter_by(**kwargs)
         cls_list = []
         for i in model_object_list:
-            cls_list.append(cls(db_conn, i))
+            cls_list.append(cls(server, i))
         return cls_list
 
     @classmethod
-    def from_database(cls, db_conn, pkid):
+    def from_database(cls, server, pkid):
         try:
-            return cls.search(db_conn, pkid=pkid)[0]
+            return cls.search(server, pkid=pkid)[0]
         except IndexError:
             return None
 
     @classmethod
-    def from_dict(cls, db_conn, kw_dict):
+    def from_dict(cls, server, kw_dict):
         model_object_inst = cls.model_object() #pylint: disable=not-callable
-        cls_inst = cls(db_conn, model_object_inst)
+        cls_inst = cls(server, model_object_inst)
         for i in kw_dict:
             if i in cls_inst.fields:
                 setattr(cls_inst, i, kw_dict[i])
-        db_conn.add(cls_inst.model)
-        db_conn.commit()
+        server.database_connection.add(cls_inst.model)
+        server.database_connection.commit()
         return cls_inst
+
+class ParseInput(object):
+    def __init__(self, input_list):
+        self.remaining_args = input_list
+        self.options = {}
+        self.command = []
+        self.command_args = {}
+        self.parse_input()
+
+    def parse_input(self):
+        self.parse_command()
+        self.parse_command_args()
+
+    def parse_options(self):
+        index = 0
+        while index < len(self.remaining_args) and self.remaining_args[index][0] == '-':
+            argument = self.remaining_args[index]
+            argument = argument.strip('-')
+            if len(argument.split("=")) > 1:
+                # The value is in the same argument
+                keyword = argument.split('=')[0]
+                value = argument.split('=')[1]
+            else:
+                # The value is in the next argument
+                keyword = argument
+                value = self.remaining_args[index + 1]
+                index += 1
+            self.options[keyword] = value
+            index += 1
+        self.remaining_args = self.remaining_args[index:]
+
+    def parse_command(self):
+        index = 0
+        while index < len(self.remaining_args) and self.remaining_args[index][0] != '-':
+            self.command.append(self.remaining_args[index])
+            index += 1
+        self.remaining_args = self.remaining_args[index:]
+
+    def parse_command_args(self):
+        index = 0
+        while index < len(self.remaining_args) and self.remaining_args[index][0] == '-':
+            argument = self.remaining_args[index]
+            argument = argument.strip('-')
+            if len(argument.split("=")) > 1:
+                # The value is in the same argument
+                keyword = argument.split('=')[0].replace('-', '_')
+                value = argument.split('=')[1]
+            else:
+                # The value is in the next argument
+                keyword = argument.replace('-', '_')
+                try:
+                    value = self.remaining_args[index + 1]
+                except IndexError:
+                    # There is no next error. Complain and quit
+                    sys.exit("Expected value in for argument, but got none.")
+                index += 1
+            self.command_args[keyword] = value
+            index += 1
+
+def main(raw_input_list):
+    # Parse the user input. Make sure a command was provided and that it is
+    # one of the available commands
+    logging.basicConfig(level=logging.DEBUG)
+    user_input = ParseInput(raw_input_list)
+    if len(user_input.command) < 0:
+        sys.exit("Usage: cssef-server [options]")
+
+    # The configuration loading process is tricky, since settings provided at
+    # runtime may dictate how we load other configurations. Load the runtime
+    # configurations, and then load the configurations from the file. We load
+    # the runtime configurations again to reset any configurations that may have
+    # been overwritten while loading from the file.
+
+    # 1: Load the runtime configurations
+    # 2: Load the file configurations
+    # 3: Load the runtime configurations again
+    config = Configuration()
+    config.from_dict(user_input.command_args)
+    config.from_file("/etc/cssef/cssef-server.yml")
+    config.from_dict(user_input.command_args)
+
+    # Create the server object based on the configuration we built, and then
+    # start it.
+    server = CssefServer(config=config)
+    # The database connection *must* be initialized before loading the rpc
+    # endpoints, otherwise the endpoints will get the default value for
+    # the database_connection, which is None (breaks everything)
+    server.database_connection = create_database_connection(server.config.database_path)
+    server.start()
