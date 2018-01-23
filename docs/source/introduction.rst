@@ -1,10 +1,12 @@
 Introduction
 ============
 
-.. attention::
-	The project is still undergoing heavy development. As such, the state of
-	the project may change at any time - please do not assume anything here
-	is stable.
+.. danger::
+	This project is no longer under development. There won't be any further
+	updates to the project, however the repo will remain available for future
+	reference. Since the project is being formally discontinued, I am
+	relicensing it as MIT. If you have any questions, please feel free to email
+	me.
 
 The Cyber Security Scoring Engine Framework (CSSEF) is an easy to use
 framework for hosting security competitions. The primary purpose of the

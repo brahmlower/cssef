@@ -13,7 +13,7 @@ setup(
 	author_email = "bplower@gmail.com",
 
 	# License
-	license = "GPL-3.0",
+	license = "MIT",
 
 	# Packages:
 	packages = ['cssefcdc'],
